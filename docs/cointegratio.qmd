@@ -1,0 +1,264 @@
+---
+title: "VECM Models"
+title-block-banner: true
+author: "Zahid Asghar"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+format:
+  revealjs:
+    theme: [default, custom.scss]
+    slide-number: true
+    chalkboard: true
+    #   buttons: false
+    preview-links: auto
+    title-slide-attributes:
+      data-background-color: "#cf3a36"
+overview: true
+execute:
+  echo: false
+  warning: false
+  freeze: auto
+---
+
+```{r include=FALSE}
+library(tidyverse)
+library(httr)
+clrs <- MetBrewer::met.brewer(name = "Java")
+clrs_lt <- colorspace::lighten(clrs, 0.9)
+knitr::opts_chunk$set(fig.retina = 3, collapse = TRUE)
+options(digits = 3, width = 75)
+```
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  hiline = TRUE
+)
+```
+
+
+
+## Main Objectives
+- Concept of cointegration 
+
+- Studying the dynamics of cointegrated variables 
+
+- Methods for testing cointegration 
+
+- How to estimate a system of cointegrated variables 
+
+- VAR and VECM difference 
+
+## Money, Prices and GDP
+
+- Data for money, prices and gdp 
+
+- Purpose is forecasting for next 4 to 8 quarters
+
+
+## Graphs of data
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+library(tidyverse)
+library(fpp2)
+library(fpp3)
+library(tsibble)
+library(lubridate)
+library(zoo)
+library(readxl)
+library(gridExtra)
+library(patchwork)
+library(readr)
+df<-read_excel("data/quarterly gdp 2021.xlsx")
+df
+df$quarter=as.yearqtr(df$date...5
+                      ,format="%Yq%q")
+df1<-df %>% mutate(qrgdp=log(QRGDP),lnM2=log(M2_mill_rs))
+df11<-df1 %>% mutate(gdp_gr=(qrgdp-lag(qrgdp,4))/lag(qrgdp,4)*100,
+                       m2_gr=(lnM2-lag(lnM2,4))/lag(lnM2,4)*100, inf=(CPI-lag(CPI,4))/lag(CPI,4)*100)
+df11<-df11|>rename(date="date...1")
+```
+
+## 
+
+```{r fig.align="center", fig.width =15,repr.plot.height=8}
+#df11<-df11 %>% filter(quarter>"1970 Q4" & quarter<="2019 Q1")
+g1<-ggplot(df11)+aes(x=date,y=qrgdp)+geom_line()
+g2<-ggplot(df11)+aes(x=date,y=lnM2)+geom_line()
+g3<-ggplot(df11)+aes(x=date,y=CPI)+geom_line()
+g1+g2+g3
+
+```
+
+These graphs indicate all three variables are non-stationary. 
+
+## Scatter plot of the variables
+
+```{r  echo = FALSE}
+g4<-ggplot(df11)+aes(x=lnM2,y=CPI)+geom_point()
+g5<-ggplot(df11)+aes(x=qrgdp,y=CPI)+geom_point()
+g6<-ggplot(df11)+aes(x=lnM2,y=qrgdp)+geom_point()
+g4+g5+g6
+
+
+```
+
+
+## Linear Combinations of I(1) series {.scrollable}
+
+-  In general a linear combination of I(1) series ) series is also I( 1). 
+-  However, in some special cases there could be a linear combination which is I(0).
+-  So something very special has to happen for a linear combination to become 
+stationary.
+
+__Intuition based on theory__
+
+- Usually economic theory helps to find reason why linear combination of I(1) 
+series is stationary I(0).
+- For example _Permanent Income Hypothesis_, _Commodity Market Arbitrage_, _Purchasing Power Parity_
+- Theory guides but one has to test it
+
+## What is Cointegration
+
+- I(1) series are cointegrated if there exists at least one linear combination of these variables which is I(0).
+- In our example `_mpy_` if $b_1m+b_2p+b_3y$ is stationary, there is cointegration.
+- In case variables are nonstationary, usual VAR not a good idea.
+- In case variables are nonstationary but cointegrated, VAR in difference form miss long run dynamics
+- In case variables are nonstationary, not cointegrated, then VAR in difference.
+
+  So lets elaborate more on cointegration and Vector Error Correction models.
+
+## Cointegretion and Vector Error Correction Model (VECM)
+
+  Money Market equiblibrium
+  $M^s=M^d=\beta_0+\beta_1p_t+\beta_2y_t+\beta_3r_t+e_t$
+  $e_t$ is not persistent and its variance should not rise over time.
+  If $b_1m+b_2p+b_3y$ is stationary, it means despite each series being            non-stationary, their linear combination is stationary and hence these variables
+  are cointegrated.
+  
+  __Long run relationship__
+  If $b_1m+b_2p+b_3y$ is stationary, it means there must be some adjustment made
+  by m,p and y that move together such that deviation from $b_1m+b_2p+b_3y$=0
+  remains bounded.
+
+## Money and Price
+
+Suppose that in the long run $m_t=\beta p_t+e_t$ where $\beta>0$
+That is $m_t$ and $p_t$ are cointegrated and money nuetrality hypothesis would imply $\beta=1$.
+If $m \uparrow$ s.t $m_t-\beta p_t>0$, what would be the dynamics?
+
+## Deviation and now what
+![](images/mp1.png) 
+
+## $m_t$ is doing all the adjument 
+![](images/mp2.png) 
+
+## $m^*_t$ is unchanged and $m_t$ $\downarrow$
+$\Delta m_t=\alpha_m(m_{t-1}-m^*_{t-1})$ where $\alpha_m<0$
+Short run change in $m_t$ is a linear function of the deviation from the long run from the long run equilibrium 
+
+ 
+## $m^*_t$ is doing all the adjument
+ ![](images/mp3.png)
+ $m_t$ is unchanged and $p_t$ and $m^*_t$ $\uparrow$ 
+$\Delta p_t=\alpha_p(m_{t-1}-m^*_{t-1})$ where $\alpha_p>0$
+Short run change in $p_t$ is a linear function of the deviation from the long run from the long run equilibrium 
+
+## Both $m_t$ and $p_t$ adjust__
+  ![](/Users/hp/Documents/money_price4.png)
+  $m_t$ and $p_t$ are adjusting simultaneously
+  $\Delta m_t=\alpha_m(m_{t-1}-m^*_{t-1})$
+  $\Delta p_t=\alpha_p(m_{t-1}-m^*_{t-1})$ 
+which is basically error/equilibrium correction model.
+!...
+
+## Cointegration and VECM (Continued)
+
+__Simple ECM__ 
+$m_t$ and $p_t$ are cointegrated with adjustment in $e_t$ 
+  $\Delta m_t=\alpha_m(m_{t-1}-\beta p_{t-1})+\nu_t$ 
+    $\Delta p_t=\alpha_p(m_{t-1}-\beta p_{t-1})+\mu_t$ 
+    A _VAR_ in difference would be misspecified. 
+    
+  $m_t=(1+\alpha_m)m_{t-1}-\alpha_m \beta p_{t-1}+\nu_t$ 
+  
+  $p_t=\alpha_p m_{t-1}-(1-\alpha_p \beta) p_{t-1}+\mu_t$ 
+  
+These two equations represent VAR but with nonlinear constraints on its coefficients.
+
+## Back to money, prices and gdp issue 
+Economic theory indicate that $m_t$, $p_t$ and $y_t$ are cointegrated.
+Lets write simple __VECM of order zero__ 
+
+No lags of $\Delta m_t$,$\Delta p_t$ and $\Delta y_t$
+$\Delta m_t=\alpha_m(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\nu_t$ 
+
+$\Delta p_t=\alpha_p(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\mu_t$ 
+
+$\Delta y_t=\alpha_y(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\eta_t$
+
+## VECM of order 1
+
+$\Delta m_t=\alpha_m(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\ \lambda_{mm} \Delta m_{t-1}+\lambda_{mp} \Delta p_{t-1}+\lambda_{my} \Delta y_{t-1}+\nu_t$ 
+
+$\Delta p_t=\alpha_p(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\ \lambda_{pm} \Delta m_{t-1}+\lambda_{pp} \Delta p_{t-1}+\lambda_{py} \Delta y_{t-1}\mu_t$ 
+
+$\Delta y_t=\alpha_y(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\ \lambda_{ym} \Delta m_{t-1}+\lambda_{yp} \Delta p_{t-1}+\lambda_{yy} \Delta y_{t-1}+\eta_t$
+
+## Deterministic component
+
+__Case 1__
+$\Delta m_t=\alpha_m(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+)+\\\lambda_{mm} \Delta m_{t-1}+\lambda_{mp} \Delta p_{t-1}+\lambda_{my} \Delta y_{t-1}+\nu_t$ 
+
+__Case 2__ 
+
+$\Delta m_t=\alpha_m(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\\lambda_{mm} \Delta m_{t-1}+\lambda_{mp} \Delta p_{t-1}+\lambda_{my} \Delta y_{t-1}+\nu_t$ 
+
+__Case 3__ 
+
+$\Delta m_t=\mu_m+\alpha_m(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\\lambda_{mm} \Delta m_{t-1}+\lambda_{mp} \Delta p_{t-1}+\lambda_{my} \Delta y_{t-1}+\nu_t$ 
+
+
+## Case 3 VECM order 1 with constant 
+
+$\Delta m_t=\mu_m+\alpha_m(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\\lambda_{mm} \Delta m_{t-1}+\lambda_{mp} \Delta p_{t-1}+\lambda_{my} \Delta y_{t-1}+\nu_t$ 
+
+$\Delta p_t=\mu_p+\alpha_p(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\\lambda_{pm} \Delta m_{t-1}+\lambda_{pp} \Delta p_{t-1}+\lambda_{py} \Delta y_{t-1}\mu_t$ 
+
+$\Delta y_t=\mu_y+\alpha_y(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\\lambda_{ym} \Delta m_{t-1}+\lambda_{yp} \Delta p_{t-1}+\lambda_{yy} \Delta y_{t-1}+\eta_t$
+ __VECM in Matric Form__ 
+ 
+$\Delta X_t=C+\Pi X_{t-1}+\Lambda \Delta X_{t-1}+e_t$ 
+ 
+$\Pi X_{t-1}$ represents error correction term
+
+## Methods of Cointegration testing {.scorllable}
+- Engle Granger two step method 
+- Johansen Cointegration procedure 
+Jo.CI rests on estimating rank($\Pi$) which is maximum number of independent vectors it contains. 
+
+If rank($\Pi$)=0 , no cointegration 
+
+If rank($\Pi$) is full, all variables are I(0) 
+
+$0<rank(\Pi)=r<n$ there are $r$ independent cointegration relationships 
+
+__Trace Statistics for r__:the null hypothesis is that the null hypothesis is that the rank is at most $r$ vs the rank is strictly greater 
+
+__Eigen Value Statistics for r__:the null hypothesis is that the rank is $r$ vs. the rank is $r+1$
+
+## Weak Exogeniety 
+
+$\Delta m_t=\mu_m+\alpha_m(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\\lambda_{mm} \Delta m_{t-1}+\lambda_{mp} \Delta p_{t-1}+\lambda_{my} \Delta y_{t-1}+\nu_t$ 
+
+$\Delta p_t=\mu_p+\alpha_p(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\\lambda_{pm} \Delta m_{t-1}+\lambda_{pp} \Delta p_{t-1}+\lambda_{py} \Delta y_{t-1}\mu_t$ 
+
+$\Delta y_t=\mu_y+\alpha_y(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\\lambda_{ym} \Delta m_{t-1}+\lambda_{yp} \Delta p_{t-1}+\lambda_{yy} \Delta y_{t-1}+\eta_t$ 
+
+Testing $\alpha_y=0$ implies $y_t$ is weakly exogenous.
+
+

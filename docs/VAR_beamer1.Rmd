@@ -1,0 +1,160 @@
+---
+title: "Vector Autoregressions"
+author: "Zahid Asghar"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+format:
+  revealjs: 
+    slide-number: true
+    # chalkboard: 
+    #   buttons: false
+    preview-links: auto
+    theme: [simple, custom.scss]
+    #title-slide-attributes:
+      #data-background-color: "#495efc"
+resources:
+  - slides.pdf
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+##all images in documents directory
+```
+
+## Vector Autoregressions (VARs) 
+
+**Primary Source: Stock, James H., and Mark W. Watson, “Vector Autoregressions,” Journal of Economic Perspectives, Vol. 15 No. 4 (Fall 2001), 101-115.**
+
+_Macroeconometricians do 4 things_ 
+
+    1. Describe and summarize macroeconomic data, 
+
+    2. Make macroeconomic forecasts,  
+
+    3. Quantify what we know about the true structure of the macroeconomy, 
+
+    4. Advise or act as policymakers. 
+
+   Following the problems of the 1970s, none of the structural models or univariate time series approaches seemed trustworthy. VARs arose in this vacuum. 
+
+## _VARs come in three varieties:_ 
+
+     1. Reduced Form 
+
+     2. Recursive 
+
+     3. Structural 
+
+  A __reduced-form__ VAR expresses each variable as a linear function of its own past values and the past values of all other variables being considered and a serially uncorrelated error term.
+  
+  ***
+  
+  $\begin{aligned}\text{UNEM}_t = \beta_{10} &+ \beta_{11}\text{UNEM}_{t-1} + \beta_{12}\text{UNEM}_{t-2}+ \gamma_{11}\text{INFL}_{t-1}\\& + \gamma_{12}\text{INFL}_{t-2} + \phi_{11}\text{R}_{t-1} + \phi_{12}\text{R}_{t-2}+ \mu_{1t}\end{aligned}$ 
+    
+  $\begin{aligned}\text{INFL}_t = \beta_{20} &+ \beta_{21}\text{UNEM}_{t-1} + \beta_{22}\text{UNEM}_{t-2}+ \gamma_{21}\text{INFL}_{t-1}\\& + \gamma_{22}\text{INFL}_{t-2} + \phi_{21}\text{R}_{t-1} + \phi_{22}\text{R}_{t-2}+ \mu_{2t}\end{aligned}$
+    
+  $\begin{aligned}\text{R}_t = \beta_{30} &+ \beta_{31}\text{UNEM}_{t-1} + \beta_{32}\text{UNEM}_{t-2}+ \gamma_{31}\text{INFL}_{t-1}\\& + \gamma_{32}\text{INFL}_{t-2}+ \phi_{31}\text{R}_{t-1} + \phi_{32}\text{R}_{t-2}+ \mu_{3t}\end{aligned}$
+  
+  ***
+  
+  In theory, the VAR uses all available or relevant past values. In practice, frequently the Akaike (AIC) or Bayes (BIC) information criteria are used. 
+  
+  The error terms are viewed as “surprises”—movements in the variables after taking its past into account. If the different variables are correlated with each other, then the error terms will also be correlated across equations. 
+
+ *** 
+ 
+  A __recursive VAR__ constructs the error terms in each regression to be uncorrelated with the error term in the preceding equation. This is done by adding carefully- selected contemporaneous values as regressors. Estimation of each equation by OLS produces residuals that are uncorrelated across equations. 
+  
+  $\begin{aligned}\text{UNEM}_t = \beta_{10} &+ \beta_{11}\text{UNEM}_{t-1} + \beta_{12}\text{UNEM}_{t-2}+ \gamma_{11}\text{INFL}_{t-1} + \gamma_{12}\text{INFL}_{t-2}\\ &+ \phi_{11}\text{R}_{t-1} + \phi_{12}\text{R}_{t-2}+ \mu_{1t}\end{aligned}$
+  
+  $\begin{aligned}\text{INFL}_t = \beta_{20} &+ \delta_{21}\text{UNEM}_{t} + \beta_{21}\text{UNEM}_{t-1} + \beta_{22}\text{UNEM}_{t-2}\\ &+ \gamma_{21}\text{INFL}_{t-1} + \gamma_{22}\text{INFL}_{t-2}+ \phi_{21}\text{R}_{t-1} + \phi_{22}\text{R}_{t-2}+ \mu_{2t}\end{aligned}$
+  
+ $\begin{aligned}\text{R}_t = \beta_{30} &+ \delta_{21}\text{UNEM}_{t} + \beta_{31}\text{UNEM}_{t-1} + \beta_{32}\text{UNEM}_{t-2}+ \delta_{31}\text{INFL}_{t}\\ & +\gamma_{31}\text{INFL}_{t-1} + \gamma_{32}\text{INFL}_{t-2}+ \phi_{31}\text{R}_{t-1} + \phi_{32}\text{R}_{t-2}+ \mu_{3t}\end{aligned}$ 
+ 
+ The recursive VAR amounts to estimating the reduced form, then computing the Cholesky factorization of the reduced form VAR covariance matrix. (See the book by Lutkepohl, 1993). 
+
+  *** 
+  
+  Unfortunately the results depend on the order of the variables. Changing the order changes the VAR equations, coefficients, and residuals, and there are n! recursive VARs possible considering the possible reorderings. 
+  
+  A __structural VAR__ uses economic theory to sort out contemporaneous links among the variables. Structural VARs require “identifying assumptions” that establish causal links among variables. These produce instrumental variables.
+  
+  Stock and Watson offer this example of a structural VAR 
+based on a Taylor rule: 
+$R_t= r^*+1.5({\overline \pi_t - \pi^*})+1.25({\overline u_t - u^*})$+ lagged values of $R_t$,$\pi_t$,_u_+$\epsilon_t$ 
+
+The asterisked values are desired values and bar values are 4 quarter trailing averages. This equation becomes the  interest rate equation in the structural VAR. 
+
+  First the reduced form VAR and a recursive VAR are estimated to summarize the co-movements of the three series involved. 
+  
+ Second, the reduced form VAR is used to forecast the variables. 
+ 
+ ***
+ 
+ Third, the structural VAR is used to estimate the effect of a policy-induced change in the fed funds rate on inflation and unemployment. 
+    
+  __Standard practice__ is to report 
+  
+    Granger-causality tests
+    
+    impulse responses, and 
+    
+    forecast error variance decompositions. 
+    
+(These are more informative to understanding the relationships than the VAR regression coefficients or $R^2$  statistics.) 
+
+## Granger Causality 
+
+  ![](/Users/hp/Documents/granger.png) 
+
+## Forecast Variance Error Deceomposition  
+  
+  ![](/Users/hp/Documents/vardecomp.png)
+
+## Impulse Response Function 
+
+![](/Users/hp/Documents/irf.png) 
+
+  In these we see the effect of a 1% change in each variable as it works through the recursive VAR system with the coefficients estimated from actual data. Also plotted are ±1 standard deviation error bands, yielding roughly 66% confidence intervals. 
+  
+  The reduced-form VAR model can also be used to iterate forward to forecast. Stock and Watson then replace the interest rate equation with two forms of the Taylor rule (one backward looking and one forward looking), and compare impulse responses of monetary policy shocks. 
+
+## Forecasting 
+
+  ![](/Users/hp/Documents/forecast.png) 
+  
+## Structural Inference 
+
+![](/Users/hp/Documents/fig2_jep.png) 
+
+## Policy Analysis 
+
+ Two type of policies: surprise monetary policy interventions and changing the policy rule, like shifting from a Taylor rule  (with weight on both unemployment and inflation) to explicit inflation targetting rule.
+   
+## Assessment 
+
+VARs are good at capturing co-movements of multiple time series. Granger-causality tests, impulse response functions and variance decompositions are well-accepted and widely used. 
+Small VARs have become the benchmarks against which new forecasting systems are judged. 
+
+  Sims (1993) allows for time-varying parameters to capture important drifts in coefficients. Adding variables involves costs. A 9-variable, four lag VAR as 333 unknown coefficients (including intercepts). Estimation of all of these requires restrictions. Bayesian approaches have helped control the number of parameters in large VAR models. 
+  
+  ***
+  
+  Structural inference is tougher. A lot of the success of these models depends upon evaluation of shocks. VAR shocks reflect omitted variables. If the omitted variables (factors or information) correlate with included variables, then the estimates will contain omitted variable bias. Also, if agents are forward looking, impulse responses may suggest bizarre causal responses. 
+ 
+  Changing policy rules may lead to misspecification in constant parameter structural VARs just as they might in standard multi-equation structural models. 
+  
+  ***
+  
+  Researchers also seem to be attempting to rationalize a specific causal relationship in order to be able to justify a 7particular recursive ordering so that their structural VAR 
+collapses to a recursive VAR, which makes analysis easier. With regard to forecast error variances, Spencer (JMCB, 1989), finds: 
+  Ordering of variables: ordering of the variables is critically important. It is of greater importance for temporally aggregated data since the contemporaneous correlation of the pre-orthogonalized aggregated data is likely to be greater. There is less problem for monthly data than for quarterly, semi-annual, and annual data. 
+  
+  Trend removal: the method of detrending can make a substantial difference to variance decomposition results. Lag length: In a mrpy model, a second year of lags to the 
+
+  VAR gives increased estimates of the importance of money in explaining industrial production. Adding lags also seems to improve the stability of results across orderings. 
+Level of temporal aggregation: While aggregation may reduce noise in series, it increases cont. correlation. 
+  
+  
+  
+  
+  
