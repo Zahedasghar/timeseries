@@ -1,0 +1,547 @@
+---
+title: "[Macroeconomic Forecasting Lec_01]{.flow}"
+author: "[[Zahid Asghar, Professor, School of Economics, QAU](https://zahedasghar.netlify.app)]{style=color:blue;}"
+date: "25-09-2023"
+date-format: "DD-MM-YYYY"
+
+format: 
+  revealjs:
+    theme: [default, custom.css,styles.scss]
+    chalkboard: true
+    slide-number: c/t
+execute: 
+  freeze: auto
+---
+
+# Properties of Time Series
+
+## Introduction
+
+-   General comments
+    -   Univariate analysis
+    -   Two general "classes" of processes
+    -   Both science and art (judgement):
+    -   Understanding behavior and forecasting
+    -   Assessing/testing
+
+## Univariate Analysis
+
+![Stochastic Process vs time series](images/prob_density.png){fig-align="center"}
+
+Each distribution is a draw from a **random process**.
+
+## Introduction
+
+-   Two general "classes" of processes
+    -   stationary vs nonstationary
+    -   Unchanged distribution (pdf) over time?
+    -   Covariance stationary:
+        i)  Unconditional mean $E(Y_t)=E(Y_{t+j})=\mu$\
+        ii) variance constant $Var(Y_t)=Var(Y_{t+j})=\sigma^2_y$ and
+        iii) Covariance depnds on time j that has elapsed between observations, not on reference period $Cov(Y_t,Y_{t+j})=Cov(Y_s,Y_{s+j})=\gamma_j$
+
+## 
+
+![Stochastic Process vs time series](images/stationary.png){fig-align="center"}
+
+## 
+
+![Diagnostic-ARMA](images/arma.png){fig-align="center"}
+
+
+## Outline
+
+### Part 1 : Stationary processes
+-   Identification
+-   Estimation & Model Selection
+-   Putting it all together
+
+### Part 2: Nonstationary processes
+-   Characterization
+
+-   Testing 
+
+
+## Part1 : Stationary Process
+Just to remind you….
+
+-   Identification
+-   Estimation & Model Selection
+-   Putting it all together
+
+##  
+
+The first step is visual inspection: graph and  observe your	data.
+
+> “You can observe a lot just by watching”
+Yogi Berra
+
+## Plot plot and plot your data 
+:::{.columns}
+
+::: {.column width=50%}
+
+```{r}
+# Load necessary library (if not already loaded)
+library(tidyverse)
+library(stats)
+library(ggplot2)
+# Set the parameters
+phi <- 0.8  # Autoregressive coefficient
+n <- 200    # Number of time points
+
+# Simulate data from the AR(1) model
+set.seed(123)  # For reproducibility
+ar1_data <- arima.sim(model = list(ar = phi), n = n)
+# Create a data frame with time series data
+time_series_data <- data.frame(Time = 1:n, Value = ar1_data)
+
+# Create a ggplot2 line plot
+ggplot(time_series_data, aes(x = Time, y = Value)) +
+  geom_line(linewidth=1) +labs(title = "AR(1) Model ", x = "Time", y = "Value") +
+  theme_minimal()
+
+
+
+```
+
+
+
+```{r}
+
+
+# Set the parameters
+mu <- 0       # Mean of the series
+theta <- 0.6  # Moving average coefficient
+n <- 200      # Number of time points
+
+# Simulate data from the MA(1) model
+set.seed(123)  # For reproducibility
+ma1_data <- arima.sim(model = list(ma = theta), n = n, mean = mu)
+
+# Create a data frame with time series data
+time_series_data <- data.frame(Time = 1:n, Value = ma1_data)
+
+# Create a ggplot2 line plot
+ggplot(time_series_data, aes(x = Time, y = Value)) +
+  geom_line(linewidth=1) +labs(title = "MA(1) Model ", x = "Time", y = "Value") +
+  theme_minimal()
+
+```
+
+:::
+
+
+::: {.column width=50%}
+
+
+```{r}
+
+# Set the parameters
+alpha <- 0.5  # Intercept or constant term
+beta <- 0.1   # Slope of the trend
+phi <- 0.7    # Autoregressive coefficient
+n <- 200      # Number of time points
+
+# Create a time sequence
+time <- 1:n
+
+# Simulate data from the AR(1) model with a trend
+set.seed(123)  # For reproducibility
+ar1_with_trend_data <- alpha + beta * time + arima.sim(model = list(ar = phi), n = n)
+# Create a data frame with time series data
+time_series_data <- data.frame(Time = 1:n, Value = ar1_with_trend_data)
+
+# Create a ggplot2 line plot
+ggplot(time_series_data, aes(x = Time, y = Value)) +
+  geom_line(linewidth=1) +labs(title = "AR(1) with trend Model ", x = "Time", y = "Value") +
+  theme_minimal()
+```
+
+
+
+
+
+
+
+```{r}
+# Load necessary libraries (if not already loaded)
+library(ggplot2)
+
+# Set a random seed for reproducibility
+set.seed(123)
+
+# Length of the time series
+n <- 200
+
+# Generate a time series with an AR(1) process before the break
+ar1_before <- arima.sim(model = list(order = c(1, 0, 0), ar = 0.8), n = n/2)
+
+# Generate a time series with a different AR(1) process after the break
+ar1_after <- arima.sim(model = list(order = c(1, 0, 0), ar = -0.5), n = n/2)
+
+# Combine the two time series at the break point
+break_point <- n/2
+time_series <- c(ar1_before, ar1_after)
+
+# Create a data frame with the time series data
+data <- data.frame(Time = 1:n, Value = time_series)
+
+# Create a plot to visualize the time series
+ggplot(data, aes(x = Time, y = Value)) +
+  geom_line(linewidth=1) +
+  geom_vline(xintercept = break_point, linetype = "dashed", color = "red") +
+  labs(title = "AR(1) Model with Break", x = "Time", y = "Value") +
+  theme_minimal()
+
+```
+:::
+:::
+
+
+## Differenced model of trend variable (third case)
+
+Difference can remove the trend.
+
+$y_t^{*}=y_t-y_{t-1}$
+
+```{r}
+# Load necessary libraries (if not already loaded)
+library(ggplot2)
+
+# Set random seed for reproducibility
+set.seed(123)
+
+# Define AR(1) model parameters
+phi <- 0.7   # Autoregressive coefficient
+beta <- 0.1  # Trend coefficient
+n <- 200     # Number of time periods
+
+# Simulate AR(1) time series data with a trend
+ar1_trend_data <- arima.sim(model = list(order = c(1, 0, 0), ar = phi), n = n) + beta * 1:n
+
+# Calculate the difference of y at each time point
+differences <- diff(ar1_trend_data)
+
+# Create a data frame with time series data and differences
+time_series_data <- data.frame(Time = 1:n, Value = ar1_trend_data, Difference = c(NA, differences))
+
+# Create a ggplot2 line plot of the differences
+ggplot(time_series_data, aes(x = Time, y = Difference)) +
+  geom_line(linewidth=1) +
+  labs(title = "AR(1) Model with Trend: Differences", x = "Time", y = "Difference") +
+  theme_minimal()
+
+
+```
+
+## Identification
+
+Assuming that the process is stationary, there  are three basic types that interest us:
+
+Autoregressive (process)   $y_t=a+b_1y_{t-1}+b_2y_{t-2}+...+b_py_{t-p}+\epsilon_t$
+
+Moving Average : AR(process)  : $y_t=\mu+u_t+\phi_1u_{t-1}+\phi_2u_{t-2}+...+\phi_qu_{t-q}+\epsilon_t$
+
+Combined ARMA-process
+$y_t=a+b_1y_{t-1}+b_2y_{t-2}+...+b_py_{t-p}+u_t+\\\phi_1u_{t-1}+\phi_2u_{t-2}+...+\phi_qu_{t-q}+\epsilon_t$
+
+## 
+Some notation:
+AR(p), MA(q), ARMA(p,q), where p,q refer to the
+order (maximum lag) of the process
+
+$\epsilon_t$	is a	white	noise	disturbance:
+
+$E(\epsilon_t=0)$, $Var(\epsilon_t=\sigma^2)$ ,
+$Cov(\epsilon_t,\epsilon_s=0 , if \ t\neq s)$
+
+
+## Tools for Identification 
+
+-   Where are we? Where are we going?
+
+-   Stationary process (visual inspection) y
+-   Learned about possible processes for y
+-   Need to identify which one in order to  understand, then eventually forecast y 
+
+> tools to help identify
+
+## 
+Autocovariance and autocorrelation
+Relations between observations at different lags:
+
+- Autocovariance $\gamma_j=E[(y_t-\mu)(y_{t-j}-\mu)]$
+- Autocorrelation $\rho_j=\gamma_j / \gamma_0$ 
+- ACF or	Correlogram	: graph of autocorrelations at  each lag
+
+
+## 
+
+::: {.columns}
+
+:::{.column width=50%}
+
+```{r}
+
+
+# Set random seed for reproducibility
+set.seed(123)
+
+# Simulate an AR(1) time series with a coefficient of 0.7
+n <- 200  # Number of time periods
+phi <- 0.7  # AR(1) coefficient
+ar1_data <- arima.sim(model = list(order = c(1, 0, 0), ar = phi), n = n)
+
+# Create a data frame with the simulated data
+time_series_data <- data.frame(Time = 1:n, Value = ar1_data)
+
+# Create a ggplot2 line plot of the simulated AR(1) time series
+ggplot(time_series_data, aes(x = Time, y = Value)) +
+  geom_line() +
+  labs(title = "AR(1) Model with Coefficient 0.7", x = "Time", y = "Value") +
+  theme_minimal()+theme(axis.text = element_text(size = 12),  # Adjust font size for axis labels
+        plot.title = element_text(size = 14))  # Adjust font size for title
+
+# Plot the ACF of the simulated data
+acf(ar1_data, main = "Autocorrelation Function (ACF) of AR(1) Model")+
+  theme(axis.text = element_text(size = 12),  # Adjust font size for axis labels
+        plot.title = element_text(size = 14))  # Adjust font size for title
+
+
+
+```
+
+:::
+
+:::{.column width=50%}
+
+```{r}
+
+# Set random seed for reproducibility
+set.seed(123)
+
+# Simulate MA(1) model with coefficient 0.7
+n <- 200  # Number of time periods
+ma1_data <- arima.sim(model = list(order = c(0, 0, 1), ma = 0.7), n = n)
+
+# Create a time series object
+ma1_ts <- ts(ma1_data)
+
+# Plot the MA(1) time series
+ggplot(data.frame(Time = 1:n, Value = ma1_ts), aes(x = Time, y = Value)) +
+  geom_line() +
+  labs(title = "Simulated MA(1) Model (Coefficient = 0.7)", x = "Time", y = "Value") +
+  theme_minimal()+theme(axis.text = element_text(size = 12),  # Adjust font size for axis labels
+        plot.title = element_text(size = 14))  # Adjust font size for title
+
+# Plot the ACF of the MA(1) model
+acf(ma1_ts, main = "ACF of Simulated MA(1) Model")+theme(axis.text = element_text(size = 12),  # Adjust font size for axis labels
+        plot.title = element_text(size = 14))  # Adjust font size for title
+
+
+```
+
+:::
+:::
+
+
+## 
+
+:::{.columns}
+
+:::{.column width=50%}
+```{r}
+# Set random seed for reproducibility
+set.seed(123)
+
+# Simulate AR(3) time series data with coefficients 1.3, -0.6, and 0.1
+n <- 200
+ar3_data <- arima.sim(model = list(order = c(3, 0, 0), ar = c(1.4, -0.6, 0.1)), n = n)
+
+# Calculate the ACF of the simulated data
+acf_values <- acf(ar3_data, plot = FALSE)
+
+# Extract ACF values and lags
+acf_data <- data.frame(Lag = acf_values$lag, ACF = acf_values$acf)
+
+# Create and customize the correlogram plot
+library(ggplot2)
+
+acf_plot <- ggplot(acf_data, aes(x = Lag, y = ACF)) +
+  geom_bar(stat = "identity", fill = "blue", width = 0.5) +
+  labs(title = "Correlogram for AR(3) Model",
+       x = "Lag", y = "ACF") +
+  theme_minimal() +
+  theme(axis.text = element_text(size = 12),  # Adjust font size for axis labels
+        plot.title = element_text(size = 14))  # Adjust font size for title
+
+# Print the correlogram plot
+print(acf_plot)
+
+```
+:::::
+
+:::{.column width=50%}
+
+```{r}
+# Set random seed for reproducibility
+set.seed(123)
+
+# Simulate AR(3) time series data with coefficients 1.3, -0.6, and 0.1
+n <- 100
+ar3_data <- arima.sim(model = list(order = c(3, 0, 0), ar = c(-0.2, 0.7, 0.3)), n = n)
+
+# Calculate the ACF of the simulated data
+acf_values <- acf(ar3_data, plot = FALSE)
+
+# Extract ACF values and lags
+acf_data <- data.frame(Lag = acf_values$lag, ACF = acf_values$acf)
+
+# Create and customize the correlogram plot
+library(ggplot2)
+
+acf_plot <- ggplot(acf_data, aes(x = Lag, y = ACF)) +
+  geom_bar(stat = "identity", fill = "blue", width = 0.5) +
+  labs(title = "Correlogram for AR(3) Model",
+       x = "Lag", y = "ACF") +
+  theme_minimal() +
+  theme(axis.text = element_text(size = 12),  # Adjust font size for axis labels
+        plot.title = element_text(size = 14))  # Adjust font size for title
+
+# Print the correlogram plot
+print(acf_plot)
+
+
+```
+
+:::
+:::
+
+## Patterns for PACF
+
+::: {.columns}
+:::{.column width=50%}
+
+```{r}
+
+# Set random seed for reproducibility
+set.seed(123)
+
+# Simulate AR(1) time series data with a coefficient of 0.8
+n <- 100
+ar1_data <- arima.sim(model = list(order = c(1, 0, 0), ar = 0.8), n = n)
+
+# Calculate the PACF of the simulated data
+pacf_values <- pacf(ar1_data, lag.max = 20)
+
+# Extract PACF values
+pacf_data <- data.frame(Lag = 1:20, PACF = pacf_values$acf)
+
+# Create a custom plot of the PACF
+ggplot(data = pacf_data, aes(x = Lag, y = PACF)) +
+  geom_bar(stat = "identity", fill = "blue", width = 0.5) +
+  labs(title = "Partial Autocorrelation Function (PACF) of AR(1) with 0.8 coefficient Model",
+       x = "Lag", y = "PACF") +
+  theme_minimal() +
+  theme(axis.text = element_text(size = 12),  # Adjust font size for axis labels
+        plot.title = element_text(size = 14))  # Adjust font size for title
+```
+
+
+```{r}
+
+# Set random seed for reproducibility
+set.seed(123)
+
+# Simulate AR(1) time series data with a coefficient of 0.8
+n <- 100
+ar1_data <- arima.sim(model = list(order = c(1, 0, 0), ar = -0.8), n = n)
+
+# Calculate the PACF of the simulated data
+pacf_values <- pacf(ar1_data, lag.max = 20)
+
+# Extract PACF values
+pacf_data <- data.frame(Lag = 1:20, PACF = pacf_values$acf)
+
+# Create a custom plot of the PACF
+ggplot(data = pacf_data, aes(x = Lag, y = PACF)) +
+  geom_bar(stat = "identity", fill = "blue", width = 0.5) +
+  labs(title = "Partial Autocorrelation Function (PACF) of AR(1) with -0.8 coeficient Model",
+       x = "Lag", y = "PACF") +
+  theme_minimal() +
+  theme(axis.text = element_text(size = 12),  # Adjust font size for axis labels
+        plot.title = element_text(size = 14))  # Adjust font size for title
+```
+
+:::
+:::{.column width=50%}
+
+```{r}
+# Load necessary library (if not already loaded)
+library(stats)
+
+# Simulate AR(3) time series data with coefficients 1.4, -0.6, and 0.1
+n <- 100
+ar3_data <- arima.sim(model = list(order = c(3, 0, 0), ar = c(1.4, -0.6, 0.1)), n = n)
+
+# Calculate the PACF of the simulated data
+pacf_values <- pacf(ar3_data, lag.max = 10)
+
+
+# Plot the PACF
+plot(pacf_values, main = "Partial Autocorrelation Function (PACF) of AR(3) Model",
+     xlab = "Lag", ylab = "PACF", col = "blue")
+```
+
+
+
+
+
+
+```{r}
+# Load necessary library (if not already loaded)
+library(stats)
+
+# Simulate AR(3) time series data with coefficients 1.4, -0.6, and 0.1
+n <- 100
+ar3_data <- arima.sim(model = list(order = c(3, 0, 0), ar = c(-0.2, 0.7, 0.3)), n = n)
+
+# Calculate the PACF of the simulated data
+pacf_values <- pacf(ar3_data, lag.max = 10)
+
+
+# Plot the PACF
+plot(pacf_values, main = "Partial Autocorrelation Function (PACF) of AR(3) Model",
+     xlab = "Lag", ylab = "PACF", col = "blue")
+```
+
+:::
+:::
+
+
+## 
+
+```{r}
+# Load necessary library (if not already loaded)
+library(stats)
+
+# Simulate MA(3) time series data with coefficients 0.7, -0.3, and -0.2
+n <- 100
+ma3_data <- arima.sim(model = list(order = c(0, 0, 3), ma = c(0.7, -0.3, -0.2)), n = n)
+
+# Calculate the ACF and PACF of the simulated data
+acf_values <- acf(ma3_data, lag.max = 10, plot = FALSE)
+pacf_values <- pacf(ma3_data, lag.max = 10, plot = FALSE)
+
+# Plot the ACF
+par(mfrow = c(2, 1))  # Create a 2x1 grid of plots
+plot(acf_values, main = "Autocorrelation Function (ACF) of MA(3) Model",
+     xlab = "Lag", ylab = "ACF", col = "blue")
+
+# Plot the PACF
+plot(pacf_values, main = "Partial Autocorrelation Function (PACF) of MA(3) Model",
+     xlab = "Lag", ylab = "PACF", col = "red")
+
+```
+
