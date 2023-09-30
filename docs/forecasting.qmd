@@ -76,7 +76,7 @@ Just to remind you....
 -   Estimation & Model Selection
 -   Putting it all together
 
-## 
+
 
 The first step is visual inspection: graph and observe your data.
 
@@ -525,13 +525,95 @@ plot(pacf_values, main = "Partial Autocorrelation Function (PACF) of MA(3) Model
 
 ## Stationary Time Series
 
-We now have a tool (ACF, PACF) to help us identify the We now have a
-tool (ACF, PACF) to help us identify identify the stochastic stochastic
-pocess underlying time series we are observing. Now we will: - Summarize
-the basic patterns to look for - Observe an actual data series and make
-an initial guess Observe an actual data series and make an initial
-guess - Next step: estimate (several alternatives) based on this guess
+We now have a tool (ACF, PACF) to help us identify the stochastic stochastic process underlying time series we are observing. Now we will: -   Summarize the basic patterns to look for - Observe an actual data series and make an initial guess Observe an actual data series and make an initial guess 
+-   Next step: estimate (several alternatives) based on this guess
 
 ## Summary Table Pattern
 
 ![Pattern for model identification](images/summary_pattern.png){.r-stretch}
+
+## Tips 
+
+-   ACF’s that do not go to zero could be sign of  nonstationarity 
+
+-   ACF of both AR, ARMA decay gradually, drops to 0 for MA 
+
+-   PACF decays gradually for ARMA, MA, drops to 0 for AR 
+
+Possible approach: begin with parsimonious low order  AR, check residuals to decide on possible MA terms.
+
+
+---
+
+When looking at ACF, PACF 
+
+-   Box-Jenkins provide sampling variance of the observed ACF and PACFs ($r_s$ and $b_s$) 
+-   Permits one to construct confidence intervals around each &rarr; assess whether significantly $\neq0$ 
+-   Computer packages provide this automatically 
+
+## Estimation and Model Selection
+
+-   Decide on plausible alternative specifications (ARMA) 
+-   Estimate each specification 
+-   Choose "best" model, based on: 
+  -   Significance of coefficients
+  -   Fit vs parsimony (criteria)
+  -   White noise residuals
+  -   Ability to forecast 
+  -   Account for possible structural breaks 
+  
+## Fit vs parsimony (information criteria): 
+
+-    Additional parameters (lags) automatically improve fit but reduce forecast quality 
+-   Tradeoff between fit and parsimony; widely used criteria: 
+  - Akaike Information Criterion (AIC)
+    $AIC=T ln(SST)+2(p+q+1)$ 
+  -   Schwartz Bayesian Criterion (BIC)
+    $SBC= T ln(SST)+(p+q+1)ln(T)$ 
+- SBC is considered to be preferable for having more parsimonious models than AIC
+
+
+## White noise errors : 
+
+
+-   Aim to eliminate autocorrelation in the residuals (could indicate that model does not reflect the lag structure well) 
+-   Plot “standardized residuals” ($\epsilon_{it}$	)
+No more than 5% of them should lie outside [-2,+2] over all periods 
+
+-   Look at $r_s$, $b_s$ (and significance) at different lags
+Box-Pierce Statistic: joint significance test up to lag $s$:
+$\bar{x} = \frac{1}{n} 
+
+$Q=T \sum_{k=1}^{s} r_k^2$ 
+
+$H_0$ : all $r_k=0$,
+$H_1$: at least one $r_k\neq0$ 
+
+
+## Forecastability 
+
+Can assess how well the model forecasts “ out of sample”: 
+
+-   Estimate the model for a sub-sample (for example, the first 250 out of  300 observations). 
+-   Use estimated parameters to forecast for the rest of the sample (last 50) 
+-   Compute the “ forecast errors” and assess:
+  -   Mean Squared Prediction Error
+  -   Granger-Newbold Test
+  -   Diebold-Mariano Test
+  
+## Account for possible structural breaks: 
+
+-    Does the same model apply equally well to the entire sample, or do parameters change (significantly) within the sample? 
+
+How to approach:  
+
+-   Own priors/suspicion : Chow test for parameter change  
+
+-   If priors not strong, recursive estimation, tests for parameter stability over the sample, for example, CUSUM
+
+
+
+
+
+
+

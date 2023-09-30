@@ -409,9 +409,6 @@
 <li>Estimation &amp; Model Selection</li>
 <li>Putting it all together</li>
 </ul>
-</section>
-<section id="section-2" class="slide level2">
-<h2></h2>
 <p>The first step is visual inspection: graph and observe your data.</p>
 <blockquote>
 <p>“You can observe a lot just by watching” Yogi Berra</p>
@@ -458,7 +455,7 @@
 <p>Moving Average : AR(process) : <span class="math inline">\(y_t=\mu+u_t+\phi_1u_{t-1}+\phi_2u_{t-2}+...+\phi_qu_{t-q}+\epsilon_t\)</span></p>
 <p>Combined ARMA-process <span class="math inline">\(y_t=a+b_1y_{t-1}+b_2y_{t-2}+...+b_py_{t-p}+u_t+\\\phi_1u_{t-1}+\phi_2u_{t-2}+...+\phi_qu_{t-q}+\epsilon_t\)</span></p>
 </section>
-<section id="section-3" class="slide level2">
+<section id="section-2" class="slide level2">
 <h2></h2>
 <p>Some notation: AR(p), MA(q), ARMA(p,q), where p,q refer to the order (maximum lag) of the process</p>
 <p><span class="math inline">\(\epsilon_t\)</span> is a white noise disturbance:</p>
@@ -476,7 +473,7 @@
 <p>tools to help identify</p>
 </blockquote>
 </section>
-<section id="section-4" class="slide level2">
+<section id="section-3" class="slide level2">
 <h2></h2>
 <p>Autocovariance and autocorrelation Relations between observations at different lags:</p>
 <ul>
@@ -485,7 +482,7 @@
 <li>ACF or Correlogram : graph of autocorrelations at each lag</li>
 </ul>
 </section>
-<section id="section-5" class="slide level2">
+<section id="section-4" class="slide level2">
 <h2></h2>
 <div class="columns">
 <div class="column" style="width:50%;">
@@ -515,7 +512,7 @@
 </div>
 </div>
 </section>
-<section id="section-6" class="slide level2">
+<section id="section-5" class="slide level2">
 <h2></h2>
 <div class="columns">
 <div class="column" style="width:50%;">
@@ -573,18 +570,92 @@
 </div>
 </div>
 </section>
-<section id="section-7" class="slide level2">
+<section id="section-6" class="slide level2">
 <h2></h2>
 
 <img data-src="forecasting_files/figure-revealjs/unnamed-chunk-14-1.png" width="960" class="r-stretch"></section>
 <section id="stationary-time-series" class="slide level2">
 <h2>Stationary Time Series</h2>
-<p>We now have a tool (ACF, PACF) to help us identify the We now have a tool (ACF, PACF) to help us identify identify the stochastic stochastic pocess underlying time series we are observing. Now we will: - Summarize the basic patterns to look for - Observe an actual data series and make an initial guess Observe an actual data series and make an initial guess - Next step: estimate (several alternatives) based on this guess</p>
+<p>We now have a tool (ACF, PACF) to help us identify the stochastic stochastic process underlying time series we are observing. Now we will: - Summarize the basic patterns to look for - Observe an actual data series and make an initial guess Observe an actual data series and make an initial guess - Next step: estimate (several alternatives) based on this guess</p>
 </section>
 <section id="summary-table-pattern" class="slide level2">
 <h2>Summary Table Pattern</h2>
 
-<img data-src="images/summary_pattern.png" class="r-stretch quarto-figure-center"><p class="caption">Pattern for model identification</p><div class="footer footer-default">
+<img data-src="images/summary_pattern.png" class="r-stretch quarto-figure-center"><p class="caption">Pattern for model identification</p></section>
+<section id="tips" class="slide level2">
+<h2>Tips</h2>
+<ul>
+<li><p>ACF’s that do not go to zero could be sign of nonstationarity</p></li>
+<li><p>ACF of both AR, ARMA decay gradually, drops to 0 for MA</p></li>
+<li><p>PACF decays gradually for ARMA, MA, drops to 0 for AR</p></li>
+</ul>
+<p>Possible approach: begin with parsimonious low order AR, check residuals to decide on possible MA terms.</p>
+</section>
+<section class="slide level2">
+
+<p>When looking at ACF, PACF</p>
+<ul>
+<li>Box-Jenkins provide sampling variance of the observed ACF and PACFs (<span class="math inline">\(r_s\)</span> and <span class="math inline">\(b_s\)</span>)</li>
+<li>Permits one to construct confidence intervals around each → assess whether significantly <span class="math inline">\(\neq0\)</span></li>
+<li>Computer packages provide this automatically</li>
+</ul>
+</section>
+<section id="estimation-and-model-selection" class="slide level2">
+<h2>Estimation and Model Selection</h2>
+<ul>
+<li>Decide on plausible alternative specifications (ARMA)</li>
+<li>Estimate each specification</li>
+<li>Choose “best” model, based on:</li>
+<li>Significance of coefficients</li>
+<li>Fit vs parsimony (criteria)</li>
+<li>White noise residuals</li>
+<li>Ability to forecast</li>
+<li>Account for possible structural breaks</li>
+</ul>
+</section>
+<section id="fit-vs-parsimony-information-criteria" class="slide level2">
+<h2>Fit vs parsimony (information criteria):</h2>
+<ul>
+<li>Additional parameters (lags) automatically improve fit but reduce forecast quality</li>
+<li>Tradeoff between fit and parsimony; widely used criteria:</li>
+<li>Akaike Information Criterion (AIC) <span class="math inline">\(AIC=T ln(SST)+2(p+q+1)\)</span></li>
+<li>Schwartz Bayesian Criterion (BIC) <span class="math inline">\(SBC= T ln(SST)+(p+q+1)ln(T)\)</span></li>
+<li>SBC is considered to be preferable for having more parsimonious models than AIC</li>
+</ul>
+</section>
+<section id="white-noise-errors" class="slide level2">
+<h2>White noise errors :</h2>
+<ul>
+<li><p>Aim to eliminate autocorrelation in the residuals (could indicate that model does not reflect the lag structure well)</p></li>
+<li><p>Plot “standardized residuals” (<span class="math inline">\(\epsilon_{it}\)</span> ) No more than 5% of them should lie outside [-2,+2] over all periods</p></li>
+<li><p>Look at <span class="math inline">\(r_s\)</span>, <span class="math inline">\(b_s\)</span> (and significance) at different lags Box-Pierce Statistic: joint significance test up to lag <span class="math inline">\(s\)</span>: ${x} = </p></li>
+</ul>
+<p><span class="math inline">\(Q=T \sum_{k=1}^{s} r_k^2\)</span></p>
+<p><span class="math inline">\(H_0\)</span> : all <span class="math inline">\(r_k=0\)</span>, <span class="math inline">\(H_1\)</span>: at least one <span class="math inline">\(r_k\neq0\)</span></p>
+</section>
+<section id="forecastability" class="slide level2">
+<h2>Forecastability</h2>
+<p>Can assess how well the model forecasts “ out of sample”:</p>
+<ul>
+<li>Estimate the model for a sub-sample (for example, the first 250 out of 300 observations).</li>
+<li>Use estimated parameters to forecast for the rest of the sample (last 50)</li>
+<li>Compute the “ forecast errors” and assess:</li>
+<li>Mean Squared Prediction Error</li>
+<li>Granger-Newbold Test</li>
+<li>Diebold-Mariano Test</li>
+</ul>
+</section>
+<section id="account-for-possible-structural-breaks" class="slide level2">
+<h2>Account for possible structural breaks:</h2>
+<ul>
+<li>Does the same model apply equally well to the entire sample, or do parameters change (significantly) within the sample?</li>
+</ul>
+<p>How to approach:</p>
+<ul>
+<li><p>Own priors/suspicion : Chow test for parameter change</p></li>
+<li><p>If priors not strong, recursive estimation, tests for parameter stability over the sample, for example, CUSUM</p></li>
+</ul>
+<div class="footer footer-default">
 
 </div>
 </section></section>
