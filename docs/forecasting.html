@@ -29,6 +29,71 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="forecasting_files/libs/revealjs/dist/theme/quarto.css" id="theme">
   <link href="forecasting_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
@@ -635,11 +700,11 @@
 </section>
 <section id="forecastability" class="slide level2">
 <h2>Forecastability</h2>
-<p>Can assess how well the model forecasts “ out of sample”:</p>
+<p>Can assess how well the model forecasts ” out of sample”:</p>
 <ul>
 <li>Estimate the model for a sub-sample (for example, the first 250 out of 300 observations).</li>
 <li>Use estimated parameters to forecast for the rest of the sample (last 50)</li>
-<li>Compute the “ forecast errors” and assess:</li>
+<li>Compute the ” forecast errors” and assess:</li>
 <li>Mean Squared Prediction Error</li>
 <li>Granger-Newbold Test</li>
 <li>Diebold-Mariano Test</li>
@@ -655,6 +720,113 @@
 <li><p>Own priors/suspicion : Chow test for parameter change</p></li>
 <li><p>If priors not strong, recursive estimation, tests for parameter stability over the sample, for example, CUSUM</p></li>
 </ul>
+</section>
+<section id="learning-all-above-with-simulated-data" class="slide level2">
+<h2>Learning all above with simulated data</h2>
+<p>Lets simulate MA(1), AR(1) series in Excel, R and one can use STATA/EVIEWS as well</p>
+<div class="panel-tabset">
+<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">MA-1 code</a></li><li><a href="#tabset-1-2">MA1-output</a></li><li><a href="#tabset-1-3">AR-1 code</a></li><li><a href="#tabset-1-4">AR-1 output</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># Set the parameters</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>mu <span class="ot">&lt;-</span> <span class="dv">0</span>       <span class="co"># Mean of the series</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>theta <span class="ot">&lt;-</span> <span class="fl">0.6</span>  <span class="co"># Moving average coefficient</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>n <span class="ot">&lt;-</span> <span class="dv">200</span>      <span class="co"># Number of time points</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="co"># Simulate data from the MA(1) model</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)  <span class="co"># For reproducibility</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>ma1_data <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="at">model =</span> <span class="fu">list</span>(<span class="at">ma =</span> theta), <span class="at">n =</span> n, <span class="at">mean =</span> mu)</span>
+<span id="cb3-9"><a href="#cb3-9"></a></span>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="co"># Create a data frame with time series data</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a>time_series_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Time =</span> <span class="dv">1</span><span class="sc">:</span>n, <span class="at">Value =</span> ma1_data)</span>
+<span id="cb3-12"><a href="#cb3-12"></a></span>
+<span id="cb3-13"><a href="#cb3-13"></a><span class="co"># Create a ggplot2 line plot</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a><span class="fu">ggplot</span>(time_series_data, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Value)) <span class="sc">+</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"MA(1) Model "</span>, <span class="at">x =</span> <span class="st">"Time"</span>, <span class="at">y =</span> <span class="st">"Value"</span>) <span class="sc">+</span></span>
+<span id="cb3-16"><a href="#cb3-16"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="tabset-1-2">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-16-1.png" width="960"></p>
+</div>
+</div>
+</div>
+<div id="tabset-1-3">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>phi <span class="ot">&lt;-</span> <span class="fl">0.8</span>  <span class="co"># Autoregressive coefficient</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>n <span class="ot">&lt;-</span> <span class="dv">200</span>    <span class="co"># Number of time points</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="co"># Simulate data from the AR(1) model</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)  <span class="co"># For reproducibility</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a>ar1_data <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="at">model =</span> <span class="fu">list</span>(<span class="at">ar =</span> phi), <span class="at">n =</span> n)</span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="co"># Create a data frame with time series data</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a>time_series_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Time =</span> <span class="dv">1</span><span class="sc">:</span>n, <span class="at">Value =</span> ar1_data)</span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="co"># Create a ggplot2 line plot</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a><span class="fu">ggplot</span>(time_series_data, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Value)) <span class="sc">+</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"AR(1) Model "</span>, <span class="at">x =</span> <span class="st">"Time"</span>, <span class="at">y =</span> <span class="st">"Value"</span>) <span class="sc">+</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="tabset-1-4">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-18-1.png" width="960"></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="acf-and-pacf-of-ar-1-and-ma-" class="slide level2">
+<h2>ACF and PACF of AR-1 and MA-`</h2>
+<div class="panel-tabset">
+<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">ACF of AR-1</a></li><li><a href="#tabset-2-2">PACF of AR-1</a></li><li><a href="#tabset-2-3">ACF-MA1</a></li><li><a href="#tabset-2-4">PACF-MA1</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-19-1.png" width="960"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>NULL</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-2">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-20-1.png" width="960"></p>
+</div>
+<div class="cell-output-display">
+<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-20-2.png" width="960"></p>
+</div>
+</div>
+</div>
+<div id="tabset-2-3">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-21-1.png" width="960"></p>
+</div>
+<div class="cell-output-display">
+<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-21-2.png" width="960"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>NULL</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-4">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-22-1.png" width="960"></p>
+</div>
+</div>
+</div>
+</div>
+</div>
 <div class="footer footer-default">
 
 </div>
