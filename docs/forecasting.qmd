@@ -3,7 +3,6 @@ title: "[Macroeconomic Forecasting Lec_01]{.flow}"
 author: "[[Zahid Asghar, Professor, School of Economics, QAU](https://zahedasghar.netlify.app)]{style=color:blue;}"
 date: "25-09-2023"
 date-format: "DD-MM-YYYY"
-
 format: 
   revealjs:
     theme: [default, custom.css,styles.scss]
@@ -11,6 +10,9 @@ format:
     slide-number: c/t
 execute: 
   freeze: auto
+editor: 
+  markdown: 
+    wrap: 72
 ---
 
 # Properties of Time Series
@@ -26,7 +28,8 @@ execute:
 
 ## Univariate Analysis
 
-![Stochastic Process vs time series](images/prob_density.png){fig-align="center"}
+![Stochastic Process vs time
+series](images/prob_density.png){fig-align="center"}
 
 Each distribution is a draw from a **random process**.
 
@@ -38,49 +41,51 @@ Each distribution is a draw from a **random process**.
     -   Covariance stationary:
         i)  Unconditional mean $E(Y_t)=E(Y_{t+j})=\mu$\
         ii) variance constant $Var(Y_t)=Var(Y_{t+j})=\sigma^2_y$ and
-        iii) Covariance depnds on time j that has elapsed between observations, not on reference period $Cov(Y_t,Y_{t+j})=Cov(Y_s,Y_{s+j})=\gamma_j$
+        iii) Covariance depnds on time j that has elapsed between
+             observations, not on reference period
+             $Cov(Y_t,Y_{t+j})=Cov(Y_s,Y_{s+j})=\gamma_j$
 
 ## 
 
-![Stochastic Process vs time series](images/stationary.png){fig-align="center"}
+![Stochastic Process vs time
+series](images/stationary.png){fig-align="center"}
 
 ## 
 
 ![Diagnostic-ARMA](images/arma.png){fig-align="center"}
 
-
 ## Outline
 
 ### Part 1 : Stationary processes
+
 -   Identification
 -   Estimation & Model Selection
 -   Putting it all together
 
 ### Part 2: Nonstationary processes
+
 -   Characterization
 
--   Testing 
-
+-   Testing
 
 ## Part1 : Stationary Process
-Just to remind you….
+
+Just to remind you....
 
 -   Identification
 -   Estimation & Model Selection
 -   Putting it all together
 
-##  
+## 
 
-The first step is visual inspection: graph and  observe your	data.
+The first step is visual inspection: graph and observe your data.
 
-> “You can observe a lot just by watching”
-Yogi Berra
+> "You can observe a lot just by watching" Yogi Berra
 
-## Plot plot and plot your data 
-:::{.columns}
+## Plot plot and plot your data
 
-::: {.column width=50%}
-
+::: columns
+::: {.column width="50%"}
 ```{r}
 # Load necessary library (if not already loaded)
 library(tidyverse)
@@ -105,8 +110,6 @@ ggplot(time_series_data, aes(x = Time, y = Value)) +
 
 ```
 
-
-
 ```{r}
 
 
@@ -128,13 +131,9 @@ ggplot(time_series_data, aes(x = Time, y = Value)) +
   theme_minimal()
 
 ```
-
 :::
 
-
-::: {.column width=50%}
-
-
+::: {.column width="50%"}
 ```{r}
 
 # Set the parameters
@@ -157,12 +156,6 @@ ggplot(time_series_data, aes(x = Time, y = Value)) +
   geom_line(linewidth=1) +labs(title = "AR(1) with trend Model ", x = "Time", y = "Value") +
   theme_minimal()
 ```
-
-
-
-
-
-
 
 ```{r}
 # Load necessary libraries (if not already loaded)
@@ -197,7 +190,6 @@ ggplot(data, aes(x = Time, y = Value)) +
 ```
 :::
 :::
-
 
 ## Differenced model of trend variable (third case)
 
@@ -237,51 +229,54 @@ ggplot(time_series_data, aes(x = Time, y = Difference)) +
 
 ## Identification
 
-Assuming that the process is stationary, there  are three basic types that interest us:
+Assuming that the process is stationary, there are three basic types
+that interest us:
 
-Autoregressive (process)   $y_t=a+b_1y_{t-1}+b_2y_{t-2}+...+b_py_{t-p}+\epsilon_t$
+Autoregressive (process)
+$y_t=a+b_1y_{t-1}+b_2y_{t-2}+...+b_py_{t-p}+\epsilon_t$
 
-Moving Average : AR(process)  : $y_t=\mu+u_t+\phi_1u_{t-1}+\phi_2u_{t-2}+...+\phi_qu_{t-q}+\epsilon_t$
+Moving Average : AR(process) :
+$y_t=\mu+u_t+\phi_1u_{t-1}+\phi_2u_{t-2}+...+\phi_qu_{t-q}+\epsilon_t$
 
 Combined ARMA-process
 $y_t=a+b_1y_{t-1}+b_2y_{t-2}+...+b_py_{t-p}+u_t+\\\phi_1u_{t-1}+\phi_2u_{t-2}+...+\phi_qu_{t-q}+\epsilon_t$
 
 ## 
-Some notation:
-AR(p), MA(q), ARMA(p,q), where p,q refer to the
-order (maximum lag) of the process
 
-$\epsilon_t$	is a	white	noise	disturbance:
+Some notation: AR(p), MA(q), ARMA(p,q), where p,q refer to the order
+(maximum lag) of the process
+
+$\epsilon_t$ is a white noise disturbance:
 
 $E(\epsilon_t=0)$, $Var(\epsilon_t=\sigma^2)$ ,
 $Cov(\epsilon_t,\epsilon_s=0 , if \ t\neq s)$
 
-
-## Tools for Identification 
+## Tools for Identification
 
 -   Where are we? Where are we going?
 
 -   Stationary process (visual inspection) y
+
 -   Learned about possible processes for y
--   Need to identify which one in order to  understand, then eventually forecast y 
+
+-   Need to identify which one in order to understand, then eventually
+    forecast y
 
 > tools to help identify
 
 ## 
-Autocovariance and autocorrelation
-Relations between observations at different lags:
 
-- Autocovariance $\gamma_j=E[(y_t-\mu)(y_{t-j}-\mu)]$
-- Autocorrelation $\rho_j=\gamma_j / \gamma_0$ 
-- ACF or	Correlogram	: graph of autocorrelations at  each lag
+Autocovariance and autocorrelation Relations between observations at
+different lags:
 
+-   Autocovariance $\gamma_j=E[(y_t-\mu)(y_{t-j}-\mu)]$
+-   Autocorrelation $\rho_j=\gamma_j / \gamma_0$
+-   ACF or Correlogram : graph of autocorrelations at each lag
 
 ## 
 
-::: {.columns}
-
-:::{.column width=50%}
-
+::: columns
+::: {.column width="50%"}
 ```{r}
 
 
@@ -311,11 +306,9 @@ acf(ar1_data, main = "Autocorrelation Function (ACF) of AR(1) Model")+
 
 
 ```
-
 :::
 
-:::{.column width=50%}
-
+::: {.column width="50%"}
 ```{r}
 
 # Set random seed for reproducibility
@@ -341,16 +334,13 @@ acf(ma1_ts, main = "ACF of Simulated MA(1) Model")+theme(axis.text = element_tex
 
 
 ```
-
 :::
 :::
-
 
 ## 
 
-:::{.columns}
-
-:::{.column width=50%}
+::: columns
+::: {.column width="50%"}
 ```{r}
 # Set random seed for reproducibility
 set.seed(123)
@@ -380,10 +370,9 @@ acf_plot <- ggplot(acf_data, aes(x = Lag, y = ACF)) +
 print(acf_plot)
 
 ```
-:::::
+:::
 
-:::{.column width=50%}
-
+::: {.column width="50%"}
 ```{r}
 # Set random seed for reproducibility
 set.seed(123)
@@ -414,15 +403,13 @@ print(acf_plot)
 
 
 ```
-
 :::
 :::
 
 ## Patterns for PACF
 
-::: {.columns}
-:::{.column width=50%}
-
+::: columns
+::: {.column width="50%"}
 ```{r}
 
 # Set random seed for reproducibility
@@ -448,7 +435,6 @@ ggplot(data = pacf_data, aes(x = Lag, y = PACF)) +
         plot.title = element_text(size = 14))  # Adjust font size for title
 ```
 
-
 ```{r}
 
 # Set random seed for reproducibility
@@ -473,10 +459,9 @@ ggplot(data = pacf_data, aes(x = Lag, y = PACF)) +
   theme(axis.text = element_text(size = 12),  # Adjust font size for axis labels
         plot.title = element_text(size = 14))  # Adjust font size for title
 ```
-
 :::
-:::{.column width=50%}
 
+::: {.column width="50%"}
 ```{r}
 # Load necessary library (if not already loaded)
 library(stats)
@@ -494,11 +479,6 @@ plot(pacf_values, main = "Partial Autocorrelation Function (PACF) of AR(3) Model
      xlab = "Lag", ylab = "PACF", col = "blue")
 ```
 
-
-
-
-
-
 ```{r}
 # Load necessary library (if not already loaded)
 library(stats)
@@ -515,10 +495,8 @@ pacf_values <- pacf(ar3_data, lag.max = 10)
 plot(pacf_values, main = "Partial Autocorrelation Function (PACF) of AR(3) Model",
      xlab = "Lag", ylab = "PACF", col = "blue")
 ```
-
 :::
 :::
-
 
 ## 
 
@@ -545,3 +523,15 @@ plot(pacf_values, main = "Partial Autocorrelation Function (PACF) of MA(3) Model
 
 ```
 
+## Stationary Time Series
+
+We now have a tool (ACF, PACF) to help us identify the We now have a
+tool (ACF, PACF) to help us identify identify the stochastic stochastic
+pocess underlying time series we are observing. Now we will: - Summarize
+the basic patterns to look for - Observe an actual data series and make
+an initial guess Observe an actual data series and make an initial
+guess - Next step: estimate (several alternatives) based on this guess
+
+## Summary Table Pattern
+
+![Pattern for model identification](images/summary_pattern.png){.r-stretch}
