@@ -1,0 +1,53 @@
+---
+title: "Assignment on <br> Time Series and Panel Data Analysis"
+author: " Zahid Asghar, SOE, QAU"
+format: pdf
+editor: visual
+---
+
+## Assignment
+
+It is due Friday November 18th by 5pm. Submissions should be uploaded to the Submission google assignment link https://classroom.google.com/c/Mzc1MjIwNzE3MzRa/a/NDkxODU1NDE5NDMz/details. Feel free to prepare your answers on your computer or write by hand, scan it as a DOCX/PDF file, or take pictures and upload the JPG files. Only JPG, DOCX, or PDF formats will be accepted. Do not submit/email your answers to me. Complete the following exercises and show your work.
+
+1. (50 points) In this problem, we are interested in the time series properties of bond returns. We collect monthly data from 1942M01 to 2021M12 for the following variables:
+
+-   b1ret denotes the 1-year bond return,
+
+-   t30ret denotes the 30-day return on treasury bill,
+
+-   cpiret denotes the inflation rate.
+
+We will be focusing on the bond return variable b1ret throughout this analysis. Create a second variable b1ret1 from the original variable, where b1ret1 has observations from 1942M01 to 2020M12. We will be using b1ret1 for estimation, and forecast the months of 2021 at the end.
+
+You can find the dataset titled "BondReturns.csv" under the Course Resources on Black board. Please use the dataset and your own script to answer the following question:
+
+(a) (5 points) Plot the TS variable and comment on its features.
+
+(b) (10 points) Estimate a quadratic trend for this TS variable. Write down the equation and test the regression residuals "Res1" for stationary and autocorrelation.
+
+(c) (10 points) Using the ACF and PACF for the stationary version of Res1 to propose an initial ARIMA model for Res1.
+
+(d) (10 points) Provide several ARIMA models and discuss which ARIMA model you would pick as the final model. Explain your reasoning.
+
+(e) (10 points) Using your final ARIMA model and the trend model in part (b), forecast the months of 2021. 
+(f) (5 points) Discuss if these forecasts are reasonable. Explain your reasoning.
+
+### 2. (50 points)
+
+In this problem, we are interested in examining the factors affecting the petrol prices. Petrol prices in New Zealand is split into three components: importer cost, importer's margin, and the taxes. We collect the weekly data on the following variables from 2004W16 (week 16) to 2020W23 (week 23):
+
+-   Dubai denotes the Dubai crude oil prices,
+
+-   Price denotes the discounted retail petrol price,
+
+-   Margin denotes the importer's margin,
+
+-   Cost denotes the importer's cost.
+
+We will be focusing on the variable Margin and Cost throughout this analysis. We will also restrict our attention to the period from 2004W16 to 2019W52 for estimation. We will be forecasting the first 23 weeks of 2020 at the end. You can find the dataset titled "PetrolPrices.csv", use the 5% significance level. Please follow the procedure below for the analysis:
+
+(a) Plot the margin and cost variables and comment on their features. De termine the order of integration for the two variables. Define the hypotheses and report the relevant test statistic and P-value. Interpret your findings.
+
+(b)  Estimate the model where Margin is regressed on a linear trend and Cost. Write down the equation and comment on the coefficient of Cost. Test the regression residuals "Res2" for stationarity, autocorrelation, and heteroskedasticity.
+
+(c) Analyse the variable Res2 and propose a final ARIMA model for this variable.

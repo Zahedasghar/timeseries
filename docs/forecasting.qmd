@@ -10,9 +10,6 @@ format:
     slide-number: c/t
 execute: 
   freeze: auto
-editor: 
-  markdown: 
-    wrap: 72
 ---
 
 # Properties of Time Series

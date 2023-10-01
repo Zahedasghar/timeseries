@@ -5,9 +5,7 @@ format:
     theme: [default, custom.css,styles.scss]
     
 execute: 
-  
   warning: false
-
 ---
 
 ## EC614: Macroeconomic Forecasting
