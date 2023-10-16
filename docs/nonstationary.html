@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-<script src="forecasting_files/libs/clipboard/clipboard.min.js"></script>
-<script src="forecasting_files/libs/quarto-html/tabby.min.js"></script>
-<script src="forecasting_files/libs/quarto-html/popper.min.js"></script>
-<script src="forecasting_files/libs/quarto-html/tippy.umd.min.js"></script>
-<link href="forecasting_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="forecasting_files/libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="forecasting_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
-<link href="forecasting_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+<script src="nonstationary_files/libs/clipboard/clipboard.min.js"></script>
+<script src="nonstationary_files/libs/quarto-html/tabby.min.js"></script>
+<script src="nonstationary_files/libs/quarto-html/popper.min.js"></script>
+<script src="nonstationary_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="nonstationary_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="nonstationary_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="nonstationary_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
+<link href="nonstationary_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.3.299">
 
   <meta name="author" content="Zahid Asghar, Professor, School of Economics, QAU">
-  <title>Macroeconomic Forecasting Lec_01</title>
+  <title>Macroeconomic Forecasting Lec_02</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="forecasting_files/libs/revealjs/dist/reset.css">
-  <link rel="stylesheet" href="forecasting_files/libs/revealjs/dist/reveal.css">
+  <link rel="stylesheet" href="nonstationary_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="nonstationary_files/libs/revealjs/dist/reveal.css">
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -29,79 +29,14 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
-    /* CSS for syntax highlighting */
-    pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-    pre > code.sourceCode > span:empty { height: 1.2em; }
-    .sourceCode { overflow: visible; }
-    code.sourceCode > span { color: inherit; text-decoration: inherit; }
-    div.sourceCode { margin: 1em 0; }
-    pre.sourceCode { margin: 0; }
-    @media screen {
-    div.sourceCode { overflow: auto; }
-    }
-    @media print {
-    pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-    }
-    pre.numberSource code
-      { counter-reset: source-line 0; }
-    pre.numberSource code > span
-      { position: relative; left: -4em; counter-increment: source-line; }
-    pre.numberSource code > span > a:first-child::before
-      { content: counter(source-line);
-        position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; display: inline-block;
-        -webkit-touch-callout: none; -webkit-user-select: none;
-        -khtml-user-select: none; -moz-user-select: none;
-        -ms-user-select: none; user-select: none;
-        padding: 0 4px; width: 4em;
-        color: #aaaaaa;
-      }
-    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-    div.sourceCode
-      { color: #003b4f; background-color: #f1f3f5; }
-    @media screen {
-    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-    }
-    code span { color: #003b4f; } /* Normal */
-    code span.al { color: #ad0000; } /* Alert */
-    code span.an { color: #5e5e5e; } /* Annotation */
-    code span.at { color: #657422; } /* Attribute */
-    code span.bn { color: #ad0000; } /* BaseN */
-    code span.bu { } /* BuiltIn */
-    code span.cf { color: #003b4f; } /* ControlFlow */
-    code span.ch { color: #20794d; } /* Char */
-    code span.cn { color: #8f5902; } /* Constant */
-    code span.co { color: #5e5e5e; } /* Comment */
-    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
-    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
-    code span.dt { color: #ad0000; } /* DataType */
-    code span.dv { color: #ad0000; } /* DecVal */
-    code span.er { color: #ad0000; } /* Error */
-    code span.ex { } /* Extension */
-    code span.fl { color: #ad0000; } /* Float */
-    code span.fu { color: #4758ab; } /* Function */
-    code span.im { color: #00769e; } /* Import */
-    code span.in { color: #5e5e5e; } /* Information */
-    code span.kw { color: #003b4f; } /* Keyword */
-    code span.op { color: #5e5e5e; } /* Operator */
-    code span.ot { color: #003b4f; } /* Other */
-    code span.pp { color: #ad0000; } /* Preprocessor */
-    code span.sc { color: #5e5e5e; } /* SpecialChar */
-    code span.ss { color: #20794d; } /* SpecialString */
-    code span.st { color: #20794d; } /* String */
-    code span.va { color: #111111; } /* Variable */
-    code span.vs { color: #20794d; } /* VerbatimString */
-    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="forecasting_files/libs/revealjs/dist/theme/quarto.css" id="theme">
-  <link href="forecasting_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
-  <link href="forecasting_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
-  <link href="forecasting_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
-  <link href="forecasting_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
-  <link href="forecasting_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
-  <link href="forecasting_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <link rel="stylesheet" href="nonstationary_files/libs/revealjs/dist/theme/quarto.css" id="theme">
+  <link href="nonstationary_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="nonstationary_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="nonstationary_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="nonstationary_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="nonstationary_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="nonstationary_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
   <style type="text/css">
 
   .callout {
@@ -392,7 +327,7 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title"><span class="flow">Macroeconomic Forecasting Lec_01</span></h1>
+  <h1 class="title"><span class="flow">Macroeconomic Forecasting Lec_02</span></h1>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -402,7 +337,7 @@
 </div>
 </div>
 
-  <p class="date">09-01-2025</p>
+  <p class="date">10-10-2023</p>
 </section>
 <section>
 <section id="properties-of-time-series" class="title-slide slide level1 center">
@@ -421,471 +356,6 @@
 <li>Assessing/testing</li>
 </ul></li>
 </ul>
-</section>
-<section id="univariate-analysis" class="slide level2">
-<h2>Univariate Analysis</h2>
-
-<img data-src="images/prob_density.png" class="r-stretch quarto-figure-center"><p class="caption">Stochastic Process vs time series</p><p>Each distribution is a draw from a <strong>random process</strong>.</p>
-</section>
-<section id="introduction-1" class="slide level2">
-<h2>Introduction</h2>
-<ul>
-<li>Two general “classes” of processes
-<ul>
-<li>stationary vs nonstationary</li>
-<li>Unchanged distribution (pdf) over time?</li>
-<li>Covariance stationary:
-<ol type="i">
-<li>Unconditional mean <span class="math inline">\(E(Y_t)=E(Y_{t+j})=\mu\)</span><br>
-</li>
-<li>variance constant <span class="math inline">\(Var(Y_t)=Var(Y_{t+j})=\sigma^2_y\)</span> and</li>
-<li>Covariance depnds on time j that has elapsed between observations, not on reference period <span class="math inline">\(Cov(Y_t,Y_{t+j})=Cov(Y_s,Y_{s+j})=\gamma_j\)</span></li>
-</ol></li>
-</ul></li>
-</ul>
-</section>
-<section id="section" class="slide level2">
-<h2></h2>
-
-<img data-src="images/stationary.png" class="r-stretch quarto-figure-center"><p class="caption">Stochastic Process vs time series</p></section>
-<section id="section-1" class="slide level2">
-<h2></h2>
-
-<img data-src="images/arma.png" class="r-stretch quarto-figure-center"><p class="caption">Diagnostic-ARMA</p></section>
-<section id="outline" class="slide level2">
-<h2>Outline</h2>
-<h3 id="part-1-stationary-processes">Part 1 : Stationary processes</h3>
-<ul>
-<li>Identification</li>
-<li>Estimation &amp; Model Selection</li>
-<li>Putting it all together</li>
-</ul>
-<h3 id="part-2-nonstationary-processes">Part 2: Nonstationary processes</h3>
-<ul>
-<li><p>Characterization</p></li>
-<li><p>Testing</p></li>
-</ul>
-</section>
-<section id="part1-stationary-process" class="slide level2">
-<h2>Part1 : Stationary Process</h2>
-<p>Just to remind you….</p>
-<ul>
-<li>Identification</li>
-<li>Estimation &amp; Model Selection</li>
-<li>Putting it all together</li>
-</ul>
-<p>The first step is visual inspection: graph and observe your data.</p>
-<blockquote>
-<p>“You can observe a lot just by watching” Yogi Berra</p>
-</blockquote>
-</section>
-<section id="plot-plot-and-plot-your-data" class="slide level2">
-<h2>Plot plot and plot your data</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-1-1.png" width="960"></p>
-</div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-2-1.png" width="960"></p>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-3-1.png" width="960"></p>
-</div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-4-1.png" width="960"></p>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="differenced-model-of-trend-variable-third-case" class="slide level2">
-<h2>Differenced model of trend variable (third case)</h2>
-<p>Difference can remove the trend.</p>
-<p><span class="math inline">\(y_t^{*}=y_t-y_{t-1}\)</span></p>
-
-<img data-src="forecasting_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"></section>
-<section id="identification" class="slide level2">
-<h2>Identification</h2>
-<p>Assuming that the process is stationary, there are three basic types that interest us:</p>
-<p>Autoregressive (process) <span class="math inline">\(y_t=a+b_1y_{t-1}+b_2y_{t-2}+...+b_py_{t-p}+\epsilon_t\)</span></p>
-<p>Moving Average : AR(process) : <span class="math inline">\(y_t=\mu+u_t+\phi_1u_{t-1}+\phi_2u_{t-2}+...+\phi_qu_{t-q}+\epsilon_t\)</span></p>
-<p>Combined ARMA-process <span class="math inline">\(y_t=a+b_1y_{t-1}+b_2y_{t-2}+...+b_py_{t-p}+u_t+\\\phi_1u_{t-1}+\phi_2u_{t-2}+...+\phi_qu_{t-q}+\epsilon_t\)</span></p>
-</section>
-<section id="section-2" class="slide level2">
-<h2></h2>
-<p>Some notation: AR(p), MA(q), ARMA(p,q), where p,q refer to the order (maximum lag) of the process</p>
-<p><span class="math inline">\(\epsilon_t\)</span> is a white noise disturbance:</p>
-<p><span class="math inline">\(E(\epsilon_t=0)\)</span>, <span class="math inline">\(Var(\epsilon_t=\sigma^2)\)</span> , <span class="math inline">\(Cov(\epsilon_t,\epsilon_s=0 , if \ t\neq s)\)</span></p>
-</section>
-<section id="tools-for-identification" class="slide level2">
-<h2>Tools for Identification</h2>
-<ul>
-<li><p>Where are we? Where are we going?</p></li>
-<li><p>Stationary process (visual inspection) y</p></li>
-<li><p>Learned about possible processes for y</p></li>
-<li><p>Need to identify which one in order to understand, then eventually forecast y</p></li>
-</ul>
-<blockquote>
-<p>tools to help identify</p>
-</blockquote>
-</section>
-<section id="section-3" class="slide level2">
-<h2></h2>
-<p>Autocovariance and autocorrelation Relations between observations at different lags:</p>
-<ul>
-<li>Autocovariance <span class="math inline">\(\gamma_j=E[(y_t-\mu)(y_{t-j}-\mu)]\)</span></li>
-<li>Autocorrelation <span class="math inline">\(\rho_j=\gamma_j / \gamma_0\)</span></li>
-<li>ACF or Correlogram : graph of autocorrelations at each lag</li>
-</ul>
-</section>
-<section id="section-4" class="slide level2">
-<h2></h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-6-1.png" width="960"></p>
-</div>
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-6-2.png" width="960"></p>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>NULL</code></pre>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-7-1.png" width="960"></p>
-</div>
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-7-2.png" width="960"></p>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>NULL</code></pre>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="section-5" class="slide level2">
-<h2></h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-8-1.png" width="960"></p>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-9-1.png" width="960"></p>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="patterns-for-pacf" class="slide level2">
-<h2>Patterns for PACF</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-10-1.png" width="960"></p>
-</div>
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-10-2.png" width="960"></p>
-</div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-11-1.png" width="960"></p>
-</div>
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-11-2.png" width="960"></p>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-12-1.png" width="960"></p>
-</div>
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-12-2.png" width="960"></p>
-</div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-13-1.png" width="960"></p>
-</div>
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-13-2.png" width="960"></p>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="section-6" class="slide level2">
-<h2></h2>
-
-<img data-src="forecasting_files/figure-revealjs/unnamed-chunk-14-1.png" width="960" class="r-stretch"></section>
-<section id="stationary-time-series" class="slide level2">
-<h2>Stationary Time Series</h2>
-<p>We now have a tool (ACF, PACF) to help us identify the stochastic stochastic process underlying time series we are observing. Now we will: - Summarize the basic patterns to look for - Observe an actual data series and make an initial guess Observe an actual data series and make an initial guess - Next step: estimate (several alternatives) based on this guess</p>
-</section>
-<section id="summary-table-pattern" class="slide level2">
-<h2>Summary Table Pattern</h2>
-
-<img data-src="images/summary_pattern.png" class="r-stretch quarto-figure-center"><p class="caption">Pattern for model identification</p></section>
-<section id="tips" class="slide level2">
-<h2>Tips</h2>
-<ul>
-<li><p>ACF’s that do not go to zero could be sign of nonstationarity</p></li>
-<li><p>ACF of both AR, ARMA decay gradually, drops to 0 for MA</p></li>
-<li><p>PACF decays gradually for ARMA, MA, drops to 0 for AR</p></li>
-</ul>
-<p>Possible approach: begin with parsimonious low order AR, check residuals to decide on possible MA terms.</p>
-</section>
-<section class="slide level2">
-
-<p>When looking at ACF, PACF</p>
-<ul>
-<li>Box-Jenkins provide sampling variance of the observed ACF and PACFs (<span class="math inline">\(r_s\)</span> and <span class="math inline">\(b_s\)</span>)</li>
-<li>Permits one to construct confidence intervals around each → assess whether significantly <span class="math inline">\(\neq0\)</span></li>
-<li>Computer packages provide this automatically</li>
-</ul>
-</section>
-<section id="estimation-and-model-selection" class="slide level2">
-<h2>Estimation and Model Selection</h2>
-<ul>
-<li>Decide on plausible alternative specifications (ARMA)</li>
-<li>Estimate each specification</li>
-<li>Choose “best” model, based on:</li>
-<li>Significance of coefficients</li>
-<li>Fit vs parsimony (criteria)</li>
-<li>White noise residuals</li>
-<li>Ability to forecast</li>
-<li>Account for possible structural breaks</li>
-</ul>
-</section>
-<section id="fit-vs-parsimony-information-criteria" class="slide level2">
-<h2>Fit vs parsimony (information criteria):</h2>
-<ul>
-<li>Additional parameters (lags) automatically improve fit but reduce forecast quality</li>
-<li>Tradeoff between fit and parsimony; widely used criteria:</li>
-<li>Akaike Information Criterion (AIC) <span class="math inline">\(AIC=T ln(SST)+2(p+q+1)\)</span></li>
-<li>Schwartz Bayesian Criterion (BIC) <span class="math inline">\(SBC= T ln(SST)+(p+q+1)ln(T)\)</span></li>
-<li>SBC is considered to be preferable for having more parsimonious models than AIC</li>
-</ul>
-</section>
-<section id="white-noise-errors" class="slide level2">
-<h2>White noise errors :</h2>
-<ul>
-<li><p>Aim to eliminate autocorrelation in the residuals (could indicate that model does not reflect the lag structure well)</p></li>
-<li><p>Plot “standardized residuals” (<span class="math inline">\(\epsilon_{it}\)</span> ) No more than 5% of them should lie outside [-2,+2] over all periods</p></li>
-<li><p>Look at <span class="math inline">\(r_s\)</span>, <span class="math inline">\(b_s\)</span> (and significance) at different lags Box-Pierce Statistic: joint significance test up to lag <span class="math inline">\(s\)</span>: ${x} = </p></li>
-</ul>
-<p><span class="math inline">\(Q=T \sum_{k=1}^{s} r_k^2\)</span></p>
-<p><span class="math inline">\(H_0\)</span> : all <span class="math inline">\(r_k=0\)</span>, <span class="math inline">\(H_1\)</span>: at least one <span class="math inline">\(r_k\neq0\)</span></p>
-</section>
-<section id="forecastability" class="slide level2">
-<h2>Forecastability</h2>
-<p>Can assess how well the model forecasts ” out of sample”:</p>
-<ul>
-<li>Estimate the model for a sub-sample (for example, the first 250 out of 300 observations).</li>
-<li>Use estimated parameters to forecast for the rest of the sample (last 50)</li>
-<li>Compute the ” forecast errors” and assess:</li>
-<li>Mean Squared Prediction Error</li>
-<li>Granger-Newbold Test</li>
-<li>Diebold-Mariano Test</li>
-</ul>
-</section>
-<section id="account-for-possible-structural-breaks" class="slide level2">
-<h2>Account for possible structural breaks:</h2>
-<ul>
-<li>Does the same model apply equally well to the entire sample, or do parameters change (significantly) within the sample?</li>
-</ul>
-<p>How to approach:</p>
-<ul>
-<li><p>Own priors/suspicion : Chow test for parameter change</p></li>
-<li><p>If priors not strong, recursive estimation, tests for parameter stability over the sample, for example, CUSUM</p></li>
-</ul>
-</section>
-<section id="learning-all-above-with-simulated-data" class="slide level2">
-<h2>Learning all above with simulated data</h2>
-<p>Lets simulate MA(1), AR(1) series in Excel, R and one can use STATA/EVIEWS as well</p>
-<div class="panel-tabset">
-<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">MA-1 code</a></li><li><a href="#tabset-1-2">MA1-output</a></li><li><a href="#tabset-1-3">AR-1 code</a></li><li><a href="#tabset-1-4">AR-1 output</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># Set the parameters</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>mu <span class="ot">&lt;-</span> <span class="dv">0</span>       <span class="co"># Mean of the series</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a>theta <span class="ot">&lt;-</span> <span class="fl">0.6</span>  <span class="co"># Moving average coefficient</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a>n <span class="ot">&lt;-</span> <span class="dv">200</span>      <span class="co"># Number of time points</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a></span>
-<span id="cb3-6"><a href="#cb3-6"></a><span class="co"># Simulate data from the MA(1) model</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)  <span class="co"># For reproducibility</span></span>
-<span id="cb3-8"><a href="#cb3-8"></a>ma1_data <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="at">model =</span> <span class="fu">list</span>(<span class="at">ma =</span> theta), <span class="at">n =</span> n, <span class="at">mean =</span> mu)</span>
-<span id="cb3-9"><a href="#cb3-9"></a></span>
-<span id="cb3-10"><a href="#cb3-10"></a><span class="co"># Create a data frame with time series data</span></span>
-<span id="cb3-11"><a href="#cb3-11"></a>time_series_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Time =</span> <span class="dv">1</span><span class="sc">:</span>n, <span class="at">Value =</span> ma1_data)</span>
-<span id="cb3-12"><a href="#cb3-12"></a></span>
-<span id="cb3-13"><a href="#cb3-13"></a><span class="co"># Create a ggplot2 line plot</span></span>
-<span id="cb3-14"><a href="#cb3-14"></a><span class="fu">ggplot</span>(time_series_data, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Value)) <span class="sc">+</span></span>
-<span id="cb3-15"><a href="#cb3-15"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"MA(1) Model "</span>, <span class="at">x =</span> <span class="st">"Time"</span>, <span class="at">y =</span> <span class="st">"Value"</span>) <span class="sc">+</span></span>
-<span id="cb3-16"><a href="#cb3-16"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
-<div id="tabset-1-2">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-16-1.png" width="960"></p>
-</div>
-</div>
-</div>
-<div id="tabset-1-3">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>phi <span class="ot">&lt;-</span> <span class="fl">0.8</span>  <span class="co"># Autoregressive coefficient</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a>n <span class="ot">&lt;-</span> <span class="dv">200</span>    <span class="co"># Number of time points</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a></span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="co"># Simulate data from the AR(1) model</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)  <span class="co"># For reproducibility</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a>ar1_data <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="at">model =</span> <span class="fu">list</span>(<span class="at">ar =</span> phi), <span class="at">n =</span> n)</span>
-<span id="cb4-7"><a href="#cb4-7"></a><span class="co"># Create a data frame with time series data</span></span>
-<span id="cb4-8"><a href="#cb4-8"></a>time_series_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Time =</span> <span class="dv">1</span><span class="sc">:</span>n, <span class="at">Value =</span> ar1_data)</span>
-<span id="cb4-9"><a href="#cb4-9"></a><span class="co"># Create a ggplot2 line plot</span></span>
-<span id="cb4-10"><a href="#cb4-10"></a><span class="fu">ggplot</span>(time_series_data, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Value)) <span class="sc">+</span></span>
-<span id="cb4-11"><a href="#cb4-11"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"AR(1) Model "</span>, <span class="at">x =</span> <span class="st">"Time"</span>, <span class="at">y =</span> <span class="st">"Value"</span>) <span class="sc">+</span></span>
-<span id="cb4-12"><a href="#cb4-12"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
-<div id="tabset-1-4">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-18-1.png" width="960"></p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="acf-and-pacf-of-ar-1-and-ma-" class="slide level2">
-<h2>ACF and PACF of AR-1 and MA-`</h2>
-<div class="panel-tabset">
-<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">ACF of AR-1</a></li><li><a href="#tabset-2-2">PACF of AR-1</a></li><li><a href="#tabset-2-3">ACF-MA1</a></li><li><a href="#tabset-2-4">PACF-MA1</a></li></ul>
-<div class="tab-content">
-<div id="tabset-2-1">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-19-1.png" width="960"></p>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>NULL</code></pre>
-</div>
-</div>
-</div>
-<div id="tabset-2-2">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-20-1.png" width="960"></p>
-</div>
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-20-2.png" width="960"></p>
-</div>
-</div>
-</div>
-<div id="tabset-2-3">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-21-1.png" width="960"></p>
-</div>
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-21-2.png" width="960"></p>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>NULL</code></pre>
-</div>
-</div>
-</div>
-<div id="tabset-2-4">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-22-1.png" width="960"></p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="section-7" class="slide level2">
-<h2></h2>
-<p><strong>Now let’s work with real world data</strong></p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>Rows: 733
-Columns: 8
-$ dateid01 &lt;date&gt; 1954-02-01, 1954-03-01, 1954-04-01, 1954-05-01, 1954-06-01, …
-$ dateid   &lt;dttm&gt; 1954-03-01 00:00:00, 1954-04-01 00:00:00, 1954-05-01 00:00:0…
-$ date     &lt;date&gt; 1954-02-26, 1954-03-31, 1954-04-30, 1954-05-31, 1954-06-30, …
-$ pe_aus   &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-$ pe_ind   &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-$ pe_ndo   &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-$ pe_saf   &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-$ pe_usa   &lt;dbl&gt; 9.9200, 10.1700, 10.5700, 11.0000, 11.0800, 12.1740, 11.7600,…</code></pre>
-</div>
-</div>
-</section>
-<section id="pick-pe_usa" class="slide level2">
-<h2>Pick pe_usa</h2>
-
-<img data-src="forecasting_files/figure-revealjs/unnamed-chunk-24-1.png" width="960" class="r-stretch"></section>
-<section id="identify-model" class="slide level2">
-<h2>Identify model</h2>
-<p>Use SACF and SPACF to choose model(s) and also use auto.arima and see which of these two wins: your judged model or auto.arima</p>
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-25-1.png" width="960"></p>
-</div>
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-25-2.png" width="960"></p>
-</div>
-</div>
-<p>acf and pacf patterns indicate series is non-stationary. So here we run acf and pacf of difference of the series.</p>
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-26-1.png" width="960"></p>
-</div>
-<div class="cell-output-display">
-<p><img data-src="forecasting_files/figure-revealjs/unnamed-chunk-26-2.png" width="960"></p>
-</div>
-</div>
-<p>From these two graphs it seems model is ARIMA(0,1,1)</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>Series: pe_us$pe_usa 
-ARIMA(1,1,1) 
-
-Coefficients:
-          ar1     ma1
-      -0.7554  0.8268
-s.e.   0.1106  0.0944
-
-sigma^2 = 0.7151:  log likelihood = -914.95
-AIC=1835.91   AICc=1835.94   BIC=1849.69</code></pre>
-</div>
-</div>
-<p>So our model was ARIMA(0,1,1) while auto.ARIMA is ARIMA(1,1,1) not bad.</p>
 </section></section>
 <section>
 <section id="nonstationary-series" class="title-slide slide level1 center">
@@ -913,8 +383,8 @@ AIC=1835.91   AICc=1835.94   BIC=1849.69</code></pre>
 </ul>
 <p><span class="math inline">\(Cov(Y_t,Y_{tj})= Cov(Y_s,Y_{s+j})= \gamma_j\)</span></p>
 </section>
-<section id="what-is-nonstatinarity" class="slide level2">
-<h2>What is nonstatinarity?</h2>
+<section class="slide level2">
+
 <p>Thus, if any of these conditions does not hold, we say that y is nonstationary:</p>
 <p>There is no long-run mean to which the series returns (economic concept of long-term <span style="color:red;">equilibrium</span>)</p>
 <p>The variance is time-dependent. For example, could go to infinity as the number of observations goes to infinity</p>
@@ -931,7 +401,257 @@ AIC=1835.91   AICc=1835.94   BIC=1849.69</code></pre>
 <li>Example <span class="math inline">\(\beta=0.45\)</span></li>
 </ul>
 
-<img data-src="forecasting_files/figure-revealjs/unnamed-chunk-28-1.png" width="960" class="r-stretch"><div class="footer footer-default">
+<img data-src="nonstationary_files/figure-revealjs/unnamed-chunk-1-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+<p>Non-stationary series can have a trend:</p>
+<ul>
+<li><p><span style="color:blue;">Stochastic</span>: random trend, varies over time</p>
+<ul>
+<li><p>Random Walk: <span class="math inline">\(y_t=b y_{t-1}+u_t\)</span></p></li>
+<li><p>Random Walk with Drift: <span class="math inline">\(y_t=\mu+y_{t-1}=b y_{t-1}+u_t\)</span> (as before, <span class="math inline">\(u_t\)</span> is iid)</p></li>
+</ul></li>
+<li><p><span class="math inline">\(\mu\)</span> is the “Drift”;<br>
+if <span class="math inline">\(\mu&gt;0\)</span>, then <span class="math inline">\(y_t\)</span> will be increasing</p></li>
+</ul>
+<h4 id="question-rw-is-a-special-of-what-process">Question: RW is a special of what process?</h4>
+</section>
+<section id="example-of-a-random-walk" class="slide level2">
+<h2>Example of a random walk</h2>
+
+<img data-src="nonstationary_files/figure-revealjs/unnamed-chunk-2-1.png" width="960" class="r-stretch"></section>
+<section id="rw-with-drift0.05" class="slide level2">
+<h2>RW with Drift=0.05</h2>
+
+<img data-src="nonstationary_files/figure-revealjs/unnamed-chunk-3-1.png" width="960" class="r-stretch"></section>
+<section id="rw-with-drift-is-2" class="slide level2">
+<h2>RW with drift is 2</h2>
+
+<img data-src="nonstationary_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch"></section>
+<section id="section" class="slide level2">
+<h2></h2>
+<h3 id="key-questions">Key Questions:</h3>
+<ul>
+<li><p>What is nonstationarity?</p></li>
+<li><p>Why is it important?</p></li>
+<li><p>How do we determine whether a time series is nonstationary?</p></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="consequences-of-non-stationarity">Consequences of non-stationarity</h3>
+<ul>
+<li><p>Shocks do not “die out”</p></li>
+<li><p>Statistical consequences</p></li>
+<li><p>Non-normal distribution of test statistics</p></li>
+<li><p>Bias in AR coefficients; poor forecast ability</p></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><strong>Shocks do not die out</strong></p>
+<ul>
+<li>Consideer a general AR(1): <span class="math inline">\(y_t=b y_{t-1}+\epsilon_t\)</span></li>
+<li>Can be expressed as an MA(q): <span class="math inline">\(y_t=b^t y_0+\epsilon_t+b\epsilon_{t-1}+b^2\epsilon{t-2}+. . .+\\b^{t-2}\epsilon_2+b^{t-1}\epsilon_1\)</span></li>
+</ul>
+<p>The impact of shocks (disturbances) will depend on values of <span class="math inline">\(b\)</span>.</p>
+</section>
+<section class="slide level2">
+
+<p><span class="math inline">\(y_t=b^t y_0+\epsilon_t+b\epsilon_{t-1}+b^2\epsilon{t-2}+. . .+\\b^{t-2}\epsilon_2+b^{t-1}\epsilon_1\)</span></p>
+<p>Three cases</p>
+<ol type="1">
+<li><p><span class="math inline">\(b&lt;0\)</span>, <span class="math inline">\(b^t\)</span> →0 as t →∞ , so the effects of a shock will diminish as time elapses</p></li>
+<li><p><span class="math inline">\(b=1\)</span>, <span class="math inline">\(b^t=1\)</span> for all t; effect persists, <span class="math inline">\(y_t=y_0+\sum_{i=1}^{n}\epsilon_{t-i}\)</span> variance grows indefinitely with time.</p></li>
+<li><p><span class="math inline">\(b&gt;1\)</span>, shocks become more influential over time.</p></li>
+</ol>
+</section>
+<section id="statistical-consequences-of-nonstationarity" class="slide level2">
+<h2>Statistical consequences of nonstationarity</h2>
+<ul>
+<li><p>Non-normal distribution of test statistics</p></li>
+<li><p>Bias in autorregressive coefficients (b’s);</p></li>
+<li><p>we might mistakenly estimate an AR(1),</p></li>
+<li><p>deficient forecast</p></li>
+<li><p>Usual confidence intervals for coefficients not valid</p></li>
+</ul>
+</section>
+<section id="statistical-consequences-of-non-stationary-for-multivariate-regressions" class="slide level2">
+<h2>Statistical consequences of non-stationary for multivariate regressions</h2>
+<ul>
+<li><p>For example, two unrelated nonstationary series <span class="math inline">\(y\)</span> and <span class="math inline">\(x\)</span> might appear to be related through a standard OLS regression</p></li>
+<li><p>Hight <span class="math inline">\(R^2\)</span></p></li>
+<li><p>t-statistics that appear to be siginficant</p></li>
+<li><p>The true test: are the regression residuals stationary? (i-e., long-run equilibrium relationship between <span class="math inline">\(y\)</span> and <span class="math inline">\(z\)</span>)</p></li>
+</ul>
+</section>
+<section id="spurious-regression-practical-exercise" class="slide level2">
+<h2>Spurious regression practical exercise:</h2>
+<p>Simulate two random walk series: <span class="math inline">\(y\)</span> and <span class="math inline">\(z\)</span> (each with its two disturbances, and either can have drift or not)</p>
+<ul>
+<li>Note by construction, they are unrelated</li>
+<li>Run OLS regression of <span class="math inline">\(y\)</span> on <span class="math inline">\(z\)</span>, evaluate coefficients, <span class="math inline">\(R^2\)</span>, and plot residulas</li>
+</ul>
+</section>
+<section id="section-1" class="slide level2">
+<h2></h2>
+<p>Key Questions: - What is nonstationarity?</p>
+<ul>
+<li><p>Why is it important?</p></li>
+<li><p>How do we determine whether a time series is non- stationary?</p></li>
+</ul>
+</section>
+<section id="testing-for-non-stationarity" class="slide level2">
+<h2>Testing for non-stationarity</h2>
+<ul>
+<li><p>Recall AR(1) model: <span class="math inline">\(y_t=by_{t-1}+\epsilon_t\)</span></p></li>
+<li><p>Special case: RW, when <span class="math inline">\(b=1\)</span></p></li>
+<li><p>Sationarity requires <span class="math inline">\(b&lt;1\)</span></p></li>
+<li><p>Generalizing to AR(p) :</p>
+<ul>
+<li>Roots of the polynomial below must all be <span class="math inline">\(&gt;1\)</span> in abs value <span class="math inline">\(1-b_1Z-b_2Z^2-b_3Z^3-\dots -b_pZ^p\)</span></li>
+</ul>
+<p>If one of the roots=1, then y is said to have a <span style="color:blue;">unit root</span></p></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li><p>AR(1) model : <span class="math inline">\(y_t=by_{t-1}+\epsilon_t\)</span><br>
+</p></li>
+<li><p>Can test for whether <span class="math inline">\(y\)</span> is a driftless random walk:</p></li>
+<li><p><span class="math inline">\(H_0: b=1\)</span> Or, equaivalently: <span class="math inline">\(\Delta y_t=\Psi y_{t-1}+\epsilon_t\)</span>, <span class="math inline">\(\Psi=b-1\)</span></p></li>
+</ul>
+<p><span class="math inline">\(H_0: \Psi=0\)</span> - This the ‘Dickey-Fuller’ (DF) test: - Regress <span class="math inline">\(\Delta y\)</span> on its lag, test for significance of coefficient.</p>
+</section>
+<section class="slide level2">
+
+<p>Can extend simple DF test in previous slide:</p>
+<ul>
+<li>Intercept: <span class="math inline">\(\Delta y_t=\mu+by_{t-1}+\epsilon_t\)</span></li>
+<li>Intercept and time trend: <span class="math inline">\(\Delta y_t=\mu+by_{t-1}+\alpha t+\epsilon_t\)</span><br>
+</li>
+<li>In all three cases, <span class="math inline">\(H_0:b=0;\)</span> <span class="math inline">\(y\)</span> has a unit root</li>
+</ul>
+<h4 id="rejecting-the-unit-root-test">Rejecting the unit root test =</h4>
+<p>find that <span class="math inline">\(y\)</span> is stationary</p>
+<p><span style="color:blue;">Note</span>: critical values for the <span class="math inline">\(t-statistics\)</span> of <span class="math inline">\(b\)</span> will vary depending on whether intercept, trend are included.</p>
+<table style="width:10%;">
+<colgroup>
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 4%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td>So</td>
+<td>me</td>
+<td style="text-align: right;">terminology</td>
+</tr>
+<tr class="even">
+<td>- -</td>
+<td></td>
+<td style="text-align: right;">Order of integration: number of times a series <span class="math inline">\(y\)</span> must be differenced to become stationary Thus, if <span class="math inline">\(y\)</span> is “integrated of order zero”, <span class="math inline">\(I(0)\)</span>, then it is stationary (no differencing needed). That is, it is stationary in levels If <span class="math inline">\(y\)</span> is <span class="math inline">\(I(1)\)</span>, then its first difference (<span class="math inline">\(\Delta y\)</span>) is stationary <span class="math inline">\(\dots\)</span> and so on <span class="math inline">\(\dots\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>Moving beyond white noise disturbances</p>
+<p>DF test assumes that <span class="math inline">\(\epsilon_t\)</span> is white noise. - However, if <span class="math inline">\(\epsilon_t\)</span> is autocorrelated, need different version of the test, allowing for higher-order lags: - Augmented Dickey-Fuller (ADF) test:</p>
+<p><span class="math inline">\(\Delta y_t=\mu+ \gamma y_{t-1}+\sum_i^p \beta_i\Delta y{t-i+1}+\epsilon_t, \gamma=-(1-\sum_i^pb_i)\)</span> and <span class="math inline">\(\beta_i=-\sum_i^pb_j\)</span></p>
+</section>
+<section class="slide level2">
+
+<p>ADF test</p>
+<ul>
+<li><p>As with DF, ADF tests whether coefficient on <span class="math inline">\(y_{t-1}(\gamma)\neq0\)</span></p></li>
+<li><p>Must make choices</p></li>
+<li><p>Intercept, trend, both, none?</p></li>
+<li><p>p: how many lags? (test statistics are very sensitive to p) - AIC - SBC - General-to-specific (start out with large p, then re-estimate with successively smaller p)</p></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>DF, ADF have been found to have low power in certain circumstances:</p>
+<p>Stationary processes with near-unit roots</p>
+<p>– For example, difficulty distinguishing between <span class="math inline">\(b = 1\)</span> and <span class="math inline">\(b = 0.95\)</span> , especially with small samples.</p>
+<p>Trend stationary processes</p>
+<p>So alternative tests have been designed.</p>
+</section>
+<section id="phillips-perron-pp-test" class="slide level2">
+<h2>Phillips-Perron (PP) Test:</h2>
+<ul>
+<li>Formulation: <span class="math inline">\(\Delta Y_t=\mu^*+\delta^*t+\Psi y_{t-1}+u_t\)</span> where <span class="math inline">\(u_t\)</span> is I(0) and may be hetroscedastic and autocorrelated, that is following an ARMA(p,q).</li>
+<li><span class="math inline">\(H_0: \Psi=0\)</span></li>
+<li>PP corrects for any serial correlation and heteroskedasticity in the errors ut by directly modifying the test statistics.</li>
+<li>One advantage of PP: no need to specify lag length.</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="kwiatkowskiphillipsschmidtshin-kpsstest">Kwiatkowski–Phillips–Schmidt–Shin (KPSS)Test:</h4>
+<ul>
+<li><p>Null hypothesis: y is trend stationary</p></li>
+<li><p>Formulation: <span class="math inline">\(y_t=\beta_0 D_t+\mu_t+u_t\)</span> <span class="math inline">\(\mu_t=\mu_{t-1}+\epsilon_t\)</span><br>
+</p></li>
+<li><p>Where <span class="math inline">\(D_t\)</span> contains deterministic components (constant or constant plus time trend), <span class="math inline">\(\mu_t\)</span> is a random walk</p></li>
+<li><p><span class="math inline">\(H_0: \sigma_{\epsilon}^2=0\)</span></p></li>
+<li><p><span class="math inline">\(H_1: \sigma_{\epsilon}^2&gt;0\)</span></p></li>
+<li><p>KPSS critical values are obtained by simulation methods.</p></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>A few notes: A few notes: - DF, ADF, and PP are called “unit root tests”; the null hypothesis is that yt has a unit root; is I(1) or higher.</p>
+<ul>
+<li><p>KPSS, on the other hand, is a “stationarity test”, null hypothesis is that yt is I(0).</p></li>
+<li><p>Correct specification is key: intercept and trend should be included when appropriate.</p></li>
+<li><p>Structural breaks can complicate matters further.</p></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>A unified way of looking at the unit root tests Slightly different representation: <span class="math inline">\(y_t=\mu+\alpha t+ u_t\)</span> <span class="math inline">\(u_t=\rho u_{t-1}+\epsilon_t\)</span></p>
+<p><span class="math inline">\(H_0: =1\)</span> y has a unit root</p>
+<p><span class="math inline">\(H_1: |\rho|&lt;1\)</span> y is <span style="color:pink;">stationary</span></p>
+<ul>
+<li>If <span class="math inline">\(\epsilon_t\)</span> is white noise, then DF can be used</li>
+<li>If <span class="math inline">\(\epsilon_t\)</span> is ARMA(p,q) then use ADF or PP</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>Simulate three processes:</p>
+<ul>
+<li><p>Stationary process with near-unit roots</p></li>
+<li><p>Trend stationary process</p></li>
+<li><p>An I(1) process</p></li>
+<li><p>Graph them and observe their behavior</p></li>
+<li><p>Conduct Unit Root/Stationarity Tests on all three.</p></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>In “Simulated Times Series Examples.xlsx”</p>
+<ul>
+<li><p>Simulate an I(0) process with a structural break</p></li>
+<li><p>Import into R</p></li>
+<li><p>Graph and observe</p></li>
+<li><p>Conduct Unit Root/Stationarity Tests</p></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>Now let’s work with real world data</p>
+<ul>
+<li><p>Choose a series:</p></li>
+<li><p>Look at graph and correlogram for a specific time series</p></li>
+<li><p>Does it appear to be non-stationary? Does it appear to have a trend, or a structural break?</p></li>
+<li><p><strong>Undertake Unit Root/Stationarity Tests</strong><br>
+</p></li>
+<li><p>Do the different tests agree?</p></li>
+<li><p>If you suspect a structural break, re-test for two sub-samples</p></li>
+</ul>
+<div class="footer footer-default">
 
 </div>
 </section></section>
@@ -939,20 +659,20 @@ AIC=1835.91   AICc=1835.94   BIC=1849.69</code></pre>
   </div>
 
   <script>window.backupDefine = window.define; window.define = undefined;</script>
-  <script src="forecasting_files/libs/revealjs/dist/reveal.js"></script>
+  <script src="nonstationary_files/libs/revealjs/dist/reveal.js"></script>
   <!-- reveal.js plugins -->
-  <script src="forecasting_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
-  <script src="forecasting_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
-  <script src="forecasting_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
-  <script src="forecasting_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
-  <script src="forecasting_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
-  <script src="forecasting_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  <script src="nonstationary_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="nonstationary_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="nonstationary_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="nonstationary_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="nonstationary_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="nonstationary_files/libs/revealjs/plugin/quarto-support/support.js"></script>
   
 
-  <script src="forecasting_files/libs/revealjs/plugin/notes/notes.js"></script>
-  <script src="forecasting_files/libs/revealjs/plugin/search/search.js"></script>
-  <script src="forecasting_files/libs/revealjs/plugin/zoom/zoom.js"></script>
-  <script src="forecasting_files/libs/revealjs/plugin/math/math.js"></script>
+  <script src="nonstationary_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="nonstationary_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="nonstationary_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="nonstationary_files/libs/revealjs/plugin/math/math.js"></script>
   <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
 
   <script>

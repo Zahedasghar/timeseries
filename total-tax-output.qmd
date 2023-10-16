@@ -1,0 +1,328 @@
+---
+title: "Services Sector Tax Analysis "
+author: "*Zahid Asghar and <br> <br> Tayyaba Batool,Capacity Analytics, Islamabad*"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+format:
+  pdf :
+    theme: [default,ryan.scss]
+    toc: true
+    code-fold: true
+    toc-location: left
+    reference-location: document
+    
+params:
+  country: Pakistan
+  year_start: '2016-07-01'
+  year_end: '2017-06-30'
+  fy: 2017
+editor: visual
+---
+
+```{r data}
+#| warning: false
+#| message: false
+library(tidyverse)
+library(lubridate)
+library(readr)
+library(readxl)
+library(collapse)
+library(kableExtra)
+library(dynlm)
+library(forecast)
+library(stargazer)
+library(scales)
+library(xts)
+library(urca)
+library(tsibble)
+library(fpp2)
+library(fpp3)
+library(ggthemes)
+library(DT)
+load("D:/RepTemplates/Tax_data/Data.RData") ## Data are loaded
+tax<-Data
+View(Data)
+tax$Date<-lubridate::ym(tax$TAX_PERIOD)
+tax$SCODE<-as.character(tax$SCODE)
+glimpse(tax)
+tax_df<-as.data.frame(tax)
+#tax_df<-tax_df %>% mutate(Year = str_replace_all(Year, pattern = ",", replacement = " "))
+##tax_df$Date<-as.Date(tax_df$Date)
+#tax_df$Date<-as.Date(tax_df$Date)
+tax$Month<-tax$TAX_PERIOD-round(tax$TAX_PERIOD,-2)
+tax$Month<-month.abb[tax$Month]
+tax$GST_RATE<-tax %>% mutate(GST_RATE=SERVICES_TAX/SERVICES_VALUE*100,na.rm=FALSE)
+
+tax_df<-tax %>% select('SCODE', 'SERVICE','Date','TAX_PERIOD','Year', 'Month',
+                       'PURCHASE_TAX','PURCHASE_VALUE', 'IMPORT_VALUE','IMPORT_TAX',
+                       'SERVICES_VALUE', 'SERVICES_TAX','OUTPUT_TAX', 'GST_RATE')
+
+
+```
+
+
+# Overall Tax
+
+## Overall Tax Summary
+The `tax_summary` dataset provides a summary of the tax collected from around 178 services in Pakistani Rs. This data is for each fiscal year from 2012 to 2018. There are 1,033,223 observations with data on 28 variables.
+After some basic data operations, we present here a summary of `tax_output` which is tax on each service sector. This `yearly` data does not include `2022` as its full data are yet not available.
+
+## 
+
+```{r, echo=FALSE}
+
+tax_df$SCODE<-as.character(tax_df$SCODE)
+total_tax<-tax_df %>% group_by(Date) %>% 
+  summarise(tax_val=sum(SERVICES_TAX)) %>% mutate(tax_mill=tax_val/1000000)
+## Extract year variable from Date
+total_tax$year<-year(total_tax$Date)
+
+
+yearly_tax<-total_tax %>% group_by(year) %>% 
+  summarise(tax_by_serv=sum(tax_val))
+
+yearly_tax<-yearly_tax %>% filter(year!=2022)
+
+ggplot(yearly_tax,aes(year, tax_by_serv))+geom_line()+labs(
+    title = "Total tax collected from services sector over 2013-2021",
+    x = "Fiscal Year",
+    y = "Rs in Millions"
+  )+theme_economist()
+```
+
+## Monthly tax summary
+
+
+```{r tax-monthly, echo=FALSE}
+ggplot(total_tax, aes(x = Date, y = tax_mill)) +
+  geom_line() +
+  labs(
+    title = "Monthly tax collected from services sector over 2013-2022",
+    x = "Fiscal Year",
+    y = "Rs in Millions"
+  )+theme_economist()
+```
+
+
+::: notes
+There is sharp dip from early 2018 till 2019 in overall revenue from all services. Why there is a dip in `tax_output`, we shall explore this issue while doing separate analaysis for `Cellular Telephone` sector. This sector generated more than 31% total services tax in the given period, while its share in fiscal year 2020, 2021 and ongoing 2022 is around 29%. In 2018, tax on the sector was brought at par with other sector and this led to a fall in revenue and tax was again raised in 2019. :::
+
+
+
+
+
+## Forecasting overall tax_output
+There are more than 170 services and if one needs to forecast , it is better to use some statistical forecasting methods in simple possible way. There are several methods but most commonly used methods are 
+- Naive Forecasting
+- Autoregressive Moving Average Models (ARIMA Models)
+- Exponential Smoothing Methods (ETS) and
+- Artificial Nueral Network (ANN)
+## ARIMA models 
+ARIMA models are one of the most useful. We shall apply all these four but results will be discussed mainly on the basis of ARIMA models. Monthly forecasting is more reliable as sufficient data are availbe but requirement is to provide annual forecasting for which we have around 10 observations. These 10 observations serve the purpose as per Hyndman book __Forecasting : Principle and Practice__. According to him
+
+
+::: notes
+> Some textbooks provide rules-of-thumb giving minimum sample sizes for various time series models. These are misleading and unsubstantiated in theory or practice. Further, they ignore the underlying variability of the data and often overlook the number of parameters to be estimated as well. There is, for example, no justification whatever for the magic number of 30 often given as a minimum for ARIMA modelling. The only theoretical limit is that we need more observations than there are parameters in our forecasting model. However, in practice, we usually need substantially more observations than that.
+:::
+We are providing both monthly and annual forecast with the methods mentioned above.
+
+
+## Annual Forecasting
+
+### NAIVE Forecasting
+
+```{r, echo=FALSE}
+NAIVE<-forecast::naive(yearly_tax$tax_by_serv, h=1) 
+summary(NAIVE)
+
+```
+
+### ARIMA models
+
+```{r, echo=FALSE}
+fit_arima<-auto.arima(yearly_tax$tax_by_serv, stepwise = FALSE, approximation = FALSE)
+summary(fit_arima)
+fit_arima %>% forecast(h=1)
+```
+
+### Aritificial Nueral Networks
+
+```{r, echo=FALSE}
+NN <- nnetar(yearly_tax$tax_by_serv, lambda="auto")
+fcast2 <- forecast(NN, h=2, PI=TRUE, npaths=100)
+autoplot(fcast2, include = 2)
+fcast2
+accuracy(NN)
+```
+
+
+## Monthly forecasting for total tax over time
+ In this case data quite smooth except one dip which was due to Supreme Court decision to make cellular taxes the same as in other services. As monthly data are available and more granularity always helps to get better insight, therefore, forecasting with three methods : seasonal naive, arima and ANN is given below.  
+### Seasonal Naive Forecasting
+
+```{r forecasting, echo=FALSE}
+fit_SN <- snaive(total_tax$tax_mill)
+
+forecast::snaive((total_tax$tax_mill), h = 24)
+fdf<-as.data.frame(forecast::snaive((total_tax$tax_mill), h = 24))
+fdf<-forecast(snaive((total_tax$tax_mill), h = 24))
+fdf$`Point Forecast`
+forecast::snaive((total_tax$tax_mill), h = 24) %>% autoplot()
+```
+
+### Autoregressive Integrated Moving Average Models
+```{r forecasting-arima, echo=FALSE}
+fit_ARIMA <- auto.arima(total_tax$tax_mill, stepwise = FALSE, approximation = FALSE)
+summary(fit_ARIMA)
+fit_ARIMA %>% forecast(h=24) %>% autoplot()
+auto.arima(total_tax$tax_mill) %>% forecast(h=24)  %>% kable(digits = 2, caption = "Forecast results from ARIMA model")
+
+
+```
+### Artificial Nueral Network Forecasting
+
+```{r, echo=FALSE}
+SNN <- nnetar(total_tax$tax_mill, lambda="auto")
+fcast2m <- forecast(NN, h=24, PI=TRUE, npaths=100)
+autoplot(fcast2m, include = 36)
+fcast2m
+library(kableExtra)
+accuracy(SNN) %>% kable(digits = 2,caption = "Forecast accuracy using ANN")
+
+```
+
+
+## Service sector share in total tax by service category
+Top 10 sectors tax share is almost 65% .
+
+```{r tables, echo=FALSE}
+grp<-tax_df %>% group_by(SCODE,SERVICE) %>% 
+  summarise(total=sum(OUTPUT_TAX)) %>% mutate(Rs_millions=round(total/1000000,2)) %>% 
+  arrange(desc(Rs_millions))
+total_output_tax<-tax_df %>% summarise(sum(OUTPUT_TAX)/1000000)
+round(total_output_tax,2)
+grp1<-grp %>% select( SERVICE, Rs_millions) %>% mutate(percent_share=round(Rs_millions/916400.9*100,2))
+datatable(grp1, caption ="Table 1.1 The total tax for each service for the 2013 to 2022 fiscal years." )
+sum(grp1[1:10,]$percent_share)
+#kable(grp1, col.names = c("SCODE", "Service","Output_tax_millionRs"), align = "cc", caption = "Table 1.1 The total tax for each service for the 2013 to 2022 fiscal years.")
+```
+
+## 
+
+```{r}
+#| warning: false
+#| message: false
+tax_2020<-tax_df %>% filter(Year==2020|Year==2021|Year==2022) %>%  group_by(SCODE,SERVICE) %>% 
+  summarise(total=sum(OUTPUT_TAX)) %>% mutate(Rs_millions=round(total/1000000,2)) %>% 
+  arrange(desc(Rs_millions))
+
+total_output_tax_2020<-tax_df %>%filter(Year==2020|Year==2021|Year==2022) %>% summarise(sum(OUTPUT_TAX)/1000000)
+round(total_output_tax_2020,2)
+tax_20_grp<-tax_2020 %>% select( SERVICE, Rs_millions) %>% mutate(percent_share=round(Rs_millions/366567.6	*100,2))
+datatable(tax_20_grp, caption ="Table 1.2 The total tax for each service for the 2020 to 2022 fiscal years." )
+
+```
+
+## Top 15 sector during FY 2020-22 as per Tax_output
+
+```{r}
+#| warning: false
+#| message: false
+library(ggplot2)
+library(dplyr)
+top<- tax_20_grp %>% arrange(desc(percent_share)) 
+top10<-top[1:10,] 
+datatable(top10, caption="Top 10 services by tax output")
+ggplot(top10, aes( x=SCODE,y=percent_share))+
+              geom_bar(stat='identity')+coord_flip()
+sum(top10$percent_share)
+
+```
+This indicates that 65% of tax share is from 10 services while remaining 35% is from remaining almost 166 services .
+
+
+## Forecasting for Service having Tax rate 16%
+ 
+```{r }
+#| warning: false
+#| message: false
+tax_rate<-tax %>% filter(SERVICES_VALUE>0) %>% 
+  mutate(rate=SERVICES_TAX/SERVICES_VALUE*100)
+tax_at_16<-tax_rate %>% filter( rate==16) %>% 
+  summarise(total=sum(SERVICES_TAX)) 
+tax_at_16 %>% summarise(sum(tax_at_16$total))
+tax_at_all<-tax_rate  %>% 
+  summarise(total=sum(SERVICES_TAX)) 
+tax_at_all %>% summarise(sum(tax_at_all$total))
+```
+
+### Tax forecast for services having 16% tax-rate
+Top 10 sectors with maximum tax collection with 16% rates applied are as follows.
+
+```{r}
+#| warning: false
+#| message: false
+glimpse(tax_rate)
+tax_rate %>% group_by(SCODE)%>% filter( rate==16) %>% 
+  summarise(total=sum(SERVICES_TAX)) %>% arrange(desc(total)) %>% top_n(10)
+
+
+
+```
+
+## 
+
+
+```{r}
+#| warning: false
+#| message: false
+
+tax_rate_yr<-tax_rate %>% group_by(Date) %>% filter(rate==16) %>% 
+  summarise(tax_val=sum(SERVICES_TAX)) 
+## Extract year variable from Date
+tax_rate_yr$year<-year(tax_rate_yr$Date)
+
+
+tax_rate_yr<-tax_rate_yr%>% group_by(year) %>% 
+  summarise(tax_by_serv=sum(tax_val))
+
+tax_rate_yr<-tax_rate_yr %>% filter(year!=2022)
+#tax_year1<-ts(tax_year$tax_by_serv,  frequency = 1,start = c(2013,1))
+#plot(tax_year1)
+ggplot(tax_rate_yr,aes(year, tax_by_serv))+geom_line()+labs(
+    title = "Total tax collected from services sector over 2013-2021",
+    x = "Fiscal Year",
+    y = "Rs"
+  )+theme_economist()
+```
+
+```{r}
+#| warning: false
+#| message: false
+auto.arima(tax_rate_yr$tax_by_serv, stepwise = FALSE, approximation = FALSE) %>% forecast(h=1)
+
+```
+So __Rs. 60.5__ billion rupees tax will be collected from sectors where 16% tax rate is appplied. If tax rate is reduced by 1%, it will reduce tax collection by __Rs. 378__ million in a year. 
+Now we calculate impact of loss in revenue if tax is reduced by 1% in top 10 sectors having tax rate of 16%.
+
+
+```{r }
+#| warning: false
+#| message: false
+top10_tax<-tax_rate %>% select(SCODE, SERVICE, SERVICES_VALUE, SERVICES_TAX,Date, Year,rate) %>% 
+  filter( SCODE %in% c("9813.4","9801.2","9809","9815.5","9824","9805.6","9999",
+                       "9875","9818.1","9813"))
+top_10<-  top10_tax %>% group_by(SCODE,Date)%>% filter(rate==16) %>% 
+  summarise(total=sum(SERVICES_TAX)) 
+top_10$year<-year(top_10$Date)
+top_10_yr<-top_10%>% group_by(year) %>% 
+  summarise(tax_by_serv=sum(total))
+## Total tax by top 10 companies at 16% rate
+top_10_yr %>% summarise(sum(tax_by_serv))
+tax_rate_yr<-tax_rate_yr %>% filter(year!=2022)
+ggplot(top_10_yr,aes(year, tax_by_serv))+geom_line()+labs(
+    title = "Total tax collected from top 10 services sector over 2013-2021",
+    x = "Fiscal Year",
+    y = "Rs "
+  )+theme_economist()
+auto.arima(top_10_yr$tax_by_serv, stepwise = FALSE, approximation = FALSE) %>% forecast(h=1)
+```

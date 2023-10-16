@@ -1,0 +1,77 @@
+---
+title: "Consumer Price Index"
+author: "*Zahid Asghar, Tayyaba Batool, Islamabad*"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+format: 
+  pdf :
+    toc: true
+    toc_float: true
+editor: visual
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r, eacho=FALSE, warning=FALSE,message=FALSE}
+library(AER)
+library(dynlm)
+library(forecast)
+library(readxl)
+library(stargazer)
+library(scales)
+library(xts)
+library(quantmod)
+library(urca)
+library(readxl)
+library(tidyverse)
+library(tsibble)
+```
+
+## Consumer Price Index
+
+    To see change in CPI over time, we plot data 
+
+
+
+
+
+```{r cpi}
+cpi_urban <- read_excel("cpi_urban.xlsx")
+cpi_urban
+ggplot(cpi_urban)+aes(x=Date, CPI_National)+geom_line()
+```
+
+## 
+
+
+```{r}
+cpi_urban<-cpi_urban %>% mutate(MoM_pct=(CPI_National/lag(CPI_National)-1)*100) 
+cpi_urban<-cpi_urban %>% mutate(pos=MoM_pct>=0)
+cpi_urban
+ggplot(cpi_urban)+aes(x=Date, MoM_pct, fill=pos)+geom_col(position = "identity",  size = 0.25) +
+  scale_fill_manual(values = c("Green", "Grey"), guide = FALSE)
+
+
+```
+
+```{r}
+acf(cpi_urban$CPI_National)
+pacf(cpi_urban$CPI_National)
+acf(cpi_urban$MoM_pct,na.action = na.pass)
+pacf(cpi_urban$MoM_pct,na.action = na.pass)
+cpi_urban
+```
+```{r}
+cpi_urban<-cpi_urban %>% mutate(YoY_pct=(CPI_National/lag(CPI_National,12)-1)*100) 
+cpi_urban<-cpi_urban %>% mutate(pos=YoY_pct>=0)
+cpi_urban
+ggplot(cpi_urban)+aes(x=Date, YoY_pct, fill=pos)+geom_col(position = "identity",  size = 0.25) +
+  scale_fill_manual(values = c("Green", "Grey"), guide = FALSE)
+
+```

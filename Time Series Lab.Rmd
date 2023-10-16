@@ -1,0 +1,184 @@
+---
+title: "Time Series Lab"
+author: "Dr.Zahid Asghaqr"
+date: "December 31, 2018"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+library(forecast)
+library(tidyverse)
+```
+
+You can also embed plots, for example:
+```{r}
+# Time and st. dev. for the white noise
+time_step=1/12
+st_dev=3
+```
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+# Time grid for 60 years of monthly data
+t<-seq(1/12,60,by=time_step)
+# iid noise
+Y<-rnorm(length(t),sd=st_dev)
+head(Y)
+# Seasonal component (with zero sum)
+S<-c(1,2,3,4,3,2,1,0,2,4,6,2)*5
+S<-S-mean(S)
+# Synthetic time series that mixes seasonal component,
+#trend and noise
+TS<-rep(S,60)+t+Y
+# Plot observations
+plot(t,TS,type='o',col=4,pch=19,cex=.5,
+xlab='Time',ylab='Observations',main='Classical
+Decomposition Model')
+# Create time series object
+TS<-ts(data=TS,frequency=12)
+# Classical Decomposition Method
+m<-decompose(TS,filter=rep(1/13,13))
+plot(m)
+# Assessment of seasonal component estimation
+par(bg='yellow')
+plot(S,type='o',pch=20,col='red',
+xlab='Month',
+ylab='Seasonal component',
+main='Assessing seasonal component estimation')
+points(m$figure,type='o',pch=19,col='blue')
+```
+
+```{r}
+#========================================
+# 2. Time Series Objects
+#========================================
+# Create time series object
+TS<-ts(data=TS,frequency=12)
+#===============================================
+# 3A. IID sequences = random variable generators
+#===============================================
+# clear the workspace
+X1 <- rnorm(n=1000,mean=100,sd=10)
+X2 <- rexp(n=1000,rate=2)
+X3 <- runif(n=1000,min=2,max=5)
+X4 <- rpois(n=1000,lambda=3)
+#========================================
+# Histograms
+#========================================
+# Simple one
+#------------
+hist(X1)
+# A better one
+#------------------------------------------------
+par(bg='yellow')
+hist(X1,breaks=20,freq=FALSE,density=15,col='blue',border='blue')
+
+```
+
+
+
+
+
+## 3B. White Noises
+
+## Example 1
+```{r}
+N<-10000
+Z<-rnorm(N)
+Z1<-Z[1:N-1]
+head(Z)
+head(Z1)
+Z2<-Z[2:N]
+head(Z2)
+W1<-Z1*Z2
+
+rm(Z1,Z2)
+plot(abs(W1[1:N-1]),abs(W1[2:N]),log='xy')
+
+```
+
+
+## Example 2
+
+```{r}
+N<-10000
+W2<-rnorm(N)
+even<-seq(2,500,by=2)
+odd<-seq(1,500,by=2)
+W2[even]<-(W2[odd]^2-1)/sqrt(2)
+plot(W2[even],W2[odd])
+
+```
+
+
+## 3C. Random walks
+```{r}
+R1<-cumsum(X1-mean(X1))
+R2<-cumsum(W2)
+plot(R2,type='l')
+plot(cumsum(rnorm(N)),type='l',xlim=c(0,N),ylim=c(-
+300,300))
+```
+
+
+## 4. Linear filters
+
+```{r eval=FALSE, include=FALSE}
+# Example 1
+N <- rnorm(n=10,mean=10,sd=2)
+f1 <- filter(N,c(.25,.5,.25),side=1)
+par(bg='yellow')
+plot(N,pch=19,col='black',lwd=1)
+points(f1,type='o',col='red',lwd=2)
+grid()
+
+```
+
+
+## Example 2
+```{r eval=FALSE, include=FALSE}
+N <- rnorm(n=1000,mean=10,sd=2)
+f1 <- filter(N,c(.25,.5,.25),side=2)
+f2 <- filter(N,rep(1/21,21),side=2)
+f3 <- filter(N,rep(1/101,101),side=2)
+par(bg='yellow')
+plot(N,pch=20,col='black',lwd=1)
+points(f1,type='l',col='red',lwd=2)
+points(f2,type='l',col='green',lwd=2)
+points(f3,type='l',col='blue',lwd=2)
+```
+
+
+## 5. ACF
+```{r eval=FALSE, include=FALSE}
+acf(X1) # a simple one
+# A better one for an IID sequence
+#----------------------------------------
+X1<-rnorm(n=10000,mean=100,sd=10)
+acf(X1,lag=100,lwd=2,col='blue',ylim=c(-
+0.05,0.05),na.action=na.pass,ci=.95)
+# ACF of a linear filter
+#--------------------------------------
+F1 <- filter(X1,rep(1,4),side=1)
+acf(F1,lag=100,lwd=2,col='blue',ylim=c(-
+0.2,1),na.action=na.pass,ci=.95)
+# ACF of a white noise
+#--------------------------------------
+acf(W1,lag=100,lwd=2,col='blue',ylim=c(-
+0.1,0.1),na.action=na.pass,ci=.95)
+# ACF of a random walk
+#--------------------------------------
+acf(R1,lag=1000,lwd=2,col='blue',ylim=c(-
+.05,1),na.action=na.pass,ci=.95)
+
+```
+
+## 6. Tests for randomness
+```{r}
+Box.test(X1,lag=5,type='Box-Pierce')
+Box.test(R1,lag=2,type='Ljung-Box')
+
+```

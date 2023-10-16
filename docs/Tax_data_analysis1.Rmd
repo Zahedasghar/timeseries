@@ -1,0 +1,403 @@
+---
+title: "**Tax collection data forecasting for next 12 months**"
+author: "*Zahid Asghar, School of Economics, QAU, Islamabad*"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+format:
+  html:
+    theme: [default,custom.scss]
+    toc: true
+    code-fold: true
+    toc-location: left
+    reference-location: document
+    
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#  **1.Analysis objective**
+This analysis has an objective to forecast revenue collection for the next 12 month from the last available data in 2021. Based on monthly Pakistan Tax Collection data, these time series cumulate from 2001 to the latest 2020 available data. __ This is still under development and in detail video on how to make this analysis and creating a file like this one will be uploade on [Data analysis and econometric](https://www.youtube.com/channel/UCuzWrGHl5SNAau1RGxaXbUA)
+
+Main purpose of this analysis is to develop a tutorial for students who use time series modeling for forecasting. However, FBR officials can also use this analysis for forecasting and develop scenario for themselves. Our time series is a conventional univariate time series with  date and monthly tax variables which we will list in the following chunk. The step applied in this analysis can be used in any forecast analysis.
+
+# **2. Models used: explanation**
+This analysis is statistical forecasting (not economic forecasting) based on three classic forecasting models(Seasonal naïve, Exponential smoothing, ARIMA) and experienced one neural network model Seasonal naïve model.
+
+I will start from very basics and will increase complexity gradually. Let me explain each model briefly.
+
+As it will be observed in the following graphs that data have strong seasonality. Therefore, the first more basics models applied is the Seasonal Naive model. The seasonal naive model makes the forecast using the last value from the same season, for example, the year before to forecast the value for the next year.
+
+__The second model__ applied is the exponentials state smoothing method by using ETS model who refer to error, trend and seasonality. This model can perform better in a short-term and on a univariate time series forecast. The model uses the exponentially weighted moving average (EWMA) to “smooth” a time series and trying to eliminate the random effect. The model uses a smoothing constant (a) which is transformed into a damping factor (1-a), the constant (a) define the weight which is applied to each period. ETS model can be applied as additive or multiplicative, but R selects the most optimal.
+
+__The third model__ applied is the autoregressive integrated moving average (ARIMA). ARIMA models are more complex model than the two previous models mainly because of the algorithm which backed this forecast model in R. ARIMA is the combination of two models. First, autoregressive model AR(p), which forecast the variable of interest using a linear combination of past values of the variable, where (p) is the lag number. Second, moving average models MA(q), which is applied as a linear regression of the current value of the series against current and previous white noise error terms or random shocks.
+
+__The fourth model__ applied, are neural network models (NN), which is the most complex model used in this analysis. This NN model performs in nonlinear time series and with big data sets. Because there seems nonlinearity in our data, we decided to test the predictive capacity of this model. The NN model is organised in multiples layers, the simplest networks contain no hidden layers and are equivalent to linear regressions. The coefficients attached to these predictors are called “weights”. The forecasts are obtained by a linear combination of the inputs. The weights are selected in the neural network framework by using a “learning algorithm”.
+
+## 2.1 Analysis outline
+First we upload data from the relevant working directory. How R and R Studio can be installed and data can be uploaded, watch [R &R Studio](https://youtu.be/ZNBZevfYgo0) and [Data upload](https://youtu.be/tgS-4RAC8aE)
+
+[Install R packages](https://youtu.be/SRSNdCZ_QnE), load the data and declare this data series as a time series.
+  Preliminary data observations 
+    
+  Data decomposition: Stationarity and identify lag specification, Seasonal component, Cycle component, Trend component.
+
+   Finding the most accurate model
+  4.1. Seasonal Naive method
+  4.2. ETS method, exponential smouthing models
+  4.3. ARIMA model
+  4.4. Neural network model
+Make the forecast for the next 12 months.
+    Conclusion
+    Create a report with Markdown 
+    
+## 2.2 Package uploaded for this analysis
+Some of these packages are not required for this analysis.
+
+
+```{r, eacho=FALSE, warning=FALSE,message=FALSE}
+
+library(dynlm)
+library(forecast)
+library(readxl)
+library(stargazer)
+library(scales)
+library(xts)
+library(urca)
+library(tidyverse)
+library(tsibble)
+library(fpp2)
+library(fpp3)
+library(ggthemes)
+library(lubridate)
+```
+
+## 2.3 Upload data
+This data is about monthly tax collection in billion of rupees (data source FBR).I have uploaded data from the respective directory.
+
+
+```{r}
+library(readxl)
+tax_data <- read_excel("Tax_billion_rs.xlsx") #Source FBR 
+tax_data
+
+taxes<-tax_data %>%
+  mutate(year = lubridate::year(Date), 
+                month = lubridate::month(Date), 
+                day = lubridate::day(Date))
+taxes
+##yearly data
+tax_year<-taxes %>% group_by(year) %>% 
+  summarise(tax_yr=sum(tax),dir_yr=sum(direct),indir_yr=sum(indirect),sales_yr=sum(sales),excise_yr=sum(excise), custom_yr=sum(custom))
+tax_year
+```
+
+## 2.4 Time Plot
+We have used "The Economist Themse", one may use one's own choice like __Financil Times__, __Fivethirtyeight.com__ etc.
+
+```{r}
+ggplot(tax_data)+aes(x=Date, y=tax)+geom_line()+
+   ylab("Rs. in Billion") +
+  ggtitle("Monthly tax collection year wise in billion of Rs. by FBR")+ labs(caption=" Source :FBR")+theme_economist()## Plot total taxes with The Economist theme
+
+
+```
+## 2.5 Multiple line plot
+There are total taxes, direct and indirect taxes, and subcomponents of indirect taxes- sales tax, custom and excise duties.
+Now we plot direct and indirect taxes. How t
+
+```{r}
+ggplot(tax_data, aes(x=Date)) + 
+  geom_line(aes(y = direct), color = "darkred") + 
+  geom_line(aes(y = indirect), color="steelblue", linetype="twodash")+
+  scale_color_manual(values = c("darkblue", "darkred", "steelblue")) +ylab("Rs. in Billion") +
+  ggtitle("Monthly tax collection year wise in billion of Rs. by FBR")+ labs(caption=" Source :FBR")+theme_economist()#Method 1
+```
+
+
+## 2.5 Another approach for multiple line chart
+
+
+```{r}
+df <- tax_data %>%
+  select(Date, tax, direct, indirect) %>%
+  gather(key = "variable", value = "value", -Date)
+df
+# Visualization
+ggplot(df, aes(x = Date, y = value)) + 
+  geom_line(aes(color = variable, linetype = variable)) + 
+  scale_color_manual(values = c("darkblue", "darkred", "steelblue")) +ylab("Rs. in Billion") +
+  ggtitle("Monthly tax collection year wise in billion of Rs. by FBR")+ labs(caption=" Source :FBR")+theme_economist()
+
+```
+
+We observe a strong positive trend and seasonality. Trend over time seems bit nonlinear. Even though, in this first observation, we can intuitively conclude that these time series have no stationary. In the next section, we will investigate and identify those potential problems in the way to make some correction to this time series and for selecting the most appropriate forecasting model.
+
+# **3 Preliminary data decomposition**
+## 3.1 Why we investigate Stationarity? (unit root test)
+A time series is stationary if it’s characteristics like mean, variance, covariance, are time variant: that is, they do not change over the time. Non-stationarity may cause autocorrelation which we explained in the next step.
+
+We will make the Dickey-Fuller Test to check the stationarity in the data.
+
+```{r}
+library(tseries)
+
+adf.test(tax_data$direct, alternative = "stationary", k=12) 
+```
+
+
+Null hypothesis of non-stationarity is not rejected. This test confirmed that this series is not stationary.
+
+To correct the non-stationarity problem, we apply the first difference and make the Dickey-Fuller again.
+
+```{r}
+DS <- diff(tax_data$direct)
+adf.test(DS, alternative = "stationary", k=12)
+```
+The Dickey-Fuller test allows you to reject the null hypothesis with this small p-value and we can conclude this series is stationary. By taking the first difference, we are making the making the corrections on this initial non-stationary time series.
+
+We can visualize the data, for seeing the impact of the first difference on this time series.
+
+```{r}
+DS<-tax_data %>% mutate(mom_pct=(direct/lag(direct)-1)*100)
+ggplot(DS)+aes(x=Date,y=mom_pct)+geom_line()+ggtitle("Month on month basis changes in tax collection")
+
+```
+We will take the first difference from the data to remove the trend. With this first difference, we can work with this time series without having the trend influence forecasting .
+
+## 3.2 What problems are caused by non-stationary (trend)
+
+Also, It’s important because it helps to identify the driving factors. When we detect a change in a time series, we may be able to infer a correlation. But we need both time series to be stationary (no trend and no seasonality); otherwise, the correlation we find will be misleading.
+
+There are three main problems with stochastic trends:
+    1.	AR coefficients can be badly biased towards zero.  This means that if you estimate an AR and make forecasts, if there is a unit root then your forecasts can be poor (AR coefficients biased towards zero)
+
+    2.	Some t-statistics don’t have a standard normal distribution, even in large samples (more on this later)
+
+    3.	If Y and X both have random walk trends then they can look related even if they are not – you can get “spurious regressions.”
+
+## 3.4 Why we investigate autocorrelation?
+Autocorrelation means that there are correlations in the error or lag correlations of a given series with itself, lagged by a number of time units. Which signify:
+
+$$Y_c =x + \beta X_i+u_i$$
+
+$$Cov(u_i, u_s) \neq 0 \forall  i\neq s$$
+Autocorrelation measures the linear relationship between lagged values of a time series. We will see dependence in the data across a range of lag value.
+
+```{r}
+acf(tax_data$direct)
+```
+acf plot shows that the data are strongly non-random and autorgressive model maybe appropriate. We can check the autocorrelation by plotting residual and standardized residuals of regression against time and compare if they show a similar pattern which signs for autocorrelation.
+
+
+
+## 3.6 Seasonality
+Seasonality is a pattern which occurs  when a time series is observed at less than annual frequency and is affected by seasonal factors such as the time of the year or the day of the week. We know that tax collection authorities usually have to meet quarterly target and some accounting lags also make collection a seasonal phenomena. We need to detect seasonality in a time series in the way to make the necessary adjustment or for choosing the appropriate models. Seasonality adjustment has three main reasons:
+  1. to aid in short-term forecasting  
+  2. to help in relating time series to other series or extreme events 
+  3. to allow series to be compared from year to year or month to month or the day today.
+
+
+
+Following two visualizations will help to identify the seasonality.
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+
+ts_tax<-ts(DS$mom_pct,  frequency = 12,start = c(2001,1))
+decomp<-decompose(ts_tax)
+plot(decomp)
+library(ggthemes)
+
+ggseasonplot(ts_tax,year.labels=TRUE, year.labels.left=TRUE) +
+  ylab("Rs. in Billion") +
+  ggtitle("Monthly tax collection year wise in billion of Rs. by FBR")+ labs(caption=" Source :FBR")+theme_economist()
+
+```
+We can observe that those 19 multiples colour lines, already have the same pattern over the years. Those colour lines informed you of the possible presence of seasonal cycles in this time series.
+
+Now, look at this other seasonal plot which isolates the variation for one month at the time
+
+```{r}
+ggsubseriesplot(ts_tax)
+```
+The horizontal lines indicate the means for each month. This form of plot enables the underlying seasonal pattern to be seen clearly, and also shows the changes in seasonality over time. It is especially useful in identifying changes within particular seasons.
+
+Both line and seasonal plots indicate that there seems strong trend and seasonality pattern in tax data.
+
+# **4. Fit a Model**
+In this section we are going to fit a model on tax data and will find out the most appropriate model.
+## 4.1 seasonal naïve method as our benchmark
+
+This model is used as a benchmark and performance of any technical model is compared with this model. This model using the most recent observation as a forecast. We are using seasonal naive model because data seems seasonal.
+
+
+$$\hat{y}_{T+h|T}=y_{T+h-m(k+1)}$$
+
+```{r}
+fit_SN <- snaive(ts_tax)
+
+ forecast::snaive((ts_tax), h = 24)
+checkresiduals(fit_SN)
+
+```
+
+We have Residual sd: 42.8065 from summary(fit_SN) command. 
+The acf graph of residuals indicate autocorrelation among the residuals.
+Ljung Box statistics is also very high and it reject the null hypothesis that residuals are uncorrelated.
+
+The naive and Snaive model are fundamental models. Some business uses those model basic forecasting models, maybe because of the lack of internal resources. Producing or maintaining extra stock it is a cost for the company and creates inefficiency. We continue testing the forecast performance of others models.
+
+## 4.2 Fit ETS method, exponential smoothing method
+Second, we will apply ETS model: Error, Trend, Seasonal. The flexibility of the ETS model lies in its ability to trend and seasonal components of different traits. This function ets() automatically optimizes the choice of model and necessary parameters. We present the structure of the additive and the multiplicative form.
+
+Assuming: $$\mu_t = \hat{y}_t=l_{t-1}+ b_{t-1}$$
+and 
+$$\varepsilon_t = y_{t} - \mu_{t}$$
+
+ETS additive
+
+$$y_t =  l_{t-1} + \phi b_{t-1} + \varepsilon_t$$
+
+$$l_t =  l_{t-1} + \phi b_{t-1} + \alpha\varepsilon_t$$
+
+$$b_t =  \phi b_{t-1} + \beta^*(l_{t}-l_{t-1}- \phi b_{t-1} = \phi b_{t-1}+\alpha\beta^*\varepsilon_t$$
+
+$$\varepsilon_t = (y_t-\mu_t ) / \mu_t$$
+
+$$y_t =  (l_{t-1} + \phi b_{t-1}) (1+\varepsilon_t)$$
+
+$$l_t =  (l_{t-1} + \phi b_{t-1}) (1+\alpha\varepsilon_t)$$
+
+$$b_t = \phi b_{t-1}+\beta(l_{t-1} + \phi b_{t-1})\varepsilon_t$$
+
+
+```{r}
+fit_ets <- ets(ts_tax) #residual = 221.1631
+checkresiduals(fit_ets)
+
+```
+We have a residual sd =40.49 from summary(fit_ets) command, which are more accurate than the seasonal naïve models and what mean for the exact month the years before, which missing on average 40.49 billion.
+
+So this model increases the precision and offer a better fit but: if we look to AFC graph, we observe that there remains autocorrelation because of the bar going out of the 95% confidence  line.
+
+The Ljung-Box test Test results also indicate rejection of null hypothesis that residuals are non-correlated.
+
+
+We realize that with using just a bit more complex forecasting model, we increase accuracy and can make a significant improvement in tax collection. We continue our analysis with a one of the most performant forecasting model the ARIMA.
+
+## 4.3 Fit on ARIMA model
+ARIMA model is a Generalized random walk model which is fine-tuned to eliminate all residual autocorrelation. It is a Generalized exponential smoothing model that can incorporate long-term trends and seasonality.
+
+AR(p) model
+$$(1-\sum^p_{k=1}\alpha_kL^k)X_t = \varepsilon_t$$
+MA(q) model
+$X_t = (1+\sum^q_{k=1}\beta_kL^k)\varepsilon_t$
+First difference is
+$\Delta X_t=X_t -X_{t-1} = (1-L)X_t$
+ where 
+ $\ Y_t = (1-L)X_t$
+ 
+ ARIMA(p, d, q) full model
+ $$(1-\sum^p_{k=1}\alpha_kL^k)(1-L)^dX_t = (1+\sum^q_{k=1}\beta_kL^k)\varepsilon_t$$
+ 
+ARIMAX model
+
+$$\Delta y_t=\alpha_0+\sum_{j}\alpha_j \Delta y_{t-j}+\sum_h\gamma_h\epsilon_{t-h}+X\beta+\epsilon_t$$
+```{r}
+#fit_ARIMA <- auto.arima(ts_tax, d=1,D=1, stepwise = FALSE, approximation = FALSE)
+#checkresiduals(fit_ARIMA)
+
+
+```
+We have a residual standard error (residual) = sqrt(1251), what mean for the exact month the years before, which missing on average 35 billion.
+
+At this stage, we can conclude that the ARIMA model offers the best fit base on residual and standard deviations.
+
+The Ljung-Box test Test results also indicate that model is appropriate fit as null hypothesis of non-autocorrelation among residuals is rejected. So far ARIMA model not only passes the diagnostic testing but also performs better than the seasonal naive and ETS models.
+
+Though for economic theory or behavioral models, simpler the better. But for forecasting having capacity for applying and Understanding complex models is a plus value for any business or forecasting team. Many decisions are based on the capacity to forecast revenues. Accuracy in short-term revenue forecast has the critical impact on all economic planning. Accuracy on long-term forecasting, contribute for supporting the significant fiscal decision. In the end, short-term and long-term forecast accuracy will have a significant impact to optimize the growth of the economy. Lousy forecasting can reduce FBR capacity for effecient decision making.
+
+## 4.4 Neural network models
+This model allows complex nonlinear relationships between the response variable and its predictors. Our time series are mostly linear, and in this case, the neural network  may not be the most appropriate model, but we will compare performance against seasonal naive, ETS and ARIMA.
+
+In neural network the inputs of each node are combined using a weighted linear combination. For exemple, the inputs (for 4 inputs) into hidden neuron j are combined linearly to give 
+$$z_j = b_j+\sum_{i=1}^4 w_i,_jx_i$$
+and in the hidden layer,this is then modified using a nonlinear function such as a sigmoid,
+$$s(z) = \frac{1}{1=e^-z}$$
+
+```{r}
+NNL <- nnetar(ts_tax)
+NN <- nnetar(ts_tax, lambda="auto")
+checkresiduals(NNL)
+accuracy(NN)
+```
+
+There seems some spikes going out of usual range in acf plot of residuals which may indicate little problem of residuals autocorrelation.
+This is very complex model but often very useful for deep learning.
+
+# 4.5 Comparative forecast performance
+We will compare those forecast models performances with using two strategies.
+
+First strategy: We will compare the indicators produced by the output of the accuracy() function when all the time series is the training set.
+
+Second strategy: Like the first strategy, we will compare the indexes produce by the output of the accuracy() function but we will split the dataset by creating, one training set and one test set.
+
+It is important to use the right tool for an accurate analysis and for understanding the impact on the results when a different strategy is used.
+
+We will base ours performance comparison model analysis on those indexes which will we define it before we use it.
+
+Mean absolute error: MAE
+ 
+ $$MAE=mean(e^2_{t})$$
+Root mean squared error: RMSE
+
+$$e_{t}={y}_{t}-\hat{y}_{t|N}$$
+$$RMSE=\sqrt{mean(e^2_{t})}$$
+Mean absolute percentage error: MAPE
+$$p_{t}=100e_{t}/y_{t}$$
+Mean absolute scaled error : MASE
+$$q_{t}= e_{t}/Q$$
+Where Q is a scaling statistic computed on the training data.
+$$p_{t}=100e_{t}/y_{t}$$
+Autocorrelations of error at lag1 (ACF)
+$$ACF=\frac{Covariance(x_{t},x_{t-h})}{Variance(x_{t})}$$
+If we print summary of each model and compare accuracy, we observe that ARIMA model seems the best while NN model seems the second best. Therefore, now we forecast with NN and ARIMA models for 24 time periods ahead.
+
+## **4.4 Forecast Using ANN model**
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+NN <- nnetar(ts_tax, lambda="auto")
+fcast2 <- forecast(NN, h=24, PI=TRUE, npaths=100)
+autoplot(fcast2, include = 60)
+print(summary(fcast2))
+```
+
+## Forecast Using ARIMA model
+```{r}
+#fit_ARIMA %>% forecast(h=24) %>% autoplot()
+#auto.arima(tax_data$direct) %>% forecast(h=24) %>% autoplot
+```
+
+```{r}
+tax_year1<-tax_year %>% filter(year!="2001"& year!="2020")
+tax_year1
+ggplot(tax_year1)+aes(x=year)+geom_line(aes(y = dir_yr), color = "darkred") + 
+  geom_line(aes(y = indir_yr), color="steelblue", linetype="twodash")+
+  scale_color_manual(values = c("darkblue", "darkred", "steelblue")) +ylab("Rs. in Billion") +
+  ggtitle("Indirect (dashed) and direct taxes (solid line) in billion of Rs. by FBR")+ labs(caption=" Source :FBR")+theme_economist()
+indirect_direct<-tax_year %>% mutate(ind_dir=(indir_yr/dir_yr)) %>% filter(year!=2001)
+ggplot(indirect_direct)+aes(x=year,y=ind_dir)+geom_line()+
+    ggtitle("Ratio of indirect to direct taxes year wise in billion of Rs. by FBR")+ labs(caption=" Source :FBR")+theme_economist()
+
+```
+

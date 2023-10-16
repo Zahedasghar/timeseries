@@ -223,10 +223,8 @@ g2s2<-lm(C~Y+lag(C,1)+lag(Y,1),data=cons_inc)
 modelsummary(g2s2,estimate = c("{estimate} ({std.error}){stars}"))
 ```
 
-::: {.border}
-
+::: border
 [Oh that makes sense and current consumption is explained by current income, past year consumption and past year income and all other variables are insignificant. This model pass all diagnostic tests as well.]{.purple}
-
 :::
 
 ```{r}

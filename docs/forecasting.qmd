@@ -25,8 +25,7 @@ execute:
 
 ## Univariate Analysis
 
-![Stochastic Process vs time
-series](images/prob_density.png){fig-align="center"}
+![Stochastic Process vs time series](images/prob_density.png){fig-align="center"}
 
 Each distribution is a draw from a **random process**.
 
@@ -38,14 +37,11 @@ Each distribution is a draw from a **random process**.
     -   Covariance stationary:
         i)  Unconditional mean $E(Y_t)=E(Y_{t+j})=\mu$\
         ii) variance constant $Var(Y_t)=Var(Y_{t+j})=\sigma^2_y$ and
-        iii) Covariance depnds on time j that has elapsed between
-             observations, not on reference period
-             $Cov(Y_t,Y_{t+j})=Cov(Y_s,Y_{s+j})=\gamma_j$
+        iii) Covariance depnds on time j that has elapsed between observations, not on reference period $Cov(Y_t,Y_{t+j})=Cov(Y_s,Y_{s+j})=\gamma_j$
 
 ## 
 
-![Stochastic Process vs time
-series](images/stationary.png){fig-align="center"}
+![Stochastic Process vs time series](images/stationary.png){fig-align="center"}
 
 ## 
 
@@ -84,6 +80,7 @@ The first step is visual inspection: graph and observe your data.
 ```{r}
 # Load necessary library (if not already loaded)
 library(tidyverse)
+library(forecast) # for time series models and auto.arima
 library(stats)
 library(ggplot2)
 # Set the parameters
@@ -224,27 +221,21 @@ ggplot(time_series_data, aes(x = Time, y = Difference)) +
 
 ## Identification
 
-Assuming that the process is stationary, there are three basic types
-that interest us:
+Assuming that the process is stationary, there are three basic types that interest us:
 
-Autoregressive (process)
-$y_t=a+b_1y_{t-1}+b_2y_{t-2}+...+b_py_{t-p}+\epsilon_t$
+Autoregressive (process) $y_t=a+b_1y_{t-1}+b_2y_{t-2}+...+b_py_{t-p}+\epsilon_t$
 
-Moving Average : AR(process) :
-$y_t=\mu+u_t+\phi_1u_{t-1}+\phi_2u_{t-2}+...+\phi_qu_{t-q}+\epsilon_t$
+Moving Average : AR(process) : $y_t=\mu+u_t+\phi_1u_{t-1}+\phi_2u_{t-2}+...+\phi_qu_{t-q}+\epsilon_t$
 
-Combined ARMA-process
-$y_t=a+b_1y_{t-1}+b_2y_{t-2}+...+b_py_{t-p}+u_t+\\\phi_1u_{t-1}+\phi_2u_{t-2}+...+\phi_qu_{t-q}+\epsilon_t$
+Combined ARMA-process $y_t=a+b_1y_{t-1}+b_2y_{t-2}+...+b_py_{t-p}+u_t+\\\phi_1u_{t-1}+\phi_2u_{t-2}+...+\phi_qu_{t-q}+\epsilon_t$
 
 ## 
 
-Some notation: AR(p), MA(q), ARMA(p,q), where p,q refer to the order
-(maximum lag) of the process
+Some notation: AR(p), MA(q), ARMA(p,q), where p,q refer to the order (maximum lag) of the process
 
 $\epsilon_t$ is a white noise disturbance:
 
-$E(\epsilon_t=0)$, $Var(\epsilon_t=\sigma^2)$ ,
-$Cov(\epsilon_t,\epsilon_s=0 , if \ t\neq s)$
+$E(\epsilon_t=0)$, $Var(\epsilon_t=\sigma^2)$ , $Cov(\epsilon_t,\epsilon_s=0 , if \ t\neq s)$
 
 ## Tools for Identification
 
@@ -254,15 +245,13 @@ $Cov(\epsilon_t,\epsilon_s=0 , if \ t\neq s)$
 
 -   Learned about possible processes for y
 
--   Need to identify which one in order to understand, then eventually
-    forecast y
+-   Need to identify which one in order to understand, then eventually forecast y
 
 > tools to help identify
 
 ## 
 
-Autocovariance and autocorrelation Relations between observations at
-different lags:
+Autocovariance and autocorrelation Relations between observations at different lags:
 
 -   Autocovariance $\gamma_j=E[(y_t-\mu)(y_{t-j}-\mu)]$
 -   Autocorrelation $\rho_j=\gamma_j / \gamma_0$
@@ -520,17 +509,11 @@ plot(pacf_values, main = "Partial Autocorrelation Function (PACF) of MA(3) Model
 
 ## Stationary Time Series
 
-We now have a tool (ACF, PACF) to help us identify the stochastic
-stochastic process underlying time series we are observing. Now we
-will: - Summarize the basic patterns to look for - Observe an actual
-data series and make an initial guess Observe an actual data series and
-make an initial guess - Next step: estimate (several alternatives) based
-on this guess
+We now have a tool (ACF, PACF) to help us identify the stochastic stochastic process underlying time series we are observing. Now we will: - Summarize the basic patterns to look for - Observe an actual data series and make an initial guess Observe an actual data series and make an initial guess - Next step: estimate (several alternatives) based on this guess
 
 ## Summary Table Pattern
 
-![Pattern for model
-identification](images/summary_pattern.png){.r-stretch}
+![Pattern for model identification](images/summary_pattern.png){.r-stretch}
 
 ## Tips
 
@@ -540,17 +523,14 @@ identification](images/summary_pattern.png){.r-stretch}
 
 -   PACF decays gradually for ARMA, MA, drops to 0 for AR
 
-Possible approach: begin with parsimonious low order AR, check residuals
-to decide on possible MA terms.
+Possible approach: begin with parsimonious low order AR, check residuals to decide on possible MA terms.
 
 ------------------------------------------------------------------------
 
 When looking at ACF, PACF
 
--   Box-Jenkins provide sampling variance of the observed ACF and PACFs
-    ($r_s$ and $b_s$)
--   Permits one to construct confidence intervals around each → assess
-    whether significantly $\neq0$
+-   Box-Jenkins provide sampling variance of the observed ACF and PACFs ($r_s$ and $b_s$)
+-   Permits one to construct confidence intervals around each → assess whether significantly $\neq0$
 -   Computer packages provide this automatically
 
 ## Estimation and Model Selection
@@ -566,25 +546,19 @@ When looking at ACF, PACF
 
 ## Fit vs parsimony (information criteria):
 
--   Additional parameters (lags) automatically improve fit but reduce
-    forecast quality
+-   Additional parameters (lags) automatically improve fit but reduce forecast quality
 -   Tradeoff between fit and parsimony; widely used criteria:
 -   Akaike Information Criterion (AIC) $AIC=T ln(SST)+2(p+q+1)$
 -   Schwartz Bayesian Criterion (BIC) $SBC= T ln(SST)+(p+q+1)ln(T)$
--   SBC is considered to be preferable for having more parsimonious
-    models than AIC
+-   SBC is considered to be preferable for having more parsimonious models than AIC
 
 ## White noise errors :
 
--   Aim to eliminate autocorrelation in the residuals (could indicate
-    that model does not reflect the lag structure well)
+-   Aim to eliminate autocorrelation in the residuals (could indicate that model does not reflect the lag structure well)
 
--   Plot "standardized residuals" ($\epsilon_{it}$ ) No more than 5% of
-    them should lie outside \[-2,+2\] over all periods
+-   Plot "standardized residuals" ($\epsilon_{it}$ ) No more than 5% of them should lie outside \[-2,+2\] over all periods
 
--   Look at $r_s$, $b_s$ (and significance) at different lags Box-Pierce
-    Statistic: joint significance test up to lag $s$: \$\bar{x} =
-    \frac{1}{n}
+-   Look at $r_s$, $b_s$ (and significance) at different lags Box-Pierce Statistic: joint significance test up to lag $s$: \$\bar{x} = \frac{1}{n}
 
 $Q=T \sum_{k=1}^{s} r_k^2$
 
@@ -594,10 +568,8 @@ $H_0$ : all $r_k=0$, $H_1$: at least one $r_k\neq0$
 
 Can assess how well the model forecasts " out of sample":
 
--   Estimate the model for a sub-sample (for example, the first 250 out
-    of 300 observations).
--   Use estimated parameters to forecast for the rest of the sample
-    (last 50)
+-   Estimate the model for a sub-sample (for example, the first 250 out of 300 observations).
+-   Use estimated parameters to forecast for the rest of the sample (last 50)
 -   Compute the " forecast errors" and assess:
 -   Mean Squared Prediction Error
 -   Granger-Newbold Test
@@ -605,23 +577,21 @@ Can assess how well the model forecasts " out of sample":
 
 ## Account for possible structural breaks:
 
--   Does the same model apply equally well to the entire sample, or do
-    parameters change (significantly) within the sample?
+-   Does the same model apply equally well to the entire sample, or do parameters change (significantly) within the sample?
 
 How to approach:
 
 -   Own priors/suspicion : Chow test for parameter change
 
--   If priors not strong, recursive estimation, tests for parameter
-    stability over the sample, for example, CUSUM
+-   If priors not strong, recursive estimation, tests for parameter stability over the sample, for example, CUSUM
 
 ## Learning all above with simulated data
 
-Lets simulate MA(1), AR(1) series in Excel, R and one can use
-STATA/EVIEWS as well
+Lets simulate MA(1), AR(1) series in Excel, R and one can use STATA/EVIEWS as well
 
 ::: panel-tabset
 ## MA-1 code
+
 ```{r}
 #| echo: true
 #| eval: false
@@ -645,6 +615,7 @@ ggplot(time_series_data, aes(x = Time, y = Value)) +
 ```
 
 ## MA1-output
+
 ```{r}
 #| echo: false
 #| eval: true
@@ -668,6 +639,7 @@ ggplot(time_series_data, aes(x = Time, y = Value)) +
 ```
 
 ## AR-1 code
+
 ```{r}
 #| echo: true
 #| eval: false
@@ -687,6 +659,7 @@ ggplot(time_series_data, aes(x = Time, y = Value)) +
 ```
 
 ## AR-1 output
+
 ```{r}
 #| echo: false
 #| eval: true
@@ -703,14 +676,12 @@ ggplot(time_series_data, aes(x = Time, y = Value)) +
   geom_line(linewidth=1) +labs(title = "AR(1) Model ", x = "Time", y = "Value") +
   theme_minimal()
 ```
-
 :::
 
-## ACF and PACF of AR-1 and MA-`
+## ACF and PACF of AR-1 and MA-\`
 
-::: panel-tabset 
-
-## ACF of AR-1 
+::: panel-tabset
+## ACF of AR-1
 
 ```{r}
 # Plot the ACF of the simulated data
@@ -720,7 +691,7 @@ acf(ar1_data, main = "Autocorrelation Function (ACF) of AR(1) Model")+
 
 ```
 
-## PACF of AR-1 
+## PACF of AR-1
 
 ```{r}
 # Calculate the PACF of the simulated data
@@ -781,6 +752,122 @@ pacf_values <- pacf(ma_data, lag.max = 10, plot = FALSE)
 plot(pacf_values, type = "h", main = "PACF of MA(1) Model")
 
 ```
-
-
 :::
+
+## 
+
+**Now let's work with real world data**
+
+```{r}
+pe <- read_csv("data/pe.csv")
+pe |> glimpse()  #Inspect data
+```
+
+## Pick pe_usa
+
+```{r}
+pe_us <- pe |> select(date,pe_usa)
+library(ggthemes)
+
+ggplot(pe_us) + aes(x=date,y=pe_usa) + geom_line()+theme_wsj()
+```
+
+## Identify model
+
+Use SACF and SPACF to choose model(s) and also use auto.arima and see which of these two wins: your judged model or auto.arima
+
+```{r}
+acf(pe_us$pe_usa)
+pacf(pe_us$pe_usa)
+```
+
+acf and pacf patterns indicate series is non-stationary. So here we run acf and pacf of difference of the series.
+
+```{r}
+acf(diff(pe_us$pe_usa))
+pacf(diff(pe_us$pe_usa))
+```
+
+From these two graphs it seems model is ARIMA(0,1,1)
+
+```{r}
+
+auto.arima(pe_us$pe_usa)
+
+```
+
+So our model was ARIMA(0,1,1) while auto.ARIMA is ARIMA(1,1,1) not bad.
+
+# Nonstationary Series
+
+## Nonstationary Series
+
+-   Introduction:
+-   Key Questions:
+-   What is nonstationarity?
+-   Why is it important?
+-   How do we determine whether a time series is nonstationary?
+
+## What is nonstationarity?
+
+Recall from earlier part on stationarity:
+
+-   Covariance stationarity of y implies that, over time, y has:
+-   Constant mean
+-   Constant variance
+-   Co-variance between different observations that do not depend on that time (t), only on the "distance" or "lag" between them (j):
+
+$Cov(Y_t,Y_{tj})= Cov(Y_s,Y_{s+j})= \gamma_j$
+
+## What is nonstatinarity?
+
+Thus, if any of these conditions does not hold, we say that y is nonstationary:
+
+There is no long-run mean to which the series returns (economic concept of long-term [equilibrium]{style="color:red;"})
+
+The variance is time-dependent. For example, could go to infinity as the number of observations goes to infinity
+
+Theoretical autocorrelations do not decay, sample autocorrelations do so very slowly.  
+
+- - -
+
+Nonstationary series can have a trend: 
+
+-   Deterministic: nonrandom function of time:  
+
+$y_t=\mu+\beta t+u_t$ , where $u_t$ is "iid"
+
+- Example $\beta=0.45$  
+
+```{r}
+library(forecast)
+library(tidyverse)
+set.seed(1269)
+# Generate a time series object
+date <- ts(c(1:100))
+
+# Define the trend component
+trend <- 0.45 * (1:length(date))
+
+
+# Generate random noise
+noise <- rnorm(length(date), mean = 0, sd = 1)
+
+yt <- trend+noise
+
+
+# Add the trend component and random noise to the data
+
+
+# Create a data frame
+
+df <- data.frame(date=date,yt=yt)
+
+
+ggplot(df)+aes(x=date,y=yt)+geom_line()
+
+
+
+```
+
+
