@@ -8,6 +8,7 @@ format:
     theme: [default, custom.scss]
     toc: true
     code-fold: true
+    keep-md: false
 overview: true
 execute:
   echo: false
@@ -41,7 +42,7 @@ library(fpp3)
 #| echo: false
 #| warning: false
 #| message: false
-cons_inc<-read_dta("Consumption_Income_Pakistan.dta")
+cons_inc<-read_dta("data/Consumption_Income_Pakistan.dta")
 library(tseries)
 cons_inc$year<-as_date(cons_inc$year)
 cons_inc<-cons_inc %>% mutate(Trend=1:52)
