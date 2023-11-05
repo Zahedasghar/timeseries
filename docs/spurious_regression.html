@@ -25,16 +25,16 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="suporious_regressions_files/libs/clipboard/clipboard.min.js"></script>
-<script src="suporious_regressions_files/libs/quarto-html/quarto.js"></script>
-<script src="suporious_regressions_files/libs/quarto-html/popper.min.js"></script>
-<script src="suporious_regressions_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="suporious_regressions_files/libs/quarto-html/anchor.min.js"></script>
-<link href="suporious_regressions_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="suporious_regressions_files/libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="suporious_regressions_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="suporious_regressions_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="suporious_regressions_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script src="spurious_regression_files/libs/clipboard/clipboard.min.js"></script>
+<script src="spurious_regression_files/libs/quarto-html/quarto.js"></script>
+<script src="spurious_regression_files/libs/quarto-html/popper.min.js"></script>
+<script src="spurious_regression_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="spurious_regression_files/libs/quarto-html/anchor.min.js"></script>
+<link href="spurious_regression_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="spurious_regression_files/libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="spurious_regression_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="spurious_regression_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="spurious_regression_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
 
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -102,7 +102,7 @@ ul.task-list li input[type="checkbox"] {
 <p>Data on annual GDP, Consumption, and Investment, for Singapore, taken from the WDI data set of the World Bank, is plotted below:</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="suporious_regressions_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+<p><img src="spurious_regression_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>The Keynesian consumption function is one of the most widely accepted and estimated regression models. The causal hypothesis is that Income (GDP) determines Consumption (Con): GDP <span class="math inline">\(Rightarrow\)</span> Con. The simplest regression model which embodies this relationship is: Con = a + b GDP. Running this regression on the data leads to the following results:</p>
@@ -124,10 +124,10 @@ ul.task-list li input[type="checkbox"] {
 # ℹ 50 more rows</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="suporious_regressions_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+<p><img src="spurious_regression_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="suporious_regressions_files/figure-html/unnamed-chunk-2-2.png" class="img-fluid" width="672"></p>
+<p><img src="spurious_regression_files/figure-html/unnamed-chunk-2-2.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
 <table id="tab:unnamed-chunk-2" class="huxtable table table-sm table-striped small" data-quarto-postprocess="true">
@@ -180,13 +180,13 @@ ul.task-list li input[type="checkbox"] {
 <p>The regression has <span class="math inline">\(R^2\)</span> of 99.6%, which is interpreted to mean that 99.7% of the variation in Singapore Consumption can be explained by the Singapore GDP. The t-stat of 116 shows that the coefficient 0.486 of SgpGDP is highly significant. The p-value of 0.000 means we can reject the null hypothesis that the true coefficient is 0.0, corresponding to the idea that SgpGDP has no influence on SgpCon. Validity of regression results depends on a large number of assumptions, which are discussed in econometrics textbooks. One of the central assumptions is that the regression residuals should be random, and should come from a common distribution. To check whether or not this holds, we graph the regression residuals, the differences between the actual value and the regression fit:</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="suporious_regressions_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+<p><img src="spurious_regression_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>This plot shows serious problems, since these residuals display systematic behavior. They are all negative and small early. To see how these patterns differ from independent random variables, we provide a graph of independent random variables with mean 0 and standard error 4.579, matching the estimated regression model standard error. The Keynesian consumption function is one of the most widely accepted and estimated regression models. The causal hypothesis is that Income (GDP) determines Consumption (Con): GDP <span class="math inline">\(\Rightarrow\)</span> Con. The simplest regression model which embodies this relationship is: Con = a + b GDP. Running this regression on the data leads to the following results:</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="suporious_regressions_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+<p><img src="spurious_regression_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Random residuals frequently switch signs. They do not display any patterns in sequencing. The patterned residuals in the consumption function prove that the regression is not valid. In such situations, econometricians typically assume that the problem is due to missing regressors or wrong functional form. By adding suitable additional regressors, and modifying the functional form, one can generally ensure that the residuals appear to satisfy the assumptions made about them. But, solving the problem of random residuals by this search over regression models creates a serious problem. This can be explained as follows. Some of the fits in the data reflect a genuine real-world relationship. Other patterns are only accidental, and do not reflect any genuine relationship. The more we search, the more likely we are to end up with an accidental pattern. The fact that most regression relationships breakdown very frequently is due to the fact that most of them are accidental patterns in the data without any counterpart in reality.</p>
@@ -223,10 +223,10 @@ therefore are not very useful for policy. </code></pre>
 <p>The reason for the failure of trend fit may be due to the reasonable assumption that the growth rate is stable across time, so that con_gr=(SgpCon-lag(SgpCon,1))/lag(SgpCon,1)<em>100,gdp_gr=(SgpGDP-lag(SgpGDP,1))/lag(SgpGDP,1)</em>100,gdp_gr_Saf=(SAfGDP-lag(SAfGDP,1))/lag(SAfGDP,1)*100 would be uncorrelated with time. This can be checked by graphing this variable against time, as follows:</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="suporious_regressions_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+<p><img src="spurious_regression_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="suporious_regressions_files/figure-html/unnamed-chunk-5-2.png" class="img-fluid" width="672"></p>
+<p><img src="spurious_regression_files/figure-html/unnamed-chunk-5-2.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
 <table id="tab:unnamed-chunk-5" class="huxtable table table-sm table-striped small" data-quarto-postprocess="true">
@@ -279,10 +279,10 @@ therefore are not very useful for policy. </code></pre>
 <p>This variable is also uncorrelated with time, at least visually. The variable transformation of taking growth rates has removed the common time trend from both variables. Now it should be possible to run a regression of Consumption on Income which does not suffer from the spurious correlation between the two variables created by the common trend. Unfortunately, this strategy also fails to differentiate between genuine and spurious regressions as we will see. First, let us look at the genuine causal regression of Gr_SgpC on Gr_SgfG: Gr_SdpC = 0.009 + 0.634 Gr_SgpG <span class="math inline">\(R^2\)</span> is now 69%. It has gone down because we have removed the correlation due to the common factor of time-trend, but it is still very high. The regression provides a good fit. Also, for the first time, the residuals from this regression look random:</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="suporious_regressions_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+<p><img src="spurious_regression_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="suporious_regressions_files/figure-html/unnamed-chunk-6-2.png" class="img-fluid" width="672"></p>
+<p><img src="spurious_regression_files/figure-html/unnamed-chunk-6-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>This transformation from levels to growth rates has substantially improved the regression results. There is now some hope that the coefficient 0.634 might be a correct measure of a causal effect, if other aspects of the specification are also correct.</p>
@@ -340,10 +340,10 @@ therefore are not very useful for policy. </code></pre>
 <p>This regression also shows that growth rates of South African GDP are highly significant in explaining growth rates of Singaporean Consumption. The regression residuals look random, and support the validity of this regression:</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="suporious_regressions_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+<p><img src="spurious_regression_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="suporious_regressions_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid" width="672"></p>
+<p><img src="spurious_regression_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>According to conventional econometrics, the causal regression of growth rates of SgpGDP on growth rates of SgpCon allows us to conclude that 63% of changes in Gr_SgpGDP are transmitted to Gr_SgpCon. But, by exactly the same reasoning, we can use the spurious regression of Gr_SgpCon on Gr_SAfGDP to conclude that 56.6% of changes in the growth rate of the South African economy are transmitted to growth rates of Singaporean consumption. The first measurement has some chance being correct, while the second statement is ridiculous.</p>
@@ -407,10 +407,10 @@ therefore are not very useful for policy. </code></pre>
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="suporious_regressions_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+<p><img src="spurious_regression_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="suporious_regressions_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid" width="672"></p>
+<p><img src="spurious_regression_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Putting in growth rates of both Singapore and South Africa leads to the right result: Singapore GDP is a highly significant determinant, while South African GDP is not significant at the 95% level. Nominal econometrics consists of this kind of exercise, where we try one equation after another in order to get a match to our a priori ideas about the size and strength of the causal effects. This is quite the opposite of what students are taught about this methodology. It is not that we allow the data to tell us about the causal structures in the world. Rather, we know these structures in advance, and try many different formulations until we get one which matches our preconceptions.</p>
