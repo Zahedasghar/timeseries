@@ -338,6 +338,55 @@
 </div>
 
   <p class="date">10-10-2023</p>
+</section><section id="TOC">
+<nav role="doc-toc"> 
+<h2 id="toc-title">Table of contents</h2>
+<ul>
+<li><a href="#/properties-of-time-series" id="/toc-properties-of-time-series">Properties of Time Series</a>
+<ul>
+<li><a href="#/introduction" id="/toc-introduction">Introduction</a></li>
+</ul></li>
+<li><a href="#/nonstationary-series" id="/toc-nonstationary-series">Nonstationary Series</a>
+<ul>
+<li><a href="#/nonstationary-series-1" id="/toc-nonstationary-series-1">Nonstationary Series</a></li>
+<li><a href="#/what-is-nonstationarity" id="/toc-what-is-nonstationarity">What is nonstationarity?</a></li>
+<li></li>
+<li></li>
+<li></li>
+<li><a href="#/example-of-a-random-walk" id="/toc-example-of-a-random-walk">Example of a random walk</a></li>
+<li><a href="#/rw-with-drift0.05" id="/toc-rw-with-drift0.05">RW with Drift=0.05</a></li>
+<li><a href="#/rw-with-drift-is-2" id="/toc-rw-with-drift-is-2">RW with drift is 2</a></li>
+<li><a href="#/section" id="/toc-section"></a>
+<ul>
+<li><a href="#/section" id="/toc-key-questions">Key Questions:</a></li>
+</ul></li>
+<li>
+<ul>
+<li><a href="#/consequences-of-non-stationarity" id="/toc-consequences-of-non-stationarity">Consequences of non-stationarity</a></li>
+</ul></li>
+<li></li>
+<li></li>
+<li><a href="#/statistical-consequences-of-nonstationarity" id="/toc-statistical-consequences-of-nonstationarity">Statistical consequences of nonstationarity</a></li>
+<li><a href="#/statistical-consequences-of-non-stationary-for-multivariate-regressions" id="/toc-statistical-consequences-of-non-stationary-for-multivariate-regressions">Statistical consequences of non-stationary for multivariate regressions</a></li>
+<li><a href="#/spurious-regression-practical-exercise" id="/toc-spurious-regression-practical-exercise">Spurious regression practical exercise:</a></li>
+<li><a href="#/section-1" id="/toc-section-1"></a></li>
+<li><a href="#/testing-for-non-stationarity" id="/toc-testing-for-non-stationarity">Testing for non-stationarity</a></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li><a href="#/phillips-perron-pp-test" id="/toc-phillips-perron-pp-test">Phillips-Perron (PP) Test:</a></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul></li>
+</ul>
+</nav>
 </section>
 <section>
 <section id="properties-of-time-series" class="title-slide slide level1 center">
@@ -536,25 +585,19 @@ if <span class="math inline">\(\mu&gt;0\)</span>, then <span class="math inline"
 <h4 id="rejecting-the-unit-root-test">Rejecting the unit root test =</h4>
 <p>find that <span class="math inline">\(y\)</span> is stationary</p>
 <p><span style="color:blue;">Note</span>: critical values for the <span class="math inline">\(t-statistics\)</span> of <span class="math inline">\(b\)</span> will vary depending on whether intercept, trend are included.</p>
-<table style="width:10%;">
-<colgroup>
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 4%">
-</colgroup>
-<tbody>
-<tr class="odd">
-<td>So</td>
-<td>me</td>
-<td style="text-align: right;">terminology</td>
-</tr>
-<tr class="even">
-<td>- -</td>
-<td></td>
-<td style="text-align: right;">Order of integration: number of times a series <span class="math inline">\(y\)</span> must be differenced to become stationary Thus, if <span class="math inline">\(y\)</span> is “integrated of order zero”, <span class="math inline">\(I(0)\)</span>, then it is stationary (no differencing needed). That is, it is stationary in levels If <span class="math inline">\(y\)</span> is <span class="math inline">\(I(1)\)</span>, then its first difference (<span class="math inline">\(\Delta y\)</span>) is stationary <span class="math inline">\(\dots\)</span> and so on <span class="math inline">\(\dots\)</span></td>
-</tr>
-</tbody>
-</table>
+</section>
+<section class="slide level2">
+
+<p>Some terminology</p>
+<ul>
+<li>Order of integration: number of times a series <span class="math inline">\(y\)</span> must be differenced to become stationary</li>
+<li>Thus, if <span class="math inline">\(y\)</span> is “integrated of order zero”, <span class="math inline">\(I(0)\)</span>, then it is stationary (no differencing needed).</li>
+<li>That is, it is stationary in levels</li>
+<li>If <span class="math inline">\(y\)</span> is <span class="math inline">\(I(1)\)</span>, then its first difference (<span class="math inline">\(\Delta y\)</span>) is stationary <span class="math inline">\(\dots\)</span> and so on <span class="math inline">\(\dots\)</span></li>
+</ul>
+</section>
+<section class="slide level2">
+
 <p>Moving beyond white noise disturbances</p>
 <p>DF test assumes that <span class="math inline">\(\epsilon_t\)</span> is white noise. - However, if <span class="math inline">\(\epsilon_t\)</span> is autocorrelated, need different version of the test, allowing for higher-order lags: - Augmented Dickey-Fuller (ADF) test:</p>
 <p><span class="math inline">\(\Delta y_t=\mu+ \gamma y_{t-1}+\sum_i^p \beta_i\Delta y{t-i+1}+\epsilon_t, \gamma=-(1-\sum_i^pb_i)\)</span> and <span class="math inline">\(\beta_i=-\sum_i^pb_j\)</span></p>

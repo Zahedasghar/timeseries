@@ -8,8 +8,10 @@ format:
     toc: true
     code-fold: true
     toc-location: left
+    keep-md: false
     reference-location: document
-editor: visual
+execute: 
+  freeze: auto
 ---
 
 ## Forecasting in R
@@ -258,7 +260,7 @@ One function that can be used to create training and test sets is subset.ts(), w
 >
 > # To subset observations from 101 to 500
 >
-> train \<- subset(x, start = 101, end = 500, ...)
+> train <- subset(x, start = 101, end = 500, ...)
 
 > # To subset the first 500 observations
 >
@@ -406,26 +408,22 @@ fcses <- ses(train, h = 20)
 fcnaive <- naive(train, h = 20)
 
 # Calculate forecast accuracy measures
-accuracy( fcses,marathon)
-accuracy(fcnaive, marathon)
+#accuracy( fcses,marathon)
+#accuracy(fcnaive, marathon)
 
 # Save the best forecasts as fcbest
 fcbest <- fcnaive
 ```
 
-
 ## Holt's trend methods
+
 Holt's local trend method is implemented in the holt() function:
 
-> holt(y, h = 10, ...)
-Here, you will apply it to the austa series, which contains annual counts of international visitors to Australia from 1980-2015 (in millions). The data has been pre-loaded into your workspace.
+> holt(y, h = 10, ...) Here, you will apply it to the austa series, which contains annual counts of international visitors to Australia from 1980-2015 (in millions). The data has been pre-loaded into your workspace.
 
 ### Instructions
 
-Produce 10 year forecasts of austa using Holt's method. Set h accordingly.
-Use the summary() function to view the model parameters and other information.
-Plot your forecasts using the standard time plotting function.
-Use checkresiduals() to see if the residuals resemble white noise.
+Produce 10 year forecasts of austa using Holt's method. Set h accordingly. Use the summary() function to view the model parameters and other information. Plot your forecasts using the standard time plotting function. Use checkresiduals() to see if the residuals resemble white noise.
 
 ```{r}
 # Produce 10 year forecasts of austa using holt()
@@ -441,22 +439,15 @@ checkresiduals(fcholt)
 
 ```
 
-
 ## Holt-Winters with monthly data
+
 In the video, you learned that the hw() function produces forecasts using the Holt-Winters method specific to whatever you set equal to the seasonal argument:
 
-fc1 <- hw(aust, seasonal = "additive")
-fc2 <- hw(aust, seasonal = "multiplicative")
-Here, you will apply hw() to a10, the monthly sales of anti-diabetic drugs in Australia from 1991 to 2008. The data are available in your workspace.
+fc1 \<- hw(aust, seasonal = "additive") fc2 \<- hw(aust, seasonal = "multiplicative") Here, you will apply hw() to a10, the monthly sales of anti-diabetic drugs in Australia from 1991 to 2008. The data are available in your workspace.
 
 ## Instructions
-Produce a time plot of the a10 data.
-Produce forecasts for the next 3 years using hw() with multiplicative seasonality and save this to fc.
-Do the residuals look like white noise? Check them using the appropriate function and set whitenoise to either TRUE or FALSE.
-Plot a time plot of the forecasts.
 
-
-
+Produce a time plot of the a10 data. Produce forecasts for the next 3 years using hw() with multiplicative seasonality and save this to fc. Do the residuals look like white noise? Check them using the appropriate function and set whitenoise to either TRUE or FALSE. Plot a time plot of the forecasts.
 
 ```{r}
 #| eval: false
@@ -492,20 +483,16 @@ whitenoise <- FALSE
 autoplot(fc)
 
 ```
+
 ## Holt-Winters method with daily data
+
 The Holt-Winters method can also be used for daily type of data, where the seasonal pattern is of length 7, and the appropriate unit of time for h is in days.
 
 Here, you will compare an additive Holt-Winters method and a seasonal naive() method for the hyndsight data, which contains the daily pageviews on the Hyndsight blog for one year starting April 30, 2014. The data are available in your workspace.
 
 ## Instructions
-Using subset.ts(), set up a training set where the last 4 weeks of the available data in hyndsight have been omitted.
-Produce forecasts for these last 4 weeks using hw() and additive seasonality applied to the training data. Assign this to fchw.
-Produce seasonal naive forecasts for the same period. Use the appropriate function, introduced in a previous chapter, and assign this to fcsn.
-Which is the better of the two forecasts based on RMSE? Use the accuracy() function to determine this.
-Produce time plots of these forecasts.
 
-
-
+Using subset.ts(), set up a training set where the last 4 weeks of the available data in hyndsight have been omitted. Produce forecasts for these last 4 weeks using hw() and additive seasonality applied to the training data. Assign this to fchw. Produce seasonal naive forecasts for the same period. Use the appropriate function, introduced in a previous chapter, and assign this to fcsn. Which is the better of the two forecasts based on RMSE? Use the accuracy() function to determine this. Produce time plots of these forecasts.
 
 ```{r}
 # Create training data with subset()
@@ -539,10 +526,9 @@ fchw <- hw(train, seasonal = "additive", h = 28)
 fcsn <- snaive(train, h = 28)
 
 # Find better forecasts with accuracy()
-accuracy(fchw, hyndsight)
-accuracy(fcsn, hyndsight)
+#accuracy(fchw, hyndsight)
+#accuracy(fcsn, hyndsight)
 
 # Plot the better forecasts
 autoplot(fchw)
 ```
-

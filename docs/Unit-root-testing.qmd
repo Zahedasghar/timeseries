@@ -44,7 +44,10 @@ knitr::opts_chunk$set(echo=T,
                       warning=F)
 ```
 
-## Unit Roots Tests
+# Unit Roots Tests {background-color="#CA225E"}
+
+
+## Unit Roots Tests 
 
 ### How do you find out if a series is stationary or not?
 
@@ -378,3 +381,94 @@ You can determine the values of $p_i$ to ensure that the autocorrelations of $\e
 The example above illustrates a common technique to correct for correlation across equations. As in the example, you can subtract a common time effect from each observation. However, there is no assurance that this correction will completely eliminate the correlation. Moreover, it is quite possible that  is nonstationary. Subtracting a nonstationary component from each sequence is clearly at odds with the notion that the variables are stationary. 
 
 
+
+# Train and evaluate models {background-color="#CA225E"}
+
+## Why tidymodels? 
+
+## Why tidymodels?  *Consistency*
+
+. . .
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+With `lm()`:
+
+```{r eng-lm-model}
+#| echo: true
+#| eval: false
+model <- 
+  lm(mpg ~ ., mtcars)
+
+```
+
+:::
+
+::: {.column width="50%"}
+
+With tidymodels:
+
+```{r tm-lm}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "|3"
+model <-
+  linear_reg() %>%
+  set_engine("lm") %>%
+  fit(mpg ~ ., mtcars)
+```
+
+
+:::
+
+::::
+
+## Why tidymodels?  *Consistency*
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+With glmnet:
+
+```{r eng-glmnet-model}
+#| echo: true
+#| eval: false
+model <- 
+  glmnet(
+    as.matrix(mtcars[2:11]),
+    mtcars$mpg
+  )
+```
+
+:::
+
+::: {.column width="50%"}
+
+With tidymodels:
+
+```{r tm-glmnet}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "3||3"
+model <-
+  linear_reg() %>%
+  set_engine("glmnet") %>%
+  fit(mpg ~ ., mtcars)
+```
+
+
+:::
+
+::::
+
+
+## Slide with a pause
+
+content before the pause
+
+. . .
+
+content after the pause

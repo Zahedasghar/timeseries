@@ -6,6 +6,10 @@ date-format: "DD-MM-YYYY"
 format: 
   revealjs:
     theme: [default, custom.css,styles.scss]
+    toc: true
+    code-fold: true
+    
+    keep-md: false
     chalkboard: true
     slide-number: c/t
 execute: 
@@ -317,7 +321,8 @@ find that $y$ is stationary
 
 [Note]{style=color:blue;}: critical values for the $t-statistics$ of $b$ will vary depending on whether intercept, trend are included. 
 
-- - - 
+- - -  
+
 Some terminology
 
 -   Order of integration: number of times a series $y$ must be differenced to become stationary 

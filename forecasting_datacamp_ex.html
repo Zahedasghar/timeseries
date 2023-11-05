@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.299">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Zahid Asghar and     School of Economics    Quaid-i-Azam University, Islamabad">
+<meta name="dcterms.date" content="2023-10-22">
+
+<title>Forecasting in R</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="forecasting_datacamp_ex_files/libs/clipboard/clipboard.min.js"></script>
+<script src="forecasting_datacamp_ex_files/libs/quarto-html/quarto.js"></script>
+<script src="forecasting_datacamp_ex_files/libs/quarto-html/popper.min.js"></script>
+<script src="forecasting_datacamp_ex_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="forecasting_datacamp_ex_files/libs/quarto-html/anchor.min.js"></script>
+<link href="forecasting_datacamp_ex_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="forecasting_datacamp_ex_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="forecasting_datacamp_ex_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="forecasting_datacamp_ex_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="forecasting_datacamp_ex_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#forecasting-in-r" id="toc-forecasting-in-r" class="nav-link active" data-scroll-target="#forecasting-in-r">Forecasting in R</a></li>
+  <li><a href="#seasonal-plots" id="toc-seasonal-plots" class="nav-link" data-scroll-target="#seasonal-plots">Seasonal plots</a>
+  <ul class="collapse">
+  <li><a href="#instructions" id="toc-instructions" class="nav-link" data-scroll-target="#instructions">Instructions</a></li>
+  </ul></li>
+  <li><a href="#autocorrelation-of-non-seasonal-time-series" id="toc-autocorrelation-of-non-seasonal-time-series" class="nav-link" data-scroll-target="#autocorrelation-of-non-seasonal-time-series">Autocorrelation of non-seasonal time series</a>
+  <ul class="collapse">
+  <li><a href="#instructions-1" id="toc-instructions-1" class="nav-link" data-scroll-target="#instructions-1">Instructions</a></li>
+  </ul></li>
+  <li><a href="#autocorrelation-of-seasonal-and-cyclic-time-series" id="toc-autocorrelation-of-seasonal-and-cyclic-time-series" class="nav-link" data-scroll-target="#autocorrelation-of-seasonal-and-cyclic-time-series">Autocorrelation of seasonal and cyclic time series</a>
+  <ul class="collapse">
+  <li><a href="#instructions-2" id="toc-instructions-2" class="nav-link" data-scroll-target="#instructions-2">Instructions</a></li>
+  </ul></li>
+  <li><a href="#concept-of-white-noise-stock-market-data" id="toc-concept-of-white-noise-stock-market-data" class="nav-link" data-scroll-target="#concept-of-white-noise-stock-market-data">Concept of white noise : Stock Market Data</a>
+  <ul class="collapse">
+  <li><a href="#instructions-3" id="toc-instructions-3" class="nav-link" data-scroll-target="#instructions-3">Instructions</a></li>
+  </ul></li>
+  <li><a href="#naive-forecasting-methods" id="toc-naive-forecasting-methods" class="nav-link" data-scroll-target="#naive-forecasting-methods">Naive forecasting methods</a></li>
+  <li><a href="#instructions-4" id="toc-instructions-4" class="nav-link" data-scroll-target="#instructions-4">Instructions</a></li>
+  <li><a href="#checking-time-series-residuals" id="toc-checking-time-series-residuals" class="nav-link" data-scroll-target="#checking-time-series-residuals">Checking time series residuals</a>
+  <ul class="collapse">
+  <li><a href="#instructions-5" id="toc-instructions-5" class="nav-link" data-scroll-target="#instructions-5">Instructions</a></li>
+  </ul></li>
+  <li><a href="#evaluating-forecast-accuracy-of-non-seasonal-methods" id="toc-evaluating-forecast-accuracy-of-non-seasonal-methods" class="nav-link" data-scroll-target="#evaluating-forecast-accuracy-of-non-seasonal-methods">Evaluating forecast accuracy of non-seasonal methods</a>
+  <ul class="collapse">
+  <li><a href="#instructions-6" id="toc-instructions-6" class="nav-link" data-scroll-target="#instructions-6">Instructions</a></li>
+  </ul></li>
+  <li><a href="#evaluating-forecast-accuracy-of-seasonal-methods" id="toc-evaluating-forecast-accuracy-of-seasonal-methods" class="nav-link" data-scroll-target="#evaluating-forecast-accuracy-of-seasonal-methods">Evaluating forecast accuracy of seasonal methods</a>
+  <ul class="collapse">
+  <li><a href="#instructions-7" id="toc-instructions-7" class="nav-link" data-scroll-target="#instructions-7">Instructions</a></li>
+  </ul></li>
+  <li><a href="#using-tscv-for-time-series-cross-validation" id="toc-using-tscv-for-time-series-cross-validation" class="nav-link" data-scroll-target="#using-tscv-for-time-series-cross-validation">Using tsCV() for time series cross-validation</a>
+  <ul class="collapse">
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
+  </ul></li>
+  <li><a href="#simple-exponential-smoothing" id="toc-simple-exponential-smoothing" class="nav-link" data-scroll-target="#simple-exponential-smoothing">Simple exponential smoothing</a>
+  <ul class="collapse">
+  <li><a href="#instructions-8" id="toc-instructions-8" class="nav-link" data-scroll-target="#instructions-8">Instructions</a></li>
+  </ul></li>
+  <li><a href="#ses-vs-naive" id="toc-ses-vs-naive" class="nav-link" data-scroll-target="#ses-vs-naive">SES vs naive</a>
+  <ul class="collapse">
+  <li><a href="#instructions-9" id="toc-instructions-9" class="nav-link" data-scroll-target="#instructions-9">Instructions</a></li>
+  </ul></li>
+  <li><a href="#holts-trend-methods" id="toc-holts-trend-methods" class="nav-link" data-scroll-target="#holts-trend-methods">Holt’s trend methods</a>
+  <ul class="collapse">
+  <li><a href="#instructions-10" id="toc-instructions-10" class="nav-link" data-scroll-target="#instructions-10">Instructions</a></li>
+  </ul></li>
+  <li><a href="#holt-winters-with-monthly-data" id="toc-holt-winters-with-monthly-data" class="nav-link" data-scroll-target="#holt-winters-with-monthly-data">Holt-Winters with monthly data</a></li>
+  <li><a href="#instructions-11" id="toc-instructions-11" class="nav-link" data-scroll-target="#instructions-11">Instructions</a>
+  <ul class="collapse">
+  <li><a href="#solution" id="toc-solution" class="nav-link" data-scroll-target="#solution">Solution</a></li>
+  </ul></li>
+  <li><a href="#holt-winters-method-with-daily-data" id="toc-holt-winters-method-with-daily-data" class="nav-link" data-scroll-target="#holt-winters-method-with-daily-data">Holt-Winters method with daily data</a></li>
+  <li><a href="#instructions-12" id="toc-instructions-12" class="nav-link" data-scroll-target="#instructions-12">Instructions</a>
+  <ul class="collapse">
+  <li><a href="#solution-1" id="toc-solution-1" class="nav-link" data-scroll-target="#solution-1">Solution</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Forecasting in R</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p><em>Zahid Asghar and <br> <br> School of Economics <br><br> Quaid-i-Azam University, Islamabad</em> </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 22, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="forecasting-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="forecasting-in-r">Forecasting in R</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the data from Excel into R</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>mydata <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"exercise1.xlsx"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Look at the first few lines of mydata</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mydata)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a ts object called myts</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>myts <span class="ot">&lt;-</span> <span class="fu">ts</span>(mydata[,<span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>], <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1981</span>, <span class="dv">1</span>), <span class="at">frequency =</span> <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<ul>
+<li><p>lot the data you stored as <code>myts</code> using <code>autoplot()</code> with facetting.</p></li>
+<li><p>Plot the same data without facetting by setting the appropriate argument to <code>FALSE</code>. What happens?</p></li>
+<li><p>Plot the <code>gold</code>, <code>woolyrnq</code>, and <code>gas</code> time series in separate plots.</p></li>
+<li><p>Use <code>which.max()</code> to spot the outlier in the <code>gold</code> series. Which observation was it?</p></li>
+<li><p>Apply the <code>frequency()</code> function to each commodity to get the number of observations per unit time. This would return 52 for weekly data, for example.</p></li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fpp2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'fpp2' was built under R version 4.3.1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Registered S3 method overwritten by 'quantmod':
+  method            from
+  as.zoo.data.frame zoo </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching packages ────────────────────────────────────────────── fpp2 2.5 ──</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ ggplot2   3.4.3     ✔ fma       2.5  
+✔ forecast  8.21      ✔ expsmooth 2.3  </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'ggplot2' was built under R version 4.3.1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'fma' was built under R version 4.3.1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'expsmooth' was built under R version 4.3.1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fpp3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching packages ────────────────────────────────────────────── fpp3 0.5 ──</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ tibble      3.2.1     ✔ tsibbledata 0.4.1
+✔ dplyr       1.1.2     ✔ feasts      0.3.1
+✔ tidyr       1.3.0     ✔ fable       0.3.3
+✔ lubridate   1.9.2     ✔ fabletools  0.3.3
+✔ tsibble     1.1.3     </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'fabletools' was built under R version 4.3.1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Conflicts ───────────────────────────────────────────────── fpp3_conflicts ──
+✖ lubridate::date()    masks base::date()
+✖ dplyr::filter()      masks stats::filter()
+✖ tsibble::intersect() masks base::intersect()
+✖ tsibble::interval()  masks lubridate::interval()
+✖ dplyr::lag()         masks stats::lag()
+✖ tsibble::setdiff()   masks base::setdiff()
+✖ tsibble::union()     masks base::union()</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'fpp3'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:fpp2':
+
+    insurance</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the data with facetting</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co">#autoplot(myts, facets = TRUE)</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the data without facetting</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co">#autoplot(myts,facets=FALSE)</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the three series</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(gold)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(woolyrnq)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-2-2.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(gas)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-2-3.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the outlier in the gold series</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>goldoutlier <span class="ot">&lt;-</span> <span class="fu">which.max</span>(gold)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Look at the seasonal frequencies of the three series</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="fu">frequency</span>(gold)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">frequency</span>(woolyrnq)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">frequency</span>(gas)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 12</code></pre>
+</div>
+</div>
+</section>
+<section id="seasonal-plots" class="level2">
+<h2 class="anchored" data-anchor-id="seasonal-plots">Seasonal plots</h2>
+<p>Along with time plots, there are other useful ways of plotting data to emphasize seasonal patterns and show changes in these patterns over time.</p>
+<p>A seasonal plot is similar to a time plot except that the data are plotted against the individual “seasons” in which the data were observed. You can create one using the ggseasonplot() function the same way you do with autoplot(). An interesting variant of a season plot uses polar coordinates, where the time axis is circular rather than horizontal; to make one, simply add a polar argument and set it to TRUE. A subseries plot comprises mini time plots for each season. Here, the mean for each season is shown as a blue horizontal line. One way of splitting a time series is by using the window() function, which extracts a subset from the object x observed between the times start and end.</p>
+<blockquote class="blockquote">
+<p>window(x, start = NULL, end = NULL) In this exercise, you will load the fpp2 package and use two of its datasets:</p>
+</blockquote>
+<p>a10 contains monthly sales volumes for anti-diabetic drugs in Australia. In the plots, can you see which month has the highest sales volume each year? What is unusual about the results in March and April 2008? ausbeer which contains quarterly beer production for Australia. What is happening to the beer production in Quarter 4? These examples will help you to visualize these plots and understand how they can be useful.</p>
+<section id="instructions" class="level3">
+<h3 class="anchored" data-anchor-id="instructions">Instructions</h3>
+<p>Use library() to load the fpp2 package. Use autoplot() and ggseasonplot() to produce plots of the a10 data. Use the ggseasonplot() function and its polar argument to produce a polar coordinate plot for the a10 data. Use the window() function to consider only the ausbeer data starting from 1992. Finally, use autoplot() and ggsubseriesplot() to produce plots of the beer series.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the fpp2 package</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fpp2)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create plots of the a10 data</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(a10)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggseasonplot</span>(a10)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-3-2.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce a polar coordinate season plot for the a10 data</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggseasonplot</span>(a10, <span class="at">polar =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-3-3.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Restrict the ausbeer data to start in 1992</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>beer <span class="ot">&lt;-</span> <span class="fu">window</span>(ausbeer,<span class="at">start=</span> <span class="dv">1992</span>)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Make plots of the beer data</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(beer)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-3-4.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsubseriesplot</span>(beer)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-3-5.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="autocorrelation-of-non-seasonal-time-series" class="level2">
+<h2 class="anchored" data-anchor-id="autocorrelation-of-non-seasonal-time-series">Autocorrelation of non-seasonal time series</h2>
+<p>Another way to look at time series data is to plot each observation against another observation that occurred some time previously by using gglagplot(). For example, you could plot against . This is called a lag plot because you are plotting the time series against lags of itself.</p>
+<p>The correlations associated with the lag plots form what is called the autocorrelation function (ACF). The ggAcf() function produces ACF plots.</p>
+<p>In this exercise, you will work with the pre-loaded oil data (available in the package fpp2), which contains the annual oil production in Saudi Arabia from 1965-2013 (measured in millions of tons).</p>
+<section id="instructions-1" class="level3">
+<h3 class="anchored" data-anchor-id="instructions-1">Instructions</h3>
+<p>Use the autoplot() function to plot the oil data. For the oil data, plot the relationship between <span class="math inline">\(y_t\)</span> and <span class="math inline">\(y_{t-1}, k=1,\dots,9\)</span> using one of the two functions introduced above. Look at how the relationships change as the lag increases. Likewise, plot the correlations associated with each of the lag plots using the other appropriate new function.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create an autoplot of the oil data</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(oil)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a lag plot of the oil data</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">gglagplot</span>(oil,<span class="at">lag=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in 1:lags: numerical expression has 9 elements: only the first used</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-4-2.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create an ACF plot of the oil data</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggAcf</span>(oil)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-4-3.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="autocorrelation-of-seasonal-and-cyclic-time-series" class="level2">
+<h2 class="anchored" data-anchor-id="autocorrelation-of-seasonal-and-cyclic-time-series">Autocorrelation of seasonal and cyclic time series</h2>
+<p>When data are either seasonal or cyclic, the ACF will peak around the seasonal lags or at the average cycle length.</p>
+<p>You will investigate this phenomenon by plotting the annual sunspot series (which follows the solar cycle of approximately 10-11 years) in sunspot.year and the daily traffic to the Hyndsight blog (which follows a 7-day weekly pattern) in hyndsight. Both objects have been loaded into your workspace.</p>
+<section id="instructions-2" class="level3">
+<h3 class="anchored" data-anchor-id="instructions-2">Instructions</h3>
+<p>Produce a time plot and ACF plot of sunspot.year. By observing the ACF plot, at which lag value (x) can you find the maximum autocorrelation (y)? Set this equal to maxlag_sunspot. Produce a time plot and ACF plot of hyndsight. By observing the ACF plot, at which lag value (x) can you find the maximum autocorrelation (y)? Set this equal to maxlag_hyndsight.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the annual sunspot numbers</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(sunspot.year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggAcf</span>(sunspot.year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-5-2.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the lag corresponding to maximum autocorrelation</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>maxlag_sunspot <span class="ot">&lt;-</span> <span class="fu">lag</span>(<span class="dv">1</span>)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the traffic on the Hyndsight blog</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(hyndsight)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-5-3.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggAcf</span>(hyndsight)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-5-4.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the lag corresponding to maximum autocorrelation</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>maxlag_hyndsight <span class="ot">&lt;-</span> <span class="fu">lag</span>(<span class="dv">7</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Possible Answers</p>
+<p>1-B, 2-C, 3-D, 4-A</p>
+<p>1-B, 2-A, 3-D, 4-C (correct)</p>
+<p>1-C, 2-D, 3-B, 4-A</p>
+<p>1-A, 2-C, 3-D, 4-B</p>
+<p>1-C, 2-A, 3-D, 4-B</p>
+<p><img src="series_acf.png" class="img-fluid"></p>
+</section>
+</section>
+<section id="concept-of-white-noise-stock-market-data" class="level2">
+<h2 class="anchored" data-anchor-id="concept-of-white-noise-stock-market-data">Concept of white noise : Stock Market Data</h2>
+<p>As you learned in the video, white noise is a term that describes purely random data. You can conduct a Ljung-Box test using the function below to confirm the randomness of a series; a p-value greater than 0.05 suggests that the data are not significantly different from white noise.</p>
+<blockquote class="blockquote">
+<p>Box.test(pigs, lag = 24, fitdf = 0, type = “Ljung”) There is a well-known result in economics called the “Efficient Market Hypothesis” that states that asset prices reflect all available information. A consequence of this is that the daily changes in stock prices should behave like white noise (ignoring dividends, interest rates and transaction costs). The consequence for forecasters is that the best forecast of the future price is the current price.</p>
+</blockquote>
+<p>You can test this hypothesis by looking at the goog series, which contains the closing stock price for Google over 1000 trading days ending on February 13, 2017. This data has been loaded into your workspace.</p>
+<section id="instructions-3" class="level3">
+<h3 class="anchored" data-anchor-id="instructions-3">Instructions</h3>
+<p>First plot the goog series using autoplot(). Using the diff() function with autoplot(), plot the daily changes in Google stock prices. Use the ggAcf() function to check if these daily changes look like white noise. Fill in the pre-written code to do a Ljung-Box test on the daily changes using 10 lags.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the original series</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(goog)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the differenced series</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(<span class="fu">diff</span>(goog))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-6-2.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ACF of the differenced series</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggAcf</span>(<span class="fu">diff</span>(goog))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-6-3.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ljung-Box test of the differenced series</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Box.test</span>(<span class="fu">diff</span>(goog), <span class="at">lag =</span> <span class="dv">10</span>, <span class="at">type =</span> <span class="st">"Ljung"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Box-Ljung test
+
+data:  diff(goog)
+X-squared = 13.123, df = 10, p-value = 0.2169</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="naive-forecasting-methods" class="level2">
+<h2 class="anchored" data-anchor-id="naive-forecasting-methods">Naive forecasting methods</h2>
+<p>As you learned in the video, a forecast is the mean or median of simulated futures of a time series.</p>
+<p>The very simplest forecasting method is to use the most recent observation; this is called a naive forecast and can be implemented in a namesake function. This is the best that can be done for many time series including most stock price data, and even if it is not a good forecasting method, it provides a useful benchmark for other forecasting methods.</p>
+<p>For seasonal data, a related idea is to use the corresponding season from the last year of data. For example, if you want to forecast the sales volume for next March, you would use the sales volume from the previous March. This is implemented in the snaive() function, meaning, seasonal naive.</p>
+<p>For both forecasting methods, you can set the second argument h, which specifies the number of values you want to forecast; as shown in the code below, they have different default values. The resulting output is an object of class forecast. This is the core class of objects in the forecast package, and there are many functions for dealing with them including summary() and autoplot().</p>
+<p>naive(y, h = 10) snaive(y, h = 2 * frequency(x)) You will try these two functions on the goog series and ausbeer series, respectively. These are available to use in your workspace.</p>
+</section>
+<section id="instructions-4" class="level2">
+<h2 class="anchored" data-anchor-id="instructions-4">Instructions</h2>
+<p>Use naive() to forecast the next 20 values of the goog series, and save this to fcgoog. Plot and summarize the forecasts using autoplot() and summary(). Use snaive() to forecast the next 16 values of the ausbeer series, and save this to fcbeer. Plot and summarize the forecasts for fcbeer the same way you did for fcgoog.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use naive() to forecast the goog series</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>fcgoog <span class="ot">&lt;-</span> <span class="fu">naive</span>(goog,<span class="at">h=</span><span class="dv">20</span>)</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot and summarize the forecasts</span></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(fcgoog)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fcgoog)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Forecast method: Naive method
+
+Model Information:
+Call: naive(y = goog, h = 20) 
+
+Residual sd: 8.7343 
+
+Error measures:
+                    ME     RMSE      MAE        MPE      MAPE MASE       ACF1
+Training set 0.4212612 8.734286 5.829407 0.06253998 0.9741428    1 0.03871446
+
+Forecasts:
+     Point Forecast    Lo 80    Hi 80    Lo 95    Hi 95
+1001         813.67 802.4765 824.8634 796.5511 830.7889
+1002         813.67 797.8401 829.4999 789.4602 837.8797
+1003         813.67 794.2824 833.0576 784.0192 843.3208
+1004         813.67 791.2831 836.0569 779.4322 847.9078
+1005         813.67 788.6407 838.6993 775.3910 851.9490
+1006         813.67 786.2518 841.0882 771.7374 855.6025
+1007         813.67 784.0549 843.2850 768.3777 858.9623
+1008         813.67 782.0102 845.3298 765.2505 862.0895
+1009         813.67 780.0897 847.2503 762.3133 865.0266
+1010         813.67 778.2732 849.0667 759.5353 867.8047
+1011         813.67 776.5456 850.7944 756.8931 870.4469
+1012         813.67 774.8948 852.4452 754.3684 872.9715
+1013         813.67 773.3115 854.0285 751.9470 875.3930
+1014         813.67 771.7880 855.5520 749.6170 877.7230
+1015         813.67 770.3180 857.0220 747.3688 879.9711
+1016         813.67 768.8962 858.4437 745.1944 882.1455
+1017         813.67 767.5183 859.8217 743.0870 884.2530
+1018         813.67 766.1802 861.1597 741.0407 886.2993
+1019         813.67 764.8789 862.4610 739.0505 888.2895
+1020         813.67 763.6114 863.7286 737.1120 890.2280</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use snaive() to forecast the ausbeer series</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>fcbeer <span class="ot">&lt;-</span> <span class="fu">snaive</span>(ausbeer,<span class="at">h=</span><span class="dv">16</span>)</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot and summarize the forecasts</span></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(fcbeer)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-7-2.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fcbeer)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Forecast method: Seasonal naive method
+
+Model Information:
+Call: snaive(y = ausbeer, h = 16) 
+
+Residual sd: 19.3259 
+
+Error measures:
+                   ME     RMSE      MAE      MPE    MAPE MASE       ACF1
+Training set 3.098131 19.32591 15.50935 0.838741 3.69567    1 0.01093868
+
+Forecasts:
+        Point Forecast    Lo 80    Hi 80    Lo 95    Hi 95
+2010 Q3            419 394.2329 443.7671 381.1219 456.8781
+2010 Q4            488 463.2329 512.7671 450.1219 525.8781
+2011 Q1            414 389.2329 438.7671 376.1219 451.8781
+2011 Q2            374 349.2329 398.7671 336.1219 411.8781
+2011 Q3            419 383.9740 454.0260 365.4323 472.5677
+2011 Q4            488 452.9740 523.0260 434.4323 541.5677
+2012 Q1            414 378.9740 449.0260 360.4323 467.5677
+2012 Q2            374 338.9740 409.0260 320.4323 427.5677
+2012 Q3            419 376.1020 461.8980 353.3932 484.6068
+2012 Q4            488 445.1020 530.8980 422.3932 553.6068
+2013 Q1            414 371.1020 456.8980 348.3932 479.6068
+2013 Q2            374 331.1020 416.8980 308.3932 439.6068
+2013 Q3            419 369.4657 468.5343 343.2438 494.7562
+2013 Q4            488 438.4657 537.5343 412.2438 563.7562
+2014 Q1            414 364.4657 463.5343 338.2438 489.7562
+2014 Q2            374 324.4657 423.5343 298.2438 449.7562</code></pre>
+</div>
+</div>
+</section>
+<section id="checking-time-series-residuals" class="level2">
+<h2 class="anchored" data-anchor-id="checking-time-series-residuals">Checking time series residuals</h2>
+<p>When applying a forecasting method, it is important to always check that the residuals are well-behaved (i.e., no outliers or patterns) and resemble white noise. The prediction intervals are computed assuming that the residuals are also normally distributed. You can use the checkresiduals() function to verify these characteristics; it will give the results of a Ljung-Box test.</p>
+<p>You haven’t used the pipe function (%&gt;%) so far, but this is a good opportunity to introduce it. When there are many nested functions, pipe functions make the code much easier to read. To be consistent, always follow a function with parentheses to differentiate it from other objects, even if it has no arguments. An example is below:</p>
+<blockquote class="blockquote">
+<p>function(foo) # These two foo %&gt;% function() # are the same!</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>foo %&gt;% function # Inconsistent In this exercise, you will test the above functions on the forecasts equivalent to what you produced in the previous exercise (fcgoog obtained after applying naive() to goog, and fcbeer obtained after applying snaive() to ausbeer).</p>
+</blockquote>
+<section id="instructions-5" class="level3">
+<h3 class="anchored" data-anchor-id="instructions-5">Instructions</h3>
+<p>Using the above pipe function, run checkresiduals() on a forecast equivalent to fcgoog. Based on this Ljung-Box test results, do the residuals resemble white noise? Assign googwn to either TRUE or FALSE. Using a similar pipe function, run checkresiduals() on a forecast equivalent to fcbeer. Based on this Ljung-Box test results, do the residuals resemble white noise? Assign beerwn to either TRUE or FALSE.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the residuals from the naive forecasts applied to the goog series</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>goog <span class="sc">%&gt;%</span> <span class="fu">naive</span>() <span class="sc">%&gt;%</span> <span class="fu">checkresiduals</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Ljung-Box test
+
+data:  Residuals from Naive method
+Q* = 13.123, df = 10, p-value = 0.2169
+
+Model df: 0.   Total lags used: 10</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Do they look like white noise (TRUE or FALSE)</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>googwn <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the residuals from the seasonal naive forecasts applied to the ausbeer series</span></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>fcbeer<span class="ot">&lt;-</span>ausbeer <span class="sc">%&gt;%</span> <span class="fu">snaive</span>()<span class="sc">%&gt;%</span> checkresiduals</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Ljung-Box test
+
+data:  Residuals from Seasonal naive method
+Q* = 60.535, df = 8, p-value = 3.661e-10
+
+Model df: 0.   Total lags used: 8</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Do they look like white noise (TRUE or FALSE)</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>beerwn <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="evaluating-forecast-accuracy-of-non-seasonal-methods" class="level2">
+<h2 class="anchored" data-anchor-id="evaluating-forecast-accuracy-of-non-seasonal-methods">Evaluating forecast accuracy of non-seasonal methods</h2>
+<p>In data science, a training set is a data set that is used to discover possible relationships. A test set is a data set that is used to verify the strength of these potential relationships. When you separate a data set into these parts, you generally allocate more of the data for training, and less for testing.</p>
+<p>One function that can be used to create training and test sets is subset.ts(), which returns a subset of a time series where the optional start and end arguments are specified using index values.</p>
+<blockquote class="blockquote">
+<h1 id="x-is-a-numerical-vector-or-time-series">x is a numerical vector or time series</h1>
+<h1 id="to-subset-observations-from-101-to-500">To subset observations from 101 to 500</h1>
+<p>train &lt;- subset(x, start = 101, end = 500, …)</p>
+</blockquote>
+<blockquote class="blockquote">
+<h1 id="to-subset-the-first-500-observations">To subset the first 500 observations</h1>
+<p>train &lt;- subset(x, end = 500, …) As you saw in the video, another function, accuracy(), computes various forecast accuracy statistics given the forecasts and the corresponding actual observations. It is smart enough to find the relevant observations if you give it more than the ones you are forecasting.</p>
+</blockquote>
+<blockquote class="blockquote">
+<h1 id="f-is-an-object-of-class-forecast">f is an object of class “forecast”</h1>
+<h1 id="x-is-a-numerical-vector-or-time-series-1">x is a numerical vector or time series</h1>
+<p>accuracy(f, x, …) The accuracy measures provided include root mean squared error (RMSE) which is the square root of the mean squared error (MSE). Minimizing RMSE, which corresponds with increasing accuracy, is the same as minimizing MSE.</p>
+</blockquote>
+<p>The pre-loaded time series gold comprises daily gold prices for 1108 days. Here, you’ll use the first 1000 days as a training set, and compute forecasts for the remaining 108 days. These will be compared to the actual values for these days using the simple forcasting functions naive(), which you used earlier in this chapter, and meanf(), which gives forecasts equal to the mean of all observations. You’ll have to specify the keyword h (which specifies the number of values you want to forecast) for both.</p>
+<section id="instructions-6" class="level3">
+<h3 class="anchored" data-anchor-id="instructions-6">Instructions</h3>
+<p>Use subset() to create a training set for gold comprising the first 1000 observations. This will be called train. Compute forecasts of the test set, containing the remaining data, using naive() and assign this to naive_fc. Set h accordingly. Now, compute forecasts of the same test set using meanf() and assign this to mean_fc. Set h accordingly. Compare the forecast accuracy statistics of the two methods using the accuracy() function. Based on the above results, store the forecasts with the higher accuracy as bestforecasts.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("remotes")</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="co">#remotes::install_github("robjhyndman/forecast")</span></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the training data as train</span></span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> <span class="fu">subset</span>(gold, <span class="at">end =</span> <span class="dv">1000</span>)</span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute naive forecasts and save to naive_fc</span></span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>naive_fc <span class="ot">&lt;-</span> <span class="fu">naive</span>(train, <span class="at">h =</span> <span class="dv">108</span>)</span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute mean forecasts and save to mean_fc</span></span>
+<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>mean_fc <span class="ot">&lt;-</span> <span class="fu">meanf</span>(train, <span class="at">h =</span> <span class="dv">108</span>)</span>
+<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Use accuracy() to compute RMSE statistics</span></span>
+<span id="cb57-15"><a href="#cb57-15" aria-hidden="true" tabindex="-1"></a><span class="co">#accuracy(naive_fc, gold)</span></span>
+<span id="cb57-16"><a href="#cb57-16" aria-hidden="true" tabindex="-1"></a><span class="co">#accuracy(mean_fc, gold)</span></span>
+<span id="cb57-17"><a href="#cb57-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-18"><a href="#cb57-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Assign one of the two forecasts as bestforecasts</span></span>
+<span id="cb57-19"><a href="#cb57-19" aria-hidden="true" tabindex="-1"></a>bestforecasts <span class="ot">&lt;-</span> naive_fc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="evaluating-forecast-accuracy-of-seasonal-methods" class="level2">
+<h2 class="anchored" data-anchor-id="evaluating-forecast-accuracy-of-seasonal-methods">Evaluating forecast accuracy of seasonal methods</h2>
+<p>As you learned in the first chapter, the window() function specifies the start and end of a time series using the relevant times rather than the index values. Either of those two arguments can be formatted as a vector like c(year, period) which you have also previously used as an argument for ts(). Again, period refers to quarter here.</p>
+<p>Here, you will use the Melbourne quarterly visitor numbers (vn[, “Melbourne”]) to create three different training sets, omitting the last 1, 2 and 3 years, respectively. Inspect the pre-loaded vn data in your console before beginning the exercise; this will help you determine the correct value to use for the keyword h (which specifies the number of values you want to forecast) in your forecasting methods.</p>
+<p>Then for each training set, compute the next year of data, and finally compare the mean absolute percentage error (MAPE) of the forecasts using accuracy(). Why do you think that the MAPE vary so much?</p>
+<section id="instructions-7" class="level3">
+<h3 class="anchored" data-anchor-id="instructions-7">Instructions</h3>
+<p>Use window() to create three training sets from vn[,“Melbourne”], omitting the last 1, 2 and 3 years; call these train1, train2, and train3, respectively. Set the end keyword accordingly. Compute one year of forecasts for each training set using the snaive() method. Call these fc1, fc2, and fc3, respectively. Following the structure of the sample code, compare the MAPE of the three sets of forecasts using the accuracy() function as your test set.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create three training series omitting the last 1, 2, and 3 years</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>train1 <span class="ot">&lt;-</span> <span class="fu">window</span>(vn[, <span class="st">"Melbourne"</span>], <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2014</span>, <span class="dv">4</span>))</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>train2 <span class="ot">&lt;-</span> <span class="fu">window</span>(vn[, <span class="st">"Melbourne"</span>], <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2013</span>, <span class="dv">4</span>))</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>train3 <span class="ot">&lt;-</span> <span class="fu">window</span>(vn[, <span class="st">"Melbourne"</span>], <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce forecasts using snaive()</span></span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>fc1 <span class="ot">&lt;-</span> <span class="fu">snaive</span>(train1, <span class="at">h =</span> <span class="dv">4</span>)</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>fc2 <span class="ot">&lt;-</span> <span class="fu">snaive</span>(train2, <span class="at">h =</span> <span class="dv">4</span>)</span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>fc3 <span class="ot">&lt;-</span> <span class="fu">snaive</span>(train3, <span class="at">h =</span> <span class="dv">4</span>)</span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Use accuracy() to compare the MAPE of each series</span></span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a><span class="co">#accuracy(fc1, vn[, "Melbourne"])["Test set", "MAPE"]</span></span>
+<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a><span class="co">#accuracy(fc2, vn[, "Melbourne"])["Test set", "MAPE"]</span></span>
+<span id="cb58-14"><a href="#cb58-14" aria-hidden="true" tabindex="-1"></a><span class="fu">accuracy</span>(fc3, vn[, <span class="st">"Melbourne"</span>])[<span class="st">"Test set"</span>, <span class="st">"MAPE"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="using-tscv-for-time-series-cross-validation" class="level2">
+<h2 class="anchored" data-anchor-id="using-tscv-for-time-series-cross-validation">Using tsCV() for time series cross-validation</h2>
+<p>The tsCV() function computes time series cross-validation errors. It requires you to specify the time series, the forecast method, and the forecast horizon. Here is the example used in the video:</p>
+<blockquote class="blockquote">
+<p>e = tsCV(oil, forecastfunction = naive, h = 1) Here, you will use tsCV() to compute and plot the MSE values for up to 8 steps ahead, along with the naive() method applied to the goog data. The exercise uses ggplot2 graphics which you may not be familiar with, but we have provided enough of the code so you can work out the rest.</p>
+</blockquote>
+<p>Be sure to reference the slides on tsCV() in the lecture. The goog data has been loaded into your workspace.</p>
+<section id="introduction" class="level3">
+<h3 class="anchored" data-anchor-id="introduction">Introduction</h3>
+<p>Using the goog data and forecasting with the naive() function, compute the cross-validated errors for up to 8 steps ahead. Assign this to e. Compute the MSE values for each forecast horizon and remove missing values in e by specifying the second argument. The expression for calculating MSE has been provided. Plot the resulting MSE values (y) against the forecast horizon (x). Think through your knowledge of functions. If MSE = mse is provided in the list of function arguments, then mse should refer to an object that exists in your workspace outside the function, whereas MSE is the variable that you refers to this object within your function.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute cross-validated errors for up to 8 steps ahead</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>e <span class="ot">&lt;-</span> <span class="fu">tsCV</span>(goog, <span class="at">forecastfunction =</span> naive, <span class="at">h =</span> <span class="dv">8</span>)</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the MSE values and remove missing values</span></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>mse <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(e<span class="sc">^</span><span class="dv">2</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the MSE values against the forecast horizon</span></span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">h =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>, <span class="at">MSE =</span> mse) <span class="sc">%&gt;%</span></span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> h, <span class="at">y =</span> MSE)) <span class="sc">+</span> <span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="simple-exponential-smoothing" class="level2">
+<h2 class="anchored" data-anchor-id="simple-exponential-smoothing">Simple exponential smoothing</h2>
+<p>The ses() function produces forecasts obtained using simple exponential smoothing (SES). The parameters are estimated using least squares estimation. All you need to specify is the time series and the forecast horizon; the default forecast time is h = 10 years.</p>
+<blockquote class="blockquote">
+<p>args(ses) function (y, h = 10, …)</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>fc &lt;- ses(oildata, h = 5) summary(fc) You will also use summary() and fitted(), along with autolayer() for the first time, which is like autoplot() but it adds a “layer” to a plot rather than creating a new plot.</p>
+</blockquote>
+<p>Here, you will apply these functions to marathon, the annual winning times in the Boston marathon from 1897-2016. The data are available in your workspace.</p>
+<section id="instructions-8" class="level3">
+<h3 class="anchored" data-anchor-id="instructions-8">Instructions</h3>
+<p>Use the ses() function to forecast the next 10 years of winning times. Use the summary() function to see the model parameters and other information. Use the autoplot() function to plot the forecasts. Add the one-step forecasts for the training data, or fitted values, to the plot using fitted() and autolayer().</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use ses() to forecast the next 10 years of winning times</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>fc <span class="ot">&lt;-</span> <span class="fu">ses</span>(marathon, <span class="at">h =</span> <span class="dv">10</span>)</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Use summary() to see the model parameters</span></span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Forecast method: Simple exponential smoothing
+
+Model Information:
+Simple exponential smoothing 
+
+Call:
+ ses(y = marathon, h = 10) 
+
+  Smoothing parameters:
+    alpha = 0.3457 
+
+  Initial states:
+    l = 167.1741 
+
+  sigma:  5.519
+
+     AIC     AICc      BIC 
+988.4474 988.6543 996.8099 
+
+Error measures:
+                     ME     RMSE      MAE        MPE     MAPE      MASE
+Training set -0.8874349 5.472771 3.826294 -0.7097395 2.637644 0.8925685
+                    ACF1
+Training set -0.01211236
+
+Forecasts:
+     Point Forecast    Lo 80    Hi 80    Lo 95    Hi 95
+2017       130.3563 123.2835 137.4292 119.5394 141.1733
+2018       130.3563 122.8727 137.8399 118.9111 141.8015
+2019       130.3563 122.4833 138.2293 118.3156 142.3970
+2020       130.3563 122.1123 138.6003 117.7482 142.9644
+2021       130.3563 121.7573 138.9553 117.2053 143.5074
+2022       130.3563 121.4164 139.2963 116.6839 144.0288
+2023       130.3563 121.0880 139.6247 116.1816 144.5310
+2024       130.3563 120.7708 139.9418 115.6966 145.0161
+2025       130.3563 120.4639 140.2488 115.2271 145.4856
+2026       130.3563 120.1661 140.5466 114.7717 145.9409</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use autoplot() to plot the forecasts</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(fc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the one-step forecasts for the training data to the plot</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(fc) <span class="sc">+</span> <span class="fu">autolayer</span>(<span class="fu">fitted</span>(fc))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-12-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="ses-vs-naive" class="level2">
+<h2 class="anchored" data-anchor-id="ses-vs-naive">SES vs naive</h2>
+<p>In this exercise, you will apply your knowledge of training and test sets, the subset() function, and the accuracy() function, all of which you learned in Chapter 2, to compare SES and naive forecasts for the marathon data.</p>
+<p>You did something very similar to compare the naive and mean forecasts in an earlier exercise “Evaluating forecast accuracy of non-seasonal methods”.</p>
+<p>Let’s review the process:</p>
+<p>First, import and load your data. Determine how much of your data you want to allocate to training, and how much to testing; the sets should not overlap. Subset the data to create a training set, which you will use as an argument in your forecasting function(s). Optionally, you can also create a test set to use later. Compute forecasts of the training set using whichever forecasting function(s) you choose, and set h equal to the number of values you want to forecast, which is also the length of the test set. To view the results, use the accuracy() function with the forecast as the first argument and original data (or test set) as the second. Pick a measure in the output, such as RMSE or MAE, to evaluate the forecast(s); a smaller error indicates higher accuracy. The marathon data is loaded into your workspace.</p>
+<section id="instructions-9" class="level3">
+<h3 class="anchored" data-anchor-id="instructions-9">Instructions</h3>
+<p>Using subset(), create a training set for marathon comprising all but the last 20 years of the data which you will reserve for testing. Compute the SES and naive forecasts of this training set and save them to fcses and fcnaive, respectively. Calculate forecast accuracy measures of the two sets of forecasts using the accuracy() function in your console. Assign the best forecasts (either fcses or fcnaive) based on RMSE to fcbest.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a training set using subset()</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> <span class="fu">subset</span>(marathon, <span class="at">end =</span> <span class="fu">length</span>(marathon) <span class="sc">-</span> <span class="dv">20</span>)</span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute SES and naive forecasts, save to fcses and fcnaive</span></span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>fcses <span class="ot">&lt;-</span> <span class="fu">ses</span>(train, <span class="at">h =</span> <span class="dv">20</span>)</span>
+<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a>fcnaive <span class="ot">&lt;-</span> <span class="fu">naive</span>(train, <span class="at">h =</span> <span class="dv">20</span>)</span>
+<span id="cb64-7"><a href="#cb64-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb64-8"><a href="#cb64-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate forecast accuracy measures</span></span>
+<span id="cb64-9"><a href="#cb64-9" aria-hidden="true" tabindex="-1"></a><span class="co">#accuracy( fcses,marathon)</span></span>
+<span id="cb64-10"><a href="#cb64-10" aria-hidden="true" tabindex="-1"></a><span class="co">#accuracy(fcnaive, marathon)</span></span>
+<span id="cb64-11"><a href="#cb64-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb64-12"><a href="#cb64-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the best forecasts as fcbest</span></span>
+<span id="cb64-13"><a href="#cb64-13" aria-hidden="true" tabindex="-1"></a>fcbest <span class="ot">&lt;-</span> fcnaive</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="holts-trend-methods" class="level2">
+<h2 class="anchored" data-anchor-id="holts-trend-methods">Holt’s trend methods</h2>
+<p>Holt’s local trend method is implemented in the holt() function:</p>
+<blockquote class="blockquote">
+<p>holt(y, h = 10, …) Here, you will apply it to the austa series, which contains annual counts of international visitors to Australia from 1980-2015 (in millions). The data has been pre-loaded into your workspace.</p>
+</blockquote>
+<section id="instructions-10" class="level3">
+<h3 class="anchored" data-anchor-id="instructions-10">Instructions</h3>
+<p>Produce 10 year forecasts of austa using Holt’s method. Set h accordingly. Use the summary() function to view the model parameters and other information. Plot your forecasts using the standard time plotting function. Use checkresiduals() to see if the residuals resemble white noise.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce 10 year forecasts of austa using holt()</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>fcholt <span class="ot">&lt;-</span> <span class="fu">holt</span>(austa,<span class="at">h=</span><span class="dv">10</span>)</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Look at fitted model using summary()</span></span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fcholt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Forecast method: Holt's method
+
+Model Information:
+Holt's method 
+
+Call:
+ holt(y = austa, h = 10) 
+
+  Smoothing parameters:
+    alpha = 0.9999 
+    beta  = 0.0085 
+
+  Initial states:
+    l = 0.656 
+    b = 0.1706 
+
+  sigma:  0.1952
+
+     AIC     AICc      BIC 
+17.14959 19.14959 25.06719 
+
+Error measures:
+                     ME      RMSE       MAE       MPE     MAPE      MASE
+Training set 0.00372838 0.1840662 0.1611085 -1.222083 5.990319 0.7907078
+                  ACF1
+Training set 0.2457733
+
+Forecasts:
+     Point Forecast    Lo 80    Hi 80    Lo 95    Hi 95
+2016       7.030683 6.780483 7.280882 6.648036 7.413330
+2017       7.202446 6.847114 7.557778 6.659013 7.745879
+2018       7.374209 6.937169 7.811249 6.705814 8.042604
+2019       7.545972 7.039179 8.052765 6.770899 8.321045
+2020       7.717736 7.148723 8.286748 6.847506 8.587965
+2021       7.889499 7.263543 8.515455 6.932181 8.846816
+2022       8.061262 7.382302 8.740222 7.022882 9.099642
+2023       8.233025 7.504136 8.961915 7.118285 9.347766
+2024       8.404788 7.628444 9.181133 7.217472 9.592105
+2025       8.576552 7.754792 9.398311 7.319779 9.833324</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the forecasts</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(fcholt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check that the residuals look like white noise</span></span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="fu">checkresiduals</span>(fcholt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-14-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Ljung-Box test
+
+data:  Residuals from Holt's method
+Q* = 4.8886, df = 7, p-value = 0.6736
+
+Model df: 0.   Total lags used: 7</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="holt-winters-with-monthly-data" class="level2">
+<h2 class="anchored" data-anchor-id="holt-winters-with-monthly-data">Holt-Winters with monthly data</h2>
+<p>In the video, you learned that the hw() function produces forecasts using the Holt-Winters method specific to whatever you set equal to the seasonal argument:</p>
+<p>fc1 &lt;- hw(aust, seasonal = “additive”) fc2 &lt;- hw(aust, seasonal = “multiplicative”) Here, you will apply hw() to a10, the monthly sales of anti-diabetic drugs in Australia from 1991 to 2008. The data are available in your workspace.</p>
+</section>
+<section id="instructions-11" class="level2">
+<h2 class="anchored" data-anchor-id="instructions-11">Instructions</h2>
+<p>Produce a time plot of the a10 data. Produce forecasts for the next 3 years using hw() with multiplicative seasonality and save this to fc. Do the residuals look like white noise? Check them using the appropriate function and set whitenoise to either TRUE or FALSE. Plot a time plot of the forecasts.</p>
+<section id="solution" class="level3">
+<h3 class="anchored" data-anchor-id="solution">Solution</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the data</span></span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(a10)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce 3 year forecasts</span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>fc <span class="ot">&lt;-</span> <span class="fu">hw</span>(a10, <span class="at">seasonal =</span><span class="st">"multiplicative"</span>, <span class="at">h =</span> <span class="dv">36</span>)</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if residuals look like white noise</span></span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a><span class="fu">checkresiduals</span>(fc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-16-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Ljung-Box test
+
+data:  Residuals from Holt-Winters' multiplicative method
+Q* = 75.764, df = 24, p-value = 2.835e-07
+
+Model df: 0.   Total lags used: 24</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>whitenoise <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot forecasts</span></span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(fc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-16-3.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="holt-winters-method-with-daily-data" class="level2">
+<h2 class="anchored" data-anchor-id="holt-winters-method-with-daily-data">Holt-Winters method with daily data</h2>
+<p>The Holt-Winters method can also be used for daily type of data, where the seasonal pattern is of length 7, and the appropriate unit of time for h is in days.</p>
+<p>Here, you will compare an additive Holt-Winters method and a seasonal naive() method for the hyndsight data, which contains the daily pageviews on the Hyndsight blog for one year starting April 30, 2014. The data are available in your workspace.</p>
+</section>
+<section id="instructions-12" class="level2">
+<h2 class="anchored" data-anchor-id="instructions-12">Instructions</h2>
+<p>Using subset.ts(), set up a training set where the last 4 weeks of the available data in hyndsight have been omitted. Produce forecasts for these last 4 weeks using hw() and additive seasonality applied to the training data. Assign this to fchw. Produce seasonal naive forecasts for the same period. Use the appropriate function, introduced in a previous chapter, and assign this to fcsn. Which is the better of the two forecasts based on RMSE? Use the accuracy() function to determine this. Produce time plots of these forecasts.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create training data with subset()</span></span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a><span class="co">#train &lt;- subset(___, end = ___)</span></span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Holt-Winters additive forecasts as fchw</span></span>
+<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a><span class="co">#fchw &lt;- hw(___, seasonal = ___, h = ___)</span></span>
+<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-7"><a href="#cb74-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Seasonal naive forecasts as fcsn</span></span>
+<span id="cb74-8"><a href="#cb74-8" aria-hidden="true" tabindex="-1"></a><span class="co">#fcsn &lt;- ___</span></span>
+<span id="cb74-9"><a href="#cb74-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-10"><a href="#cb74-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Find better forecasts with accuracy()</span></span>
+<span id="cb74-11"><a href="#cb74-11" aria-hidden="true" tabindex="-1"></a><span class="co">#accuracy(___, ___)</span></span>
+<span id="cb74-12"><a href="#cb74-12" aria-hidden="true" tabindex="-1"></a><span class="co">#accuracy(___, ___)</span></span>
+<span id="cb74-13"><a href="#cb74-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-14"><a href="#cb74-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the better forecasts</span></span>
+<span id="cb74-15"><a href="#cb74-15" aria-hidden="true" tabindex="-1"></a><span class="co">#autoplot(___)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="solution-1" class="level3">
+<h3 class="anchored" data-anchor-id="solution-1">Solution</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create training data with subset()</span></span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> <span class="fu">subset</span>(hyndsight, <span class="at">end =</span> <span class="fu">length</span>(hyndsight) <span class="sc">-</span> <span class="dv">28</span>)</span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Holt-Winters additive forecasts as fchw</span></span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a>fchw <span class="ot">&lt;-</span> <span class="fu">hw</span>(train, <span class="at">seasonal =</span> <span class="st">"additive"</span>, <span class="at">h =</span> <span class="dv">28</span>)</span>
+<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-7"><a href="#cb75-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Seasonal naive forecasts as fcsn</span></span>
+<span id="cb75-8"><a href="#cb75-8" aria-hidden="true" tabindex="-1"></a>fcsn <span class="ot">&lt;-</span> <span class="fu">snaive</span>(train, <span class="at">h =</span> <span class="dv">28</span>)</span>
+<span id="cb75-9"><a href="#cb75-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-10"><a href="#cb75-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Find better forecasts with accuracy()</span></span>
+<span id="cb75-11"><a href="#cb75-11" aria-hidden="true" tabindex="-1"></a><span class="co">#accuracy(fchw, hyndsight)</span></span>
+<span id="cb75-12"><a href="#cb75-12" aria-hidden="true" tabindex="-1"></a><span class="co">#accuracy(fcsn, hyndsight)</span></span>
+<span id="cb75-13"><a href="#cb75-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-14"><a href="#cb75-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the better forecasts</span></span>
+<span id="cb75-15"><a href="#cb75-15" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(fchw)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="forecasting_datacamp_ex_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
