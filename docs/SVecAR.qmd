@@ -1,0 +1,257 @@
+---
+title: "[Structural VAR Lec_01]{.flow}"
+author: "[[Zahid Asghar, Professor, School of Economics, QAU](https://zahedasghar.netlify.app)]{style=color:blue;}"
+date: "25-09-2023"
+date-format: "DD-MM-YYYY"
+format: 
+  revealjs:
+    theme: [default, custom.css,styles.scss]
+    
+    chalkboard: true
+    slide-number: c/t
+execute: 
+  freeze: auto
+---
+
+# SVAR models
+
+## Objectives
+
+#### Why a structural VAR 
+#### VAR identification: Identifying **A**
+#### Impulse responses 
+#### Variance decomposition
+#### Two identification strategies
+  -   Recursive idendtification: Sims (1992)
+  -   Non Recursive: Blanchard and Perotti (2002)
+
+
+## Why a strucutural VAR 
+
+**Effect of monetary policy**. Consider these events:
+
+1. Anticipating a rise in inflation ...
+2. The central bank increases the monetary policy interest rate...
+inflation still rises, as anticipated. 
+
+  -   One could [**wrongly**]{style="color:red;"} conclude that the interest rate hike led to the inflation. 
+  -   It wan an endogenous reaction to expected inflation
+  
+## Challenge: SVAR Identification 
+
+#### We must identify purely exogenous (policy or other type of) shocks tobe able to trace out its dynamic effects. Identify the structural VAR. 
+
+-   Uncovering the structural model is called identification
+-   According to Sims (1986):
+ > identification is the interpretation of historically observed variation in 
+data in a way that allows the variation to be used to predict the 
+consequences of an action not yet undertaken.  
+
+## SVAR Identification
+
+-   Suppose we have the following **Structural VAR(1): 
+$AX_t=\beta_0+\beta_1 X_{t-1}+u_t$ Structural shocks u are independent
+
+-   If $X$ variables GDP gap ($y$) and the interest rate ($r$): 
+$$X_t=\begin{bmatrix}
+y  \\
+r  \\ 
+\end{bmatrix}$$
+the system will be 
+$y_t+a_{12}r_t=\beta_{10}+\beta_{12}y_{t-1}+\beta_{12}r_{t-1}+u_{yt}$ 
+
+$a_{21}y_t+r_t=\beta_{20}+\beta_{21}y_{t-1}+\beta_{22}r_{t-1}+u_{rt}$
+
+- - -
+
+In martrix form : $$\begin{bmatrix}
+1 & a12\\
+a21 & 1 \\
+\end{bmatrix}\begin{bmatrix}
+y_t\\
+r_t\\
+\end{bmatrix}=\begin{bmatrix}
+\beta_{10}\\
+\beta_{20}\\
+\end{bmatrix}+\begin{bmatrix}
+\beta_{11} & \beta_{12}\\
+\beta_{21} & \beta_{22} \\
+\end{bmatrix}\begin{bmatrix}
+y_{t-1}\\
+r_{t-1}\\
+\end{bmatrix}+\begin{bmatrix}
+u_{yt}\\
+u_{rt}\\
+\end{bmatrix}$$ 
+
+### $e$ combination of $u$
+If we pre multiply this VAR by $A^{-1}$ we get the reduced-form VAR
+
+$A^{-1}A X_t=A^{-1}\beta_0+A^{-1}\beta_1 X_{t-1}+A^{-1}u_t$ 
+$X_t=G_0+G_1 X_{t-1}+e_t$  $A^{-1}A=I$ 
+
+- Matrix $A$ also relates the forecast errors of the reduced-form VAR, $e$ and the structural shocks $u$: $e_t=A^{-1}u_t$
+
+## $e$ combinations of $u$
+
+- The forecast errors $e$ are linear combinations of the structural shocks $u$
+
+$e_t=A^{-1}u_t$ 
+$e_{yt}=(u_{yt}-a_{12}u_{rt})/(1-a{12}a_{21})$
+
+$e_{rt}=(u_{-a_{12}u_{yt}+rt})/(1-a{12}a_{21})$
+
+## Identification, getting $A$ 
+
+-   The structural VAR cannot be estimated directly. 
+-   Start from the reduced-form VAR: 
+$X_t=G_0+G_1 X_{t-1}+u_{t}$ 
+and get to the structurala one: 
+$AX_t=\beta_0+\beta_1 X_{t-1}+u_t$
+
+-   To do that, we need to restrict matrix **A: IDENTIFICATION** 
+
+## Identification, find A
+- Get **A** and multiply the reduced-form VAR by **A** to get the structural model, shocks, and contemporaneous relations among variables. 
+
+$AX_t=AG_0+AG_1 X_{t-1}+A e_t$ 
+
+$AX_t=\beta_0+\beta_1 X_{t-1}+y_t$  
+
+$AA^{-1}\beta_0=\beta_0$
+
+## SVAR Identification: getting A 
+
+Usual approach: impose restrictions on matrix **A** which is equivalent to: 
+
+-   Imposing restrictions on the contemporaneous relations among the endogenous variables of the structural model (based on economics).
+
+$$\begin{bmatrix}
+1 & 0\\
+a21 & 1 \\
+\end{bmatrix}\begin{bmatrix}
+y_t\\
+r_t\\
+\end{bmatrix}=\begin{bmatrix}
+\beta_{10}\\
+\beta_{20}\\
+\end{bmatrix}+\begin{bmatrix}
+\beta_{11} & \beta_{12}\\
+\beta_{21} & \beta_{22} \\
+\end{bmatrix}\begin{bmatrix}
+y_{t-1}\\
+r_{t-1}\\
+\end{bmatrix}+\begin{bmatrix}
+u_{yt}\\
+u_{rt}\\
+\end{bmatrix}$$ 
+
+This is what identification is about: [0]{style="color:red;"} in top left corner of A. 
+
+## SVAR Identification: getting A
+
+If we impose $a_{12}=0$, we impose that $y$ is only affected with a lag by a shock to $r$ but that a shock to $y$ affects $r$ contemporaneously  
+
+
+$y_t=\beta_{10}+\beta_{12}y_{t-1}+\beta_{12}r_{t-1}+u_{yt}$  
+
+
+$a_{21}y_t+r_t=\beta_{20}+\beta_{21}y_{t-1}+\beta_{22}r_{t-1}+u_{rt}$ 
+
+
+## SVAR Identification: getting A
+
+-   Be aware that by imposing restrictions on **A** you also impose restrictions on $A^{-}$. Again, if we look at the reduced form,
+
+$A^{-1}A X_t=A^{-1}\beta_0+A^{-1}\beta_1 X_{t-1}+A^{-1}u_t$
+
+
+
+$$\begin{bmatrix}
+y_t\\
+r_t\\
+\end{bmatrix}=\begin{bmatrix}
+1 & 0\\
+a21 & 1 \\
+\end{bmatrix}^{-1}\begin{bmatrix}
+\beta_{10}\\
+\beta_{20}\\
+\end{bmatrix}+\begin{bmatrix}
+1 & 0\\
+a21 & 1 \\
+\end{bmatrix}^{-1}\begin{bmatrix}
+\beta_{11} & \beta_{12}\\
+\beta_{21} & \beta_{22} \\
+\end{bmatrix}\begin{bmatrix}
+y_{t-1}\\
+r_{t-1}\\
+\end{bmatrix}+\\ \begin{bmatrix}
+1 & 0\\
+a21 & 1 \\
+\end{bmatrix}^{-1}\begin{bmatrix}
+u_{yt}\\
+u_{rt}\\
+\end{bmatrix}$$ 
+
+-    It is also a restriction on the relation between the forecast errors and the 
+structural shocks. Forecast errors of $y$ = structural shocks to y: $e_{yt}=u_{yt}$
+
+## SVAR Identification: restrictions
+
+The matrices product makes the reduced-form VAR: 
+
+$$\begin{bmatrix}
+y_t\\
+r_t\\
+\end{bmatrix}=\begin{bmatrix}
+\beta_0\\
+-a_{21}\beta_{10}+\beta_{20} \\
+\end{bmatrix}+\begin{bmatrix}
+\beta_{11} & \beta_{12}\\
+-a_{21}\beta_{11}+\beta_{12} & -a_{21}\beta_{12}+\beta_{22} \\
+\end{bmatrix}\begin{bmatrix}
+y_{t-1}\\
+r_{t-1}\\
+\end{bmatrix}+\\ \begin{bmatrix}
+u_{yt}\\
+-a_{21}u_{yt}+u_{rt}\\
+\end{bmatrix}$$ 
+
+
+- The OLS VAR estimation gives:
+
+$$\begin{bmatrix}
+y_t\\
+r_t\\
+\end{bmatrix}=\begin{bmatrix}
+g_{10}\\
+g_{20} \\
+\end{bmatrix}+\begin{bmatrix}
+g_{11} & g_{12}\\
+g_{21} & g{22} \\
+\end{bmatrix}\begin{bmatrix}
+y_{t-1}\\
+r_{t-1}\\
+\end{bmatrix}+ \begin{bmatrix}
+e_{yt}\\
+e_{rt}\\
+\end{bmatrix}$$ 
+
+
+## SVAR Identification : restrictions
+-   With the restriction, the number of unknown parameters in the structural model is equal to the number of equations known from the estimated VAR 
+-   Substitute the results from the estimation for these 9 parameters $g_{10},g_{11},g_{12},g_{20},g_{21},g_{22},\sigma_{ey}^2,\sigma_{er}^2 and \sigma_{ey-er}$  
+into 9 equations, to solve for : 
+
+$a_{21}, \beta_{10},\beta_{20},\beta_{11},\beta_{21},\beta_{22}, \sigma_{vy}^2 and \sigma_{vr}^2$ 
+- The structural shocks may also be recovered. 
+
+
+## SVAR Identification: restrictions
+ Summary of SVAR Identification up to now: 
+-   Get the structural model, 
+-   to do that, we need to get A, so
+-   impose restrictions on A, based on economics, to recover the structural shocks 
+and the structural parameters, using the reduced-form estimation. 
+
+#### Therefore, SVAR identification is about imposing restrictions on matrix A.

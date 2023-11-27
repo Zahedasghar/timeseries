@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Zahid Asghar ">
-<meta name="dcterms.date" content="2023-11-05">
+<meta name="dcterms.date" content="2023-11-08">
 
 <title>Spurious Regressions </title>
 <style>
@@ -22,7 +22,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="spurious_regression_files/libs/clipboard/clipboard.min.js"></script>
@@ -31,10 +50,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="spurious_regression_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="spurious_regression_files/libs/quarto-html/anchor.min.js"></script>
 <link href="spurious_regression_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="spurious_regression_files/libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="spurious_regression_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="spurious_regression_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="spurious_regression_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="spurious_regression_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<link href="spurious_regression_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -82,7 +101,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">November 5, 2023</p>
+      <p class="date">November 8, 2023</p>
     </div>
   </div>
   
@@ -95,7 +114,7 @@ ul.task-list li input[type="checkbox"] {
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p>In previous lectures <a href="https://weapedagogy.wordpress.com/2021/04/19/causal-explanation-of-autonomy-invariance-of-regression-relationships/">Causal Explanation of Autonomy &amp; Invariance of Regression Relationships</a>, we have seen the essential importance of analyzing the causal structure of the variables under study via path diagrams. In this lecture, we study one aspect of this which creates serious problems for understanding and interpreting regression results. This is the problem of a common cause.</p>
-<p><span class="math inline">\(Z\)</span> is a common cause of <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> if <span class="math inline">\(Z\)</span> <span class="math inline">\(\Rightarrow\)</span> <span class="math inline">\(X\)</span> and <span class="math inline">\(Z\)</span> <span class="math inline">\(\Rightarrow\)</span> <span class="math inline">\(Y\)</span>. When this happens, <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> will be correlated, but neither variable causes the other. In such situations, a regression of <span class="math inline">\(Y\)</span> on <span class="math inline">\(X\)</span> will give results which show, according to standard methods for analysis, that <span class="math inline">\(X\)</span> is a strong determinant of <span class="math inline">\(Y\)</span>. This is called a <em>spurious</em> regression, or a <em>nonsense</em> regression. In this lecture, we will study some examples of this phenomena in real world data.</p>
+<p><span class="math inline">\(Z\)</span> is a common cause of <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> if <span class="math inline">\(Z\)</span> <span class="math inline">\(\Rightarrow\)</span> <span class="math inline">\(X\)</span> and <span class="math inline">\(Z\)</span> <span class="math inline">\(\Rightarrow\)</span> <span class="math inline">\(Y\)</span>. When this happens, <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> will be correlated, but neither variable causes the other. In such situations, a regression of <span class="math inline">\(Y\)</span> on <span class="math inline">\(X\)</span> will give results which show, according to standard methods for analysis, that <span class="math inline">\(X\)</span> is a strong determinant of <span class="math inline">\(Y\)</span>. This is called a <em>spurious</em> regression, or a <em>nonsense</em> regression. In this lecture, we will study some examples of this phenomena in real world data. <span class="citation" data-cites="rehmat2022">Rehmat and Idrees (<a href="#ref-rehmat2022" role="doc-biblioref">2022</a>)</span></p>
 </section>
 <section id="a-causal-relationship-a-consumption-function" class="level2">
 <h2 class="anchored" data-anchor-id="a-causal-relationship-a-consumption-function">A Causal Relationship: A Consumption Function</h2>
@@ -419,9 +438,14 @@ therefore are not very useful for policy. </code></pre>
 <h2 class="anchored" data-anchor-id="concluding-remarks">Concluding Remarks</h2>
 <p><em>Econometricians</em> have been working on finding methods to discriminate between nonsense and sensible regressions for decades, without success. We have discussed three strategies for doing so in this lecture. All three lead to failure, although the third one can be salvaged. Currently, it is the third strategy which dominates the scene. However, it also suffers from failures in many different cases. The reason for this failure is that solutions to causal problems cannot be found in nominal econometrics. Without having a good grasp of the causal structures which relate the regressors to the dependent variables, it is not possible to estimate causal effects.</p>
 <p>POSTSCRIPT: Regressions for the lecture above were done using the RegressIt package for EXCEL – available from:<a href="https://regressit.com/">data</a> . The WDI Data Set for Singapore and South Africa, Consumption and GDP, is available from <a href="https://onedrive.live.com/view.aspx?resid=F5F6A4108BE920A5!46844&amp;ithint=file%2cxlsx&amp;authkey=!AA5r8iTFTqYaIfU">Singapore Data</a></p>
+
 </section>
 
-</main>
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-rehmat2022" class="csl-entry" role="listitem">
+Rehmat, Sania, and Muhammad Idrees. 2022. <span>“MULTIDIMENSIONAL POVERTY DISPARITY IN PAKISTAN.”</span> <em>Pakistan Journal of Social Research</em> 04 (02): 567–82. <a href="https://doi.org/10.52567/pjsr.v4i2.509">https://doi.org/10.52567/pjsr.v4i2.509</a>.
+</div>
+</div></section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {

@@ -16,7 +16,7 @@ kse30 %>% glimpse()
 
 kse30$date <- as.Date(kse30$Date,format = "%m/%d/%Y")
 
-
+kse30$day <- weekdays(kse30$date)
 # Create an xts time series object
 kse_xts <- xts(kse30[, c("Price", "Open", "High", "Low")], order.by = kse30$date)
 
@@ -94,7 +94,7 @@ periodicity(kse_xts)
 
 # Convert kse_xts to yearly
 kse_yearly <- to.yearly(kse_xts)
-
+kse_yearly
 # Calculate the periodicity of edhec_yearly
 periodicity(kse_yearly)
 
@@ -141,19 +141,66 @@ kse30 |> select(Price, date) |> glimpse()
 daily_kse30 <- xts(kse30)
 
 ggplot(kse30)+aes(x=date,y=Price)+
-  geom_line()
+  geom_line() +geom_smooth(method="lm",se=FALSE)
+
+
+
 
 library(dygraphs)
 
-kse30 |> select(date, Price) |> 
-  dygraph(, main="KSE-30 price index") |> 
-  dyAxis("y", label = "Price") |> 
-  dyAxis("x", label = "date") 
 
- 
-kse30 |> select(date, Price) |> 
-  dygraph(, main="KSE-30 price index") |> 
+kse30 |> 
+  select(date, Price) |> 
+  dygraph(main="KSE-30 price index") |> 
   dyAxis("y", label = "Price") |> 
   dyAxis("x", label = "date") |> 
-  dyOptions(drawRug = TRUE)
+  dyOptions(drawPoints = TRUE)
 
+
+#https://www.geeksforgeeks.org/how-to-use-interactive-time-series-graph-using-dygraphs-in-r/
+ 
+# Assuming kse30 is your data frame containing 'date' and 'Price' columns
+kse30  %>%
+  dygraph(main = "KSE-30 price index") %>%
+  dyAxis("y", label = "Price") %>%
+  dyAxis("x", label = "date") %>%
+  dyOptions(drawAxis = TRUE)
+kse30 |> colnames()
+# plot graph 
+
+dygraph(kse30, main = "KSE-30 Price Index") %>%  
+  dySeries(label = "", 
+           color = "black") %>% 
+  dyShading(from = "2018-1-1", 
+            to = "2019-12-1",  
+            color = "#FFE6E6") %>% 
+  dyShading(from = "2020-1-1",  
+            to = "2021-1-1", 
+            color = "#CCEBD6")
+  dyRangeSelector()
+  
+  
+kse30  
+
+kse30 %>% 
+  select(date, Price) %>%
+  dygraph(main = "KSE-30 price index") %>%
+  dyAxis("y", label = "Price") %>%
+  dyAxis("x", label = "date")  |> 
+  dyRangeSelector()
+
+  
+  kse30 %>% mutate(p_diff=Price - lag(Price)) |> 
+    select(date, p_diff) %>%
+    dygraph(main = "KSE-30 price index") %>%
+    dyAxis("y", label = "Price") %>%
+    dyAxis("x", label = "date")  |> 
+    dyRangeSelector()
+  
+  
+  kse30 %>% mutate(p_diff=Price - lag(Price)) |> 
+    select(date, p_diff) %>%
+    dygraph(main = "KSE-30 price index") |> 
+  
+  dyShading(from = "2020-1-1", to = "2021-6-1", color = "#FFE6E6") %>%
+    dyShading(from = "2022-4-1", to = "2023-4-1", color = "#CCEBD6")

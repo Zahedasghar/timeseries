@@ -1,0 +1,365 @@
+---
+title: "[Forecast Uncertainty and Evaluation]{.flow}"
+subtitle: "Macroeconomic Forecasting"
+author: "[[Zahid Asghar, Professor, School of Economics, QAU](https://zahedasghar.netlify.app)]{style=color:blue;}"
+date: "today"
+date-format: "DD-MM-YYYY"
+format: 
+  revealjs:
+    theme: [default, custom.css,styles.scss,slides.scss]
+    toc: true
+    code-fold: true
+    
+    keep-md: false
+    chalkboard: true
+    slide-number: c/t
+execute: 
+  freeze: auto
+---
+
+# Forecast uncertainty and evaluation
+
+## Main Objectives
+
+-   Learn how to choose between forecasts from competing models or sources
+
+-   Learn how to assign a number to forecast performance using various "summary" statistics
+    -   Interpretation of these statistics
+    -   Learn about different forecasting strategies
+    -   Learn how to visualize forecast uncertainty using fan charts
+    -   How to do verything above in R
+
+
+
+## Forecast Evaluation
+
+-   Hard to say how a given strategy will perform in the future
+  -   Anything can happen
+-   Idea: estimate the model on a fraction of the available data and use the remaining part to evaluate out-of-sample forecast performance
+
+> If you have to forecast, forecast often. 
+
+Forecast from the same model need to be repeated. 
+
+The properties of a forecaster/model (correct on average, low volatility) are evaluated using various statistical measures
+
+## Forecast Evaluation (continued)
+
+Forecasters/models are evaluated using out-of-sample forecast performance 
+
+There are many dimensions/statistics one could use 
+
+-   Average of the forecast errors, degree of uncertainty
+
+Evaluation has to be repeated 
+
+> It is often said there are two types of forecasts... Lucky or Wrong !
+
+## Forecast Evaluation (continued) 
+
+
+Economic variables are random processes and therefore each has a probability distribution.  
+
+We call that distribution, which is typically unknown, the *data generation process (DGP)* of that variable  
+
+If the variable can have continuous values, the probability of a 
+single point forecast being equal to the eventual outcome is zero 
+
+Therefore, it is only possible to attach a probability to a range of 
+possible outcomes encompassing the actual outcome 
+
+If a point forecast happens to be equal to the actual outcome, it is 
+purely by chance and quite unlikely to be repeated in the next 
+period
+
+
+## Data generation process
+
+Every economic variable has an underlying *data generating process [(GDP)]{style="color:red;}
+
+The DGP is a probability density function, for example, 
+$N(\mu,\sigma^2)$ 
+
+For any sequence of data points, $\pi_t$ drawn from this distribution, we may write 
+
+$y_{t+1}=E_t(y_{t+1}|Information)+\epsilon_{t+1}$ 
+
+Where $E_t$ is the "condistional expectation operator" and $\epsilon_t$ is a residual error term, which we expect to have zero mean. 
+
+
+## Why Conditional Means?  
+
+The density for is difficult to estimate precisely, requiring a 
+considerable amount of data in practice 
+
+ Conditional means can be estimated more readily using a variety of 
+statistical procedures 
+
+ For example, it is often assumed that the conditional mean is a 
+linear function of other explanatory variables (*information set*), 
+and to use ordinary least squares to estimate the unknowns in that 
+relationship 
+
+- - -
+
+**Assuming that conditional means is known** 
+
+$y_{t+1}=E_t(y_{t+1}|Information)+\epsilon_{t+1}$ 
+
+We still need an estimate of $\epsilon_{t+1}$ to complete the forecast. 
+
+Assuming $\epsilon_{t+1}$ is a white noise process from a normal distribution with zero mean, say, our best guess for of its future values is zero. 
+
+So it is typically impossible to predict the actual outcome exactly. 
+
+## Source of Forecast Uncertainty #1 
+Even if we know the conditional mean, our 
+conditional forecast will necessarily differ 
+from the outcome.  
+Indeed, the observed forecast errors will 
+obviously reflect the distribution of the true 
+error term, which is normally unknown  
+It follows that ...
+The best we can hope for is that, on average, our actual forecast errors are zero. Why? 
+
+$y_{t+1}=E_t(y_{t+1}|Information)+\epsilon_{t+1}$ 
+
+Recall that with as $T \rightarrow infinity$,
+
+$\frac{(\sum_{i=1}^{n}\epsilon_t)}T \rightarrow 0$ in probability. 
+
+## Key Implication
+
+If you want to be a reputable forecaster
+
+-   The average of your forecast errors should be zero 
+-   Dont get overly excited if one of your forecast is exactly correct. Unless you are dealing with discrete outcomes, it is a fluke. 
+
+
+# Additional sources of forecast uncertainty 
+
+## Additional sources of forecast uncertainity 
+
+-   We will continue with our maintained assumption that the conditional mean is known and correctly specified 
+-   However, now assume it depends on a set of variables, $X:$ 
+$y{t+1}=F(X_{t+1};\theta)+\epsilon_{t+1}$ 
+- These variables might be jointly determined within the same system (economic model), or be determined outside of the system (exogenous for example GDP of Pakistan) 
+
+- - - 
+
+#### Specifically
+If the forecasting model for the series we are interested in is
+
+$y{t+1}=F(X_{t+1};\theta)+\epsilon_{t+1}$ 
+
+The RHS or explanatory variables $X_t$, will need to be forecasted using additional equations, namely:
+
+$X_{t+1}= G(Z_{t+1};\beta)+u_{t+1}$ 
+
+## Source of forecast uncertainty 2 
+
+- Inherent randomness of the explanatory variables 
+- The uncertainty associated with $X_t$ will all result in a wider forecast confidence interval for $y_t$ 
+
+- - - 
+
+#### What if parameters of GDP are unknown
+
+-   We will continue with  our maintained assumption that conditional mean is known 
+-   However, let's now assume that we dont know the values of the parameters on X, namely $\theta$ 
+
+$y{t+1}=F(X_{t+1};\theta)+\epsilon_{t+1}$  
+
+## Source of forecast uncertainty 
+
+-   The unknown parameters need to be estimated from the available data, which are random. 
+-   It follows that the estimates of $\theta$ are necessarily random variables and therefore can contribute to forecast errors. 
+- Why? Estimates of the unknown parameters will typically be different from their true values : $\hat{\theta} \neq \theta$  
+
+## More sources of forecast uncertainty
+
+- The conditional mean is misspecified. Why? Perhaps 
+  - The set of variables in X is incomplete 
+  - Actual functional form used is wrong (linear or non-linear) 
+  - Underlying parameters may change over time (i-e, structural break) 
+- Estimation Issues: 
+  - Parameters are estimated incorrectly (possibly because of misspecification, measurement error in explanatory variables and a poor estimation procedure) 
+
+## Whe we learned
+$y{t+1}=F(X_{t+1};\theta)+\epsilon_{t+1}$   
+
+- Sources of forecast uncertainty
+  -   Economic variables are inherently random 
+  -   There are unknown parameters in the conditional mean 
+that need to be estimated 
+  -   Explanatory variables also need to be forecast and could 
+be random quantities themselves 
+
+  -   The working form of the conditional mean may be 
+misspecified 
+
+
+## Measures of Forecast Uncertainty 
+
+-   How can we measure forecast uncertainty? 
+
+-   How do we use a measure of forecast uncertainty 
+in practice? 
+
+-   Unfortunately, there is no unique measure of 
+forecast accuracy and precision 
+
+
+## Common Statistical Measures 
+The smaller they are the better are forecast 
+
+-   Bias: the difference between the 
+forecasts and the correct outcome 
+(on average) 
+
+-   Variance (*standard forecast error, 
+SE*): A narrow range of outcomes is 
+compatible with the forecast 
+
+-   Mean Squared Forecast Error 
+(MSFE): A combination of bias and 
+variance that is commonly reported 
+in forecast comparisons 
+
+## Common measures
+
+1. Mean Absolute Error (MAE):
+ $MAE = \frac{1}{n} \sum_{i=1}^{n} |Y_i - \hat{Y}i|$
+- Description: The average of the absolute differences between the actual and forecasted values.
+
+2. Mean Squared Error (MSE):
+$MSE = \frac{1}{n} \sum{i=1}^{n} (Y_i - \hat{Y}i)^2$
+- Description: The average of the squared differences between the actual and forecasted values.
+
+- - -
+
+3. Root Mean Squared Error (RMSE): $RMSE = \sqrt{\frac{1}{n} \sum{i=1}^{n} (Y_i - \hat{Y}i)^2}$
+- Description: The square root of the average of the squared differences between the actual and forecasted values. 
+
+
+4. Mean Absolute Percentage Error (MAPE): $MAPE = \frac{1}{n} \sum{i=1}^{n} \left| \frac{Y_i - \hat{Y}i}{Y_i} \right| \times 100\%$
+- Description: The average of the absolute percentage differences between the actual and forecasted values.
+
+5. Forecast Bias: $Bias = \frac{1}{n} \sum{i=1}^{n} (Y_i - \hat{Y}i)$
+- Description: The average difference between the actual and forecasted values, indicating the tendency of the forecasts to be consistently high or low.
+
+## Relationship between different measures
+
+- Bias, Standard forecast error (SE) and MSE: 
+$MSE=SE^2+BIAS^2$ 
+-   That is, mean squared error is a combination of bias and standard forecast error 
+
+
+## Forecast uncertainty for different horizons
+
+## Symmetric Costs 
+
+-   The mean square and absolute error assume a symmetric cost associated with positive and negative forecast errors 
+-   However, the cost of forecast errors can be symmetric 
+
+-   Examples:
+  -   Airplane departure 
+  -   Inflation forecast for inflation targeting (deflation often perceived more costly than inflation)
+-   Need different criteria for these cases 
+
+## Comparative Evaluation 
+
+Often useful to compare these measures against those that are obtained from 
+using a benchmark forecast such as the naive forecast or the consensus forecast
+? Our economic/behavioral models should be at least as good forecasters as the 
+established benchmark
+? Note, however, that there is often a trade-off between forecasting accuracy and 
+the number of parameters one has to estimate in the economic model 
+? The advantage of economic models is that enable you to assess the reasons 
+behind any forecast error 
+
+## Naive Forecasting Model 
+
+-   Compare the performance of your model agains that obtained using naive (no change) forecasting model: 
+
+-   Assumed 1-step ahead forecast is: 
+  $\hat y_t=y_{t-1}$  $MAPE_{naive}=100 \frac {1}{f} \sum_{i=1}^{n} |\frac{Y_t - Y_{t-1}}{y_t}|$ 
+  
+-   Note that the MAE formula cant be calculated if $y_t=0$ for any period
+-   It also not not suitable for variables expressed in log form 
+
+## Graphical Approaches 
+-   Summary statistics of forecasting performance are useful, but can mask important outcomes (for example that the higher forecast error for a particular model due to a single observation error) 
+-   Sensible to back up the statistical analysis with scatter 
+and line plots of actual against fitted, and nonparametric estimates of the relationship between 
+actual and the forecast 
+
+# Workshop 
+
+## Motivation
+
+Objective: see how using rolling forecasting strategy instead 
+of the standard expanding window can improve forecast 
+accuracy
+? What if potential structural breaks in the future are possible?
+  - I will use simulated data
+  - For assessment, you will use India GDP growth data and 
+analyze growth slowdown after the global financial crisis
+
+
+# Session 3 Workshop: Calculating Forecast Assessment Statistics
+
+
+## Let?s evaluate some forecasts!
+By hand! 
+? Given: Thailand monthly year-on-year all items CPI inflation data 
+for 2003-2014 
+
+$y_t=\frac {CPI_t-CPI_{t-1}}{CPI_{t-1}}$ 
+
+Source: Haver Analytics
+? Objective: Evaluate and compare two 1 month ahead forecasts 
+using actual data for 2014 as a test period
+? Let?s work in Excel for this exercise
+
+
+## Evaluating Forecast 
+
+Step 1
+? Calculate observational errors for forecast 1
+? Recall that forecast (observational) error is
+
+$FE_t=\hat y_t-y_t$
+
+Forecast error is denoted by
+ $e_{1t}=f_{1t}-\pi_t$
+
+```{r}
+#| warning: false
+library(forecast)
+library(stringr)
+library(xts)
+library(plyr)
+library(dplyr)
+library(lubridate)
+library(tidyverse)
+
+```
+
+
+```{r}
+#### Reading data ####
+# my data
+my_df_read <-
+  read_csv("004_module_4_Forecast_uncertainty_and_Model_evaluation/Thailand_M.csv")
+
+my_df <- my_df_read|> mutate(date=dmy(dateid01))
+
+cpi_xts <- xts(my_df$p,order.by=my_df$date) 
+
+autoplot(cpi_xts)
+
+```
+
+
+

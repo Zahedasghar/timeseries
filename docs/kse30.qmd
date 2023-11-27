@@ -1,0 +1,87 @@
+---
+title: "KSE-30 Interactive Time Series Plot"
+
+author: "Zahid Asghar"
+format: html
+execute: 
+  echo: false
+  freeze: auto
+---
+
+
+```{r}
+#| warning: false
+library(tidyverse) # for data manipulation
+library(dygraphs) # for interactive time series plots
+```
+
+## Load data
+
+```{r}
+#| message: false
+#| warning: false
+kse30 <- read_csv("data/kse_30_index.csv")
+
+
+
+kse30$date <- as.Date(kse30$Date,format = "%m/%d/%Y") # Deal with date variable
+
+```
+
+## KSE30 data inspection
+
+```{r}
+
+kse30 %>% glimpse()
+
+kse30 <- kse30 %>% select(date, Price, Open, High, Low) # Select only required variables
+
+```
+
+
+
+
+```{r}
+kse30  %>%
+  dygraph(main = "KSE-30  index") %>%
+  dyAxis("y", label = "Price") %>%
+  dyAxis("x", label = "date") |> 
+  dyRangeSelector()
+
+```
+
+```{r}
+#| fig.align: center
+kse30 %>% 
+  select(date, Price) %>%
+  dygraph(main = "KSE-30 index") %>%
+  dyAxis("y", label = "Price") %>%
+  dyAxis("x", label = "date")  |> 
+  dyRangeSelector()
+
+```
+
+## Difference of kse30 index plot
+
+```{r}
+kse30 %>% mutate(p_diff=Price - lag(Price)) |> 
+    select(date, p_diff) %>%
+    dygraph(main = "KSE-30  index") %>%
+    dyAxis("y", label = "Price") %>%
+    dyAxis("x", label = "date")  |> 
+    dyRangeSelector()
+```
+
+## KSE30 index plot with moving average
+
+```{r}
+
+kse30 %>% mutate(ma=rollmean(Price, 15, fill = NA)) |> 
+    select(date, Price, ma) %>%
+    dygraph(main = "KSE-30 index") %>%
+    dyAxis("y", label = "Price") %>%
+    dyAxis("x", label = "date")  |> 
+    dyRangeSelector()
+
+
+```

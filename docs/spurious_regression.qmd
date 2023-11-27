@@ -5,7 +5,7 @@ author: '*Zahid Asghar *'
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 format:
   html:
-    theme: [default, custom.scss]
+    theme: [default]
     toc: true
 overview: true
 execute:
@@ -13,6 +13,7 @@ execute:
   warning: false
   freeze: auto
 editor: visual
+bibliography: references.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -23,7 +24,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 In previous lectures [Causal Explanation of Autonomy & Invariance of Regression Relationships](https://weapedagogy.wordpress.com/2021/04/19/causal-explanation-of-autonomy-invariance-of-regression-relationships/), we have seen the essential importance of analyzing the causal structure of the variables under study via path diagrams. In this lecture, we study one aspect of this which creates serious problems for understanding and interpreting regression results. This is the problem of a common cause.
 
-$Z$ is a common cause of $X$ and $Y$ if $Z$ $\Rightarrow$ $X$ and $Z$ $\Rightarrow$ $Y$. When this happens, $X$ and $Y$ will be correlated, but neither variable causes the other. In such situations, a regression of $Y$ on $X$ will give results which show, according to standard methods for analysis, that $X$ is a strong determinant of $Y$. This is called a *spurious* regression, or a *nonsense* regression. In this lecture, we will study some examples of this phenomena in real world data.
+$Z$ is a common cause of $X$ and $Y$ if $Z$ $\Rightarrow$ $X$ and $Z$ $\Rightarrow$ $Y$. When this happens, $X$ and $Y$ will be correlated, but neither variable causes the other. In such situations, a regression of $Y$ on $X$ will give results which show, according to standard methods for analysis, that $X$ is a strong determinant of $Y$. This is called a *spurious* regression, or a *nonsense* regression. In this lecture, we will study some examples of this phenomena in real world data. @rehmat2022
 
 ## A Causal Relationship: A Consumption Function
 

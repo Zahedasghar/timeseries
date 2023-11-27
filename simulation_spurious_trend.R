@@ -1,5 +1,5 @@
 # Set the parameters
-set.seed(42)  # For reproducibility
+set.seed(2023)  # For reproducibility
 n_values <- c(50, 100, 200)  # Different sample sizes
 num_replications <- 2500  # Number of replications for each sample size
 

@@ -100,11 +100,16 @@ Box.test(res.ar2,lag=24,type="Ljung-Box")
 
 
 ### PAGE 88
-data = read.xls("/Users/user/Google Drive/Website/Book/Enders/QUARTERLY.xls")
+data = read_excel("data/quarterly.xlsx")
 library("zoo")
+library(xts)
+library(forecast)
 data$DATE = as.yearqtr(data$DATE)
 data$spread = data$r5-data$Tbill
 
+spread_xts <- xts(data$spread,order.by=data$DATE)
+
+autoplot(spread_xts)
 par(mfrow=c(2,1))
 plot(data$DATE,data$spread,type="l",las=1,xaxs="i",yaxs="i",xlab="",ylab="",main="The Interest Rate Spread",tck=0.02,col="steelblue4",ylim=c(-2,4))
 abline(h=0)
@@ -118,6 +123,13 @@ pacf(data$spread,lag=12,tck=.02,xlab="",ylab="",main="",las=1)
 
 ### PAGE 91
 ### TABLE 2.4
+# Install and load the fracdiff package
+#install.packages("fracdiff")
+library(fracdiff)
+
+# Now you should be able to use the arfimaspec function
+spec.ar7 = arfimaspec(mean.model = list(armaOrder = c(7, 0), include.mean = TRUE))
+
 spec.ar7 = arfimaspec(mean.model=list(armaOrder=c(7,0),include.mean=TRUE))
 fit.ar7 = arfimafit(spec=spec.ar7,data=data$spread)
 fit.ar7

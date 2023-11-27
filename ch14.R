@@ -208,10 +208,12 @@ class(GDP)
 
 frequency(GDP)
 
-# Use snaive() to forecast the ausbeer series
+# Use snaive() to forecast 
 fcGDP <- snaive(GDP,h=12)
 fcn <- naive(GDP,h=12)
 accuracy(fcGDP,fcn)
+class(fcGDP)
+class(fcn)
 autoplot(fcGDP)
 autoplot(fcn)
 
