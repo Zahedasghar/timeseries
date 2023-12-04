@@ -1,5 +1,5 @@
 ---
-title: "Vector Autoregressions"
+title: "[Vector Autoregressions]{.yellow}"
 author: "Zahid Asghar"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 format:
@@ -32,13 +32,13 @@ Autoregressions," Journal of Economic Perspectives, Vol. 15 No. 4 (Fall
 
 *Macroeconometricians do 4 things*
 
-    1. Describe and summarize macroeconomic data, 
+1. Describe and summarize macroeconomic data, 
 
-    2. Make macroeconomic forecasts,  
+2. [Make macroeconomic forecasts]{.yellow},  
 
-    3. Quantify what we know about the true structure of the macroeconomy, 
+3. Quantify what we know about the true structure of the macroeconomy, 
 
-    4. Advise or act as policymakers. 
+4. [Advise or act as policymakers]{.yellow}. 
 
 Following the problems of the 1970s, none of the structural models or
 univariate time series approaches seemed trustworthy. VARs arose in this
@@ -46,26 +46,25 @@ vacuum.
 
 ## *VARs come in three varieties:*
 
-     1. Reduced Form 
 
-     2. Recursive 
+1. Reduced Form 
 
-     3. Structural 
+2. Recursive 
 
-A **reduced-form** VAR expresses each variable as a linear function of
+3. Structural 
+
+A **[reduced-form]{.yellow}** VAR expresses each variable as a linear function of
 its own past values and the past values of all other variables being
 considered and a serially uncorrelated error term.
 
-------------------------------------------------------------------------
+ ***
+$\begin{aligned}\text{UNEM}_t = \beta_{10} &+ \beta_{11}\text{UNEM}_{t-1} + \beta_{12}\text{UNEM}_{t-2}+\\ \gamma_{11}\text{INFL}_{t-1}& + \gamma_{12}\text{INFL}_{t-2} + \phi_{11}\text{R}_{t-1} + \phi_{12}\text{R}_{t-2}+ \mu_{1t}\end{aligned}$
 
-$\begin{aligned}\text{UNEM}_t = \beta_{10} &+ \beta_{11}\text{UNEM}_{t-1} + \beta_{12}\text{UNEM}_{t-2}+ \gamma_{11}\text{INFL}_{t-1}\\& + \gamma_{12}\text{INFL}_{t-2} + \phi_{11}\text{R}_{t-1} + \phi_{12}\text{R}_{t-2}+ \mu_{1t}\end{aligned}$
+$\begin{aligned}\text{INFL}_t = \beta_{20} &+ \beta_{21}\text{UNEM}_{t-1} + \beta_{22}\text{UNEM}_{t-2}+ \\ \gamma_{21}\text{INFL}_{t-1}& + \gamma_{22}\text{INFL}_{t-2} + \phi_{21}\text{R}_{t-1} + \phi_{22}\text{R}_{t-2}+ \mu_{2t}\end{aligned}$
 
-$\begin{aligned}\text{INFL}_t = \beta_{20} &+ \beta_{21}\text{UNEM}_{t-1} + \beta_{22}\text{UNEM}_{t-2}+ \gamma_{21}\text{INFL}_{t-1}\\& + \gamma_{22}\text{INFL}_{t-2} + \phi_{21}\text{R}_{t-1} + \phi_{22}\text{R}_{t-2}+ \mu_{2t}\end{aligned}$
+$\begin{aligned}\text{R}_t = \beta_{30} &+ \beta_{31}\text{UNEM}_{t-1} + \beta_{32}\text{UNEM}_{t-2}+\\ \gamma_{31}\text{INFL}_{t-1}& + \gamma_{32}\text{INFL}_{t-2}+ \phi_{31}\text{R}_{t-1} + \phi_{32}\text{R}_{t-2}+ \mu_{3t}\end{aligned}$
 
-$\begin{aligned}\text{R}_t = \beta_{30} &+ \beta_{31}\text{UNEM}_{t-1} + \beta_{32}\text{UNEM}_{t-2}+ \gamma_{31}\text{INFL}_{t-1}\\& + \gamma_{32}\text{INFL}_{t-2}+ \phi_{31}\text{R}_{t-1} + \phi_{32}\text{R}_{t-2}+ \mu_{3t}\end{aligned}$
-
-------------------------------------------------------------------------
-
+ ***
 In theory, the VAR uses all available or relevant past values. In
 practice, frequently the Akaike (AIC) or Bayes (BIC) information
 criteria are used.
@@ -75,7 +74,7 @@ after taking its past into account. If the different variables are
 correlated with each other, then the error terms will also be correlated
 across equations.
 
-## Recursive VAR {.scroll}
+## Recursive VAR {.scrollable}
 
 A **recursive VAR** constructs the error terms in each regression to be
 uncorrelated with the error term in the preceding equation. This is done
@@ -83,11 +82,11 @@ by adding carefully- selected contemporaneous values as regressors.
 Estimation of each equation by OLS produces residuals that are
 uncorrelated across equations.
 
-$\begin{aligned}\text{UNEM}_t = \beta_{10} &+ \beta_{11}\text{UNEM}_{t-1} + \beta_{12}\text{UNEM}_{t-2}+ \gamma_{11}\text{INFL}_{t-1} + \gamma_{12}\text{INFL}_{t-2}\\ &+ \phi_{11}\text{R}_{t-1} + \phi_{12}\text{R}_{t-2}+ \mu_{1t}\end{aligned}$
+$\begin{aligned}\text{UNEM}_t = \beta_{10} &+ \beta_{11}\text{UNEM}_{t-1} + \beta_{12}\text{UNEM}_{t-2}+\\ \gamma_{11}\text{INFL}_{t-1} + \gamma_{12}\text{INFL}_{t-2} &+ \phi_{11}\text{R}_{t-1} + \phi_{12}\text{R}_{t-2}+ \mu_{1t}\end{aligned}$
 
-$\begin{aligned}\text{INFL}_t = \beta_{20} &+ \delta_{21}\text{UNEM}_{t} + \beta_{21}\text{UNEM}_{t-1} + \beta_{22}\text{UNEM}_{t-2}\\ &+ \gamma_{21}\text{INFL}_{t-1} + \gamma_{22}\text{INFL}_{t-2}+ \phi_{21}\text{R}_{t-1} + \phi_{22}\text{R}_{t-2}+ \mu_{2t}\end{aligned}$
+$\begin{aligned}\text{INFL}_t = \beta_{20} &+ \delta_{21}\text{UNEM}_{t} + \beta_{21}\text{UNEM}_{t-1} +\\ \beta_{22}\text{UNEM}_{t-2} &+ \gamma_{21}\text{INFL}_{t-1} + \gamma_{22}\text{INFL}_{t-2}+ \phi_{21}\text{R}_{t-1} + \phi_{22}\text{R}_{t-2}+ \mu_{2t}\end{aligned}$
 
-$\begin{aligned}\text{R}_t = \beta_{30} &+ \delta_{21}\text{UNEM}_{t} + \beta_{31}\text{UNEM}_{t-1} + \beta_{32}\text{UNEM}_{t-2}+ \delta_{31}\text{INFL}_{t}\\ & +\gamma_{31}\text{INFL}_{t-1} + \gamma_{32}\text{INFL}_{t-2}+ \phi_{31}\text{R}_{t-1} + \phi_{32}\text{R}_{t-2}+ \mu_{3t}\end{aligned}$
+$\begin{aligned}\text{R}_t = \beta_{30} &+ \delta_{21}\text{UNEM}_{t} + \beta_{31}\text{UNEM}_{t-1} +\\ \beta_{32}\text{UNEM}_{t-2}+ \delta_{31}\text{INFL}_{t} & +\gamma_{31}\text{INFL}_{t-1} + \gamma_{32}\text{INFL}_{t-2}+ \phi_{31}\text{R}_{t-1} + \phi_{32}\text{R}_{t-2}+ \mu_{3t}\end{aligned}$
 
 The recursive VAR amounts to estimating the reduced form, then computing
 the Cholesky factorization of the reduced form VAR covariance matrix.
@@ -98,7 +97,7 @@ the order changes the VAR equations, coefficients, and residuals, and
 there are n! recursive VARs possible considering the possible
 reorderings.
 
-## Structural VAR {.scroll}
+## Structural VAR {.scrollable}
 
 A **structural VAR** uses economic theory to sort out contemporaneous
 links among the variables. Structural VARs require "identifying
@@ -113,8 +112,6 @@ lagged values of $R_t$,$\pi_t$,*u*+$\epsilon_t$
 The asterisked values are desired values and bar values are 4 quarter
 trailing averages. This equation becomes the interest rate equation in
 the structural VAR.
-
-------------------------------------------------------------------------
 
 First the reduced form VAR and a recursive VAR are estimated to
 summarize the co-movements of the three series involved.
@@ -168,7 +165,7 @@ horizon.
 
 : Variance Decomposition of R
 
-## Impulse Response Function {.scroll}
+## Impulse Response Function {.scrollable}
 
 Impulse responses trace out the response of current and future values of
 each of the variables to a one-unit increase in the current value of one
@@ -176,11 +173,7 @@ of the VAR errors. It is a one-period shock which reverts to zero
 immediately. These make more sense in the context of a model with
 uncorrelated errors across equations
 
- *** 
- 
-![](images/image-118026330.png){width="532"}
 
-## 
  
 In these we see the effect of a 1% change in each variable as it works
 through the recursive VAR system with the coefficients estimated from
@@ -192,9 +185,7 @@ forecast. Stock and Watson then replace the interest rate equation with
 two forms of the Taylor rule (one backward looking and one forward
 looking), and compare impulse responses of monetary policy shocks.
 
-------------------------------------------------------------------------
 
-![](images/image-1911444829.png)
 
 ## Policy Analysis
 
@@ -245,7 +236,7 @@ annual data.
  *** 
  
 Trend removal: the method of detrending can make a substantial
-difference to variance decomposition results. Lag length: In a mrpy
+difference to variance decomposition results. Lag length: In a [`mrpy`]{.yellow}
 model, a second year of lags to the VAR gives increased estimates of the
 importance of money in explaining industrial production. Adding lags
 also seems to improve the stability of results across orderings. Level
