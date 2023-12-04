@@ -1,8 +1,8 @@
-library(fpp2)
-library(fpp3)
+# library(fpp2)
+# library(fpp3)
 library(tidyverse)
 library(forecast)
-library(zoo)
+# library(zoo)
 library(ggfortify)
 library(readxl)
 library(xts)
@@ -34,15 +34,15 @@ endpoints(kse_xts, on = "weeks", k = 4)
 
 
 # Calculate the weekly endpoints
-ep <- endpoints(ts_data, on = "weeks")
+# ep <- endpoints(ts_data, on = "weeks")
 
 # Now calculate the weekly mean and display the results
 period.apply(kse_xts, INDEX = ep, FUN = mean) 
 
 # Or  Following two commands are very similar to period.apply----------------------------------------------------------------------
 
-# Split temps by week
-ts_weekly <- split(ts_data, f = "weeks")
+# Split  by week
+ts_weekly <- split(kse_xts, f = "weeks")
 
 # Create a list of weekly means, temps_avg, and print this list
 ts_avg <- lapply(X =ts_weekly, FUN = mean)
@@ -54,30 +54,31 @@ ts_avg
 
 
 # Convert kse to weekly and assign to kse_weekly
-kse_weekly <- to.period(kse_xts, period = "weeks")
+kse_weekly <- to.period(kse_xts, period = "weeks",OHLC = FALSE)
 
 # Convert kse to monthly and assign to kse_monthly
-kse_monthly<- to.period(kse_xts, period = "months")
+kse_monthly<- to.period(kse_xts, period = "months",OHLC = FALSE)
+
+# Convert eq_mkt to quarterly OHLC
+kse_quarterly <- to.period(kse_xts, period = "quarters",OHLC = FALSE)
 
 # Convert kse to yearly univariate and assign to kse_yearly
 kse_yearly <- to.period(kse_xts, period = "years", OHLC = FALSE)
 
 
-# Convert eq_mkt to quarterly OHLC
-kse_quarterly <- to.period(kse_xts, period = "quarters")
 
 # Convert eq_mkt to quarterly using shortcut function
 kse_quarterly2 <- to.quarterly(kse_xts, name = "kse_index", indexAt = "firstof")
 
-kse_quarterly
+kse_quarterly |> head()
 
-kse_quarterly2
+kse_quarterly2 |> head()
 
 
-# Split edhec into years
+# Split kse into years
 kse_years <- split(kse_xts , f = "years")
 
-# Use lapply to calculate the cumsum for each year in edhec_years
+# Use lapply to calculate the cumsum for each year in kse
 kse_ytd <- lapply(kse_years, FUN = cumsum)
 
 # Use do.call to rbind the results
@@ -95,7 +96,7 @@ periodicity(kse_xts)
 # Convert kse_xts to yearly
 kse_yearly <- to.yearly(kse_xts)
 kse_yearly
-# Calculate the periodicity of edhec_yearly
+# Calculate the periodicity of kse_yearly
 periodicity(kse_yearly)
 
 # Count the days
@@ -124,6 +125,12 @@ tzone(kse_xts)
 # Explore underlying units of kse_xts in two commands: .index() and .indexwday()
 .index(kse_xts)
 .indexwday(kse_xts)
+
+
+
+# Second part -------------------------------------------------------------
+
+
 
 # Create an index of weekend days using which()
 index <- which(.indexwday(kse_xts) == 0 | .indexwday(kse_xts) == 6)

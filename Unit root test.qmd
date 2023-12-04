@@ -1,0 +1,55 @@
+---
+title: "Unit root test"
+format: html
+editor: visual
+---
+
+## URT
+
+```{r}
+# Load data
+#install.packages('bvartools')
+library(tidyverse)
+library(fpp3)
+library(forecast)
+library(xts)
+library(bvartools)
+
+```
+
+## Data and inspection
+
+
+```{r}
+data("e1")
+
+# Disposable income in levels 
+
+income <- e1[, "income"]
+
+e1 |> glimpse()
+df <- as_tsibble(e1)
+
+e1 |> select(income)
+
+autoplot(income)
+# Plot series
+plot(income, main = "West Germain disposable income", ylab = "Billion DM")
+
+```
+
+```{r}
+# Obtain ln of income
+lincome <- log(income)
+
+# Obtain detrended series
+t_lincome <- (lincome - fitted(lm(lincome ~ I(1:length(lincome))))) * 100
+
+# Plot and add horizontal line at 0
+plot(t_lincome, main = "West German Disposable Income",
+     ylab = "Deviation from linear trend"); abline(h = 0)
+df <- as_tsibble(e1)
+df |> glimpse()
+ggplot(df,aes(x=index,y=income))+geom_line()
+```
+

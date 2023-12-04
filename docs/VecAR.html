@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.3.299">
 
   <meta name="author" content="Zahid Asghar, Professor, School of Economics, QAU">
-  <title>Structural VAR Lec_01</title>
+  <title>Structural VAR Part 1</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -327,7 +327,7 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title"><span class="flow">Structural VAR Lec_01</span></h1>
+  <h1 class="title"><span class="flow">Structural VAR Part 1</span></h1>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -337,7 +337,7 @@
 </div>
 </div>
 
-  <p class="date">09-01-2025</p>
+  <p class="date">03-12-2023</p>
 </section>
 <section>
 <section id="introduction" class="title-slide slide level1 center">
@@ -464,24 +464,28 @@ e_{2,t}
 <ol type="1">
 <li>The expected value of <span class="math inline">\(y_t\)</span> does not depend on timed</li>
 </ol>
-<p><span class="math display">\[[Y_t]=E[Y_{t+j}]=\mu=\begin{bmatrix}
+<p><span class="math display">\[E[Y_t]=E[Y_{t+j}]=\mu=\begin{bmatrix}
 \mu_1  \\
 \mu_2  \\
 \dots  \\
 \mu_n
 \end{bmatrix}\]</span> 2. The covariance matrix of <span class="math inline">\(y_t\)</span> and <span class="math inline">\(y_{t+j}\)</span> depends on the time lapsed between j and not not the reference period t</p>
-<p><span class="math display">\[E[(y_t-\mu)(y_{t+j}-\mu)']=E[(y_s-\mu)(y_{s+j}-\mu)']=\Gamma_j\]</span> ## Condions for Sationarity The conditioins for a VAR to be stationary are similar to the conditions for a univariate AR process to be stationary: <span class="math inline">\(y_t=G_0+G_1y_{t-1}+G_2 y_{t-2}+\dots+G_py_{t-p}+e_t\)</span></p>
+<p><span class="math display">\[E[(y_t-\mu)(y_{t+j}-\mu)']=E[(y_s-\mu)(y_{s+j}-\mu)']=\Gamma_j\]</span></p>
+</section>
+<section id="condions-for-sationarity" class="slide level2">
+<h2>Condions for Sationarity</h2>
+<p>The conditioins for a VAR to be stationary are similar to the conditions for a univariate AR process to be stationary: <span class="math inline">\(y_t=G_0+G_1y_{t-1}+G_2 y_{t-2}+\dots+G_py_{t-p}+e_t\)</span></p>
 <p><span class="math inline">\((I_n-G_1L-G_2L^2-\dots-G_pL^p)y_t=G_0+e_t\)</span></p>
 <p><span class="math inline">\(G(L)y_t=G_0+e_t\)</span> For <span class="math inline">\(y_t\)</span> to be stationary, the matrix polynomial in the lag operator <span class="math inline">\(G(L)\)</span> must be invertible.</p>
 </section>
 <section id="conditions-for-stationarity" class="slide level2">
 <h2>Conditions for Stationarity</h2>
 <div class="columns">
-<div class="column" style="width:60%;">
+<div class="column" style="width:55%;">
 <p>A VAR(p) process is stationary (thus) - A VAR(p) if all the np roots of the <span style="color:red;">characteristic polynomial</span> are (in modulus) outside the unit imaginary</p>
 <p><span class="math inline">\(det(I_n-G_1L-G_2L^2-\dots-G_pL^p)=0\)</span></p>
 <p>Softwares sometimes <strong>inverse roots</strong> of the characteristic AR polynomial, which should then lie within the unit imaginary circle.</p>
-</div><div class="column" style="width:40%;">
+</div><div class="column" style="width:35%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
 <p><img data-src="images/unit_circle.png"></p>
@@ -494,7 +498,7 @@ e_{2,t}
 <section id="vector-moving-average-representation-of-a-var" class="slide level2">
 <h2>Vector Moving Average Representation of a VAR</h2>
 <ul>
-<li>If a VAR is stationary, the yt vector can be expressed as a sum of all of the past white noise shocks et (VMA(∞) representation <span class="math inline">\(y_t=\mu+G(L)^{-1}e_t\)</span>, where <span class="math inline">\(\mu=G(L)^{-1}G_0\)</span> <span class="math inline">\(y_t=\mu+(I_n+\Psi_1L+\Psi L^2+\dots)e_t\)</span> $y_t=+e_t+e_{t-1}+e_{t-2}+$</li>
+<li>If a VAR is stationary, the yt vector can be expressed as a sum of all of the past white noise shocks et (VMA(∞) representation <span class="math inline">\(y_t=\mu+G(L)^{-1}e_t\)</span>, where <span class="math inline">\(\mu=G(L)^{-1}G_0\)</span> <span class="math inline">\(y_t=\mu+(I_n+\Psi_1L+\Psi L^2+\dots)e_t\)</span> <span class="math inline">\(y_t=\mu+e_t+\Psi e\_{t-1}+\Psi e\_{t-2}+\dots\)</span></li>
 </ul>
 <p><span class="math inline">\(y_t=\mu+\sum_{i=1}^{n} \Psi_i e_{t-i}\)</span></p>
 <ul>
@@ -522,7 +526,7 @@ e_{2,t}
 <ul>
 <li>In a VAR(p) we have <span class="blue">p</span> matrices of dimension nxn : <span class="math inline">\(G_1, ...,G_p\)</span></li>
 <li>Assume <span class="math inline">\(G_0\)</span> is an intercept vector (dimension: nx1)</li>
-<li>The number of <span style="color:red;">total</span> coefficients/parameters to be estimated as : <span style="color:red;">n+nxnxp=n(1+nxp)</span></li>
+<li>The number of <span style="color:red;">total</span> coefficients/parameters to be estimated as : $<span style="color:red;">n+n.n.p=n(1+np)</span></li>
 </ul>
 </section>
 <section id="overfitting-versus-omitted-variable-bias" class="slide level2">
@@ -565,9 +569,6 @@ e_{2,t}
 <li>Let <span class="math inline">\(Y_{t-1}\)</span> be a matrix containing all information available up to time t (before realization of <span class="math inline">\(e_t\)</span> are known)</li>
 <li>Then: <span class="math inline">\(E[y_t/Y_{t-1}]=G_0+G_1y_{t-1}+G_2y_{t-2}+\dots+G_py_{t-p}\)</span></li>
 </ul>
-</section>
-<section id="forecasting-using-the-estimated-var-1" class="slide level2">
-<h2>Forecasting Using the Estimated VAR</h2>
 <p>The forecast error can be decomposed into the sum of et , the unexpected innovation of yt , and the coefficient estimation error:</p>
 <p><span class="math inline">\(y_t-E[y_t/Y_{t-1}]=e_t+V(Y_{t-1}])\)</span></p>
 <ul>

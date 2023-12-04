@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.3.299">
 
   <meta name="author" content="Zahid Asghar, Professor, School of Economics, QAU">
-  <title>Structural VAR Lec_01</title>
+  <title>Macroeconomic Forecasting: Structural VAR</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -327,7 +327,7 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title"><span class="flow">Structural VAR Lec_01</span></h1>
+  <h1 class="title"><span class="flow">Macroeconomic Forecasting: Structural VAR</span></h1>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -337,7 +337,7 @@
 </div>
 </div>
 
-  <p class="date">09-01-2025</p>
+  <p class="date">04-12-2023</p>
 </section>
 <section>
 <section id="svar-models" class="title-slide slide level1 center">
@@ -373,8 +373,11 @@
 <h4 id="we-must-identify-purely-exogenous-policy-or-other-type-of-shocks-tobe-able-to-trace-out-its-dynamic-effects.-identify-the-structural-var.">We must identify purely exogenous (policy or other type of) shocks tobe able to trace out its dynamic effects. Identify the structural VAR.</h4>
 <ul>
 <li>Uncovering the structural model is called identification</li>
-<li>According to Sims (1986): &gt; identification is the interpretation of historically observed variation in data in a way that allows the variation to be used to predict the consequences of an action not yet undertaken.</li>
+<li>According to Sims (1986):</li>
 </ul>
+<blockquote>
+<p>identification is the interpretation of historically observed variation in data in a way that allows the variation to be used to predict the consequences of an action not yet undertaken.</p>
+</blockquote>
 </section>
 <section id="svar-identification" class="slide level2">
 <h2>SVAR Identification</h2>
@@ -560,6 +563,252 @@ into 9 equations, to solve for :</li>
 <h2>SVAR Identification: restrictions</h2>
 <p>Summary of SVAR Identification up to now: - Get the structural model, - to do that, we need to get A, so - impose restrictions on A, based on economics, to recover the structural shocks and the structural parameters, using the reduced-form estimation.</p>
 <h4 id="therefore-svar-identification-is-about-imposing-restrictions-on-matrix-a.">Therefore, SVAR identification is about imposing restrictions on matrix A.</h4>
+</section>
+<section id="svar-identification-how-many-restrictions" class="slide level2">
+<h2>SVAR Identification: how many restrictions?</h2>
+<ul>
+<li><p>The minimum number of restrictions required: <strong>difference</strong> between the number of unknown and known elements. Let <strong>n</strong> be the number of variable in the VAR.</p></li>
+<li><p><strong>Unknown</strong>: as the elements of the diagonal of <strong>A</strong> are equal 1’s, there are <span class="math inline">\(n(n-1)\)</span> unknown elements in <strong>A</strong>. There are also n unknown variances of <span class="math inline">\(u\)</span>. The total is: <span class="math inline">\(n(n-1)+n=n^2\)</span>.</p></li>
+<li><p><strong>Known elements</strong>: the estimation allows us to get <span class="math inline">\(n(n-1)/2+n=n(n+1)/2\)</span> distinct elements contained in the <strong>symmetric</strong> var-cov matrix of the errors: <span class="math inline">\(Ee_t e_t'=\Sigma_e\)</span>.</p></li>
+</ul>
+</section>
+<section id="svar-identification-how-many-restrictions-1" class="slide level2">
+<h2>SVAR Identification: how many restrictions?</h2>
+<p><strong>Why the known</strong> elements are <span class="math inline">\(n(n+1)/2\)</span>? The distinct elements contained in the symmetric var-cov matrix of the forecast errors: <span class="math inline">\(Ee_t e_t'=\Sigma_e\)</span></p>
+<ul>
+<li><p>Because there are n distinct elements in the diagonal of <span class="math inline">\(\Sigma_e\)</span> and <span class="math inline">\(n(n-1)/2\)</span> distinct elements in the upper triangular part of <span class="math inline">\(\Sigma_e\)</span>. The total number of known elements is: <span class="math inline">\(n+n(n-1)/2=n(n+1)/2\)</span>.</p></li>
+<li><p>Thus, impose <span class="math inline">\(n^2-n(n+1)/2=n(n-1)/2\)</span> restrictions on <strong>A</strong>.A VAR with 3 variables requires 3(3-1)/2=3 restrictions on <strong>A</strong>; A VAR with 4 variables requires 4(4-1)/2=6 restrictions on <strong>A</strong>.</p></li>
+</ul>
+</section>
+<section id="impulse-responses-1" class="slide level2">
+<h2>Impulse Responses</h2>
+<ul>
+<li><p>Impulse responses trace the effects of structural shocks on the endogenous variables over time.</p></li>
+<li><p>Each response includes the effect of a specific shock on one of the endogenous variables of the system at impact t, then on <strong>t+1</strong>, and so on.</p></li>
+<li><p>Transform our structural autoregressive vector <span class="math inline">\(AX_t=\beta_0+\beta_1 X_{t-1}+u_t\)</span> into a moving average representation: <span class="math inline">\(X_t=\mu+\sum_{i=0}^{\infty}C_i u_t\)</span></p></li>
+</ul>
+</section>
+<section id="variance-decomposition-1" class="slide level2">
+<h2>Variance Decomposition</h2>
+<ul>
+<li><p>Forecast errors and the relationships among the variables.</p></li>
+<li><p>Propotion of the movements of a variable due to shocks to itself and shocks to other variables in the system.</p></li>
+<li><p>This forecast error variance decomposition and the foreces behind business cycles.</p></li>
+</ul>
+</section>
+<section id="variance-decomposition-2" class="slide level2">
+<h2>Variance Decomposition</h2>
+<ul>
+<li><p>Are all business cycles alike? Are GDP surprises mostly due to technology shocks or to monetary policy shocks?</p></li>
+<li><p>Are demand shocks the main source of GDP forecast errors at long hirzons?</p></li>
+<li><p>In our recursive ordering for <span class="math inline">\(y\)</span> and <span class="math inline">\(r\)</span>, all of the one period forecast-error variance of <span class="math inline">\(y\)</span> is due to shocks to <span class="math inline">\(u_{yt}\)</span>. At longer horizons the explanatory share of shocks to <span class="math inline">\(u_{yt}\)</span> will diminish.</p></li>
+</ul>
+</section></section>
+<section>
+<section id="two-identification-strategies-1" class="title-slide slide level1 center">
+<h1>Two identification strategies</h1>
+
+</section>
+<section id="svar-identification-recursive-ordering" class="slide level2">
+<h2>SVAR Identification: recursive ordering</h2>
+<ul>
+<li>In our example the residuals take on a recursive ordering: Matrix <span class="math inline">\(A^{-1}\)</span> is lower triangular ( only has zeros above the diagonal).</li>
+</ul>
+<p><span class="math inline">\(e_{yt}=u_{yt}\)</span> and <span class="math inline">\(e_{rt}=u_{rt}-a_{21}u_{yt}\)</span></p>
+<p><span class="math display">\[\begin{bmatrix}
+e_{yt}\\
+e_{rt}\\
+\end{bmatrix}=\begin{bmatrix}
+1 &amp; 0\\
+-a_{21} &amp; 1 \\
+\end{bmatrix}\begin{bmatrix}
+u_{yt}\\
+u_{rt}\\
+\end{bmatrix}\]</span></p>
+<ul>
+<li>The recursive ordering means that there is a sequential chain.</li>
+</ul>
+</section>
+<section id="svar-identification-recursive-ordering-1" class="slide level2">
+<h2>SVAR Identification: recursive ordering</h2>
+<ul>
+<li><p>Shocks to <span class="math inline">\(r\)</span> only affects output gap <span class="math inline">\(y\)</span> with a lag: <span class="math inline">\(y_t=\beta_0+\beta_1 y_{t-1}+\beta_2 r_{t-1}+u_{yt}\)</span></p></li>
+<li><p>Both shocks have contemporaneous effects on the interest rate<span class="math inline">\(r\)</span>: <span class="math inline">\(r_t+a_{21}y_t=\beta_0+\beta_1 y_{t-1}+\beta_2 r_{t-1}+u_{rt}\)</span></p></li>
+<li><p>If <span class="math inline">\(r\)</span> is the policy rate, then the recursive ordering is consistent with the view that monetary policy responds to output gap <span class="math inline">\(y\)</span> with a lag, but responds to the interest rate <span class="math inline">\(r\)</span> contemporaneously.</p></li>
+</ul>
+</section>
+<section id="svar-identification-recursive-ordering-2" class="slide level2">
+<h2>SVAR Identification: recursive ordering</h2>
+<ul>
+<li>Another example: a three-variable recursive ordering with <span class="math inline">\(y\)</span>, <span class="math inline">\(\pi\)</span>(inflation) and <span class="math inline">\(r\)</span>:</li>
+</ul>
+<p><span class="math inline">\(e_{yt}=u_{yt}\)</span> <span class="math inline">\(e_{\pi t}=-a_{21}u_{yt}+u_{\pi t}\)</span> <span class="math inline">\(e_{rt}=(-a_{31}+a_{21}a_{32})u_{yt}-a_{32}u_{\pi t}+u_{rt}\)</span></p>
+<p><span class="math display">\[\begin{bmatrix}
+e_{yt}\\
+e_{\pi t}\\
+e_{rt}\\
+\end{bmatrix}=\begin{bmatrix}
+1 &amp; 0 &amp; 0\\
+-a_{21} &amp; 1 &amp; 0\\
+-a_{31}+a_{21}a_{32} &amp; -a_{32} &amp; 1\\
+\end{bmatrix}\begin{bmatrix}
+u_{yt}\\
+u_{\pi t}\\
+u_{rt}\\
+\end{bmatrix}\]</span> - If movements of <span class="math inline">\(r\)</span> are monetary policy(MP) decisions, policy is reacting to output <span class="math inline">\(y\)</span> and inflation <span class="math inline">\(\pi\)</span> within the period. All shocks have contemporaneous effects on <span class="math inline">\(r\)</span>. - The policy rate <span class="math inline">\(r\)</span> affects output <span class="math inline">\(y\)</span> with a lag, and inflation <span class="math inline">\(\pi\)</span> with a lag.</p>
+</section>
+<section id="svar-identification-recursive-ordering-3" class="slide level2">
+<h2>SVAR Identification: recursive ordering</h2>
+<ul>
+<li>The good news is that it is easy to find matrix <span class="math inline">\(A^{-1}\)</span> and <span class="math inline">\(A\)</span> when one has a recursive ordering. And with <span class="math inline">\(A\)</span> we get the impulse-responses.</li>
+<li>Any invertible matrix may be broken into two lower triangular factors(Choleski factors). It is a numerica technique(not economics) to easily estimate a recursive ordering.</li>
+<li>You must be aware of the economic restrictions you are imposing. <span style="color:red">The zeros</span> on the upper side <span style="color:red">are RESTRICTIONS</span> on the contemporaneous effects of the shocks.</li>
+</ul>
+</section>
+<section id="svar-identification-recursive-ordering-4" class="slide level2">
+<h2>SVAR Identification: recursive ordering</h2>
+<ul>
+<li><p>Indeed, when one has a recursive odering.</p></li>
+<li><p><span class="math inline">\(A^{-1}\)</span> is the <strong>Choleski factor</strong> of the variance-covariance matrix.</p></li>
+<li><p>Why? substitute <span class="math inline">\(e_t=A^{-1}u_t\)</span> into <span class="math inline">\(Ee_t e_t'=\Sigma_e\)</span> and get <span class="math inline">\(A^{-1}\Sigma_u A^{-1'}=\Sigma_e\)</span>.</p></li>
+<li><p>Assuming that <span class="math inline">\(u_tu_t'\)</span> is diagonal, then <span class="math inline">\(A^{-1}IA^{-1}'=\Sigma_e\)</span> same as <span class="math inline">\(\Sigma_e=A^{-1}A^{-1'}\)</span>. The inverse of <span class="math inline">\(A\)</span> is lower triangular consistent with a recursive ordering.</p></li>
+</ul>
+<p>Not that assuming <span class="math inline">\(\Sigma_u=1\)</span> implies that <span class="math inline">\(A\)</span> will not have <span class="math inline">\(1s\)</span> on the diagonal.</p>
+</section>
+<section id="svar-identification-recursive-ordering-5" class="slide level2">
+<h2>SVAR Identification: recursive ordering</h2>
+<ul>
+<li>If correlations between the errors are low, the order is irrelevant. But usually, correlations are strong and the order matters.</li>
+<li>Deciding the ordering (restrictions) to be imposed is crucial. Use economic intuition to decide it.</li>
+<li>It is impractical to try all possible orderings. With 4 variables there are 4!=24 possible orderings. Too many.</li>
+</ul>
+</section>
+<section id="svar-identification-recursive-ordering-6" class="slide level2">
+<h2>SVAR Identification: recursive ordering</h2>
+<ul>
+<li>If you are sure that there is a recursive ordering, or sequential chain, you must then know in what order the variables are recursive.</li>
+<li>It is often difficult to justify the economics of a recursive ordering</li>
+</ul>
+</section>
+<section id="example-sims1992" class="slide level2">
+<h2>Example : Sims(1992)</h2>
+<blockquote>
+<p><em>Interepreting the macroeconomic time series facts</em> European Economic Review</p>
+</blockquote>
+<ul>
+<li><p>Sims estimated a VAR to trace the effect of a shock to monetary policy (Central Bank Interest Rate) using specific ordering.</p></li>
+<li><p>To assess the empirical support for alternative views (models) about monetary policy: VAR agenda.</p></li>
+<li><p>He included:</p>
+<ul>
+<li>Federal Funds Rate(ff) and the logs of <span class="math inline">\(M1\)</span> (lm), CPI (lp), and <strong>Industrial production</strong>(ly). The VAR was estimated using 14 lags during the sample period : 1958:04- 1991:02</li>
+</ul></li>
+</ul>
+</section>
+<section id="example-sims1992-1" class="slide level2">
+<h2>Example : Sims(1992)</h2>
+<ul>
+<li>The policy variable (ff) was observed first. So the ordering is equivalent to assuming that:</li>
+</ul>
+<ol type="1">
+<li><p>Shocks to the nominal interest rate <strong>ff</strong>, represent monetary policy shocks.</p></li>
+<li><p>A shcok to the policy variable affects all other variables contemporaneously.</p></li>
+<li><p>The variable that is affected by all the others, within the period, is ordered last.</p></li>
+<li><p>Authorities only observe non-policy variables with a lag.</p></li>
+</ol>
+</section>
+<section id="example-sims1992-2" class="slide level2">
+<h2>Example : Sims(1992)</h2>
+<p>Empirical results:</p>
+</section>
+<section id="svar-identification-non-recursive-ordering" class="slide level2">
+<h2>SVAR Identification: non recursive ordering</h2>
+<ul>
+<li>Until now we have used <span class="math inline">\(e_t=A^{-1}u_t\)</span> to show the relation between forecast errors and structural shocks.</li>
+<li>Bernanke and Mihov (1998), Blanchard and Perotti (2002), and other authors use a more general way of relating errors and shocks in structural VARs: <span class="math inline">\(Ae_t=Bu_t\)</span>.</li>
+<li>The specification of these equations can have both errors and shocks on the right hand side. To get the system responses to shocks one needs to have <span class="math inline">\(e_t=A^{-1}Bu_t\)</span>. or <span class="math inline">\(e_t=Fu_t\)</span>. So we use the estimated <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> to compute <span class="math inline">\(F=A^{-1}B\)</span>.</li>
+</ul>
+</section>
+<section id="svar-identification-non-recursive-ordering-1" class="slide level2">
+<h2>SVAR Identification: non recursive ordering</h2>
+<blockquote>
+<p>“An empirical characterization of the dynamic effects of changes in government spending and taxes on output.” Quarterly Journal of Economics, 117(4):1329–1368, 2002.</p>
+</blockquote>
+<p>Use a semi-recursive VAR to econometrically identify fiscal policy shocks; i.e.&nbsp;exogenous movements in public expenditure/taxes. - They estimate a VAR: - Using contemporaneous identification restrictions on variables. - Imposing, on matrix A, coefficients estimated outside the VAR. - They pay careful attention to institutional procedures and periods of tax collection and public spending.</p>
+</section>
+<section id="exmaple-blanchard-and-perotti-2002" class="slide level2">
+<h2>Exmaple: Blanchard and Perotti (2002)</h2>
+<ul>
+<li><p>The <strong>VAR</strong> is <span class="math inline">\(X_t=G(L)X_{t-1}+e_t\)</span> where <span class="math inline">\(X_t=[S_t,T_t,Y_t]\)</span> includes the logs of quarterly real per capita government spending, taxes, and GDP, respectively.</p></li>
+<li><p>And <span class="math inline">\(e_t=[e_t^S,e_t^T,e_t^Y\)</span> is the vector of reduced form residuals or forecast errors of spending, taxes, and GDP, respectively.</p></li>
+<li><p><strong>Spending</strong>: government <strong>consumption</strong> and <strong>investment</strong>.</p></li>
+<li><p><strong>Revenue</strong>: total <strong>taxes</strong> minus <strong>transfers</strong> and minus interest payments.</p></li>
+</ul>
+</section>
+<section id="exmaple-blanchard-and-perotti-2002-1" class="slide level2">
+<h2>Exmaple: Blanchard and Perotti (2002)</h2>
+<blockquote>
+<p>An empirical characterization of the dynamic effects …</p>
+</blockquote>
+<ul>
+<li>The whole system is: <span class="math inline">\(e_t^{S}=b_1e_t^{y}+b_2e_t^{T}+b_3e_t^{S}\)</span> <span class="math inline">\(e_t^{T}=a_1e_t^{y}+a_2e_t^{S}+b_6e_t^{T}\)</span> <span class="math inline">\(e_t^{y}=c_1e_t^{T}+c_2e_t^{S}+c_3e_t^{y}\)</span></li>
+</ul>
+<p><span class="math display">\[\begin{bmatrix}
+1 &amp; 0 &amp; -b_1\\
+0 &amp; 1 &amp; -a_1\\
+-c_1 &amp; -c_2 &amp; 1\\
+\end{bmatrix}\begin{bmatrix}
+e_t^{S}\\
+e_t^{T}\\
+e_t^{y}\\
+\end{bmatrix}=\begin{bmatrix}
+1 &amp; b_2 &amp; 0\\
+a_2 &amp; 1 &amp; 0\\
+0 &amp; 0 &amp; 1\\
+\end{bmatrix}\begin{bmatrix}
+u_t^{S}\\
+u_t^{T}\\
+u_t^{y}\\
+\end{bmatrix}\]</span> These are matrices <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> to be estimated.</p>
+<ul>
+<li><span class="math inline">\(U_t=[u_t^S,u_t^T,u_t^Y]\)</span> is the vector of structural shocks to spending, taxes, and GDP.</li>
+</ul>
+</section>
+<section id="exmaple-blanchard-and-perotti-2002-2" class="slide level2">
+<h2>Exmaple: Blanchard and Perotti (2002)</h2>
+<blockquote>
+<p>An empirical characterization of the dynamic effects …</p>
+</blockquote>
+<ul>
+<li>Forecast errors are a mix of <span class="math inline">\(e\)</span> and structural shocks <span class="math inline">\(u\)</span>:</li>
+</ul>
+<ol type="1">
+<li><span class="math inline">\(e_t^S=b_1 e_t^{y}+b_2 e_t^{T}+u_t^S\)</span> Unexpected movements in spending (<span class="math inline">\(e_t^S\)</span>) are due to shocks to GDP forecast errors (<span class="math inline">\(b_1 e_t^{y}\)</span>) structural shocks to taxes (<span class="math inline">\(b_2 e_t^{T}\)</span>) and structural shocks to government spending (<span class="math inline">\(u_t^S\)</span>).</li>
+</ol>
+<ul>
+<li>Key: At high frequencies (quarterly), there is no discretionary, within the period, response of government spending to unexpected movements in <span class="math inline">\(y: b1\)</span> is always 0.</li>
+<li>Are taxes responding to spending decisions? Or the reverse? Here government spending decisions go before tax decisions so <span class="math inline">\(b2 = 0\)</span>.</li>
+</ul>
+</section>
+<section id="exmaple-blanchard-and-perotti-2002-3" class="slide level2">
+<h2>Exmaple: Blanchard and Perotti (2002)</h2>
+<blockquote>
+<p>An empirical characterization of the dynamic effects …</p>
+</blockquote>
+<ol start="2" type="1">
+<li><span class="math inline">\(e_t^T=a_1 e_t^{y}+a_2 e_t^{S}+u_t^T\)</span></li>
+</ol>
+<ul>
+<li>Forecast errors in taxes are due to surprises in GDP (<span class="math inline">\(a_1 e_t^{y}\)</span>), surprises in spending (<span class="math inline">\(a_2 u_t^{S}\)</span>), and structural shocks to taxes (<span class="math inline">\(u_t^T\)</span>).</li>
+<li>They constructed the elasticity to output of taxes minus transfers ( ) to get the automatic effect of GDP on taxes within the quarter. On average</li>
+<li>Assumed that spending decisions go first, so a2 was estimated with the SVAR</li>
+</ul>
+</section>
+<section id="exmaple-blanchard-and-perotti-2002-4" class="slide level2">
+<h2>Exmaple: Blanchard and Perotti (2002)</h2>
+<p><span style="color:blue">SPENDING SHOCKS</span> VAR 4 lags 1960:1 1997:4 (<span class="math inline">\(a_2neq0\)</span>,<span class="math inline">\(b_2=0\)</span>)</p>
+</section>
+<section id="r-codes-for-blanchard-and-perotti-2002" class="slide level2">
+<h2>R Codes for Blanchard and Perotti (2002)</h2>
 <div class="footer footer-default">
 
 </div>
