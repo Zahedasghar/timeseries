@@ -242,3 +242,5 @@ importance of money in explaining industrial production. Adding lags
 also seems to improve the stability of results across orderings. Level
 of temporal aggregation: While aggregation may reduce noise in series,
 it increases cont. correlation.
+
+1

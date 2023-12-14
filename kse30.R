@@ -1,8 +1,7 @@
-# library(fpp2)
-# library(fpp3)
+
 library(tidyverse)
 library(forecast)
-# library(zoo)
+ library(zoo)
 library(ggfortify)
 library(readxl)
 library(xts)
@@ -10,17 +9,19 @@ kse30 <- read_csv("docs/data/kse_30_index.csv")
 
 kse30 |> dim()
 
-kse30 %>% glimpse()
+kse30 |>  glimpse()
 
 
 
 kse30$date <- as.Date(kse30$Date,format = "%m/%d/%Y")
 
 kse30$day <- weekdays(kse30$date)
+
+kse30 |> glimpse()
 # Create an xts time series object
 kse_xts <- xts(kse30[, c("Price", "Open", "High", "Low")], order.by = kse30$date)
 
-
+kse_xts |> head()
 # Locate the weeks
 
 
@@ -33,17 +34,15 @@ endpoints(kse_xts, on = "weeks", k = 2)
 endpoints(kse_xts, on = "weeks", k = 4)
 
 
-# Calculate the weekly endpoints
-# ep <- endpoints(ts_data, on = "weeks")
-
 # Now calculate the weekly mean and display the results
 period.apply(kse_xts, INDEX = ep, FUN = mean) 
 
-# Or  Following two commands are very similar to period.apply----------------------------------------------------------------------
 
 # Split  by week
 ts_weekly <- split(kse_xts, f = "weeks")
+ts_weekly |> head(15)
 
+ts_weekly |> head()
 # Create a list of weekly means, temps_avg, and print this list
 ts_avg <- lapply(X =ts_weekly, FUN = mean)
 ts_avg
@@ -55,6 +54,7 @@ ts_avg
 
 # Convert kse to weekly and assign to kse_weekly
 kse_weekly <- to.period(kse_xts, period = "weeks",OHLC = FALSE)
+
 
 # Convert kse to monthly and assign to kse_monthly
 kse_monthly<- to.period(kse_xts, period = "months",OHLC = FALSE)
@@ -125,6 +125,13 @@ tzone(kse_xts)
 # Explore underlying units of kse_xts in two commands: .index() and .indexwday()
 .index(kse_xts)
 .indexwday(kse_xts)
+
+
+
+
+
+
+
 
 
 

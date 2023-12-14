@@ -87,7 +87,7 @@ VARselect(df.lev, lag.max = 4,
 var.model_lev <-  VAR(df.lev, p = 2, 
                      type = "const", season = 4)
 
-
+df.lev |> head()
 summary(var.model_lev)
 # forecast of lev data
 var.pred <-   predict(var.model_lev, n.ahead = nhor)

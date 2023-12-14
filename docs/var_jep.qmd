@@ -1,0 +1,166 @@
+---
+title: "VAR and SVAR in R"
+subtitle: "Vector Autoregression by Stock and Watson JEP-2001"
+author: "Zahid Asghar"
+date: 12/14/2023
+date-format: long
+format: 
+  html:
+    toc: true
+    toc_float: true
+    number_sections: true
+    theme: solarized
+    highlight: tango
+    code_folding: true
+execute:
+  freeze: auto
+  warning: false
+---
+
+# Vector Autoregression
+
+## Introduction
+
+In this post I am going to reproduce results of article by [**Stock, James H., and Mark W. Watson, "Vector Autoregressions," Journal of Economic Perspectives, Vol. 15 No. 4 (Fall 2001), 101-115.**](https://www.aeaweb.org/articles?id=10.1257/jep.15.4.101) using R.
+
+## Load necessary libraries
+
+```{r}
+#| warnings: false
+library(tidyverse) # An umbrella library consisting of 9 R packages
+library(vars)
+library(svars)
+library(lmtest)
+library(forecast)
+library(haven) # To read data from stata/spss
+```
+
+## Load data
+
+```{r}
+sw_df <- read_dta("C:/Users/92300/Dropbox/Applied Econometrics SBP/VAR JEP data.dta")
+```
+
+## Inspect data
+
+`head()` and `tail()` provides first 6 and last 6 observations, respectively. One can use `glimpse` to see nature of each variable.
+
+```{r}
+sw_df |> head()
+sw_df |> tail()
+```
+
+## Set the time series data
+
+```{r}
+sw_df <- ts(sw_df, start = c(1960, 1), frequency = 4)
+
+sw_df1 <- sw_df[,2:4]
+
+## Plot the time series data
+plot(sw_df1, main = "Time Series Plot", ylab = "Percent", xlab = "Year")
+```
+
+## Estimate Reduced form model
+
+As I have explained ... video that reduced VAR is used only for forecasting and it has lags of all endogenous variables. First we select appropriate lags using `lag length selection criteria` as follows:
+
+```{r}
+# Estimate VAR model
+VARselect(sw_df1, lag.max = 4,
+          type = "const", season = 4)
+```
+
+## Estimation of VAR model with lag order 4
+
+In original article there are four lags selected and AIC and FPE is also indicating 4 lags, therefore, I estimate VAR model with 4 lags:
+
+```{r}
+var_model <- VAR(sw_df1, p = 4, type = "const")
+summary(var_model)
+```
+
+::: callout-note
+Individual coefficients in VAR model should not be interpretted and current VAR model form is only for forecasting.
+:::
+
+## Perform granger causality test
+
+Assuming var_model is your VAR model with lag order 4
+
+```{r}
+# Perform Granger causality test for each effect variable separately
+granger_causality_unrate <- causality(var_model, cause = "inflation")
+granger_causality_ffr <- causality(var_model, cause = "unrate")
+granger_causality_inf <- causality(var_model, cause = "ffr")
+granger_causality_inf
+granger_causality_unrate
+granger_causality_ffr
+```
+
+## If one has to go by pair of variables
+
+::: callout-caution
+Granger causality is test of descriptive statistics, so dont interpret it in structural inference sense. For reference, please read paper I am reproducing here.
+:::
+
+```{r}
+
+grangertest(inflation ~ ffr,order = 4, data = sw_df1)
+
+grangertest(inflation ~ unrate,order = 4, data = sw_df1)
+
+```
+
+## Forecast Error Variance Decomposition
+
+Another descriptive measure in reduced form VAR model
+
+Forecast error variance decomposition only at 4, 8 and 12 quarters
+
+```{r}
+fevd_model1<- fevd(var_model, n.ahead = 1)
+fevd_model2 <- fevd(var_model, n.ahead = 4)
+fevd_model3 <- fevd(var_model, n.ahead = 8)
+
+fevd_model4 <- fevd(var_model, n.ahead = 12)
+
+fevd_model1
+
+```
+
+## Impulse response function
+
+Third measure of descriptive statistics for reduced VAR. IRF is also from SVAR, so its important to distinguish which VAR model one is working with.
+
+```{r}
+# Estimate impulse response function from VAR
+irf_model <- irf(var_model, impulse = c("inflation", "unrate", "ffr"), response = c("inflation", "unrate", "ffr"), n.ahead = 20)
+
+plot(irf_model, yline = 0, ncol = 3, by = "response", main = "Impulse Response Function")
+```
+
+## Structural VAR
+
+Difference between Reduced VAR, Recursive VAR and SVAR is already explained in ...video. Therefore, I am only estimating it here using `R`.
+
+```{r}
+# Define the A and B matrices for SVAR
+A <- matrix(c(1, 0, 0, NA, 1, 0, NA, NA, 1), nrow = 3, byrow = TRUE)
+B <- matrix(c(NA, 0, 0, 0, NA, 0, 0, 0, 1), nrow = 3, byrow = TRUE)
+```
+
+```{r}
+# Perform SVAR
+svar_model <- SVAR(var_model, A = A, B = B)
+
+svar_model
+```
+
+```{r}
+
+irf_ffr <- irf(svar_model, impulse = "ffr", response = c("inflation", "unrate", "ffr"), boot =
+      FALSE)
+
+plot(irf_ffr)
+```
