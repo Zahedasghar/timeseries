@@ -38,7 +38,7 @@ library(haven) # To read data from stata/spss
 ## Load data
 
 ```{r}
-sw_df <- read_dta("C:/Users/92300/Dropbox/Applied Econometrics SBP/VAR JEP data.dta")
+sw_df <- read_dta("data/var_jep.dta")
 ```
 
 ## Inspect data
@@ -63,7 +63,7 @@ plot(sw_df1, main = "Time Series Plot", ylab = "Percent", xlab = "Year")
 
 ## Estimate Reduced form model
 
-As I have explained ... video that reduced VAR is used only for forecasting and it has lags of all endogenous variables. First we select appropriate lags using `lag length selection criteria` as follows:
+As I have explained {{< video https://youtu.be/Y1NTXEDQtHs?si=WFuASo1OnuxHTYtn >}} that reduced VAR is used only for forecasting and it has lags of all endogenous variables. First we select appropriate lags using `lag length selection criteria` as follows:
 
 ```{r}
 # Estimate VAR model
@@ -81,7 +81,7 @@ summary(var_model)
 ```
 
 ::: callout-note
-Individual coefficients in VAR model should not be interpretted and current VAR model form is only for forecasting.
+Individual coefficients in VAR model should not be interpreted and current VAR model form is only for forecasting.
 :::
 
 ## Perform granger causality test
@@ -126,6 +126,7 @@ fevd_model3 <- fevd(var_model, n.ahead = 8)
 fevd_model4 <- fevd(var_model, n.ahead = 12)
 
 fevd_model1
+fevd_model2
 
 ```
 
@@ -142,7 +143,7 @@ plot(irf_model, yline = 0, ncol = 3, by = "response", main = "Impulse Response F
 
 ## Structural VAR
 
-Difference between Reduced VAR, Recursive VAR and SVAR is already explained in ...video. Therefore, I am only estimating it here using `R`.
+Difference between Reduced VAR, Recursive VAR and SVAR is already explained in SVAR {{< video https://youtu.be/W622vevJ6VA?si=tMG9DsKMC4DjHaxs >}} . Therefore, I am only estimating it here using `R`.
 
 ```{r}
 # Define the A and B matrices for SVAR

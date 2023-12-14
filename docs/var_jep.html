@@ -153,7 +153,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="load-data" class="level2">
 <h2 class="anchored" data-anchor-id="load-data">Load data</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>sw_df <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">"C:/Users/92300/Dropbox/Applied Econometrics SBP/VAR JEP data.dta"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>sw_df <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">"data/var_jep.dta"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="inspect-data" class="level2">
@@ -206,7 +206,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="estimate-reduced-form-model" class="level2">
 <h2 class="anchored" data-anchor-id="estimate-reduced-form-model">Estimate Reduced form model</h2>
-<p>As I have explained … video that reduced VAR is used only for forecasting and it has lags of all endogenous variables. First we select appropriate lags using <code>lag length selection criteria</code> as follows:</p>
+<p>As I have explained </p><div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/Y1NTXEDQtHs?si=WFuASo1OnuxHTYtn" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div> that reduced VAR is used only for forecasting and it has lags of all endogenous variables. First we select appropriate lags using <code>lag length selection criteria</code> as follows:<p></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate VAR model</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">VARselect</span>(sw_df1, <span class="at">lag.max =</span> <span class="dv">4</span>,</span>
@@ -350,7 +350,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Individual coefficients in VAR model should not be interpretted and current VAR model form is only for forecasting.</p>
+<p>Individual coefficients in VAR model should not be interpreted and current VAR model form is only for forecasting.</p>
 </div>
 </div>
 </section>
@@ -482,16 +482,39 @@ $ffr
       inflation    unrate       ffr
 [1,] 0.01856258 0.1534387 0.8279987</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>fevd_model2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$inflation
+     inflation     unrate        ffr
+[1,] 1.0000000 0.00000000 0.00000000
+[2,] 0.9317696 0.02861707 0.03961330
+[3,] 0.9230811 0.03650735 0.04041154
+[4,] 0.9020235 0.06009546 0.03788099
+
+$unrate
+       inflation    unrate          ffr
+[1,] 0.007673522 0.9923265 0.0000000000
+[2,] 0.004327086 0.9956314 0.0000415495
+[3,] 0.009943936 0.9857939 0.0042622129
+[4,] 0.012134052 0.9770071 0.0108588254
+
+$ffr
+      inflation    unrate       ffr
+[1,] 0.01856258 0.1534387 0.8279987
+[2,] 0.04230040 0.3011456 0.6565540
+[3,] 0.09893196 0.3731835 0.5278845
+[4,] 0.13724493 0.4220231 0.4407320</code></pre>
+</div>
 </div>
 </section>
 <section id="impulse-response-function" class="level2">
 <h2 class="anchored" data-anchor-id="impulse-response-function">Impulse response function</h2>
 <p>Third measure of descriptive statistics for reduced VAR. IRF is also from SVAR, so its important to distinguish which VAR model one is working with.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate impulse response function from VAR</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>irf_model <span class="ot">&lt;-</span> <span class="fu">irf</span>(var_model, <span class="at">impulse =</span> <span class="fu">c</span>(<span class="st">"inflation"</span>, <span class="st">"unrate"</span>, <span class="st">"ffr"</span>), <span class="at">response =</span> <span class="fu">c</span>(<span class="st">"inflation"</span>, <span class="st">"unrate"</span>, <span class="st">"ffr"</span>), <span class="at">n.ahead =</span> <span class="dv">20</span>)</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(irf_model, <span class="at">yline =</span> <span class="dv">0</span>, <span class="at">ncol =</span> <span class="dv">3</span>, <span class="at">by =</span> <span class="st">"response"</span>, <span class="at">main =</span> <span class="st">"Impulse Response Function"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate impulse response function from VAR</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>irf_model <span class="ot">&lt;-</span> <span class="fu">irf</span>(var_model, <span class="at">impulse =</span> <span class="fu">c</span>(<span class="st">"inflation"</span>, <span class="st">"unrate"</span>, <span class="st">"ffr"</span>), <span class="at">response =</span> <span class="fu">c</span>(<span class="st">"inflation"</span>, <span class="st">"unrate"</span>, <span class="st">"ffr"</span>), <span class="at">n.ahead =</span> <span class="dv">20</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(irf_model, <span class="at">yline =</span> <span class="dv">0</span>, <span class="at">ncol =</span> <span class="dv">3</span>, <span class="at">by =</span> <span class="st">"response"</span>, <span class="at">main =</span> <span class="st">"Impulse Response Function"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -517,17 +540,17 @@ $ffr
 </section>
 <section id="structural-var" class="level2">
 <h2 class="anchored" data-anchor-id="structural-var">Structural VAR</h2>
-<p>Difference between Reduced VAR, Recursive VAR and SVAR is already explained in …video. Therefore, I am only estimating it here using <code>R</code>.</p>
+<p>Difference between Reduced VAR, Recursive VAR and SVAR is already explained in SVAR </p><div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/W622vevJ6VA?si=tMG9DsKMC4DjHaxs" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div> . Therefore, I am only estimating it here using <code>R</code>.<p></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the A and B matrices for SVAR</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="cn">NA</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="dv">1</span>), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="cn">NA</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="cn">NA</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the A and B matrices for SVAR</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="cn">NA</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="dv">1</span>), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="cn">NA</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="cn">NA</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform SVAR</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>svar_model <span class="ot">&lt;-</span> <span class="fu">SVAR</span>(var_model, <span class="at">A =</span> A, <span class="at">B =</span> B)</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>svar_model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform SVAR</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>svar_model <span class="ot">&lt;-</span> <span class="fu">SVAR</span>(var_model, <span class="at">A =</span> A, <span class="at">B =</span> B)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>svar_model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 SVAR Estimation Results:
@@ -548,10 +571,10 @@ ffr           0.000 0.0000   1</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>irf_ffr <span class="ot">&lt;-</span> <span class="fu">irf</span>(svar_model, <span class="at">impulse =</span> <span class="st">"ffr"</span>, <span class="at">response =</span> <span class="fu">c</span>(<span class="st">"inflation"</span>, <span class="st">"unrate"</span>, <span class="st">"ffr"</span>), <span class="at">boot =</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>      <span class="cn">FALSE</span>)</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(irf_ffr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>irf_ffr <span class="ot">&lt;-</span> <span class="fu">irf</span>(svar_model, <span class="at">impulse =</span> <span class="st">"ffr"</span>, <span class="at">response =</span> <span class="fu">c</span>(<span class="st">"inflation"</span>, <span class="st">"unrate"</span>, <span class="st">"ffr"</span>), <span class="at">boot =</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>      <span class="cn">FALSE</span>)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(irf_ffr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
