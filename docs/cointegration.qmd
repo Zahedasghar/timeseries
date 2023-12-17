@@ -3,21 +3,18 @@ title: "VECM Models"
 title-block-banner: true
 author: "Zahid Asghar"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-format:
+format: 
   revealjs:
-    theme: [default, custom.scss]
-    slide-number: true
+    theme: [default, custom.css,styles.scss]
     chalkboard: true
-    #   buttons: false
+    slide-number: c/t
     preview-links: auto
     title-slide-attributes:
       data-background-color: "#cf3a36"
-overview: true
-execute:
-  echo: false
-  warning: false
+execute: 
   freeze: auto
 ---
+
 
 ```{r include=FALSE}
 library(tidyverse)

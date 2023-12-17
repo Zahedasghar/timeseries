@@ -16,7 +16,8 @@ library(urca) # ca.jo, denmark
 library(vars) # vec2var
 library(tidyverse) # data manipulation
 library(tsDyn)
-
+library(forecast)
+library(xts)
 #========================================================
 # Data
 #========================================================
@@ -37,9 +38,10 @@ nhor <-  12
 
 # selected variables
 data(denmark)
-
+denmark |> dim()
 denmark |> colnames()
-df.lev <- denmark[, c("LRM", "LRY", "IBO", "IDE")]
+df.lev <- denmark |> select(LRM, LRY, IBO, IDE)
+#df.lev <- denmark[, c("LRM", "LRY", "IBO", "IDE")]
 m.lev  <-  as.matrix(df.lev)
 nr_lev <-  nrow(df.lev)
 nr_lev
@@ -56,7 +58,9 @@ dum_season$Q3 <-  (substr.q==3)-1/4
 dum_season$Q4 <-  (substr.q==4)-1/4
 dum_season    <-   dum_season[,-1]
 
-# Draw Graph
+# Draw Graph for each of the series in four panels
+
+
 str.main <- c("LRM=ln(real money M2)", "LRY=ln(real income)", "IBO=bond rate", "IDE=bank deposit rate")
 
 x11(width=12, height = 6); 
@@ -164,9 +168,13 @@ x11(width=8, height = 8);
 par(mfrow=c(4,1), mar=c(2,2,2,2))
 
 df <- rbind(df.lev, linevarf_diff)
+df |> head()
+
+
 
 for(i in 1:4) {
   matplot(df[,i], type=c("l"), col = c("blue"), 
           main = str.main[i]) 
   abline(v=nr_lev, col="blue")
 }
+
