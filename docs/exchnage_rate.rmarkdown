@@ -7,8 +7,6 @@ execute:
   message: false
 ---
 
-
-
 ```{r}
 #| echo: false
 library(readxl)
@@ -39,7 +37,6 @@ usd_pkr_xts <- usd_pkr_xts[,-3]
 plot(usd_pkr_xts, main = "USD to PKR Exchange Rate", ylab = "USD to PKR", xlab = "Year")
 ```
 
-
 ```{r}
 #| echo: false
 
@@ -67,7 +64,6 @@ dygraph(usd_pkr_xts, main = "USD to PKR Exchange Rate", ylab = "Regime", xlab = 
   dyLegend(labelsSeparateLines = TRUE, show = "always") 
 ```
 
-
 ```{r}
 #| echo: false
 # Define the political regimes in Pakistan from 1947 onward
@@ -93,7 +89,9 @@ pakistan_regimes <- c(
 ```
 
 
+
 ## Take data from 2000 onward till 2024 
+
 
 ```{r}
 #| echo: false
@@ -157,7 +155,6 @@ annotations_df <- data.frame(
 )
 
 ```
-
 
 ```{r}
 #| echo: false
