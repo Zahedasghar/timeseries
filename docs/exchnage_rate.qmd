@@ -67,32 +67,6 @@ dygraph(usd_pkr_xts, main = "USD to PKR Exchange Rate", ylab = "Regime", xlab = 
   dyLegend(labelsSeparateLines = TRUE, show = "always") 
 ```
 
-```{r}
-#| echo: false
-## Save this as html file
-library(htmlwidgets)
-saveWidget(dygraph(usd_pkr_xts, main = "USD to PKR Exchange Rate", ylab = "Regime", xlab = "Year") %>%
-  dyRangeSelector() %>%
-  dyShading(from = "1947-01-01", to = "1958-10-07", color = "#FFE6E6") %>%
-  dyShading(from = "1958-10-07", to = "1969-03-25", color = "#CCEBD6") %>%
-  dyShading(from = "1969-03-25", to = "1971-12-20", color = "#FFE6E6") %>%
-  dyShading(from = "1971-12-20", to = "1972-12-20", color = "#CCEBD6") %>%
-  dyShading(from = "1972-12-20", to = "1977-07-05", color = "#FFE6E6") %>%
-  dyShading(from = "1977-07-05", to = "1988-08-17", color = "#CCEBD6") %>%
-  dyShading(from = "1988-08-17", to = "1990-08-06", color = "#FFE6E6") %>%
-  dyShading(from = "1990-08-06", to = "1993-04-26", color = "#CCEBD6") %>%
-  dyShading(from = "1993-04-26", to = "1996-11-05", color = "#FFE6E6") %>%
-  dyShading(from = "1996-11-05", to = "1997-02-17", color = "#CCEBD6") %>%
-  dyShading(from = "1997-02-17", to = "1999-10-12", color = "#FFE6E6") %>%
-  dyShading(from = "1999-10-12", to = "2008-08-18", color = "#CCEBD6") %>%
-  dyShading(from = "2008-08-18", to = "2013-06-05", color = "#FFE6E6") %>%
-  dyShading(from = "2013-06-05", to = "2017-07-28", color = "#CCEBD6") %>%
-  dyShading(from = "2017-07-28", to = "2018-05-31", color = "#FFE6E6") %>%
-  dyShading(from = "2018-05-31", to = "2022-04-10", color = "#CCEBD6") %>%
-  dyShading(from = "2022-04-10", to = "2023-09-10", color = "#FFE6E6") %>%
-  dyLegend(labelsSeparateLines = TRUE, show = "always"), "usd_pkr.html")
-```
-
 
 ```{r}
 #| echo: false
