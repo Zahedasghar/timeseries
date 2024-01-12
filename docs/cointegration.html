@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.4.528">
 
   <meta name="author" content="Zahid Asghar">
-  <meta name="dcterms.date" content="2023-12-17">
+  <meta name="dcterms.date" content="2023-12-18">
   <title>VECM Models</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Zahid Asghar
 </div>
 </div>
 
-  <p class="date">2023-12-17</p>
+  <p class="date">2023-12-18</p>
 </section>
 <section id="main-objectives" class="slide level2">
 <h2>Main Objectives</h2>
@@ -446,15 +446,15 @@ Zahid Asghar
 </section>
 <section id="section" class="slide level2">
 <h2></h2>
-<div class="cell" data-layout-align="center" data-repr.plot.height="8">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a><span class="co">#df11&lt;-df11 %&gt;% filter(quarter&gt;"1970 Q4" &amp; quarter&lt;="2019 Q1")</span></span>
+<div class="cell" data-columns="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a> <span class="co">#df11&lt;-df11 %&gt;% filter(quarter&gt;"1970 Q4" &amp; quarter&lt;="2019 Q1")</span></span>
 <span id="cb2-2"><a href=""></a>g1<span class="ot">&lt;-</span><span class="fu">ggplot</span>(df11)<span class="sc">+</span><span class="fu">aes</span>(<span class="at">x=</span>date,<span class="at">y=</span>qrgdp)<span class="sc">+</span><span class="fu">geom_line</span>()</span>
 <span id="cb2-3"><a href=""></a>g2<span class="ot">&lt;-</span><span class="fu">ggplot</span>(df11)<span class="sc">+</span><span class="fu">aes</span>(<span class="at">x=</span>date,<span class="at">y=</span>lnM2)<span class="sc">+</span><span class="fu">geom_line</span>()</span>
 <span id="cb2-4"><a href=""></a>g3<span class="ot">&lt;-</span><span class="fu">ggplot</span>(df11)<span class="sc">+</span><span class="fu">aes</span>(<span class="at">x=</span>date,<span class="at">y=</span>CPI)<span class="sc">+</span><span class="fu">geom_line</span>()</span>
 <span id="cb2-5"><a href=""></a>g1<span class="sc">+</span>g2<span class="sc">+</span>g3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="cointegration_files/figure-revealjs/unnamed-chunk-3-1.png" class="quarto-figure quarto-figure-center r-stretch" style="width:100.0%"><p>These graphs indicate all three variables are non-stationary.</p>
+<img data-src="cointegration_files/figure-revealjs/unnamed-chunk-3-1.png" style="width:100.0%" class="r-stretch"><p>These graphs indicate all three variables are non-stationary.</p>
 </section>
 <section id="scatter-plot-of-the-variables" class="slide level2">
 <h2>Scatter plot of the variables</h2>
@@ -515,6 +515,11 @@ Zahid Asghar
 <section id="both-m_t-and-p_t-adjust" class="slide level2">
 <h2>Both <span class="math inline">\(m_t\)</span> and <span class="math inline">\(p_t\)</span> adjust</h2>
 <p><img data-src="/Users/hp/Documents/money_price4.png"> <span class="math inline">\(m_t\)</span> and <span class="math inline">\(p_t\)</span> are adjusting simultaneously <span class="math inline">\(\Delta m_t=\alpha_m(m_{t-1}-m^*_{t-1})\)</span> <span class="math inline">\(\Delta p_t=\alpha_p(m_{t-1}-m^*_{t-1})\)</span> which is basically error/equilibrium correction model. !…</p>
+</section>
+<section id="both-m_t-and-p_t-adjust-simulataneously" class="slide level2">
+<h2>Both <span class="math inline">\(m_t\)</span> and <span class="math inline">\(p_t\)</span> adjust simulataneously</h2>
+
+<img data-src="images/mp4.png" class="center r-stretch"><p><span class="math inline">\(m_t\)</span> and <span class="math inline">\(p_t\)</span> are adjusting simultaneously <span class="math inline">\(\Delta m_t=\alpha_m(m_{t-1}-m^*_{t-1})\)</span> <span class="math inline">\(\Delta p_t=\alpha_p(m_{t-1}-m^*_{t-1})\)</span></p>
 </section>
 <section id="cointegration-and-vecm-continued" class="slide level2">
 <h2>Cointegration and VECM (Continued)</h2>

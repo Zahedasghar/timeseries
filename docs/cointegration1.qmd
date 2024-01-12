@@ -1,0 +1,13 @@
+---
+title: "[Cointegration in R]{.flow}"
+author: "[[Zahid Asghar, Professor, School of Economics, QAU](https://zahedasghar.netlify.app)]{style=color:blue;}"
+date: "today"
+date-format: "DD-MM-YYYY"
+format: 
+  revealjs:
+    theme: [default, custom.css,styles.scss]
+    chalkboard: true
+    slide-number: c/t
+execute: 
+  freeze: auto
+---

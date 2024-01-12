@@ -1,0 +1,186 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+  ignorenonframetext,
+  aspectratio=169]{beamer}
+\usepackage{pgfpages}
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{caption label separator}{: }
+\setbeamercolor{caption name}{fg=normal text.fg}
+\beamertemplatenavigationsymbolsempty
+% Prevent slide breaks in the middle of a paragraph
+\widowpenalties 1 10000
+\raggedbottom
+\setbeamertemplate{part page}{
+  \centering
+  \begin{beamercolorbox}[sep=16pt,center]{part title}
+    \usebeamerfont{part title}\insertpart\par
+  \end{beamercolorbox}
+}
+\setbeamertemplate{section page}{
+  \centering
+  \begin{beamercolorbox}[sep=12pt,center]{part title}
+    \usebeamerfont{section title}\insertsection\par
+  \end{beamercolorbox}
+}
+\setbeamertemplate{subsection page}{
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center]{part title}
+    \usebeamerfont{subsection title}\insertsubsection\par
+  \end{beamercolorbox}
+}
+\AtBeginPart{
+  \frame{\partpage}
+}
+\AtBeginSection{
+  \ifbibliography
+  \else
+    \frame{\sectionpage}
+  \fi
+}
+\AtBeginSubsection{
+  \frame{\subsectionpage}
+}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\usetheme[]{AnnArbor}
+\usecolortheme{dolphin}
+\usefonttheme{structurebold}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\newif\ifbibliography
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\titlegraphic{\centering \includegraphics[width=1.5cm]{/Users/hp/Documents/logo.jpg}\\}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={ARDL Cointegration},
+  pdfauthor={Zahid Asghar},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{ARDL Cointegration}
+\author{Zahid Asghar}
+\date{08 January, 2024}
+\institute{School of Economics}
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}{ARDL Cointegration}
+\protect\hypertarget{ardl-cointegration}{}
+\begin{itemize}
+\item
+  Pesaran, Shin and Smith (PSS)(2001) test is based on testing
+  cointegration among variables irrespective of the fact whether
+  variables are I(0)/I(1).
+\item
+  Test statistics is similar to Wald or F-test but nonstandard
+\item
+  Critical values assuming all I(0) for lower bound and I(1) for upper
+  bound
+\item
+  If test statistics fall outside the range, there is CI without testing
+  variables are I(0)/I(1)
+\item
+  Advantages over conventional methodology
+
+  \begin{enumerate}
+  \item
+    It can be used with mixture of I(0) and I(1) data.
+  \item
+    It involves just a single-equation set-up, making it simple to
+    implement and interpret.
+  \item
+    Different variables can be assigned different lag-lengths as they
+    enter the model.
+  \end{enumerate}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Basic Steps}
+\protect\hypertarget{basic-steps}{}
+\[\begin{aligned}{{Y}_{t}}={{\beta}_{0}}+\sum\limits_{i=1}^{p}{{{\beta}_{1}}{{Y}_{t-i}}+\sum\limits_{i=0}^{{{q}_{1}}}{{{a}_{1}}{{X}_{1,t-i}}\sum\limits_{i=0}^{{{q}_{2}}}{{{a}_{2}}{{X}_{2,t-i}}+}}}\sum\limits_{i=0}^{{{q}_{3}}}{{{a}_{3}}{{X}_{3,t-i}}+}\sum\limits_{i=0}^{q4}{{{a}_{4}}{{X}_{4,t-i}}+}{{\varepsilon}_{t}}\end{aligned}\]
+
+\begin{itemize}
+\item
+  \begin{enumerate}
+  \tightlist
+  \item
+    None of the variables should be I(2)
+  \end{enumerate}
+\item
+  \begin{enumerate}
+  \setcounter{enumi}{1}
+  \tightlist
+  \item
+    Formulate the following equation
+  \end{enumerate}
+\end{itemize}
+
+\[\begin{aligned}\Delta {{Y}_{t}}={{\beta}_{0}}+\sum\limits_{i=1}^{p}{{{\beta }_{1}}\Delta{{Y}_{t-i}}+\sum\limits_{i=0}^{{{q}_{1}}}{{{a}_{1}}\Delta{{X}_{1,t-i}}\sum\limits_{i=0}^{{{q}_{2}}}{{{a}_{2}}\Delta{{X}_{2,t-i}}+}}}\sum\limits_{i=0}^{{{q}_{3}}}{{{a}_{3}}\Delta{{X}_{3,t-i}}+}\sum\limits_{i=0}^{q4}{{{a}_{4}}\Delta{{X}_{4,t-i}}}\\+{{\theta}_{0}}{{Y}_{t-1}}+{{\theta}_{1}}{{X}_{1,t-1}}+{{\theta}_{2}}{{X}_{2,t-1}}+{{\theta}_{3}}{{X}_{3,t-1}}+{{\theta}_{4}}{{X}_{4,t-1}}+{{\varepsilon}_{t}}\end{aligned}\]
+
+Test \({{H}_{0}}:{{\theta}_{0}}={{\theta }_{1}}=...={{\theta }_{4}}=0\)
+against the alternative \(H_0\) is correct.
+
+\begin{itemize}
+\item
+  \begin{enumerate}
+  \setcounter{enumi}{2}
+  \tightlist
+  \item
+    If \(H_0\) is rejected, then CI and run
+    \({{Y}_{t}}={{\beta}_{0}}+{{a}_{1}}{{X}_{1,t}}+{{a}_{2}}{{X}_{2,t}}+{{a}_{3}}{{X}_{3,t}}+{{a}_{4}}{{X}_{4,t}}+{{\varepsilon}_{t}}\)
+  \end{enumerate}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+and as usual ECM
+
+\[\Delta {{Y}_{t}}={{\beta}_{0}}+\sum\limits_{i=1}^{p}{{{\beta }_{1}}\Delta{{Y}_{t-i}}+\sum\limits_{i=0}^{{{q}_{1}}}{{{a}_{1}}\Delta{{X}_{1,t-i}}\sum\limits_{i=0}^{{{q}_{2}}}{{{a}_{2}}\Delta{{X}_{2,t-i}}+}}}\sum\limits_{i=0}^{{{q}_{3}}}{{{a}_{3}}\Delta{{X}_{3,t-i}}+}\sum\limits_{i=0}^{q4}{{{a}_{4}}\Delta{{X}_{4,t-i}}}\\+\delta {{Z}_{t-1}}+{{\varepsilon}_{t}}\]
+
+\({{Z}_{t-1}}=\left({{Y}_{t-1}}-{{a}_{0}}-{{a}_{1}}{{X}_{1,t-1}}-{{a}_{2}}{{X}_{2,t-1}}-{{a}_{3}}{{X}_{3,t-1}}-{{a}_{4}}{{X}_{4,t-1}}\right)\)
+
+\href{http://rizaudinsahlan.blogspot.com/2016/06/ardl-cointegration-test-with-stata.html}{How
+to do perform it in STATA/R}
+\end{frame}
+
+\end{document}

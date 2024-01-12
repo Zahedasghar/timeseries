@@ -1,0 +1,196 @@
+---
+title: "ARDL model"
+author: "Zahid Asghar"
+date: 'today'
+format: 
+  html:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    keep-md: false
+
+execute: 
+  echo: false
+  warning: false
+  freeze: auto
+bibliography: references.bib
+---
+
+## Data Analysis
+
+Please find attached the dataset for our analysis. Our primary objective is to understand how liquidity factors impact stock market performance To measure liquidity, we will consider the following variables: turnover ratio, Amihud liquidity, and bid-ask spread which These are key metrics that are known to influence stock market dynamics.
+
+Control Variables: In addition to liquidity metrics, we will consider other control variables, such as price-to-earnings (PE) ratio, beta, dividend yield (DY), and market capitalization. These are important as they can impact stock returns independently of liquidity.
+
+## ARDL Model
+
+We will employ the AutoRegressive Distributed Lag (ARDL) model to analyze the relationship between these variables. The ARDL model is suitable for investigating long-term relationships between variables and is especially useful when the data may be non-stationary. It accounts for lagged values of the dependent and independent variables, which is crucial for understanding dynamics over time @shah2023
+
+## Steps for data analysis
+
+First we convert data in proper time series format and inspect it.
+
+```{r}
+library(tidyverse)
+library(readxl)
+library(dynamac)
+library(forecast)
+
+library(tseries)
+library(urca)
+library(TSstudio)
+library(janitor)
+library(ARDL)
+library(janitor) # to clean names
+
+ardlf <- read_excel("data/ardl.xlsx", skip=3)
+
+ardlf |> clean_names() -> ardlf
+
+ardlf$date <- format(ardlf$date, format = "%m-%d-%Y")
+
+ardlf$date <- mdy(ardlf$date)
+
+
+```
+
+```{r}
+ardlf |> dim()
+```
+
+There are 129 rows and 29 columns.
+
+```{r}
+ardlf |> glimpse()
+```
+
+Each columns in its proper context , i-e date and numerical format.
+
+## Plot, plot and plot
+
+First step is analysis is always to plot your data for better insight.
+
+```{r}
+#Declaring the Time Series Variables
+tri <- ts(ardlf$tri, start = c(2013,1,1), frequency = 12)
+amihud_illiqudity <- ts(ardlf$amihud_illiqudity, start = c(2013,1,1), frequency = 12)
+turn_over_ratio<- ts(ardlf$turn_over_ratio, start = c(2013,1,1), frequency = 12)
+bid_ask_spread <- ts(ardlf$bid_ask_spread, start = c(2013,1,1), frequency = 12)
+
+beta_monthly_leveraged <- ts(ardlf$beta_monthly_leveraged, start = c(2013,1,1), frequency = 12)
+annualised_volatility_open <- ts(ardlf$annualised_volatility_open, start = c(2013,1,1), frequency = 12)
+
+dy <- ts(ardlf$dy, start = c(2013,1,1), frequency = 12)
+market_cap <- ts(ardlf$market_cap, start = c(2013,1,1), frequency = 12)
+
+p1 <- plot(tri, main='tri')
+
+p2<- plot(amihud_illiqudity,main='amihud_illiqudity')
+p3<- plot(turn_over_ratio,main='turn_over_ratio')
+p4 <- plot(bid_ask_spread,main='bid_ask_spread')
+p5 <- plot(beta_monthly_leveraged,main='beta_monthly_leveraged')
+p6 <- plot(dy,main='dy')
+p7 <- plot(market_cap, main='market_cap')
+
+p8 <- plot(annualised_volatility_open,main='annualised_volatility_open')
+
+
+```
+
+From these plots, one observes that some series are showing non-stationary behavior and we will test using adf test in the following part.
+
+```{r}
+adf.test(tri)
+adf.test(amihud_illiqudity)
+adf.test(turn_over_ratio)
+adf.test(bid_ask_spread)
+adf.test(beta_monthly_leveraged)
+adf.test(dy)
+adf.test(market_cap)
+adf.test(annualised_volatility_open)
+```
+
+We have a mix of the series. In some series , hypothesis series is non-stationary is rejected and in others its not. Therefore, we shall use ARDL model accordingly. Before we go with seasonal plots to have an idea of seasonality in couple of series.
+
+```{r}
+ggseasonplot(tri)
+ggseasonplot(amihud_illiqudity)
+ggseasonplot(turn_over_ratio)
+ggseasonplot(bid_ask_spread)
+ggseasonplot(beta_monthly_leveraged)
+ggseasonplot(dy)
+ggseasonplot(market_cap)
+ggseasonplot(annualised_volatility_open)
+```
+
+Seasonality element in most of the cases is not strong and its impact is not significant.
+
+## ARDL
+
+First step in ARDL modeling will be to pick the right order of lags structures of each of the variables to be used in the model. It will also help us in deciding whether we have significant observations available for model estimation or not. Its monthly data and seasonality seems not very significant , therefore we have assumed maximum lag order of each of the variable is 4 and then select appropriate lag order as per `AIC` criteria.
+
+```{r}
+ardl_mod <- auto_ardl(tri ~ amihud_illiqudity+  turn_over_ratio +  bid_ask_spread+
+             beta_monthly_leveraged+dy+annualised_volatility_open+market_cap, data = ardlf, max_order = 4)
+ardl_mod
+```
+
+## Select the best model
+
+```{r}
+ardl_24000441 <- ardl_mod$best_model
+```
+
+So ardl(2,4,0,0,0,4,4,1) is the best model. So this model has 16 coefficients to estimate from a sample of 129 observations which seems fine.
+
+## ARDL model estimation
+
+Problem with applying OLS is that some variables are non-stationary and some are stationary, which will lead to spurious regression. Therefore, we shall first we estimate the UECM (Unrestricted Error Correction Model) of the underlying ARDL(2,4,0,0,0,4,4,1)
+
+```{r}
+uecm_24000441 <- uecm(ardl_24000441)
+summary(uecm_24000441)
+```
+
+## RECM (Restricted Error Correction Model)
+
+Underlying ARDL(2,4,0,0,0,4,4,1), allowing the constant to join the long-run relationship (case
+
+```{r}
+recm_24000441 <- recm(uecm_24000441, case = 2) 
+
+summary(recm_24000441)
+```
+
+### Long-run levels relationship (cointegration)
+
+Let's test if there is a long-run levels relationship (cointegration) using the bounds test from Pesaran et al. (2001). The bounds F-test (under the case 2) rejects the NULL hypothesis (let's say, assuming alpha = 0.01) with p-value = 0.004418.
+
+```{r}
+bounds_f_test(recm_24000441, case = 2)
+
+tbounds <- bounds_t_test(uecm_24000441, case = 3, alpha = 0.01)
+tbounds
+
+```
+
+So t=-2.855 lies below lower limit and indicates there is no cointegration and p-value is also 0.5683
+
+## Short-run and long-run multipliers
+
+Here we have the short-run and the long-run multipliers (with standard errors, t-statistics and p-values).
+
+```{r}
+multipliers(ardl_24000441, type = "sr")
+```
+
+`amihud_illiqudity` has positive and signficant impact on stock returns. Othere coefficients can be interpretted similarly.
+
+We can also estimate and visualize the delay multipliers along with their standard errors.
+
+```{r}
+mult <- multipliers(ardl_24000441, type = 15, se = TRUE)
+plot_delay(mult, interval = 0.95)
+```
+
+These graphs indicate that most of the variables have almost same impact throughtout time while certain variables affect stock for 4 to 5 months before their impact becomes absorbed. Now let's graphically check the estimated long-run relationship (cointegrating equation) against the dependent variable LRM.

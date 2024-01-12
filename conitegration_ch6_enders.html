@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.528">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>conitegration_ch6_enders</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="conitegration_ch6_enders_files/libs/clipboard/clipboard.min.js"></script>
+<script src="conitegration_ch6_enders_files/libs/quarto-html/quarto.js"></script>
+<script src="conitegration_ch6_enders_files/libs/quarto-html/popper.min.js"></script>
+<script src="conitegration_ch6_enders_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="conitegration_ch6_enders_files/libs/quarto-html/anchor.min.js"></script>
+<link href="conitegration_ch6_enders_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="conitegration_ch6_enders_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="conitegration_ch6_enders_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="conitegration_ch6_enders_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="conitegration_ch6_enders_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+
+
+
+<section id="load-relevant-libraries" class="level2">
+<h2 class="anchored" data-anchor-id="load-relevant-libraries">Load relevant libraries</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#|warning: false</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#|message: false</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl) <span class="co"># to read excel data</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.2     ✔ readr     2.1.4
+✔ forcats   1.0.0     ✔ stringr   1.5.0
+✔ ggplot2   3.4.3     ✔ tibble    3.2.1
+✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+✔ purrr     1.0.1     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tseries) <span class="co"># for adf test</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Registered S3 method overwritten by 'quantmod':
+  method            from
+  as.zoo.data.frame zoo </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(urca) <span class="co"># for adf test, cointegration...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="load-data" class="level2">
+<h2 class="anchored" data-anchor-id="load-data">Load data</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span>  <span class="fu">read_xls</span>(<span class="st">"data/COINT6.xls"</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Add observation index</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>obs_index <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="fu">nrow</span>(data))</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Use pivot longer command</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>data_long <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>obs_index, <span class="at">names_to =</span> <span class="st">"series"</span>, <span class="at">values_to =</span> <span class="st">"value"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="plot-using-ggplot" class="level1">
+<h1>Plot using ggplot</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data_long, <span class="fu">aes</span>(<span class="at">x =</span> obs_index, <span class="at">y =</span> value, <span class="at">color =</span> series)) <span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Three Columns Plot"</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Observation Index"</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Value"</span>) <span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="conitegration_ch6_enders_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_long, <span class="fu">aes</span>(<span class="at">x =</span> obs_index, <span class="at">y =</span> value, <span class="at">color =</span> series)) <span class="sc">+</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Three Columns Plot"</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Observation Index"</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Value"</span>) <span class="sc">+</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Add 0 line </span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>p<span class="sc">+</span>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="conitegration_ch6_enders_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="fit-linear-models-of-y-on-z-w-z-on-y-w-and-w-on-y-z" class="level2">
+<h2 class="anchored" data-anchor-id="fit-linear-models-of-y-on-z-w-z-on-y-w-and-w-on-y-z">Fit linear models of y on z, w , z on y, w and w on y, z</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> z <span class="sc">+</span> w, <span class="at">data =</span> data)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(z <span class="sc">~</span> y <span class="sc">+</span> w, <span class="at">data =</span> data)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>lm3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(w <span class="sc">~</span> y <span class="sc">+</span> z, <span class="at">data =</span> data)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="do">## round to 3 decimal places</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>lm1 <span class="sc">|&gt;</span> <span class="fu">tidy</span>() <span class="sc">|&gt;</span> <span class="fu">mutate_at</span>(<span class="fu">vars</span>(estimate,std.error,statistic,p.value), round, <span class="dv">3</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 5
+  term        estimate std.error statistic p.value
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+1 (Intercept)   -0.048     0.084    -0.575   0.567
+2 z             -0.927     0.024   -38.1     0    
+3 w              0.977     0.018    53.5     0    </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>lm2 <span class="sc">|&gt;</span> <span class="fu">tidy</span>() <span class="sc">|&gt;</span> <span class="fu">mutate_at</span>(<span class="fu">vars</span>(estimate,std.error,statistic,p.value), round, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 5
+  term        estimate std.error statistic p.value
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+1 (Intercept)    0.059     0.088     0.671   0.504
+2 y             -1.01      0.027   -38.1     0    
+3 w              1.02      0.016    65.3     0    </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>lm3 <span class="sc">|&gt;</span> <span class="fu">tidy</span>() <span class="sc">|&gt;</span> <span class="fu">mutate_at</span>(<span class="fu">vars</span>(estimate,std.error,statistic,p.value), round, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 5
+  term        estimate std.error statistic p.value
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+1 (Intercept)   -0.085     0.084     -1.01   0.316
+2 y              0.99      0.019     53.5    0    
+3 z              0.953     0.015     65.3    0    </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="do">## acf and pacf of each series</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>a1 <span class="ot">=</span> <span class="fu">acf</span>(data<span class="sc">$</span>y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="conitegration_ch6_enders_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>a2 <span class="ot">&lt;-</span> <span class="fu">acf</span>(data<span class="sc">$</span>w)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="conitegration_ch6_enders_files/figure-html/unnamed-chunk-6-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>a3 <span class="ot">&lt;-</span> <span class="fu">acf</span>(data<span class="sc">$</span>z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="conitegration_ch6_enders_files/figure-html/unnamed-chunk-6-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">pacf</span>(data<span class="sc">$</span>y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="conitegration_ch6_enders_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">pacf</span>(data<span class="sc">$</span>w)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="conitegration_ch6_enders_files/figure-html/unnamed-chunk-7-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">pacf</span>(data<span class="sc">$</span>z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="conitegration_ch6_enders_files/figure-html/unnamed-chunk-7-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="unit-root-testing" class="level2">
+<h2 class="anchored" data-anchor-id="unit-root-testing">Unit Root Testing</h2>
+<p>ADF test for unit root equation</p>
+<p><span class="math inline">\(\delta y_t = \alpha + \beta y_{t-1} + \gamma_1 \delta y_{t-1} + \\ \gamma_2 \delta y_{t-2} + \gamma_3 \delta y_{t-3} + \gamma_4 \delta y_{t-4} + \epsilon_t\)</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="do">### adf unit root tests at lag 0 and 4</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>adf1 <span class="ot">&lt;-</span>  <span class="fu">ur.df</span>(data<span class="sc">$</span>y,<span class="at">lag=</span><span class="dv">0</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>adf1<span class="sc">@</span>testreg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = z.diff ~ z.lag.1 - 1)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.73685 -0.27717  0.03721  0.24885  0.67514 
+
+Coefficients:
+         Estimate Std. Error t value Pr(&gt;|t|)
+z.lag.1 -0.003026   0.007295  -0.415    0.679
+
+Residual standard error: 0.3287 on 98 degrees of freedom
+Multiple R-squared:  0.001753,  Adjusted R-squared:  -0.008433 
+F-statistic: 0.1721 on 1 and 98 DF,  p-value: 0.6792</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>adf1 <span class="ot">&lt;-</span>  <span class="fu">ur.df</span>(data<span class="sc">$</span>y,<span class="at">lag=</span><span class="dv">4</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>adf1<span class="sc">@</span>testreg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = z.diff ~ z.lag.1 - 1 + z.diff.lag)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.65964 -0.20970 -0.01871  0.24160  0.62474 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)  
+z.lag.1     -0.004053   0.007210  -0.562   0.5754  
+z.diff.lag1 -0.155087   0.104069  -1.490   0.1397  
+z.diff.lag2  0.075724   0.103998   0.728   0.4684  
+z.diff.lag3  0.193651   0.104153   1.859   0.0663 .
+z.diff.lag4  0.201585   0.103635   1.945   0.0549 .
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.3226 on 90 degrees of freedom
+Multiple R-squared:  0.08771,   Adjusted R-squared:  0.03703 
+F-statistic: 1.731 on 5 and 90 DF,  p-value: 0.1357</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>adf2 <span class="ot">&lt;-</span>  <span class="fu">ur.df</span>(data<span class="sc">$</span>z,<span class="at">lag=</span><span class="dv">0</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>adf2<span class="sc">@</span>testreg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = z.diff ~ z.lag.1 - 1)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.82261 -0.32306 -0.01221  0.23600  0.72896 
+
+Coefficients:
+         Estimate Std. Error t value Pr(&gt;|t|)
+z.lag.1 0.0009268  0.0134774   0.069    0.945
+
+Residual standard error: 0.3724 on 98 degrees of freedom
+Multiple R-squared:  4.825e-05, Adjusted R-squared:  -0.01016 
+F-statistic: 0.004729 on 1 and 98 DF,  p-value: 0.9453</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>adf2 <span class="ot">&lt;-</span>  <span class="fu">ur.df</span>(data<span class="sc">$</span>z,<span class="at">lag=</span><span class="dv">4</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>adf2<span class="sc">@</span>testreg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = z.diff ~ z.lag.1 - 1 + z.diff.lag)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.89135 -0.31498 -0.05454  0.24159  0.70585 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)
+z.lag.1      0.002354   0.014725   0.160    0.873
+z.diff.lag1  0.017912   0.107158   0.167    0.868
+z.diff.lag2  0.065455   0.106171   0.617    0.539
+z.diff.lag3 -0.120187   0.107296  -1.120    0.266
+z.diff.lag4  0.003146   0.108432   0.029    0.977
+
+Residual standard error: 0.382 on 90 degrees of freedom
+Multiple R-squared:  0.0185,    Adjusted R-squared:  -0.03603 
+F-statistic: 0.3393 on 5 and 90 DF,  p-value: 0.8878</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>adf3 <span class="ot">&lt;-</span>  <span class="fu">ur.df</span>(data<span class="sc">$</span>w,<span class="at">lag=</span><span class="dv">0</span>)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>adf3<span class="sc">@</span>testreg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = z.diff ~ z.lag.1 - 1)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.07682 -0.32029 -0.05526  0.31236  0.92311 
+
+Coefficients:
+         Estimate Std. Error t value Pr(&gt;|t|)
+z.lag.1 0.0009197  0.0065519    0.14    0.889
+
+Residual standard error: 0.4439 on 98 degrees of freedom
+Multiple R-squared:  0.000201,  Adjusted R-squared:  -0.01 
+F-statistic: 0.0197 on 1 and 98 DF,  p-value: 0.8887</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>adf3 <span class="ot">&lt;-</span>  <span class="fu">ur.df</span>(data<span class="sc">$</span>w,<span class="at">lag=</span><span class="dv">4</span>)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>adf3<span class="sc">@</span>testreg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = z.diff ~ z.lag.1 - 1 + z.diff.lag)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-0.9633 -0.3031 -0.0683  0.2458  0.8660 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)  
+z.lag.1     -0.0004809  0.0065789  -0.073   0.9419  
+z.diff.lag1 -0.1384530  0.1036411  -1.336   0.1850  
+z.diff.lag2  0.1008930  0.1046847   0.964   0.3377  
+z.diff.lag3  0.0349312  0.1063438   0.328   0.7433  
+z.diff.lag4  0.2219713  0.1057646   2.099   0.0386 *
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.4361 on 90 degrees of freedom
+Multiple R-squared:  0.088, Adjusted R-squared:  0.03733 
+F-statistic: 1.737 on 5 and 90 DF,  p-value: 0.1342</code></pre>
+</div>
+</div>
+</section>
+<section id="residuals-unit-root-testing" class="level2">
+<h2 class="anchored" data-anchor-id="residuals-unit-root-testing">Residuals Unit Root Testing</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="do">###  Unit root tests for Residuals of each model</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>adf1 <span class="ot">&lt;-</span>  <span class="fu">ur.df</span>(lm1<span class="sc">$</span>residuals,<span class="at">lag=</span><span class="dv">0</span>)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>adf1<span class="sc">@</span>testreg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = z.diff ~ z.lag.1 - 1)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-0.4910 -0.1181  0.0143  0.1477  0.4371 
+
+Coefficients:
+        Estimate Std. Error t value Pr(&gt;|t|)    
+z.lag.1 -0.44301    0.08561  -5.175 1.21e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.209 on 98 degrees of freedom
+Multiple R-squared:  0.2146,    Adjusted R-squared:  0.2066 
+F-statistic: 26.78 on 1 and 98 DF,  p-value: 1.213e-06</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>adf1 <span class="ot">&lt;-</span>  <span class="fu">ur.df</span>(lm1<span class="sc">$</span>residuals,<span class="at">lag=</span><span class="dv">4</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>adf1<span class="sc">@</span>testreg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = z.diff ~ z.lag.1 - 1 + z.diff.lag)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.46750 -0.14126  0.01941  0.16700  0.40763 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+z.lag.1     -0.59525    0.14610  -4.074 9.93e-05 ***
+z.diff.lag1  0.28612    0.13873   2.062   0.0421 *  
+z.diff.lag2  0.05408    0.12814   0.422   0.6740    
+z.diff.lag3  0.07724    0.11431   0.676   0.5010    
+z.diff.lag4  0.04111    0.10631   0.387   0.6999    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.2106 on 90 degrees of freedom
+Multiple R-squared:  0.2405,    Adjusted R-squared:  0.1983 
+F-statistic: 5.699 on 5 and 90 DF,  p-value: 0.0001299</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>adf2 <span class="ot">&lt;-</span>  <span class="fu">ur.df</span>(lm2<span class="sc">$</span>residuals,<span class="at">lag=</span><span class="dv">0</span>)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>adf2<span class="sc">@</span>testreg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = z.diff ~ z.lag.1 - 1)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.57923 -0.11929  0.00032  0.15698  0.45422 
+
+Coefficients:
+        Estimate Std. Error t value Pr(&gt;|t|)    
+z.lag.1 -0.45195    0.08402  -5.379  5.1e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.2172 on 98 degrees of freedom
+Multiple R-squared:  0.2279,    Adjusted R-squared:  0.2201 
+F-statistic: 28.93 on 1 and 98 DF,  p-value: 5.103e-07</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>adf2 <span class="ot">&lt;-</span>  <span class="fu">ur.df</span>(lm2<span class="sc">$</span>residuals,<span class="at">lag=</span><span class="dv">4</span>)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>adf2<span class="sc">@</span>testreg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = z.diff ~ z.lag.1 - 1 + z.diff.lag)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.56544 -0.13670 -0.02394  0.16231  0.39084 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+z.lag.1     -0.59344    0.14040  -4.227 5.68e-05 ***
+z.diff.lag1  0.28381    0.13485   2.105   0.0381 *  
+z.diff.lag2  0.04773    0.12562   0.380   0.7049    
+z.diff.lag3  0.07693    0.11222   0.686   0.4948    
+z.diff.lag4  0.03770    0.10445   0.361   0.7190    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.2185 on 90 degrees of freedom
+Multiple R-squared:  0.2514,    Adjusted R-squared:  0.2098 
+F-statistic: 6.044 on 5 and 90 DF,  p-value: 7.207e-05</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>adf3 <span class="ot">&lt;-</span>  <span class="fu">ur.df</span>(lm3<span class="sc">$</span>residuals,<span class="at">lag=</span><span class="dv">0</span>)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>adf3<span class="sc">@</span>testreg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = z.diff ~ z.lag.1 - 1)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.43489 -0.15275 -0.00318  0.11991  0.52920 
+
+Coefficients:
+        Estimate Std. Error t value Pr(&gt;|t|)    
+z.lag.1 -0.45525    0.08447   -5.39 4.87e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.2096 on 98 degrees of freedom
+Multiple R-squared:  0.2286,    Adjusted R-squared:  0.2208 
+F-statistic: 29.05 on 1 and 98 DF,  p-value: 4.871e-07</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>adf3 <span class="ot">&lt;-</span>  <span class="fu">ur.df</span>(lm3<span class="sc">$</span>residuals,<span class="at">lag=</span><span class="dv">4</span>)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>adf3<span class="sc">@</span>testreg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = z.diff ~ z.lag.1 - 1 + z.diff.lag)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.38083 -0.15385  0.00125  0.11981  0.50888 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+z.lag.1     -0.60711    0.14370  -4.225 5.72e-05 ***
+z.diff.lag1  0.29009    0.13664   2.123   0.0365 *  
+z.diff.lag2  0.05839    0.12637   0.462   0.6451    
+z.diff.lag3  0.07616    0.11291   0.674   0.5017    
+z.diff.lag4  0.03578    0.10461   0.342   0.7331    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.2111 on 90 degrees of freedom
+Multiple R-squared:  0.2513,    Adjusted R-squared:  0.2097 
+F-statistic: 6.042 on 5 and 90 DF,  p-value: 7.233e-05</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>DATA <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">diff</span>(data<span class="sc">$</span>y),<span class="fu">diff</span>(data<span class="sc">$</span>z),<span class="fu">diff</span>(data<span class="sc">$</span>w))</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"vars"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: MASS</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'MASS'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:dplyr':
+
+    select</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: strucchange</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: zoo</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'zoo'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    as.Date, as.Date.numeric</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: sandwich</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'strucchange'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:stringr':
+
+    boundary</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: lmtest</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>e.w <span class="ot">&lt;-</span>  lm3<span class="sc">$</span>residuals</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">VAR</span>(DATA,<span class="at">p=</span><span class="dv">1</span>,<span class="at">exogen=</span>e.w[<span class="sc">-</span><span class="fu">length</span>(e.w)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in VAR(DATA, p = 1, exogen = e.w[-length(e.w)]): No column names supplied in exogen, using: exo1 , instead.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+VAR Estimation Results:
+======================= 
+
+Estimated coefficients for equation diff.data.y.: 
+================================================= 
+Call:
+diff.data.y. = diff.data.y..l1 + diff.data.z..l1 + diff.data.w..l1 + const + exo1 
+
+diff.data.y..l1 diff.data.z..l1 diff.data.w..l1           const            exo1 
+    0.178276649     0.312995255    -0.367720385     0.006065021     0.417973964 
+
+
+Estimated coefficients for equation diff.data.z.: 
+================================================= 
+Call:
+diff.data.z. = diff.data.y..l1 + diff.data.z..l1 + diff.data.w..l1 + const + exo1 
+
+diff.data.y..l1 diff.data.z..l1 diff.data.w..l1           const            exo1 
+     0.14593872      0.26246246     -0.31262789     -0.04221498      0.07409731 
+
+
+Estimated coefficients for equation diff.data.w.: 
+================================================= 
+Call:
+diff.data.w. = diff.data.y..l1 + diff.data.z..l1 + diff.data.w..l1 + const + exo1 
+
+diff.data.y..l1 diff.data.z..l1 diff.data.w..l1           const            exo1 
+      0.1557652       0.3012198      -0.4195309      -0.0398010      -0.0690757 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read_xls</span>(<span class="st">"data/COINT6.xls"</span>)</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>jo.ci <span class="ot">=</span> <span class="fu">ca.jo</span>(data,<span class="at">type=</span><span class="st">"trace"</span>)</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(jo.ci)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+###################### 
+# Johansen-Procedure # 
+###################### 
+
+Test type: trace statistic , with linear trend 
+
+Eigenvalues (lambda):
+[1] 0.32539935 0.13327446 0.02528157
+
+Values of teststatistic and critical values of test:
+
+          test 10pct  5pct  1pct
+r &lt;= 2 |  2.51  6.50  8.18 11.65
+r &lt;= 1 | 16.53 15.66 17.95 23.52
+r = 0  | 55.10 28.71 31.52 37.22
+
+Eigenvectors, normalised to first column:
+(These are the cointegration relations)
+
+          y.l2       z.l2       w.l2
+y.l2  1.000000  1.0000000  1.0000000
+z.l2  1.036709  0.6496448 -0.1261411
+w.l2 -1.016939 -0.9091914  0.2455287
+
+Weights W:
+(This is the loading matrix)
+
+          y.l2      z.l2         w.l2
+y.d -0.5458751 0.1485834 -0.013171676
+z.d -0.1767483 0.1559032  0.028602678
+w.d -0.2311188 0.3643981  0.006557148</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>jo.ci<span class="sc">@</span>lambda</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.32539935 0.13327446 0.02528157</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>var.ci <span class="ot">=</span> <span class="fu">vec2var</span>(jo.ci,<span class="at">r=</span><span class="dv">1</span>)</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>var.ci</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Coefficient matrix of lagged endogenous variables:
+
+A1:
+          y.l1       z.l1       w.l1
+y  0.636002218 -0.1487653  0.1118465
+z -0.006072164  1.1454829 -0.1839338
+w  0.020876904  0.2364272  0.6767028
+
+
+A2:
+        y.l2       z.l2      w.l2
+y -0.1818774 -0.4171485 0.4432751
+z -0.1706762 -0.3287196 0.3636760
+w -0.2519957 -0.4760302 0.5583308
+
+
+Coefficient matrix of deterministic regressor(s).
+
+      constant
+y -0.008299368
+z -0.046797589
+w -0.045607860</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(var.ci)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              Length Class  Mode   
+deterministic   3    -none- numeric
+A               2    -none- list   
+p               1    -none- numeric
+K               1    -none- numeric
+y             300    -none- numeric
+obs             1    -none- numeric
+totobs          1    -none- numeric
+call            3    -none- call   
+vecm            1    ca.jo  S4     
+datamat       980    -none- numeric
+resid         294    -none- numeric
+r               1    -none- numeric</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">irf</span>(var.ci)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Impulse response coefficients
+$y
+              y           z         w
+ [1,] 0.2904922 -0.01060536 0.2510280
+ [2,] 0.2144080 -0.06008471 0.1734285
+ [3,] 0.2275644 -0.05682834 0.1796325
+ [4,] 0.2362216 -0.05328969 0.1842756
+ [5,] 0.2407194 -0.05120253 0.1870334
+ [6,] 0.2425854 -0.05029848 0.1882133
+ [7,] 0.2433034 -0.04994208 0.1886772
+ [8,] 0.2435654 -0.04981008 0.1888485
+ [9,] 0.2436580 -0.04976299 0.1889095
+[10,] 0.2436899 -0.04974663 0.1889307
+[11,] 0.2437007 -0.04974105 0.1889379
+
+$z
+                y         z         w
+ [1,]  0.00000000 0.3593709 0.2789571
+ [2,] -0.02226155 0.3603436 0.2737361
+ [3,] -0.06340488 0.3458710 0.2546473
+ [4,] -0.08822536 0.3346349 0.2396809
+ [5,] -0.09895502 0.3295051 0.2329778
+ [6,] -0.10319851 0.3274140 0.2302521
+ [7,] -0.10477110 0.3266255 0.2292279
+ [8,] -0.10533264 0.3263407 0.2288585
+ [9,] -0.10552782 0.3262409 0.2287292
+[10,] -0.10559436 0.3262067 0.2286849
+[11,] -0.10561670 0.3261951 0.2286700
+
+$w
+               y            z         w
+ [1,] 0.00000000  0.000000000 0.1899906
+ [2,] 0.02124978 -0.034945694 0.1285672
+ [3,] 0.11731150  0.005288449 0.1852609
+ [4,] 0.16224773  0.025887058 0.2121294
+ [5,] 0.18164391  0.035264476 0.2244136
+ [6,] 0.18910339  0.038959601 0.2292206
+ [7,] 0.19184137  0.040337313 0.2310098
+ [8,] 0.19281057  0.040830100 0.2316486
+ [9,] 0.19314556  0.041001708 0.2318708
+[10,] 0.19325926  0.041060283 0.2319466
+[11,] 0.19329732  0.041079977 0.2319720
+
+
+Lower Band, CI= 0.95 
+$y
+              y           z          w
+ [1,] 0.2516155 -0.08369527 0.18135968
+ [2,] 0.1531695 -0.15143019 0.07993651
+ [3,] 0.1793316 -0.12807082 0.11666851
+ [4,] 0.1779672 -0.12605805 0.11887513
+ [5,] 0.1769127 -0.12424157 0.11758718
+ [6,] 0.1770824 -0.12512298 0.11176113
+ [7,] 0.1773339 -0.12400805 0.11116385
+ [8,] 0.1774520 -0.12444428 0.11077810
+ [9,] 0.1774918 -0.12429424 0.11091974
+[10,] 0.1774905 -0.12419562 0.11085579
+[11,] 0.1774794 -0.12410711 0.11087848
+
+$z
+                y         z         w
+ [1,]  0.00000000 0.3085741 0.2243596
+ [2,] -0.07999851 0.2552140 0.1680301
+ [3,] -0.12325644 0.2384301 0.1415927
+ [4,] -0.15677800 0.2315535 0.1165559
+ [5,] -0.17688119 0.2215402 0.1086062
+ [6,] -0.18497928 0.2181165 0.1044876
+ [7,] -0.18702468 0.2177535 0.1036437
+ [8,] -0.18837385 0.2174397 0.1034216
+ [9,] -0.19119487 0.2173720 0.1032964
+[10,] -0.19301870 0.2172925 0.1014888
+[11,] -0.19422088 0.2171955 0.1000074
+
+$w
+                y           z          w
+ [1,]  0.00000000  0.00000000 0.15696214
+ [2,] -0.04498478 -0.10665684 0.03265698
+ [3,]  0.05111507 -0.07824987 0.07296339
+ [4,]  0.07443535 -0.08961715 0.06397598
+ [5,]  0.08275463 -0.09283730 0.06691069
+ [6,]  0.07806016 -0.09545461 0.06336197
+ [7,]  0.07538375 -0.09678210 0.06424058
+ [8,]  0.07470268 -0.09771208 0.06377964
+ [9,]  0.07520709 -0.09824453 0.06388150
+[10,]  0.07570165 -0.09858034 0.06376768
+[11,]  0.07588480 -0.09878278 0.06377903
+
+
+Upper Band, CI= 0.95 
+$y
+              y          z         w
+ [1,] 0.3109319 0.04816565 0.3046478
+ [2,] 0.2679294 0.04760280 0.2739212
+ [3,] 0.2732242 0.04298559 0.2708138
+ [4,] 0.2876998 0.04576577 0.2808999
+ [5,] 0.2935205 0.04908902 0.2843559
+ [6,] 0.2938204 0.04981100 0.2868542
+ [7,] 0.2930445 0.04987669 0.2879925
+ [8,] 0.2933030 0.04984665 0.2885280
+ [9,] 0.2936422 0.04983492 0.2887812
+[10,] 0.2940151 0.04983623 0.2889038
+[11,] 0.2941899 0.04983733 0.2889688
+
+$z
+                y         z         w
+ [1,]  0.00000000 0.3816071 0.3075354
+ [2,]  0.02571133 0.4134455 0.3403883
+ [3,] -0.02144079 0.4067872 0.3294309
+ [4,] -0.03104596 0.4014055 0.3263205
+ [5,] -0.03359083 0.4024041 0.3222968
+ [6,] -0.03478349 0.4020671 0.3223140
+ [7,] -0.03451172 0.4027748 0.3230003
+ [8,] -0.03448960 0.4032612 0.3234437
+ [9,] -0.03473642 0.4036059 0.3235305
+[10,] -0.03487606 0.4038038 0.3234593
+[11,] -0.03490034 0.4039153 0.3233893
+
+$w
+              y          z         w
+ [1,] 0.0000000 0.00000000 0.2102987
+ [2,] 0.0784750 0.04290478 0.2128940
+ [3,] 0.1799767 0.10556069 0.2901159
+ [4,] 0.2450280 0.14895295 0.3348766
+ [5,] 0.2891567 0.16742443 0.3524765
+ [6,] 0.3045134 0.17233168 0.3589425
+ [7,] 0.3178227 0.17383967 0.3637955
+ [8,] 0.3263920 0.17487189 0.3657810
+ [9,] 0.3320674 0.17624258 0.3668214
+[10,] 0.3392300 0.17738651 0.3673817
+[11,] 0.3442927 0.17813319 0.3677098</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the cointegrating vector</span></span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>beta <span class="ot">&lt;-</span> jo.ci<span class="sc">@</span>V[, <span class="dv">1</span>]</span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a>coint_ca<span class="ot">&lt;-</span> <span class="fu">cajorls</span>(jo.ci, <span class="at">r=</span><span class="dv">1</span>)</span>
+<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-6"><a href="#cb70-6" aria-hidden="true" tabindex="-1"></a>coint_ca</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$rlm
+
+Call:
+lm(formula = substitute(form1), data = data.mat)
+
+Coefficients:
+          y.d        z.d        w.d      
+ect1      -0.545875  -0.176748  -0.231119
+constant  -0.008299  -0.046798  -0.045608
+y.dl1     -0.363998  -0.006072   0.020877
+z.dl1     -0.148765   0.145483   0.236427
+w.dl1      0.111846  -0.183934  -0.323297
+
+
+$beta
+          ect1
+y.l2  1.000000
+z.l2  1.036709
+w.l2 -1.016939</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(coint_ca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     Length Class  Mode   
+rlm  12     mlm    list   
+beta  3     -none- numeric</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>ecm <span class="ot">=</span> jo.ci<span class="sc">@</span>V[,<span class="dv">1</span>]<span class="sc">%*%</span><span class="fu">t</span>(data)</span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">irf</span>(var.ci))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="conitegration_ch6_enders_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="conitegration_ch6_enders_files/figure-html/unnamed-chunk-12-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="conitegration_ch6_enders_files/figure-html/unnamed-chunk-12-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">c</span>(ecm),<span class="at">type=</span><span class="st">"l"</span>,<span class="at">xaxs=</span><span class="st">"i"</span>,<span class="at">las=</span><span class="dv">1</span>,<span class="at">xlab=</span><span class="st">""</span>,<span class="at">ylab=</span><span class="st">""</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>),<span class="at">tck=</span>.<span class="dv">02</span>)</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">c</span>(ecm),<span class="at">col=</span><span class="st">"steelblue4"</span>,<span class="at">lwd=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="conitegration_ch6_enders_files/figure-html/unnamed-chunk-12-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>quarterly <span class="ot">&lt;-</span>  <span class="fu">read_excel</span>(<span class="st">"data/QUARTERLY.xls"</span>)</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Convert DATE as yearqtr</span></span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>quarterly<span class="sc">$</span>date<span class="ot">=</span><span class="fu">as.yearqtr</span>(quarterly<span class="sc">$</span>DATE)</span>
+<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a>quarterly <span class="sc">|&gt;</span> <span class="fu">colnames</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "DATE"     "FFR"      "Tbill"    "Tb1yr"    "r5"       "r10"     
+ [7] "PPINSA"   "Finished" "CPI"      "CPICORE"  "M1NSA"    "M2SA"    
+[13] "M2NSA"    "Unemp"    "IndProd"  "RGDP"     "Potent"   "Deflator"
+[19] "Curr"     "date"    </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Plot the data</span></span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(quarterly, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> RGDP)) <span class="sc">+</span></span>
+<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Quarterly Real GDP"</span>,</span>
+<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Date"</span>,</span>
+<span id="cb78-6"><a href="#cb78-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Real GDP"</span>) <span class="sc">+</span></span>
+<span id="cb78-7"><a href="#cb78-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="conitegration_ch6_enders_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">=</span> <span class="fu">summary</span>(<span class="fu">lm</span>(r10<span class="sc">~</span>Tbill,<span class="at">data=</span>quarterly))</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>res.lm1 <span class="ot">=</span> lm1<span class="sc">$</span>residuals</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>adf1 <span class="ot">=</span> <span class="fu">ur.df</span>(res.lm1,<span class="at">type=</span><span class="st">"drift"</span>,<span class="at">lag=</span><span class="dv">1</span>)</span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>adf1<span class="sc">@</span>testreg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = z.diff ~ z.lag.1 + 1 + z.diff.lag)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2.25629 -0.24784 -0.05719  0.23422  1.89419 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) -4.109e-05  3.161e-02  -0.001 0.998964    
+z.lag.1     -1.145e-01  2.951e-02  -3.879 0.000141 ***
+z.diff.lag   2.160e-01  6.768e-02   3.192 0.001633 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.4581 on 207 degrees of freedom
+Multiple R-squared:  0.09156,   Adjusted R-squared:  0.08278 
+F-statistic: 10.43 on 2 and 207 DF,  p-value: 4.829e-05</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">=</span> <span class="fu">summary</span>(<span class="fu">lm</span>(Tbill<span class="sc">~</span>r10, <span class="at">data=</span>quarterly))</span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>res.lm2 <span class="ot">=</span> lm2<span class="sc">$</span>residuals</span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a>adf2 <span class="ot">=</span> <span class="fu">ur.df</span>(res.lm2,<span class="at">type=</span><span class="st">"drift"</span>,<span class="at">lag=</span><span class="dv">1</span>)</span>
+<span id="cb81-4"><a href="#cb81-4" aria-hidden="true" tabindex="-1"></a>adf2<span class="sc">@</span>testreg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = z.diff ~ z.lag.1 + 1 + z.diff.lag)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2.28630 -0.24254  0.04718  0.29253  3.14033 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) -0.001072   0.037545  -0.029 0.977247    
+z.lag.1     -0.134502   0.031550  -4.263 3.06e-05 ***
+z.diff.lag   0.233035   0.067336   3.461 0.000654 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.5441 on 207 degrees of freedom
+Multiple R-squared:  0.1064,    Adjusted R-squared:  0.09775 
+F-statistic: 12.32 on 2 and 207 DF,  p-value: 8.792e-06</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">=</span> <span class="fu">data.frame</span>(quarterly<span class="sc">$</span>r10,quarterly<span class="sc">$</span>Tbill)</span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>jo1 <span class="ot">=</span> <span class="fu">ca.jo</span>(df)</span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(jo1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+###################### 
+# Johansen-Procedure # 
+###################### 
+
+Test type: maximal eigenvalue statistic (lambda max) , with linear trend 
+
+Eigenvalues (lambda):
+[1] 0.11378664 0.01251764
+
+Values of teststatistic and critical values of test:
+
+          test 10pct  5pct  1pct
+r &lt;= 1 |  2.65  6.50  8.18 11.65
+r = 0  | 25.37 12.91 14.90 19.19
+
+Eigenvectors, normalised to first column:
+(These are the cointegration relations)
+
+                   quarterly.r10.l2 quarterly.Tbill.l2
+quarterly.r10.l2           1.000000           1.000000
+quarterly.Tbill.l2        -1.012833          -0.116413
+
+Weights W:
+(This is the loading matrix)
+
+                  quarterly.r10.l2 quarterly.Tbill.l2
+quarterly.r10.d        -0.06564836        -0.01970497
+quarterly.Tbill.d       0.07629145        -0.03246534</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>coint_ca1<span class="ot">&lt;-</span> <span class="fu">cajorls</span>(jo1, <span class="at">r=</span><span class="dv">1</span>)</span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb85-3"><a href="#cb85-3" aria-hidden="true" tabindex="-1"></a>coint_ca1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$rlm
+
+Call:
+lm(formula = substitute(form1), data = data.mat)
+
+Coefficients:
+                     quarterly.r10.d  quarterly.Tbill.d
+ect1                 -0.06565          0.07629         
+constant              0.08560         -0.11911         
+quarterly.r10.dl1     0.13590          0.14160         
+quarterly.Tbill.dl1   0.06522          0.15941         
+
+
+$beta
+                        ect1
+quarterly.r10.l2    1.000000
+quarterly.Tbill.l2 -1.012833</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(IndProd<span class="sc">~</span>M1NSA,<span class="at">data=</span>quarterly))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = IndProd ~ M1NSA, data = quarterly)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-30.2141  -4.8318  -0.3374   5.6500  18.1308 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 30.481429   1.019418   29.90   &lt;2e-16 ***
+M1NSA        0.040112   0.001097   36.58   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 8.668 on 210 degrees of freedom
+Multiple R-squared:  0.8643,    Adjusted R-squared:  0.8637 
+F-statistic:  1338 on 1 and 210 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">lm</span>(IndProd<span class="sc">~</span>M1NSA,<span class="at">data=</span>quarterly)<span class="sc">$</span>residuals,<span class="at">type=</span><span class="st">"l"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="conitegration_ch6_enders_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ur.df</span>(<span class="fu">lm</span>(IndProd<span class="sc">~</span>M1NSA,<span class="at">data=</span>quarterly)<span class="sc">$</span>residuals,<span class="at">type=</span><span class="st">"drift"</span>,<span class="at">lag=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+############################################################### 
+# Augmented Dickey-Fuller Test Unit Root / Cointegration Test # 
+############################################################### 
+
+The value of the test statistic is: -1.1155 0.7662 </code></pre>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

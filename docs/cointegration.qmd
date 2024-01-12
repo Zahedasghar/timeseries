@@ -25,22 +25,10 @@ knitr::opts_chunk$set(fig.retina = 3, collapse = TRUE)
 options(digits = 3, width = 75)
 ```
 
-```{r setup, include=FALSE}
-options(htmltools.dir.version = FALSE)
-knitr::opts_chunk$set(
-  fig.width=9, fig.height=3.5, fig.retina=3,
-  out.width = "100%",
-  cache = FALSE,
-  echo = TRUE,
-  message = FALSE, 
-  warning = FALSE,
-  hiline = TRUE
-)
-```
 
 
+## Main Objectives 
 
-## Main Objectives
 - Concept of cointegration 
 
 - Studying the dynamics of cointegrated variables 
@@ -82,8 +70,9 @@ df11<-df11|>rename(date="date...1")
 
 ## 
 
-```{r fig.align="center", fig.width =15,repr.plot.height=8}
-#df11<-df11 %>% filter(quarter>"1970 Q4" & quarter<="2019 Q1")
+```{r }
+#| columns: 2
+ #df11<-df11 %>% filter(quarter>"1970 Q4" & quarter<="2019 Q1")
 g1<-ggplot(df11)+aes(x=date,y=qrgdp)+geom_line()
 g2<-ggplot(df11)+aes(x=date,y=lnM2)+geom_line()
 g3<-ggplot(df11)+aes(x=date,y=CPI)+geom_line()
@@ -179,6 +168,14 @@ Short run change in $p_t$ is a linear function of the deviation from the long ru
 which is basically error/equilibrium correction model.
 !...
 
+## Both $m_t$ and $p_t$ adjust simulataneously
+
+![](images/mp4.png){.center}
+
+  $m_t$ and $p_t$ are adjusting simultaneously
+  $\Delta m_t=\alpha_m(m_{t-1}-m^*_{t-1})$
+  $\Delta p_t=\alpha_p(m_{t-1}-m^*_{t-1})$
+
 ## Cointegration and VECM (Continued)
 
 __Simple ECM__ 
@@ -215,7 +212,7 @@ $\Delta y_t=\alpha_y(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\
 ## Deterministic component
 
 __Case 1__
-$\Delta m_t=\alpha_m(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+)+\\\lambda_{mm} \Delta m_{t-1}+\lambda_{mp} \Delta p_{t-1}+\lambda_{my} \Delta y_{t-1}+\nu_t$ 
+$\Delta m_t=\alpha_m(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\\lambda_{mm} \Delta m_{t-1}+\lambda_{mp} \Delta p_{t-1}+\lambda_{my} \Delta y_{t-1}+\nu_t$ 
 
 __Case 2__ 
 

@@ -1,0 +1,330 @@
+---
+title: "ARDL model"
+author: ""
+date: 'today'
+format: 
+  html:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    keep-md: false
+
+execute: 
+  echo: false
+  warning: false
+  freeze: auto
+bibliography: references.bib
+---
+
+## Summary Statistics
+
+
+```{r}
+library(tidyverse)
+library(readxl)
+library(xts)
+library(ARDL)
+library(tidyr)
+library(janitor) # to clean names
+library(gt)
+library(gtExtras)
+library(data.table)
+library(forecast)
+library(broom)
+```
+
+
+
+```{r}
+ardlf <- read_excel("data/ardl.xlsx", skip=3)
+
+ardlf |> clean_names() -> ardlf
+
+ardlf$date <- format(ardlf$date, format = "%m-%d-%Y")
+
+ardlf$date <- mdy(ardlf$date)
+
+
+
+ ardlf |>  
+summarise(
+  across(
+    .cols = c(
+      tri ,amihud_illiqudity,  turn_over_ratio ,  bid_ask_spread,pe,
+             beta_monthly_leveraged,dy,annualised_volatility_open,market_cap
+    ),
+    .fns = c(
+      n = ~sum(!is.na(.)),
+      mean = \(x) mean(x, na.rm = TRUE),
+      variance =\(x) var(x, na.rm = TRUE),
+      min = \(x) min(x, na.rm = TRUE),
+      max = \(x) max(x, na.rm = TRUE)
+    ),
+    .names = '{.col}----{.fn}'
+  )
+) |> 
+  pivot_longer(
+    cols = everything(),
+    names_sep = '----',
+    names_to = c('variable', 'stat')
+  )  -> ardf
+
+
+ardf |> pivot_wider(names_from = stat, values_from = value) ->wide_data
+
+
+# Optional: Rename columns
+colnames(wide_data) <- c("Variable", "Observations","Mean", "Variance", "Min", "Max")
+
+# Reset row names to NULL
+row.names(wide_data) <- NULL
+
+wide_data |> gt()|>tab_header("Descriptive statistics") |> gt_theme_pff()
+
+# # Assuming 'wide_data' is your data frame
+# rounded_data <- wide_data
+# 
+# # Identify numeric columns to round
+# numeric_columns <- sapply(rounded_data, is.numeric)
+# 
+# # Round numeric columns to 2 decimal places
+# rounded_data[numeric_columns] <- lapply(rounded_data[numeric_columns], function(x) round(x, 2))
+# 
+# 
+# rounded_data |> gt() |> fmt_number(
+#   decimals = 2
+# ) |>tab_header("Descriptive statistics") |> gt_theme_pff()
+```
+The summary statistics of the financial series that have been incorporated as a dependent and independent variable are shown in Table 1. The study examined the impact of liquidity, market cap, dividend yield, and beta weekly leverage on `tri` using monthly data from January 2013 to September 2023. The gathered from Yahoo Finance, freely available data source. A few common statistics of the data used in the studies are reported in Table 1. A total of 129 observations were included in that data analysis process. The `tri` average isequal to 8404, with minimum values of 4805 and maximum values of 13658. pe, beta monthly, and dy variables are in ratios. As some variables are in ratios while others in numbers, so comparing means and other measures across variables will not make much idea. 
+
+## Correlation
+
+
+To observe association among vaerious variables , correlation (a measure of linear association) is given as follows:
+
+```{r}
+correlation_matrix <- ardlf |> select(
+  tri ,amihud_illiqudity,  turn_over_ratio ,  bid_ask_spread,pe,
+             beta_monthly_leveraged,dy,annualised_volatility_open,market_cap) |> cor()
+
+# Create a data frame from the correlation matrix
+correlation_df <- as.data.frame(correlation_matrix)
+
+# Create a gt table
+correlation_table <- correlation_df  |> 
+  gt() |> fmt_number(
+    columns = everything(),
+    decimals = 2
+  )  
+
+# Convert the correlation matrix to a data table with variable names
+correlation_table <- data.table(data.frame(Var = colnames(correlation_matrix), correlation_matrix))
+
+# Print the correlation table
+correlation_table |> gt() |>  fmt_number(
+  decimals = 2
+) |> tab_header("Correlation among selected variables") |> gt_theme_pff()
+
+
+```
+
+Correlation of `tri` with `market capitalization` is almost perfect while with `liqudity` , its zero, while its negative with `pe`. But as correlation is not same as the causation, therefore, one should observe caution while interpreting results. THese results indicate
+
+
+
+## Trend analysis
+
+First step is analysis is always to plot your data for better insight.
+
+```{r}
+#Declaring the Time Series Variables
+tri <- ts(ardlf$tri, start = c(2013,1,1), frequency = 12)
+
+#turn_over_ratio<- ts(ardlf$turn_over_ratio, start = c(2013,1,1), frequency = 12)
+#bid_ask_spread <- ts(ardlf$bid_ask_spread, start = c(2013,1,1), frequency = 12)
+
+beta_monthly_leveraged <- ts(ardlf$beta_monthly_leveraged, start = c(2013,1,1), frequency = 12)
+annualised_volatility_open <- ts(ardlf$annualised_volatility_open, start = c(2013,1,1), frequency = 12)
+
+dy <- ts(ardlf$dy, start = c(2013,1,1), frequency = 12)
+market_cap <- ts(ardlf$market_cap, start = c(2013,1,1), frequency = 12)
+
+pe <- ts(ardlf$pe, start = c(2013,1,1), frequency = 12)
+amihud_illiqudity <- ts(ardlf$amihud_illiqudity, start = c(2013,1,1), frequency = 12)
+turn_over_ratio <- ts(ardlf$turn_over_ratio, start = c(2013,1,1), frequency = 12)
+bid_ask_spread <- ts(ardlf$bid_ask_spread, start = c(2013,1,1), frequency = 12)
+
+p1 <- plot(tri, main='tri')
+
+p2<- plot(amihud_illiqudity,main='amihud_illiqudity') 
+
+p3<- plot(beta_monthly_leveraged,main='beta monthly leveraged')
+
+p4 <- plot(dy,main='dy')
+
+p5 <- plot(market_cap, main='market_cap')
+
+p6 <- plot(pe, main="pe")
+
+p7 <- plot(annualised_volatility_open,main='annualised_volatility_open')
+
+p8 <- plot(bid_ask_spread,main="bid ask spread")
+
+p9 <- plot(turn_over_ratio,main="turn over ratio")
+
+
+```
+
+From these plots, one observes that some series are showing non-stationary behavior and we will test using adf test in the following part.
+
+## Taking log of `tri`, `market cap` and `turn over ratio` 
+
+These three variables have very large values, therefore, log transformation will be made in order to scale down values and to some extent it will make data normally distributed.
+
+## Unit Root Testing using ADF and PP tests
+
+
+```{r}
+# transforming variables into log form
+
+ardlf <- ardlf |> mutate(ln_turn_over=log(turn_over_ratio),ln_mkt_cap=log(market_cap),
+                        lntri=log(tri))
+
+library(tseries)
+library(purrr)
+
+
+## ADF test
+
+
+ardlf %>%
+  select(lntri,amihud_illiqudity,ln_turn_over,annualised_volatility_open,ln_mkt_cap,pe,dy,bid_ask_spread,beta_monthly_leveraged) %>%
+  map(~adf.test(.)) |> 
+  map_df(broom::tidy, .id = "Variable") ->adf_test
+## PP test
+
+ardlf %>%
+  select(lntri,amihud_illiqudity,ln_turn_over,annualised_volatility_open,ln_mkt_cap,pe,dy,bid_ask_spread,beta_monthly_leveraged) %>%
+  map(~pp.test(.)) |> 
+  map_df(broom::tidy, .id = "Variable") ->pp_test
+
+adf_test <- as_tibble(adf_test)
+
+pp_test <- as_tibble(pp_test) 
+
+
+ bind_cols(
+   adf_test,
+   pp_test
+)  |> select(1:3,8,9) -> adf_pp
+ 
+ colnames(adf_pp) <- c("Variable", "adf_stat","p_val_adf", "pp_stat", "p_val_pp")
+
+adf_pp |> mutate(across(where(is.numeric), ~ round(., 3)))
+```
+**ADF test** indicates that all variables with log transformation are non-stationary besides `pe` which is as per expectation as ratio and rates variables are usually stationary. 
+ Philips-Perron test indicates `have also more or similar results. So one thing is obvious all variables are of the same order of integration, therefore, we shall use ARDL model accordingly. Before we go with seasonal plots to have an idea of seasonality in couple of series.
+
+## Seasonality 
+But before we proceed further, lets have an overview of seasonality and see whether there are strong seasonal patterns are or not.
+
+```{r}
+
+lntri <- ts(ardlf$lntri, start = c(2013,1,1), frequency = 12)
+ln_turn_over <- ts(ardlf$ln_turn_over, start = c(2013,1,1), frequency = 12)
+ln_mkt_cap <- ts(ardlf$ln_mkt_cap, start=c(2012,1,1), frequency = 12)
+ggseasonplot(lntri)
+ggseasonplot(amihud_illiqudity)
+ggseasonplot(ln_turn_over)
+ggseasonplot(pe)
+ggseasonplot(beta_monthly_leveraged)
+ggseasonplot(dy)
+ggseasonplot(ln_mkt_cap)
+ggseasonplot(annualised_volatility_open)
+ggseasonplot(bid_ask_spread)
+```
+
+Seasonality element in most of the cases is not strong and its impact is not significant.
+
+## ARDL
+
+First step in ARDL modeling will be to pick the right order of lags structures of each of the variables to be used in the model. It will also help us in deciding whether we have significant observations available for model estimation or not. Its monthly data and seasonality seems not very significant , therefore we have assumed maximum lag order of each of the variable is 4 and then select appropriate lag order as per `AIC` criteria.
+
+## Best model selection 
+
+```{r}
+ardl_mod <- auto_ardl(lntri~ln_turn_over+ln_mkt_cap+pe+dy+beta_monthly_leveraged+amihud_illiqudity+bid_ask_spread+annualised_volatility_open, data = ardlf, max_order = 4)
+ardl_mod
+
+
+
+```
+
+$lntri=ln_turn_over+ln_mkt_cap+pe+dy+beta_monthly_leveraged+amihud_illiqudity+bid_ask_spread+annualised_volatility_open$
+
+## Select the best model using lag length `AIC` criteria
+
+`ardl(3,1,3,3,3,0,1,0,3)` is found to be the best model using lag length selectio criteria based on AIC. And we shall use this best model to proceed further.
+
+```{r}
+ardl_313330103 <- ardl_mod$best_model
+
+ardl_313330103 |> tidy() |> mutate(across(where(is.numeric), ~ round(., 3)))
+
+```
+
+Coefficients of each variable and required lags is given in the table. `ardl(3,1,3,3,3,0,1,0,3)` is the best model. So this model has 17 coefficients to estimate from a sample of 129 observations which seems fine.
+
+## ARDL model estimation
+
+Problem with applying OLS is that some variables are non-stationary and some are stationary, which will lead to spurious regression. Therefore, we shall first we estimate the UECM (Unrestricted Error Correction Model) of the underlying `ardl(3,1,3,3,3,0,1,0,3)`
+
+```{r}
+uecm_313000103 <- uecm(ardl_313330103)
+summary(uecm_313000103)
+```
+F-statisitic indicate that variables in the model are collectively important for forecasting stock market turn over.
+
+## RECM (Restricted Error Correction Model)
+
+Underlying `ardl(3,1,3,3,3,0,1,0,3)`, allowing the constant to join the long-run relationship (case
+
+```{r}
+recm_313330103 <- recm(uecm_313000103, case = 2) 
+
+summary(recm_313330103)
+```
+
+### Test for cointegration
+
+Let's test if there is a long-run levels relationship (cointegration) using the bounds test from Pesaran et al. (2001). The bounds F-test (under the case 2) rejects the NULL hypothesis (let's say, assuming alpha = 0.01) with p-value = 0.004418.
+
+```{r}
+bounds_f_test(recm_313330103, case = 2)
+
+tbounds <- bounds_t_test(uecm_313000103, case = 3, alpha = 0.01)
+tbounds
+
+```
+
+So t=-2.3966 lies below lower limit and indicates there is no cointegration and p-value is also 0.7892 indicating no cointegration. Therefore, there is no long run relationship between stock market turn over and different variables included in the model. However, in the short run variables affect turn over.
+
+## Short-run 
+
+Here we have the short-run coefficients (with standard errors, t-statistics and p-values) as there is no cointegration from Bounds test for cointegration.
+
+```{r}
+multipliers(ardl_313330103, type = "sr") |> mutate(across(where(is.numeric), ~ round(., 3)))
+```
+
+
+
+We can also estimate and visualize the delay multipliers along with their standard errors.
+
+```{r}
+mult <- multipliers(ardl_313330103, type = 15, se = TRUE)
+plot_delay(mult, interval = 0.95)
+```
+These graphs also indicate that some variables have short run impact before it settles down in 4 to 5 months. This analysis indicate that overall there is short run relationship among `tri` and other variables and play effective role.
+
+These graphs indicate that most of the variables have almost same impact throughtout time while certain variables affect stock for 4 to 5 months before their impact becomes absorbed. 

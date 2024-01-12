@@ -1,0 +1,170 @@
+
+#########################################################
+#########################################################
+###### 6. COINTEGRATION AND ERRORCORRECTION MODELS ######
+#########################################################
+#########################################################
+
+### PAGE 366
+library(readxl)
+library("gdata")
+library("tseries")
+library("urca")
+library(tidyverse)
+library(broom)
+data <-  read_xls("data/COINT6.xls")
+
+## Add observation index
+data$obs_index <- seq(1, nrow(data))
+
+
+## Use pivot longer command
+data_long <- data %>%
+  pivot_longer(cols = -obs_index, names_to = "series", values_to = "value")
+
+# Plot using ggplot
+ggplot(data_long, aes(x = obs_index, y = value, color = series)) +
+  geom_line() +
+  labs(title = "Three Columns Plot",
+       x = "Observation Index",
+       y = "Value") +
+  theme_minimal()
+
+p <- ggplot(data_long, aes(x = obs_index, y = value, color = series)) +
+  geom_line() +
+  labs(title = "Three Columns Plot",
+       x = "Observation Index",
+       y = "Value") +
+  theme_minimal()
+
+## Add 0 line 
+p+  geom_hline(yintercept = 0, linetype = "dashed") 
+
+## Fit linear models of y on z, w , z on y, w and w on y, z
+
+lm1 <- lm(y ~ z + w, data = data)
+lm2 <- lm(z ~ y + w, data = data)
+lm3 <- lm(w ~ y + z, data = data)
+
+lm1 |> tidy()
+lm2 |> tidy()
+lm3 |> tidy()
+
+library("urca")
+
+## acf and pacf of each series
+acf(data$y)
+acf(data$z)
+acf(data$w)
+pacf(data$y)
+pacf(data$z)
+pacf(data$w)
+
+### adf unit root tests at lag 0 and 4
+adf1 <-  ur.df(data$y,lag=0)
+adf1@testreg
+adf1 <-  ur.df(data$y,lag=4)
+adf1@testreg
+adf2 <-  ur.df(data$z,lag=0)
+adf2@testreg
+adf2 <-  ur.df(data$z,lag=4)
+adf2@testreg
+adf3 <-  ur.df(data$w,lag=0)
+adf3@testreg
+adf3 <-  ur.df(data$w,lag=4)
+adf3@testreg
+
+###  Unit root tests for Residuals of each model
+adf1 <-  ur.df(lm1$residuals,lag=0)
+adf1@testreg
+adf1 <-  ur.df(lm1$residuals,lag=4)
+adf1@testreg
+adf2 <-  ur.df(lm2$residuals,lag=0)
+adf2@testreg
+adf2 <-  ur.df(lm2$residuals,lag=4)
+adf2@testreg
+adf3 <-  ur.df(lm3$residuals,lag=0)
+adf3@testreg
+adf3 <-  ur.df(lm3$residuals,lag=4)
+adf3@testreg
+
+DATA <-  data[-1,]
+
+for (i in 1:ncol(DATA)) {
+   DATA[,i] <- diff(data[,i])
+}
+library("vars")
+e.w <-  lm3$residuals
+VAR(DATA,p=1,exogen=e.w[-length(e.w)])
+
+
+### PAGE 390
+jo.ci = ca.jo(data,type="trace")
+summary(jo.ci)
+jo.ci@lambda
+var.ci = vec2var(jo.ci,r=1)
+var.ci
+
+# Extract the cointegrating vector
+beta <- jo.ci@V[, 1]
+
+coint_ca<- cajorls(jo.ci, r=1)
+
+coint_ca
+
+summary(coint_ca)
+
+ecm = jo.ci@V[,1]%*%t(data)
+
+lines(c(ecm),col="steelblue4",lwd=2)
+
+plot(irf(var.ci))
+
+plot(c(ecm),type="l",xaxs="i",las=1,xlab="",ylab="",ylim=c(-1,1),tck=.02)
+
+
+
+
+quarterly <-  read_excel("data/QUARTERLY.xls")
+
+## Convert DATE as yearqtr
+quarterly$date=as.yearqtr(quarterly$DATE)
+
+quarterly |> colnames()
+## Plot the data
+ggplot(quarterly, aes(x = date, y = RGDP)) +
+  geom_line() +
+  labs(title = "Quarterly Real GDP",
+       x = "Date",
+       y = "Real GDP") +
+  theme_minimal()
+
+lm1 = summary(lm(r10~Tbill,data=quarterly))
+res.lm1 = lm1$residuals
+adf1 = ur.df(res.lm1,type="drift",lag=1)
+adf1@testreg
+
+lm2 = summary(lm(Tbill~r10, data=quarterly))
+res.lm2 = lm2$residuals
+adf2 = ur.df(res.lm2,type="drift",lag=1)
+adf2@testreg
+
+df = data.frame(quarterly$r10,quarterly$Tbill)
+jo1 = ca.jo(df)
+summary(jo1)
+
+coint_ca1<- cajorls(jo1, r=1)
+
+coint_ca1
+
+summary(lm(IndProd~M1NSA,data=quarterly))
+
+plot(lm(IndProd~M1NSA,data=quarterly)$residuals,type="l")
+
+ur.df(lm(IndProd~M1NSA,data=quarterly)$residuals,type="drift",lag=1)
+
+# 
+# lm1 = summary(lm(log(RGDP)~log(RCons),data=quarterly))
+# lm1
+# 
+# ### END
