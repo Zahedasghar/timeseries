@@ -39,7 +39,7 @@ execute:
 
 ## Basic Steps 
 
- $\begin{aligned}{{Y}_{t}}={{\beta}_{0}}+\sum\limits_{i=1}^{p}{{{\beta}_{1}}{{Y}_{t-i}}+\sum\limits_{i=0}^{{{q}_{1}}}{{{a}_{1}}{{X}_{1,t-i}}\sum\limits_{i=0}^{{{q}_{2}}}{{{a}_{2}}{{X}_{2,t-i}}+}}}\\\sum\limits_{i=0}^{{{q}_{3}}}{{{a}_{3}}{{X}_{3,t-i}}+}\sum\limits_{i=0}^{q4}{{{a}_{4}}{{X}_{4,t-i}}+}{{\varepsilon}_{t}}\end{aligned}$
+$\begin{aligned}{{Y}_{t}}={{\beta}_{0}}+\sum\limits_{i=1}^{p}{{{\beta}_{1}}{{Y}_{t-i}}+\sum\limits_{i=0}^{{{q}_{1}}}{{{a}_{1}}{{X}_{1,t-i}}\sum\limits_{i=0}^{{{q}_{2}}}{{{a}_{2}}{{X}_{2,t-i}}+}}}\\\sum\limits_{i=0}^{{{q}_{3}}}{{{a}_{3}}{{X}_{3,t-i}}+}\sum\limits_{i=0}^{q4}{{{a}_{4}}{{X}_{4,t-i}}+}{{\varepsilon}_{t}}\end{aligned}$
 
 ## 
 
@@ -60,9 +60,9 @@ $\begin{aligned}\Delta {{Y}_{t}}={{\beta}_{0}}+\sum\limits_{i=1}^{p}{{{\beta }_{
 
 ## 
 
-   $$\Delta {{Y}_{t}}={{\beta}_{0}}+\sum\limits_{i=1}^{p}{{{\beta }_{1}}\Delta{{Y}_{t-i}}+\sum\limits_{i=0}^{{{q}_{1}}}{{{a}_{1}}\Delta{{X}_{1,t-i}}\sum\limits_{i=0}^{{{q}_{2}}}{{{a}_{2}}\Delta{{X}_{2,t-i}}+}}}\\\sum\limits_{i=0}^{{{q}_{3}}}{{{a}_{3}}\Delta{{X}_{3,t-i}}+}\sum\limits_{i=0}^{q4}{{{a}_{4}}\Delta{{X}_{4,t-i}}}+\delta {{Z}_{t-1}}+{{\varepsilon}_{t}}$$
+$$\Delta {{Y}_{t}}={{\beta}_{0}}+\sum\limits_{i=1}^{p}{{{\beta }_{1}}\Delta{{Y}_{t-i}}+\sum\limits_{i=0}^{{{q}_{1}}}{{{a}_{1}}\Delta{{X}_{1,t-i}}\sum\limits_{i=0}^{{{q}_{2}}}{{{a}_{2}}\Delta{{X}_{2,t-i}}+}}}\\\sum\limits_{i=0}^{{{q}_{3}}}{{{a}_{3}}\Delta{{X}_{3,t-i}}+}\sum\limits_{i=0}^{q4}{{{a}_{4}}\Delta{{X}_{4,t-i}}}+\delta {{Z}_{t-1}}+{{\varepsilon}_{t}}$$
 where 
-  $${{Z}_{t-1}}=\left({{Y}_{t-1}}-{{a}_{0}}-{{a}_{1}}{{X}_{1,t-1}}-{{a}_{2}}{{X}_{2,t-1}}-\\{{a}_{3}}{{X}_{3,t-1}}-{{a}_{4}}{{X}_{4,t-1}}\right)$$ 
+$${{Z}_{t-1}}=\left({{Y}_{t-1}}-{{a}_{0}}-{{a}_{1}}{{X}_{1,t-1}}-{{a}_{2}}{{X}_{2,t-1}}-\\{{a}_{3}}{{X}_{3,t-1}}-{{a}_{4}}{{X}_{4,t-1}}\right)$$ 
 
 [How to do perform it in STATA/R](http://rizaudinsahlan.blogspot.com/2016/06/ardl-cointegration-test-with-stata.html)
 
