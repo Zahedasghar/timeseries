@@ -8,9 +8,10 @@
 <link href="nonstationary_files/libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="nonstationary_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="nonstationary_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.3.299">
+  <meta name="generator" content="quarto-1.5.9">
 
   <meta name="author" content="Zahid Asghar, Professor, School of Economics, QAU">
+  <meta name="dcterms.date" content="2024-04-01">
   <title>Macroeconomic Forecasting Lec_02</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -30,7 +31,7 @@
       vertical-align: middle;
     }
   </style>
-  <link rel="stylesheet" href="nonstationary_files/libs/revealjs/dist/theme/quarto.css" id="theme">
+  <link rel="stylesheet" href="nonstationary_files/libs/revealjs/dist/theme/quarto.css">
   <link href="nonstationary_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="nonstationary_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="nonstationary_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -158,7 +159,8 @@
   }
 
   .callout.callout-titled .callout-body > .callout-content > :last-child {
-    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0;
   }
 
   .callout.callout-titled .callout-icon::before {
@@ -337,56 +339,7 @@
 </div>
 </div>
 
-  <p class="date">10-10-2023</p>
-</section><section id="TOC">
-<nav role="doc-toc"> 
-<h2 id="toc-title">Table of contents</h2>
-<ul>
-<li><a href="#/properties-of-time-series" id="/toc-properties-of-time-series">Properties of Time Series</a>
-<ul>
-<li><a href="#/introduction" id="/toc-introduction">Introduction</a></li>
-</ul></li>
-<li><a href="#/nonstationary-series" id="/toc-nonstationary-series">Nonstationary Series</a>
-<ul>
-<li><a href="#/nonstationary-series-1" id="/toc-nonstationary-series-1">Nonstationary Series</a></li>
-<li><a href="#/what-is-nonstationarity" id="/toc-what-is-nonstationarity">What is nonstationarity?</a></li>
-<li></li>
-<li></li>
-<li></li>
-<li><a href="#/example-of-a-random-walk" id="/toc-example-of-a-random-walk">Example of a random walk</a></li>
-<li><a href="#/rw-with-drift0.05" id="/toc-rw-with-drift0.05">RW with Drift=0.05</a></li>
-<li><a href="#/rw-with-drift-is-2" id="/toc-rw-with-drift-is-2">RW with drift is 2</a></li>
-<li><a href="#/section" id="/toc-section"></a>
-<ul>
-<li><a href="#/section" id="/toc-key-questions">Key Questions:</a></li>
-</ul></li>
-<li>
-<ul>
-<li><a href="#/consequences-of-non-stationarity" id="/toc-consequences-of-non-stationarity">Consequences of non-stationarity</a></li>
-</ul></li>
-<li></li>
-<li></li>
-<li><a href="#/statistical-consequences-of-nonstationarity" id="/toc-statistical-consequences-of-nonstationarity">Statistical consequences of nonstationarity</a></li>
-<li><a href="#/statistical-consequences-of-non-stationary-for-multivariate-regressions" id="/toc-statistical-consequences-of-non-stationary-for-multivariate-regressions">Statistical consequences of non-stationary for multivariate regressions</a></li>
-<li><a href="#/spurious-regression-practical-exercise" id="/toc-spurious-regression-practical-exercise">Spurious regression practical exercise:</a></li>
-<li><a href="#/section-1" id="/toc-section-1"></a></li>
-<li><a href="#/testing-for-non-stationarity" id="/toc-testing-for-non-stationarity">Testing for non-stationarity</a></li>
-<li></li>
-<li></li>
-<li></li>
-<li></li>
-<li></li>
-<li></li>
-<li><a href="#/phillips-perron-pp-test" id="/toc-phillips-perron-pp-test">Phillips-Perron (PP) Test:</a></li>
-<li></li>
-<li></li>
-<li></li>
-<li></li>
-<li></li>
-<li></li>
-</ul></li>
-</ul>
-</nav>
+  <p class="date">2024-04-01</p>
 </section>
 <section>
 <section id="properties-of-time-series" class="title-slide slide level1 center">
@@ -501,16 +454,16 @@ if <span class="math inline">\(\mu&gt;0\)</span>, then <span class="math inline"
 <p><strong>Shocks do not die out</strong></p>
 <ul>
 <li>Consideer a general AR(1): <span class="math inline">\(y_t=b y_{t-1}+\epsilon_t\)</span></li>
-<li>Can be expressed as an MA(q): <span class="math inline">\(y_t=b^t y_0+\epsilon_t+b\epsilon_{t-1}+b^2\epsilon{t-2}+. . .+\\b^{t-2}\epsilon_2+b^{t-1}\epsilon_1\)</span></li>
+<li>Can be expressed as an MA(q): <span class="math inline">\(y_t=b^t y_0+\epsilon_t+b\epsilon_{t-1}+b^2\epsilon_{t-2}+. . .+\\b^{t-2}\epsilon_2+b^{t-1}\epsilon_1\)</span></li>
 </ul>
 <p>The impact of shocks (disturbances) will depend on values of <span class="math inline">\(b\)</span>.</p>
 </section>
 <section class="slide level2">
 
-<p><span class="math inline">\(y_t=b^t y_0+\epsilon_t+b\epsilon_{t-1}+b^2\epsilon{t-2}+. . .+\\b^{t-2}\epsilon_2+b^{t-1}\epsilon_1\)</span></p>
+<p><span class="math inline">\(y_t=b^t y_0+\epsilon_t+b\epsilon_{t-1}+b^2\epsilon_{t-2}+. . .+\\b^{t-2}\epsilon_2+b^{t-1}\epsilon_1\)</span></p>
 <p>Three cases</p>
 <ol type="1">
-<li><p><span class="math inline">\(b&lt;0\)</span>, <span class="math inline">\(b^t\)</span> →0 as t →∞ , so the effects of a shock will diminish as time elapses</p></li>
+<li><p><span class="math inline">\(b&lt;0\)</span>, <span class="math inline">\(b^t\)</span> →0 as <span class="math inline">\(t\)</span> →∞ , so the effects of a shock will diminish as time elapses</p></li>
 <li><p><span class="math inline">\(b=1\)</span>, <span class="math inline">\(b^t=1\)</span> for all t; effect persists, <span class="math inline">\(y_t=y_0+\sum_{i=1}^{n}\epsilon_{t-i}\)</span> variance grows indefinitely with time.</p></li>
 <li><p><span class="math inline">\(b&gt;1\)</span>, shocks become more influential over time.</p></li>
 </ol>
@@ -544,8 +497,9 @@ if <span class="math inline">\(\mu&gt;0\)</span>, then <span class="math inline"
 </section>
 <section id="section-1" class="slide level2">
 <h2></h2>
-<p>Key Questions: - What is nonstationarity?</p>
+<p><strong>Key Questions:</strong></p>
 <ul>
+<li><p>What is nonstationarity?</p></li>
 <li><p>Why is it important?</p></li>
 <li><p>How do we determine whether a time series is non- stationary?</p></li>
 </ul>
@@ -599,8 +553,13 @@ if <span class="math inline">\(\mu&gt;0\)</span>, then <span class="math inline"
 <section class="slide level2">
 
 <p>Moving beyond white noise disturbances</p>
-<p>DF test assumes that <span class="math inline">\(\epsilon_t\)</span> is white noise. - However, if <span class="math inline">\(\epsilon_t\)</span> is autocorrelated, need different version of the test, allowing for higher-order lags: - Augmented Dickey-Fuller (ADF) test:</p>
-<p><span class="math inline">\(\Delta y_t=\mu+ \gamma y_{t-1}+\sum_i^p \beta_i\Delta y{t-i+1}+\epsilon_t, \gamma=-(1-\sum_i^pb_i)\)</span> and <span class="math inline">\(\beta_i=-\sum_i^pb_j\)</span></p>
+<p>DF test assumes that <span class="math inline">\(\epsilon_t\)</span> is white noise.</p>
+<ul>
+<li><p>However, if <span class="math inline">\(\epsilon_t\)</span> is autocorrelated, need different version of the test, allowing for higher-order lags:</p></li>
+<li><p>Augmented Dickey-Fuller (ADF) test:</p></li>
+</ul>
+<p><span class="math inline">\(\Delta y_t=\mu+ \gamma y_{t-1}+\sum_i^p \beta_i\Delta y{t-i+1}+\epsilon_t, \gamma=-(1-\sum_i^pb_i)\)</span> and</p>
+<p><span class="math inline">\(\beta_i=-\sum_i^pb_j\)</span></p>
 </section>
 <section class="slide level2">
 
@@ -655,7 +614,7 @@ if <span class="math inline">\(\mu&gt;0\)</span>, then <span class="math inline"
 
 <p>A unified way of looking at the unit root tests Slightly different representation: <span class="math inline">\(y_t=\mu+\alpha t+ u_t\)</span> <span class="math inline">\(u_t=\rho u_{t-1}+\epsilon_t\)</span></p>
 <p><span class="math inline">\(H_0: =1\)</span> y has a unit root</p>
-<p><span class="math inline">\(H_1: |\rho|&lt;1\)</span> y is <span style="color:pink;">stationary</span></p>
+<p><span class="math inline">\(H_1: |\rho|&lt;1\)</span> y is <span style="color:red;">stationary</span></p>
 <ul>
 <li>If <span class="math inline">\(\epsilon_t\)</span> is white noise, then DF can be used</li>
 <li>If <span class="math inline">\(\epsilon_t\)</span> is ARMA(p,q) then use ADF or PP</li>
@@ -694,8 +653,10 @@ if <span class="math inline">\(\mu&gt;0\)</span>, then <span class="math inline"
 <li><p>Do the different tests agree?</p></li>
 <li><p>If you suspect a structural break, re-test for two sub-samples</p></li>
 </ul>
+<div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
+</div>
 </div>
 </section></section>
     </div>
@@ -725,7 +686,6 @@ if <span class="math inline">\(\mu&gt;0\)</span>, then <span class="math inline"
       Reveal.initialize({
 'controlsAuto': true,
 'previewLinksAuto': false,
-'smaller': false,
 'pdfSeparateFragments': false,
 'autoAnimateEasing': "ease",
 'autoAnimateDuration': 1,
@@ -1025,10 +985,9 @@ if <span class="math inline">\(\mu&gt;0\)</span>, then <span class="math inline"
         // clear code selection
         e.clearSelection();
       });
-      function tippyHover(el, contentFn) {
+      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
         const config = {
           allowHTML: true,
-          content: contentFn,
           maxWidth: 500,
           delay: 100,
           arrow: false,
@@ -1038,8 +997,17 @@ if <span class="math inline">\(\mu&gt;0\)</span>, then <span class="math inline"
           interactive: true,
           interactiveBorder: 10,
           theme: 'light-border',
-          placement: 'bottom-start'
+          placement: 'bottom-start',
         };
+        if (contentFn) {
+          config.content = contentFn;
+        }
+        if (onTriggerFn) {
+          config.onTrigger = onTriggerFn;
+        }
+        if (onUntriggerFn) {
+          config.onUntrigger = onUntriggerFn;
+        }
           config['offset'] = [0,0];
           config['maxWidth'] = 700;
         window.tippy(el, config); 

@@ -1,15 +1,10 @@
 ---
 title: "[Macroeconomic Forecasting Lec_02]{.flow}"
 author: "[[Zahid Asghar, Professor, School of Economics, QAU](https://zahedasghar.netlify.app)]{style=color:blue;}"
-date: "10-10-2023"
-date-format: "DD-MM-YYYY"
+date: "today"
 format: 
   revealjs:
     theme: [default, custom.css,styles.scss]
-    toc: true
-    code-fold: true
-    
-    keep-md: false
     chalkboard: true
     slide-number: c/t
 execute: 
@@ -223,18 +218,18 @@ geom_line()
 -   Consideer a general AR(1): 
     $y_t=b y_{t-1}+\epsilon_t$
 -   Can be expressed as an MA(q): 
-    $y_t=b^t y_0+\epsilon_t+b\epsilon_{t-1}+b^2\epsilon{t-2}+. . .+\\b^{t-2}\epsilon_2+b^{t-1}\epsilon_1$ 
+    $y_t=b^t y_0+\epsilon_t+b\epsilon_{t-1}+b^2\epsilon_{t-2}+. . .+\\b^{t-2}\epsilon_2+b^{t-1}\epsilon_1$ 
     
 The impact of shocks (disturbances) will depend on values of $b$.
 
 
 - - - 
 
-$y_t=b^t y_0+\epsilon_t+b\epsilon_{t-1}+b^2\epsilon{t-2}+. . .+\\b^{t-2}\epsilon_2+b^{t-1}\epsilon_1$  
+$y_t=b^t y_0+\epsilon_t+b\epsilon_{t-1}+b^2\epsilon_{t-2}+. . .+\\b^{t-2}\epsilon_2+b^{t-1}\epsilon_1$  
 
 Three cases
 
-1.    $b<0$, $b^t$ &rarr;0 as t &rarr;&infin; , so the effects of a shock will diminish as time elapses
+1.    $b<0$, $b^t$ &rarr;0 as $t$ &rarr;&infin; , so the effects of a shock will diminish as time elapses
 
 2.    $b=1$, $b^t=1$ for all t; effect persists, 
     $y_t=y_0+\sum_{i=1}^{n}\epsilon_{t-i}$ 
@@ -273,7 +268,8 @@ plot residulas
 
 ## 
 
-Key Questions:
+**Key Questions:**
+
 -   What is nonstationarity? 
 
 -   Why is	it	important? 
@@ -334,11 +330,14 @@ Some terminology
 
 Moving beyond white noise disturbances
 
-DF test assumes that $\epsilon_t$ is white noise. 
--   However, if $\epsilon_t$ is autocorrelated, need different version of the test, allowing for higher-order lags: 
+DF test assumes that $\epsilon_t$ is white noise.  
+
+-   However, if $\epsilon_t$ is autocorrelated, need different version of the test, allowing for higher-order lags:  
+
 -   Augmented Dickey-Fuller (ADF) test: 
 
-$\Delta y_t=\mu+ \gamma y_{t-1}+\sum_i^p \beta_i\Delta y{t-i+1}+\epsilon_t, \gamma=-(1-\sum_i^pb_i)$ and 
+$\Delta y_t=\mu+ \gamma y_{t-1}+\sum_i^p \beta_i\Delta y{t-i+1}+\epsilon_t, \gamma=-(1-\sum_i^pb_i)$ and  
+
 $\beta_i=-\sum_i^pb_j$  
 
 - - -
@@ -360,7 +359,8 @@ ADF test
 
 DF, ADF have been found to have low power in  certain circumstances: 
 
-Stationary processes with near-unit roots 
+Stationary processes with near-unit roots  
+
 
 –   For example, difficulty distinguishing between $b = 1$ and
 $b = 0.95$ , especially with small samples. 
@@ -410,7 +410,7 @@ $u_t=\rho u_{t-1}+\epsilon_t$
 
 $H_0: =1$ y has a unit root 
 
-$H_1: |\rho|<1$ y is [stationary]{style=color:pink;} 
+$H_1: |\rho|<1$ y is [stationary]{style=color:red;} 
 
 -   If $\epsilon_t$ is white noise, then DF can be used 
 -   If $\epsilon_t$ is ARMA(p,q) then use ADF or PP 
