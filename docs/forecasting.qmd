@@ -1,8 +1,8 @@
 ---
 title: "[Macroeconomic Forecasting Lec_01]{.flow}"
 author: "[[Zahid Asghar, Professor, School of Economics, QAU](https://zahedasghar.netlify.app)]{style=color:blue;}"
-date: "25-09-2023"
-date-format: "DD-MM-YYYY"
+date: "today"
+
 format: 
   revealjs:
     theme: [default, custom.css,styles.scss]
