@@ -1,0 +1,116 @@
+---
+format: html
+
+params:
+  Country: "Saudi.Arabia"
+
+---
+
+## Load libraries
+
+```{r}
+library(fable) # for forecasting
+
+library(fpp3) # for forecasting
+
+library(tsibble) # for time series data manipulation
+
+library(dplyr) # for data manipulation
+
+library(ggplot2) # for data visualization
+
+library(xts) # for time series data manipulation
+
+library(lubridate) # for date manipulation
+
+library(tidyr) # for data manipulation
+
+library(forecast) # for forecasting
+
+```
+
+## Load data
+
+```{r}
+# Load data
+
+rmt <- read.csv("data/remittances_karandaaz.csv")
+
+
+
+rmt <- rmt[-1,] # remove the first row
+
+# Convert the remaining columns to numeric
+rmt[, -1] <- lapply(rmt[, -1], as.numeric)
+
+dates <- seq(as.Date("2024-02-01"), as.Date("2010-07-01"), by = "-1 month")
+
+rmt$date <- dates
+
+
+rmt <- rmt %>% select(-Period) |> select(date, everything())
+
+# Convert wide to long 
+
+rmt_long <- rmt %>% pivot_longer(-date, names_to = "country", values_to = "remittances")
+
+```
+
+
+
+## Visualize data
+
+```{r}
+rmt_long |> filter(country!="Total" ) |> 
+ggplot()+ aes(x = date, y = remittances, color = country) +
+  geom_line() +
+  labs(title = "Remittances by Country",
+       x = "Date",
+       y = "Remittances") +
+  theme_minimal()
+
+```
+
+
+## Calculate %share by dividing col 2 to 13 by column 14
+
+```{r}
+## Calculate %share by dividing col 2 to 13 by column 14
+
+rmt_share <- rmt |> mutate_at(vars(-date), ~./rmt$Total) |> select(date, Total, everything())
+
+
+rmt_share_long <- rmt_share %>% pivot_longer(-date, names_to = "country", values_to = "share")
+
+rmt_share_long |> filter(country!="Total" , share>0.08) |>
+  ggplot()+ aes(x = date, y = share, color = country) +
+  geom_line() +
+  labs(title = "Remittances by Country",
+       x = "Date",
+       y = "Remittances") +
+  theme_minimal()
+
+
+```
+
+
+## 
+
+```{r}
+## tsiibble
+
+rmt_long <- rmt_long |> mutate(month_year = yearmonth(date))
+
+ts_data <- as_tsibble(rmt_long, key = country, index = month_year) 
+
+
+```
+
+## Forecasting remittances for `r params$Country`
+
+```{r}
+ts_data |> filter(country == params$Country) |> model(ARIMA(remittances)) |> forecast(h = 12) |> autoplot()
+
+model(SNAIVE(remittances ~ lag(12))) |> forecast(h = 12) |> autoplot(ts_data)
+
+```

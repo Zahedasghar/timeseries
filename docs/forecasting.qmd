@@ -25,7 +25,7 @@ execute:
 
 ## Univariate Analysis
 
-![Stochastic Process vs time series](images/prob_density.png){fig-align="center"}
+![](images/prob_density.png){fig-align="center"}
 
 Each distribution is a draw from a **random process**.
 
@@ -78,6 +78,8 @@ The first step is visual inspection: graph and observe your data.
 ::: columns
 ::: {.column width="50%"}
 ```{r}
+#| warning: false
+#| message: false
 # Load necessary library (if not already loaded)
 library(tidyverse)
 library(forecast) # for time series models and auto.arima
@@ -97,10 +99,10 @@ time_series_data <- data.frame(Time = 1:n, Value = ar1_data)
 ggplot(time_series_data, aes(x = Time, y = Value)) +
   geom_line(linewidth=1) +labs(title = "AR(1) Model ", x = "Time", y = "Value") +
   theme_minimal()
-
-
-
 ```
+
+
+
 
 ```{r}
 
@@ -225,9 +227,9 @@ Assuming that the process is stationary, there are three basic types that intere
 
 Autoregressive (process) $y_t=a+b_1y_{t-1}+b_2y_{t-2}+...+b_py_{t-p}+\epsilon_t$
 
-Moving Average : AR(process) : $y_t=\mu+u_t+\phi_1u_{t-1}+\phi_2u_{t-2}+...+\phi_qu_{t-q}+\epsilon_t$
+Moving Average : MA(process) : $y_t=\mu+\phi_1\epsilon_{t-1}+\phi_2\epsilon_{t-1}+...+\phi_q\epsilon_{t-1}+\epsilon_t$
 
-Combined ARMA-process $y_t=a+b_1y_{t-1}+b_2y_{t-2}+...+b_py_{t-p}+u_t+\\\phi_1u_{t-1}+\phi_2u_{t-2}+...+\phi_qu_{t-q}+\epsilon_t$
+Combined ARMA-process $y_t=a+b_1y_{t-1}+b_2y_{t-2}+...+b_py_{t-p}+\\\phi_1\epsilon_{t-1}+\phi_2\epsilon_{t-1}+...+\phi_q\epsilon_{t-1}+\epsilon_t$
 
 ## 
 
@@ -251,7 +253,7 @@ $E(\epsilon_t=0)$, $Var(\epsilon_t=\sigma^2)$ , $Cov(\epsilon_t,\epsilon_s=0 , i
 
 ## 
 
-Autocovariance and autocorrelation Relations between observations at different lags:
+Autocovariance and autocorrelation relations between observations at different lags:
 
 -   Autocovariance $\gamma_j=E[(y_t-\mu)(y_{t-j}-\mu)]$
 -   Autocorrelation $\rho_j=\gamma_j / \gamma_0$
@@ -390,7 +392,7 @@ print(acf_plot)
 :::
 :::
 
-## Patterns for PACF
+## Patterns for PACF {.scrollable}
 
 ::: columns
 ::: {.column width="50%"}
@@ -482,7 +484,7 @@ plot(pacf_values, main = "Partial Autocorrelation Function (PACF) of AR(3) Model
 :::
 :::
 
-## 
+## ACF and PACF for MA(3) 
 
 ```{r}
 # Load necessary library (if not already loaded)
@@ -509,7 +511,10 @@ plot(pacf_values, main = "Partial Autocorrelation Function (PACF) of MA(3) Model
 
 ## Stationary Time Series
 
-We now have a tool (ACF, PACF) to help us identify the stochastic stochastic process underlying time series we are observing. Now we will: - Summarize the basic patterns to look for - Observe an actual data series and make an initial guess Observe an actual data series and make an initial guess - Next step: estimate (several alternatives) based on this guess
+We now have a tool (ACF, PACF) to help us identify the stochastic stochastic process underlying time series we are observing. Now we will: -   Summarize the basic patterns to look for 
+  -   Observe an actual data series and make an initial guess Observe an actual data series and make an initial guess
+
+-   Next step: estimate (several alternatives) based on this guess
 
 ## Summary Table Pattern
 
@@ -538,11 +543,11 @@ When looking at ACF, PACF
 -   Decide on plausible alternative specifications (ARMA)
 -   Estimate each specification
 -   Choose "best" model, based on:
--   Significance of coefficients
--   Fit vs parsimony (criteria)
--   White noise residuals
--   Ability to forecast
--   Account for possible structural breaks
+  -   Significance of coefficients
+  -   Fit vs parsimony (criteria)
+  -   White noise residuals
+  -   Ability to forecast
+  -   Account for possible structural breaks
 
 ## Fit vs parsimony (information criteria):
 
@@ -558,12 +563,11 @@ When looking at ACF, PACF
 
 -   Plot "standardized residuals" ($\epsilon_{it}$ ) No more than 5% of them should lie outside \[-2,+2\] over all periods
 
--   Look at $r_s$, $b_s$ (and significance) at different lags Box-Pierce Statistic: joint significance test up to lag $s$: \$\bar{x} = \frac{1}{n}
-
-$Q=T \sum_{k=1}^{s} r_k^2$
-
-$H_0$ : all $r_k=0$, $H_1$: at least one $r_k\neq0$
-
+-   Look at $r_s$, $b_s$ (and significance) at different lags Box-Pierce Statistic: joint significance test up to lag $s$: $\bar{x} = \frac{1}{n}$
+  -   $Q=T \sum_{k=1}^{s} r_k^2$
+  -   $H_0$ : all $r_k=0$, $H_1$: at least one $r_k\neq0$
+  -   $Q$ is distributed as $\chi^2(s)$ under $H_0$ 
+  
 ## Forecastability
 
 Can assess how well the model forecasts " out of sample":
@@ -587,7 +591,7 @@ How to approach:
 
 ## Learning all above with simulated data
 
-Lets simulate MA(1), AR(1) series in Excel, R and one can use STATA/EVIEWS as well
+Lets simulate MA(1), AR(1) series in R 
 
 ::: panel-tabset
 ## MA-1 code
@@ -722,13 +726,6 @@ ma1_data <- arima.sim(model = list(order = c(0, 0, 1), ma = 0.7), n = n)
 
 # Create a time series object
 ma1_ts <- ts(ma1_data)
-
-# Plot the MA(1) time series
-ggplot(data.frame(Time = 1:n, Value = ma1_ts), aes(x = Time, y = Value)) +
-  geom_line() +
-  labs(title = "Simulated MA(1) Model (Coefficient = 0.7)", x = "Time", y = "Value") +
-  theme_minimal()+theme(axis.text = element_text(size = 12),  # Adjust font size for axis labels
-        plot.title = element_text(size = 14))  # Adjust font size for title
 
 # Plot the ACF of the MA(1) model
 acf(ma1_ts, main = "ACF of Simulated MA(1) Model")+theme(axis.text = element_text(size = 12),  # Adjust font size for axis labels

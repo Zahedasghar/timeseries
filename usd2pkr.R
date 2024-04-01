@@ -9,6 +9,12 @@ library(janitor)
 
 names(usd_pkr) <- c("date", "usd2pkr", "annual_growth_rate","years")
 
+# Remove rows with missing values
+usd_pkr <- usd_pkr %>% drop_na(annual_growth_rate, usd2pkr)
+
+
+
+
 usd_pkr <- usd_pkr |> dplyr::select(1:4)
 
 ## Convert date to month, day, year format
@@ -21,10 +27,23 @@ usd_pkr_xts <- xts(usd_pkr[, -1,-4], order.by = usd_pkr$date)
 
 usd_pkr_xts <- usd_pkr_xts[,-3]
 
+# ## Calculate variable relative difference of usd2pkr to annual growth rate (usd2pkr-annual_growth_rate)/annual_growth_rate*100
+# 
+# usd_pkr_xts$relative_diff <- (usd_pkr_xts$usd2pkr - usd_pkr_xts$annual_growth_rate)/usd_pkr_xts$annual_growth_rate*100
+
+
+
 ## Plot both series on the same graph
 
 plot(usd_pkr_xts, main = "USD to PKR Exchange Rate", ylab = "USD to PKR", xlab = "Year")
 
+
+
+
+#plot(usd_pkr_xts$relative_diff, main = "Relative Difference of USD to PKR Exchange Rate", ylab = "Relative Difference", xlab = "Year")
+
+# dygraph(usd_pkr_xts$relative_diff, main = "Relative Difference of USD to PKR Exchange Rate", ylab = "Relative Difference", xlab = "Year") |> 
+#   dyRangeSelector() 
 
 ## Insert all these regimes in this graph with their names as well
 
@@ -192,96 +211,73 @@ annotations_df <- data.frame(
   label = c("Musharraf", "PPPP", "PMLN", "PTI", "PDM")
 )
 
-# Plot using ggplot2
-plt <- ggplot(pk_usd_2000, aes(x = Date)) +
-  geom_line(aes(y = usd2pkr, color = "USD to PKR"), linewidth = 1.5, col = "red") +
-  geom_line(aes(y = annual_growth_rate, color = "black"), linewidth = 1.3) +
-  labs(
-    title = "USD to PKR Exchange Rate and Annual Growth Rate (2000 Onward)",
-    y = "Values"
-  ) +
-  scale_color_manual(
-    name = "Series",
-    values = c("USD to PKR" = "blue", "Annual Growth Rate" = "red")
-  ) +
+
+# Define color palette
+regime_colors <- c("#CCEBD6", "#c5e2e6", "#CCEBD6", "#d1c5e6", "#CCEBD6", "#d1c5e6")
+
+# Define regime boundaries
+regime_boundaries <- c(
+  as.Date("1999-10-12"),
+  as.Date("2008-08-18"),
+  as.Date("2013-06-05"),
+  as.Date("2017-07-28"),
+  as.Date("2018-05-31"),
+  as.Date("2022-04-10"),
+  as.Date("2023-09-10")
+)
+
+
+
+
+
+
+
+
+pk_long <- pk_usd_2000 %>%
+  pivot_longer(cols = c("usd2pkr", "annual_growth_rate"), names_to = "series", values_to = "value")
+
+## Line plot
+
+pk_long |> 
+ggplot()+aes(x=Date,y=value, color=series)+
+  geom_line(linewidth=1)+theme_minimal()+
+  labs(x="",y="Values",labs="USD to PKR Exchange Rate and Annual Growth Rate (2000 Onward)")+
+  theme(legend.position = "bottom")+ 
+  annotate(geom="point", x=as.Date("2004-10-01"), y=155, size=15, shape=21, fill="transparent") 
+  
+
+# Define the data frame for annotations
+annotations_df <- data.frame(
+  x = as.Date(c("2004-01-01", "2010-01-01", "2015-01-01", "2020-01-01", "2022-04-10")),
+  y = c(75, 75, 75, 75, 75),
+  label = c("Musharraf/PMLQ", "PPPP", "PMLN", "PTI", "PDM")
+)
+
+# Create the plot
+pk_long |> 
+  ggplot() +
+  aes(x = Date, y = value, color = series) +
+  geom_line(linewidth = 1) + 
   theme_minimal() +
   geom_rect(
-    data = NULL,
-    aes(
-      xmin = as.Date("1999-10-12"),
-      xmax = as.Date("2008-08-18"),
-      ymin = -Inf,
-      ymax = Inf
-    ),
-    fill = "#CCEBD6",
-    alpha = 0.01,
-    inherit.aes = FALSE,
-    show.legend = FALSE
+    aes(xmin = as.Date("1999-10-12"), xmax = as.Date("2008-08-18"), ymin = -Inf, ymax = Inf),
+    fill = "lightblue", alpha = 0.011, inherit.aes = FALSE, show.legend = FALSE
   ) +
   geom_rect(
-    data = NULL,
-    aes(
-      xmin = as.Date("2008-08-18"),
-      xmax = as.Date("2013-06-05"),
-      ymin = -Inf,
-      ymax = Inf
-    ),
-    fill = "#c5e2e6",
-    alpha = 0.02,
-    inherit.aes = FALSE,
-    show.legend = FALSE
+    aes(xmin = as.Date("2008-08-18"), xmax = as.Date("2013-06-05"), ymin = -Inf, ymax = Inf),
+    fill = "lightgreen", alpha = 0.01, inherit.aes = FALSE, show.legend = FALSE
   ) +
   geom_rect(
-    data = NULL,
-    aes(
-      xmin = as.Date("2013-06-05"),
-      xmax = as.Date("2017-07-28"),
-      ymin = -Inf,
-      ymax = Inf
-    ),
-    fill = "#CCEBD6",
-    alpha = 0.01,
-    inherit.aes = FALSE,
-    show.legend = FALSE
+    aes(xmin = as.Date("2013-06-05"), xmax = as.Date("2018-05-31"), ymin = -Inf, ymax = Inf),
+    fill = "lightgrey", alpha = 0.01, inherit.aes = FALSE, show.legend = FALSE
   ) +
   geom_rect(
-    data = NULL,
-    aes(
-      xmin = as.Date("2017-07-28"),
-      xmax = as.Date("2018-05-31"),
-      ymin = -Inf,
-      ymax = Inf
-    ),
-    fill = "#d1c5e6",
-    alpha = 0.02,
-    inherit.aes = FALSE,
-    show.legend = FALSE
+    aes(xmin = as.Date("2018-05-31"), xmax = as.Date("2022-04-10"), ymin = -Inf, ymax = Inf),
+    fill = "lightgreen", alpha = 0.01, inherit.aes = FALSE, show.legend = FALSE
   ) +
   geom_rect(
-    data = NULL,
-    aes(
-      xmin = as.Date("2018-05-31"),
-      xmax = as.Date("2022-04-10"),
-      ymin = -Inf,
-      ymax = Inf
-    ),
-    fill = "#CCEBD6",
-    alpha = 0.01,
-    inherit.aes = FALSE,
-    show.legend = FALSE
-  ) +
-  geom_rect(
-    data = NULL,
-    aes(
-      xmin = as.Date("2022-04-10"),
-      xmax = as.Date("2023-09-10"),
-      ymin = -Inf,
-      ymax = Inf
-    ),
-    fill = "#d1c5e6",
-    alpha = 0.02,
-    inherit.aes = FALSE,
-    show.legend = FALSE
+    aes(xmin = as.Date("2022-04-10"), xmax = as.Date("2023-09-10"), ymin = -Inf, ymax = Inf),
+    fill = "lightgrey", alpha = 0.01, inherit.aes = FALSE, show.legend = FALSE
   ) +
   geom_text(
     data = annotations_df,
@@ -291,105 +287,125 @@ plt <- ggplot(pk_usd_2000, aes(x = Date)) +
     color = "black",
     size = 3
   ) +
-  theme(legend.position = "bottom")+labs(caption = "exchangerates.org.uk")  # Adjust legend position as needed
+  labs(x = "", y = "", title = "PKR to USD Exchange Rate") +
+  scale_color_manual(values = c("usd2pkr" = "red", "annual_growth_rate" = "blue")) +
+  theme(
+    legend.position = c(0.2, 0.8),  # Adjust legend position
+    legend.background = element_rect(fill = "white", size = 0.5),
+    legend.title = element_text(face = "bold", size = 10),
+    legend.text = element_text(size = 8)
+  )+ labs(caption="exchangerates.org.uk")
 
-ggsave("exchange_us2pkr.png", plot = plt, width = 8, height = 5, units = "in", dpi = 200)
 
-## Save as ragg file
+plot <- pk_long |> 
+  ggplot() +
+  aes(x = Date, y = value, color = series) +
+  geom_line(linewidth = 1) + 
+  theme_minimal() +
+  geom_rect(
+    aes(xmin = as.Date("1999-10-12"), xmax = as.Date("2008-08-18"), ymin = -Inf, ymax = Inf),
+    fill = "lightblue", alpha = 0.011, inherit.aes = FALSE, show.legend = FALSE
+  ) +
+  geom_rect(
+    aes(xmin = as.Date("2008-08-18"), xmax = as.Date("2013-06-05"), ymin = -Inf, ymax = Inf),
+    fill = "lightgreen", alpha = 0.01, inherit.aes = FALSE, show.legend = FALSE
+  ) +
+  geom_rect(
+    aes(xmin = as.Date("2013-06-05"), xmax = as.Date("2018-05-31"), ymin = -Inf, ymax = Inf),
+    fill = "lightgrey", alpha = 0.01, inherit.aes = FALSE, show.legend = FALSE
+  ) +
+  geom_rect(
+    aes(xmin = as.Date("2018-05-31"), xmax = as.Date("2022-04-10"), ymin = -Inf, ymax = Inf),
+    fill = "lightgreen", alpha = 0.01, inherit.aes = FALSE, show.legend = FALSE
+  ) +
+  geom_rect(
+    aes(xmin = as.Date("2022-04-10"), xmax = as.Date("2023-09-10"), ymin = -Inf, ymax = Inf),
+    fill = "lightgrey", alpha = 0.01, inherit.aes = FALSE, show.legend = FALSE
+  ) +
+  geom_text(
+    data = annotations_df,
+    aes(x = x, y = y, label = label),
+    vjust = 0,
+    hjust = 0,
+    color = "black",
+    size = 3
+  ) +
+  labs(x = "", y = "", title = "Politics and PKR to USD Exchange Rate") +
+  scale_color_manual(values = c("usd2pkr" = "red", "annual_growth_rate" = "blue")) +
+  theme(
+    legend.position = c(0.2, 0.8),  # Adjust legend position
+    legend.background = element_rect(fill = "white", size = 0.5),
+    legend.title = element_text(face = "bold", size = 10),
+    legend.text = element_text(size = 8)
+  )+ labs(caption="exchangerates.org.uk")
+
+
 library(ragg)
-ragg::agg_png("usd2pkr.png", width = 8, height = 5, units = "in", res = 200)
-plt
+ragg::agg_png("exchange_ragg_14x10.png", width = 14, height = 10, units = "in", res = 250, scaling = 2)
+plot
 dev.off()
 
-exchange_rate <- ggplot(pk_usd_2000, aes(x = Date)) +
-  geom_line(aes(y = usd2pkr, color = "USD to PKR"), linewidth = 1.5, col = "red") +
-  geom_line(aes(y = annual_growth_rate, color = "black"), linewidth = 1.3) +
-  labs(
-    title = "USD to PKR Exchange Rate and Annual Growth Rate (2000 Onward)",
-    y = "Values"
-  ) +
-  scale_color_manual(
-    name = "Series",
-    values = c("USD to PKR" = "blue", "Annual Growth Rate" = "red")
-  ) +
+
++
+  annotate(geom="text", x=as.Date("2008-01-01"), y=100, 
+           label="Lawyer's \n Movement", size=2)+
+  annotate(geom="point", x=as.Date("2007-12-01"), y=100, size=15, shape=21, fill="transparent")+
+annotate(geom="text", x=as.Date("2014-01-01"), y=130, 
+         label="PTI Dharna", size=2) + 
+  annotate(geom="point", x=as.Date("2014-10-01"), y=130, size=15, shape=21, fill="transparent")+
+    annotate(geom="text", x=as.Date("2017-12-01"), y=140, 
+           label="Panama",size=2) + 
+  annotate(geom="point", x=as.Date("2017-12-01"), y=140, size=15, shape=21, fill="transparent")+
+  annotate(geom="point", x=as.Date("2020-09-01"), y=160, size=15, shape=21, fill="transparent") +
+  annotate(geom="text", x=as.Date("2020-09-01"), y=160, 
+           label="Covid-19", size=2) + 
+  annotate(geom="point", x=as.Date("2022-04-01"), y=200, size=15, shape=21, fill="transparent") +
+  annotate(geom="text", x=as.Date("2022-04-01"), y=200, 
+           label="VNC", size=2) 
+
+
+
+
+
+library(ggplot2)
+
+# Assuming you have a Date column in your data
+# If not, replace 'Date' with the actual column name
+
+## Data in descending date order
+
+pk_long <- pk_long[order(pk_long$Date), ]
+
+
+
+
+pk_long
+pk_long %>%
+  ggplot() +
+  aes(x = Date, y = value, color = series) +
+  geom_line(linewidth = 1) +
   theme_minimal() +
+  scale_x_date(limits = rev(range(pk_long$Date)))
++
   geom_rect(
-    data = NULL,
-    aes(
-      xmin = as.Date("1999-10-12"),
-      xmax = as.Date("2008-08-18"),
-      ymin = -Inf,
-      ymax = Inf
-    ),
-    fill = "#CCEBD6",
-    alpha = 0.01,
-    inherit.aes = FALSE,
-    show.legend = FALSE
+    aes(xmin = as.Date("1999-10-12"), xmax = as.Date("2008-08-18"), ymin = -Inf, ymax = Inf),
+    fill = "lightblue", alpha = 0.011, inherit.aes = FALSE, show.legend = FALSE
   ) +
   geom_rect(
-    data = NULL,
-    aes(
-      xmin = as.Date("2008-08-18"),
-      xmax = as.Date("2013-06-05"),
-      ymin = -Inf,
-      ymax = Inf
-    ),
-    fill = "#c5e2e6",
-    alpha = 0.02,
-    inherit.aes = FALSE,
-    show.legend = FALSE
+    aes(xmin = as.Date("2008-08-18"), xmax = as.Date("2013-06-05"), ymin = -Inf, ymax = Inf),
+    fill = "lightgreen", alpha = 0.01, inherit.aes = FALSE, show.legend = FALSE
   ) +
   geom_rect(
-    data = NULL,
-    aes(
-      xmin = as.Date("2013-06-05"),
-      xmax = as.Date("2017-07-28"),
-      ymin = -Inf,
-      ymax = Inf
-    ),
-    fill = "#CCEBD6",
-    alpha = 0.01,
-    inherit.aes = FALSE,
-    show.legend = FALSE
+    aes(xmin = as.Date("2013-06-05"), xmax = as.Date("2018-05-31"), ymin = -Inf, ymax = Inf),
+    fill = "lightgrey", alpha = 0.01, inherit.aes = FALSE, show.legend = FALSE
   ) +
   geom_rect(
-    data = NULL,
-    aes(
-      xmin = as.Date("2017-07-28"),
-      xmax = as.Date("2018-05-31"),
-      ymin = -Inf,
-      ymax = Inf
-    ),
-    fill = "#d1c5e6",
-    alpha = 0.02,
-    inherit.aes = FALSE,
-    show.legend = FALSE
+    aes(xmin = as.Date("2018-05-31"), xmax = as.Date("2022-04-10"), ymin = -Inf, ymax = Inf),
+    fill = "lightgreen", alpha = 0.01, inherit.aes = FALSE, show.legend = FALSE
   ) +
   geom_rect(
-    data = NULL,
-    aes(
-      xmin = as.Date("2018-05-31"),
-      xmax = as.Date("2022-04-10"),
-      ymin = -Inf,
-      ymax = Inf
-    ),
-    fill = "#CCEBD6",
-    alpha = 0.01,
-    inherit.aes = FALSE,
-    show.legend = FALSE
-  ) +
-  geom_rect(
-    data = NULL,
-    aes(
-      xmin = as.Date("2022-04-10"),
-      xmax = as.Date("2023-09-10"),
-      ymin = -Inf,
-      ymax = Inf
-    ),
-    fill = "#d1c5e6",
-    alpha = 0.02,
-    inherit.aes = FALSE,
-    show.legend = FALSE
+    aes(xmin = as.Date("2022-04-10"), xmax = as.Date("2023-09-10"), ymin = -Inf, ymax = Inf),
+    fill = "lightgrey", alpha = 0.01, inherit.aes = FALSE, show.legend = FALSE
   ) +
   geom_text(
     data = annotations_df,
@@ -399,10 +415,11 @@ exchange_rate <- ggplot(pk_usd_2000, aes(x = Date)) +
     color = "black",
     size = 3
   ) +
-  theme(legend.position = "bottom")  # Adjust legend position as needed
-
-library(plotly)
-
-exchange_rate <- ggplotly(exchange_rate)
-
-saveWidget(exchange_rate, "exchange_rate.html")
+  labs(x = "", y = "", title = "Politics and PKR to USD Exchange Rate") +
+  scale_color_manual(values = c("usd2pkr" = "red", "annual_growth_rate" = "blue")) +
+  theme(
+    legend.position = c(0.2, 0.8),  # Adjust legend position
+    legend.background = element_rect(fill = "white", size = 0.5),
+    legend.title = element_text(face = "bold", size = 10),
+    legend.text = element_text(size = 8)
+  )+ labs(caption="exchangerates.org.uk")

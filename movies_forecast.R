@@ -29,7 +29,6 @@ movies_prepped <- movies %>%
 movies_tsibble <- movies_prepped %>%
   as_tsibble(index = year,
              key = c(genre))
-
 movie_fcasts_models <- movies_tsibble %>%
   model(arima = ARIMA(mean_budget),
         ets = ETS(mean_budget)

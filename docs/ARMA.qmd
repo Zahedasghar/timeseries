@@ -1,0 +1,85 @@
+---
+title: "White Noise, ARMA , ACF and PACF Concepts"
+title-block-banner: true
+author: "Zahid Asghar"
+#date: "`r format(Sys.time(), '%d %B, %Y')`"
+format:
+  revealjs:
+    theme: [default, custom.scss]
+    slide-number: true
+    chalkboard: true
+    #   buttons: false
+    preview-links: auto
+    title-slide-attributes:
+      data-background-color: "#cf3a36"
+overview: true
+execute:
+  echo: false
+  warning: false
+  freeze: auto
+---
+
+
+## Outline
+
+- White Noise
+
+- Moving Average (MA) Process
+
+- Autoregressive Moving Average (ARMA) Process
+
+- Autocorrelation Function (ACF)
+
+- Partial Autocorrelation Function (PACF)
+
+- ARMA Model Identification using ACF and PACF
+
+
+## 
+
+ 
+ 
+## 
+
+
+## 
+
+
+
+## 
+
+
+## 
+
+
+## 
+
+
+
+## 
+
+
+## 
+
+
+
+## 
+
+
+## 
+
+
+
+## 
+
+
+## 
+
+
+
+## 
+
+
+
+
+

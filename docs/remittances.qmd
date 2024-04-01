@@ -1,0 +1,156 @@
+---
+title: "Forecasting for Remittances for `r params$country`"
+format: 
+  html:
+    embed_resources: true
+  pdf: default
+  docx: default
+
+execute:
+  messages: false
+  warning: false
+  echo: false
+params:
+  country: "Total"
+
+---
+
+
+```{r}
+library(fable) # for forecasting
+
+library(fpp3) # for forecasting
+
+library(tsibble) # for time series data manipulation
+
+library(dplyr) # for data manipulation
+
+library(ggplot2) # for data visualization
+
+library(xts) # for time series data manipulation
+
+library(lubridate) # for date manipulation
+
+library(tidyr) # for data manipulation
+
+library(forecast) # for forecasting
+
+```
+
+
+
+```{r}
+# Load data
+
+rmt <- read.csv("D:/RepTemplates/timeseries/data/remittances_karandaaz.csv")
+
+
+
+rmt <- rmt[-1,] # remove the first row
+
+# Convert the remaining columns to numeric
+rmt[, -1] <- lapply(rmt[, -1], as.numeric)
+
+dates <- seq(as.Date("2024-02-01"), as.Date("2010-07-01"), by = "-1 month")
+
+rmt$date <- dates
+
+
+rmt <- rmt %>% select(-Period) |> select(date, everything())
+
+# Convert wide to long 
+
+rmt_long <- rmt %>% pivot_longer(-date, names_to = "country", values_to = "remittances")
+
+## Save as RDS
+
+saveRDS(rmt_long, file = "D:/RepTemplates/timeseries/docs/data/rmt_long.RDS")
+
+
+```
+
+## Remittances in million of USD
+
+```{r}
+rmt_long |> filter(country!="Total" ) |> 
+ggplot()+ aes(x = date, y = remittances, color = country) +
+  geom_line() +
+  labs(title = "Remittances by country",
+       x = "Date",
+       y = "Remittances") +
+  theme_minimal()
+```
+
+
+
+## Amount of remittances in million of USD from `r params$country`
+
+
+
+```{r}
+rmt_long %>%
+  filter(country == params$country) %>%
+  ggplot() +
+  aes(x = date, y = remittances, color = country) +
+  geom_line(linewidth=1) +
+  labs(title = paste("Monthly remittances in mill of USD from", params$country),
+       x = "Date",
+       y = "Remittances") +
+  theme_minimal()+ theme(legend.position = "none")
+```
+
+
+## Share of remittances by `r params$country`
+
+```{r}
+
+## Calculate %share by dividing col 2 to 13 by column 14
+
+rmt_share <- rmt |> mutate_at(vars(-date), ~./rmt$Total) |> select(date, Total, everything())
+
+
+rmt_share_long <- rmt_share %>% pivot_longer(-date, names_to = "country", values_to = "share")
+
+rmt_share_long |> filter(country== params$country) |>
+  ggplot()+ aes(x = date, y = share, color = country) +
+  geom_line(linewidth=1) +
+  labs(title = paste("Share of remittances from", params$country),
+       x = " ",
+       y = "Remittances share") +
+  theme_minimal()+ theme(legend.position = "none")
+
+
+```
+
+
+## 
+
+```{r}
+## tsiibble
+
+rmt_long <- rmt_long |> mutate(month_year = yearmonth(date))
+
+ts_data <- as_tsibble(rmt_long, key = country, index = month_year) 
+
+
+```
+
+## Forecasting remittances for `r params$country`
+
+```{r}
+ts_data |> filter(country == params$country) |>
+model(SNAIVE(remittances ~ lag(12))) |> forecast(h = 12) |> autoplot(ts_data)
+
+```
+
+## Forecasting remittances for `r params$country` using SNAIVE model
+
+```{r}
+library(gt)
+ts_data %>%
+  filter(country == params$country) %>%
+  model(SNAIVE(remittances ~ lag(12))) %>%
+  forecast(h = 12) |> select(month_year, remittances,.mean) |> as.data.frame() |> 
+  gt() |> tab_header(title = "Forecasting remittances for Saudi Arabia using SNAIVE model") |> fmt_number(columns = 2, decimals = 2)
+
+```
