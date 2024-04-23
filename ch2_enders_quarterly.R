@@ -6,16 +6,18 @@ library(forecast)
 
 ### PAGE 88
 data = read_excel("data/quarterly.xlsx")
+
 data$DATE = as.yearqtr(data$DATE)
 data$spread = data$r5-data$Tbill
+# 
+# spread_xts <- xts(data$spread,order.by=data$DATE)
+# colnames(spread_xts) <- c("spread")
+# ## Make an autoplot and mean line of spread
+# 
+# autoplot(spread_xts) 
+# 
+# autoplot(diff(spread_xts)) 
 
-spread_xts <- xts(data$spread,order.by=data$DATE)
-colnames(spread_xts) <- c("spread")
-## Make an autoplot and mean line of spread
-
-autoplot(spread_xts) 
-
-autoplot(diff(spread_xts))
 par(mfrow=c(2,1))
 plot(data$DATE,data$spread,type="l",las=1,xaxs="i",yaxs="i",xlab="",ylab="",main="The Interest Rate Spread",tck=0.02,col="steelblue4",ylim=c(-2,4))
 abline(h=0)
@@ -141,7 +143,7 @@ library(tseries)
 arma(data$spread, lag=list(ar=1,ma=c(1,7))) 
 
 
-arima(data$spread, order = c(1, 0, c(1, 7)))
+ arima(data$spread, order = c(1, 0, c(1, 7)))
 msummary(arima_model)
 # Fit ARIMA model with the specified order
 arima_model <- arima(spread_data, order = ar_order)

@@ -8,8 +8,10 @@
 <link href="Unit-root-testing_files/libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="Unit-root-testing_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="Unit-root-testing_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.3.299">
+  <meta name="generator" content="quarto-1.5.29">
 
+  <meta name="author" content="Zahid Asghar, Professor, School of Economics, QAU">
+  <meta name="dcterms.date" content="2024-04-20">
   <title>Unit Roots Tests: Methods and Problems</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -28,73 +30,8 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
-    /* CSS for syntax highlighting */
-    pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-    pre > code.sourceCode > span:empty { height: 1.2em; }
-    .sourceCode { overflow: visible; }
-    code.sourceCode > span { color: inherit; text-decoration: inherit; }
-    div.sourceCode { margin: 1em 0; }
-    pre.sourceCode { margin: 0; }
-    @media screen {
-    div.sourceCode { overflow: auto; }
-    }
-    @media print {
-    pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-    }
-    pre.numberSource code
-      { counter-reset: source-line 0; }
-    pre.numberSource code > span
-      { position: relative; left: -4em; counter-increment: source-line; }
-    pre.numberSource code > span > a:first-child::before
-      { content: counter(source-line);
-        position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; display: inline-block;
-        -webkit-touch-callout: none; -webkit-user-select: none;
-        -khtml-user-select: none; -moz-user-select: none;
-        -ms-user-select: none; user-select: none;
-        padding: 0 4px; width: 4em;
-        color: #aaaaaa;
-      }
-    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-    div.sourceCode
-      { color: #003b4f; background-color: #f1f3f5; }
-    @media screen {
-    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-    }
-    code span { color: #003b4f; } /* Normal */
-    code span.al { color: #ad0000; } /* Alert */
-    code span.an { color: #5e5e5e; } /* Annotation */
-    code span.at { color: #657422; } /* Attribute */
-    code span.bn { color: #ad0000; } /* BaseN */
-    code span.bu { } /* BuiltIn */
-    code span.cf { color: #003b4f; } /* ControlFlow */
-    code span.ch { color: #20794d; } /* Char */
-    code span.cn { color: #8f5902; } /* Constant */
-    code span.co { color: #5e5e5e; } /* Comment */
-    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
-    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
-    code span.dt { color: #ad0000; } /* DataType */
-    code span.dv { color: #ad0000; } /* DecVal */
-    code span.er { color: #ad0000; } /* Error */
-    code span.ex { } /* Extension */
-    code span.fl { color: #ad0000; } /* Float */
-    code span.fu { color: #4758ab; } /* Function */
-    code span.im { color: #00769e; } /* Import */
-    code span.in { color: #5e5e5e; } /* Information */
-    code span.kw { color: #003b4f; } /* Keyword */
-    code span.op { color: #5e5e5e; } /* Operator */
-    code span.ot { color: #003b4f; } /* Other */
-    code span.pp { color: #ad0000; } /* Preprocessor */
-    code span.sc { color: #5e5e5e; } /* SpecialChar */
-    code span.ss { color: #20794d; } /* SpecialString */
-    code span.st { color: #20794d; } /* String */
-    code span.va { color: #111111; } /* Variable */
-    code span.vs { color: #20794d; } /* VerbatimString */
-    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="Unit-root-testing_files/libs/revealjs/dist/theme/quarto.css" id="theme">
+  <link rel="stylesheet" href="Unit-root-testing_files/libs/revealjs/dist/theme/quarto.css">
   <link href="Unit-root-testing_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="Unit-root-testing_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="Unit-root-testing_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -222,7 +159,8 @@
   }
 
   .callout.callout-titled .callout-body > .callout-content > :last-child {
-    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0;
   }
 
   .callout.callout-titled .callout-icon::before {
@@ -390,32 +328,29 @@
   <div class="reveal">
     <div class="slides">
 
-<section id="title-slide" data-background-color="#447099" class="quarto-title-block center">
+<section id="title-slide" class="quarto-title-block center">
   <h1 class="title">Unit Roots Tests: Methods and Problems</h1>
-  <p class="subtitle">Economic Forecasting and Panel Data Analysis</p>
 
 <div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+<span style="color:blue;"><a href="https://zahedasghar.netlify.app">Zahid Asghar, Professor, School of Economics, QAU</a></span> 
+</div>
+</div>
 </div>
 
-</section>
-<section id="section" class="slide level2 centered" data-background-color="#447099">
-<h2></h2>
-<p><span class="custom-title">Economic Forecasting — Unit Roots Test</span></p>
-<p><span class="custom-author">Dr.&nbsp;Zahid Asghar <br> Professor of Economics</span></p>
-<p><span class="custom-institution"><a href="mailto:zasghar@qau.edu.pk"><i class="fa fa-paper-plane fa-fw"></i>zasghar@qau.edu.pk</a> <br> <a href="https://github.com/zahedasghar"><i class="fa fa-github fa-fw"></i>zahedasghar</a><br> <a href="https://QMR.zahidasghar.com"> <i class="fa fa-globe fa-fw"></i>zahidasghar.com</a><br></span></p>
+  <p class="date">2024-04-20</p>
 </section>
 <section>
-<section id="unit-roots-tests" class="title-slide slide level1 center" data-background-color="#CA225E">
-<h1>Unit Roots Tests</h1>
+<section id="augmented-dickey-fuller-and-phillips-perron-unit-roots-tests-using-r" class="title-slide slide level1 center" data-background-color="#CA225E">
+<h1>Augmented Dickey-Fuller and Phillips-Perron Unit Roots Tests using R</h1>
 
 </section>
-<section id="unit-roots-tests-1" class="slide level2">
+<section id="unit-roots-tests" class="slide level2">
 <h2>Unit Roots Tests</h2>
-<h3 id="how-do-you-find-out-if-a-series-is-stationary-or-not">How do you find out if a series is stationary or not?</h3>
-</section>
-<section id="order-of-integration-of-a-series" class="slide level2">
-<h2>Order of integration of a Series</h2>
-<p>A series which is stationary after being differenced once is said to integrated of order 1 and is being denoted by <em>I(1)</em>.In general a series which is stationary after being differenced <span class="math inline">\(d\)</span> times is said to be integrated of order <span class="math inline">\(d\)</span>, denoted <span class="math inline">\(I(d)\)</span>. A series, which is stationary without differencing, is said to be <span class="math inline">\(I(0)\)</span></p>
+<h4 id="how-do-you-find-out-if-a-series-is-stationary-or-not">How do you find out if a series is stationary or not?</h4>
+<h4 id="order-of-integration-of-a-series">Order of integration of a Series</h4>
+<p>A series which is stationary after being differenced once is said to integrated of order 1 and is being denoted by <em>I(1)</em>. In general a series which is stationary after being differenced <span class="math inline">\(d\)</span> times is said to be integrated of order <span class="math inline">\(d\)</span>, denoted <span class="math inline">\(I(d)\)</span>. A series, which is stationary without differencing, is said to be <span class="math inline">\(I(0)\)</span></p>
 <p><span class="math inline">\(Y_t=b_0+Y_{t-1}+\epsilon_t\)</span> –&gt; <span class="math inline">\(I(1)\)</span></p>
 <p><span class="math inline">\(\Delta{Y_t}= Y_t-Y_{t-1}=b_0+\epsilon_t\)</span> –&gt; <span class="math inline">\(I(0)\)</span></p>
 </section>
@@ -427,88 +362,105 @@
 <div class="quarto-figure quarto-figure-center">
 <figure>
 <p><img data-src="images/paste-A7E511A8.png"></p>
-<p></p><figcaption>Constant mean?</figcaption><p></p>
+<figcaption>Constant mean?</figcaption>
 </figure>
 </div>
 </div><div class="column" style="width:49%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
 <p><img data-src="images/paste-1DFA9EBF.png"></p>
-<p></p><figcaption>Constant variance?</figcaption><p></p>
+<figcaption>Constant variance?</figcaption>
 </figure>
 </div>
 </div>
 </div>
 </section>
-<section id="section-1" class="slide level2">
-<h2></h2>
-<h3 id="diagnostic-test---correlogram">2. Diagnostic test - Correlogram</h3>
+<section id="diagnostic-test---correlogram" class="slide level2">
+<h2>Diagnostic test - Correlogram</h2>
 <p>Correlation between 1980 and 1980+K.</p>
 <p>For stationary process correlelogram dies out rapidly. Series has no memory. 1980 is not related to 1985.</p>
-
-<img data-src="images/paste-4BA97D8D.png" class="r-stretch"></section>
-<section id="section-2" class="slide level2">
-<h2></h2>
-<p>For a random walk the correlogram does not die out. High autocorrelation for large values of k.</p>
-
-<img data-src="images/paste-24AC630E.png" class="r-stretch"></section>
+<div class="columns">
+<div class="column" style="width:49%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/paste-4BA97D8D.png"></p>
+<figcaption>stationary</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:49%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/paste-24AC630E.png"></p>
+<figcaption>non-stationary</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
 <section id="statistical-tests-for-sationarity-simple-t-test" class="slide level2">
 <h2>Statistical tests for sationarity: Simple t-test</h2>
 <p>Set up <span class="math inline">\(AR(1)\)</span> process with drift (<span class="math inline">\(b_0\)</span>)</p>
-<p><span class="math inline">\(Y_t=b_0+b_1Y_{t-1}+\epsilon_t \\ \epsilon_t~iid(0,\sigma^2)\)</span></p>
-<p>Simple approach is to estimate eq(1) using OLS and examine <span class="math inline">\(b_1\)</span>.</p>
+<p><span class="math inline">\(Y_t = b_0 + bY_{t-1} + \epsilon_t\)</span> where <span class="math inline">\(\epsilon_t \sim \text{iid}(0, \sigma^2)\)</span></p>
+<p>Simple approach is to estimate eq(1) using OLS and examine <span class="math inline">\(b\)</span>.</p>
 <ul>
-<li><p>Use a t-test with null <span class="math inline">\(H_0: b_1=1\)</span> (non-stationary)</p></li>
-<li><p>against alternative <span class="math inline">\(H_a: b_1&lt;1\)</span> (stationary)</p></li>
-<li><p>Test Statistics : TS=<span class="math inline">\((b_1-1)/SE(b_1)\)</span> reject null hypothesis when test statistics is large negative 5% critical value is -1.65</p></li>
+<li><p>Use a t-test with null <span class="math inline">\(H_0: b=1\)</span> (non-stationary)</p></li>
+<li><p>against alternative <span class="math inline">\(H_a: b&lt;1\)</span> (stationary)</p></li>
+<li><p>Test Statistics : TS=<span class="math inline">\((b-1)/SE(b)\)</span> reject null hypothesis when test statistics is large negative 5% critical value is -1.65</p></li>
 </ul>
 </section>
-<section id="section-3" class="slide level2">
+<section id="section" class="slide level2">
 <h2></h2>
 <p>Simple t-test based on AR(1) process with drift (<span class="math inline">\(b_0\)</span>)</p>
-<p><span class="math inline">\(Y_t=b_0+b_1Y_{t-1}+\epsilon_t \\ \epsilon_t~iid(0,\sigma^2)\)</span> –&gt; (1)</p>
-<p>Problem with simple test approach 1. lagged dependent variables ==&gt; <span class="math inline">\(b_1\)</span> biased downwards in small samples (i-e dynamic bias) 2. When <span class="math inline">\(b_1=1\)</span>, we have non-stationary process and standard regression analysis is invalid (i-e non-standard distribution)</p>
+<p><span class="math inline">\(Y_t=b_0+bY_{t-1}+\epsilon_t \\ \epsilon_t \sim iid(0,\sigma^2)\)</span> –&gt; (1)</p>
+<p>Problem with simple test approach</p>
+<ol type="1">
+<li><p>lagged dependent variables ==&gt; <span class="math inline">\(b\)</span> biased downwards in small samples (i-e dynamic bias)</p></li>
+<li><p>When <span class="math inline">\(b=1\)</span>, we have non-stationary process and standard regression analysis is invalid (i-e non-standard distribution)</p></li>
+</ol>
 </section>
-<section id="dickey-fuller-df-approach-to-non-stationary-testing" class="slide level2">
-<h2>Dickey Fuller (DF) approach to non-stationary testing</h2>
-<p>Dickey and Fuller (1979) suggest we subtract <span class="math inline">\(Y_{t-1}\)</span> from both sides of eq(1).</p>
-<p><span class="math inline">\(Y_t-Y_{t-1}=b_0+b_1Y_{t-1}-Y_{t-1}+\epsilon_t \\ \epsilon_t~iid(0,\sigma^2)\)</span></p>
+<section id="dickey-fuller-df-test" class="slide level2">
+<h2>Dickey Fuller (DF) Test</h2>
+<p>Subtract <span class="math inline">\(Y_{t-1}\)</span> from both sides of eq(1).</p>
+<p><span class="math inline">\(Y_t-Y_{t-1}=b_0+bY_{t-1}-Y_{t-1}+\epsilon_t \\ \epsilon_t \sim iid(0,\sigma^2)\)</span></p>
 <p><span class="math display">\[\Delta{Y_t}= b_0+\beta Y_{t-1}+\epsilon_t \\\beta=b_1-1\]</span></p>
 <p>Use a t-test with: null <span class="math inline">\(H_0: \beta=0\)</span> (non-stationary or <strong>Unit Root</strong>) against alternative <span class="math inline">\(H_0: \beta&lt;0\)</span></p>
 <ul>
 <li>Large negative test statistics reject non-stationary</li>
-<li>This is know as unit root test since in eq(1) <span class="math inline">\(H_0: b_1=0\)</span></li>
+<li>This is known as unit root test since in eq(1) <span class="math inline">\(H_0: b=0\)</span></li>
 </ul>
 </section>
 <section id="variants-of-df-test" class="slide level2">
 <h2>Variants of DF test</h2>
 <p>The different regression can be used to test the presence of a unit root</p>
-<p><span class="math inline">\(\Delta Y=\beta Y_{t-1}+\epsilon\)</span></p>
-<p><span class="math inline">\(\Delta Y=b_0+\beta Y_{t-1}+\epsilon\)</span></p>
-<p><span class="math inline">\(\Delta Y=b_0+\beta Y_{t-1}+b_2 t+\epsilon\)</span></p>
+<p><span class="math inline">\(\Delta Y=\beta Y_{t-1}+\epsilon_t\)</span></p>
+<p><span class="math inline">\(\Delta Y=b_0+\beta Y_{t-1}+\epsilon_t\)</span></p>
+<p><span class="math inline">\(\Delta Y=b_0+\beta Y_{t-1}+b_2 t+\epsilon_t\)</span></p>
 <ol type="1">
 <li>For testing if Y is a pure Random Walk</li>
 <li>For testing if Y is Random Walk with Drift</li>
 <li>For testing if Y is a Random walk with Drift and Deterministi Trend</li>
 </ol>
 </section>
-<section id="section-4" class="slide level2">
+<section id="section-1" class="slide level2 scrollable">
 <h2></h2>
-<p>The simplest model (appropriately <strong>only</strong> if you think there are no other terms present in the <em>true</em> regression model) <span class="math inline">\(\Delta Y=\beta Y_{t-1}+\epsilon\)</span> Use the t-statistics and compare it with the table of critical values computed by the DF. If your t value is outside the confidence interval, the null of unit root is rejected.</p>
+<p>The simplest model (appropriate <strong>only</strong> if you think there are no other terms present in the <em>true</em> regression model)<br>
+<span class="math inline">\(\Delta Y=\beta Y_{t-1}+\epsilon\)</span></p>
+<p>Use the t-statistics and compare it with the table of critical values computed by the DF. If your t value is outside the confidence interval, the null of unit root is rejected.</p>
 <p><span class="math inline">\(\tau\)</span> Statistics</p>
-<p>A more general modeel (allowing for <code>drift</code>)</p>
+<p>A more general model (allowing for <code>drift</code>)</p>
 <p><span class="math inline">\(\Delta Y=b_0+\beta Y_{t-1}+\epsilon\)</span></p>
 <p><span class="math inline">\(\phi_1\)</span> Statistics- Use F statistics if <span class="math inline">\(\beta=b_0=0\)</span> using the non standard tables</p>
-<p><span class="math inline">\(\tau_{\mu}\)</span> Statistics - use the t statistics to check if <span class="math inline">\(\beta=0\)</span>, against non-standard tables.</p>
+<p><span class="math inline">\(\tau_{\mu}\)</span> Statistics<br>
+- use the t statistics to check if <span class="math inline">\(\beta=0\)</span>, against non-standard tables.</p>
 </section>
 <section id="examples" class="slide level2">
 <h2>Examples</h2>
-<p>Sample size of n=25 at 5% level of signinficance for eq(2)</p>
+<p>Sample size of n=25 at 5% level of significance for eq(2)</p>
 <p><span class="math inline">\(\tau\)</span> - critical value=-3.00</p>
 <p>t-test critical value=-1.65</p>
 <p><span class="math inline">\(\Delta p_t=-0.007-0.190p_{t-1} \\ (-1.05) (-1.49)\)</span></p>
-<p><span class="math inline">\(\beta=-0.0190\)</span> <span class="math inline">\(\tau_{\mu}=-1.49&gt;-3.00\)</span></p>
-<p>hence cannot reject <span class="math inline">\(H_0\)</span> and so unit root.</p>
+<p><span class="math inline">\(\beta=-0.190\)</span> <span class="math inline">\(\tau=-1.49&gt;-3.00\)</span></p>
+<p>hence cannot reject <span class="math inline">\(H_0\)</span> of unit root.</p>
 </section>
 <section id="incorporating-time-trends-in-df-test-for-unit-root" class="slide level2">
 <h2>Incorporating time trends in DF test for unit root</h2>
@@ -520,7 +472,7 @@
 <li><p><span class="math inline">\(H_0=\beta=0 \\H_a:\beta&lt;0\)</span> <span class="math inline">\(\tau_{\tau} \\\Delta Y_t=\beta Y_{t-1}+\epsilon\)</span> Critical values from Fuller (1976)</p></li>
 </ol>
 </section>
-<section id="section-5" class="slide level2">
+<section id="section-2" class="slide level2">
 <h2></h2>
 
 <img data-src="images/paste-6A96C572.png" class="r-stretch"></section>
@@ -535,16 +487,13 @@ Check F-test for significant variables</p>
 <p>Use Information Criteria<br>
 Trade-off parsimony vs.&nbsp;residual variance</p>
 </section>
-<section id="section-6" class="slide level2">
+<section id="section-3" class="slide level2">
 <h2></h2>
 <p>Conside the following series and its correlogram</p>
 
 <img data-src="images/paste-BE1F50D7.png" class="r-stretch"><p>The variable Y is clealry trended and question is whether trend : Deterministic or Stochastic</p>
 </section>
-<section id="section-7" class="slide level2">
-<h2></h2>
-</section>
-<section id="section-8" class="slide level2">
+<section id="section-4" class="slide level2">
 <h2></h2>
 
 <img data-src="images/paste-6268E7CF.png" class="r-stretch"></section>
@@ -556,17 +505,69 @@ Trade-off parsimony vs.&nbsp;residual variance</p>
 <p><span class="math display">\[\Delta Y_t=b_0+\beta Y_{t-1}+\epsilon\]</span></p>
 <p>AIC, SBC, HQC or some other criteria maybe used beside having judgement for appropriate lag selection.</p>
 </section>
-<section id="section-9" class="slide level2">
+<section id="adf-vs-pp" class="slide level2">
+<h2>ADF vs PP</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table>
+<caption>Comparison of ADF Test and PP Test Features</caption>
+<colgroup>
+<col style="width: 19%">
+<col style="width: 39%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Feature</th>
+<th style="text-align: left;">ADF.Test</th>
+<th style="text-align: left;">PP.Test</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Underlying Assumption</td>
+<td style="text-align: left;">No serial correlation in error terms</td>
+<td style="text-align: left;">No assumptions about serial correlation</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Applicability</td>
+<td style="text-align: left;">Data with no significant serial correlation</td>
+<td style="text-align: left;">Data with potential serial correlation</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Implementation</td>
+<td style="text-align: left;">Requires lag selection</td>
+<td style="text-align: left;">No lag selection required</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Advantages</td>
+<td style="text-align: left;">Common, well-established test</td>
+<td style="text-align: left;">More robust to serial correlation</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Disadvantages</td>
+<td style="text-align: left;">Requires attention to serial correlation</td>
+<td style="text-align: left;">Less common, may be computationally expensive</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="choosing-adf-or-pp" class="slide level2">
+<h2>Choosing ADF or PP</h2>
+<ul>
+<li><p>If you’re confident there’s no serial correlation in your data, ADF can be a good choice.</p></li>
+<li><p>If you suspect serial correlation or are unsure, the PP test is generally recommended for its robustness.</p></li>
+<li><p>In practice, it’s often recommended to run both tests and compare the results. If they agree on the presence or absence of a unit root, you can be more confident in the conclusion.</p></li>
+</ul>
+</section>
+<section id="section-5" class="slide level2">
 <h2></h2>
 
 <img data-src="images/paste-E90AFB05.png" class="r-stretch"></section>
-<section id="alternative-statistical-test-for-stationarity" class="slide level2">
-<h2>Alternative statistical test for stationarity</h2>
-<p>One further approach is the Sargan and Bhargave (1983) test which uses the Durbin-Watson statistics.</p>
-<p>If <span class="math inline">\(Y_t\)</span> is regressed on a constant alone, we then examine the residuals for serial correlation.</p>
-<p>Serial correlation in the residuals (long memory) will fail the DW test in a low value for this test.</p>
-<p>This test has not proven so popular.</p>
-<h3 id="three-main-aspects-of-unit-root-testing">Three main aspects of Unit root testing</h3>
+<section id="three-main-aspects-of-unit-root-testing" class="slide level2">
+<h2>Three main aspects of Unit root testing</h2>
 <ul>
 <li><p>Determining components (constant , time trend).</p></li>
 <li><p>ADF test- lag length , use F-test or Schwarz Information Criteria</p></li>
@@ -576,10 +577,18 @@ Trade-off parsimony vs.&nbsp;residual variance</p>
 </section>
 <section id="three-strategy-for-unit-roots" class="slide level2">
 <h2>Three Strategy for Unit Roots</h2>
-<p>Formal Strategy 1. Use informal tests- eye ball data and correlogram 2. Incorporate Time trend if data is upwards trending 3. Specification of ADF test - how many lags should we incorporate to avoid serial correlation?</p>
+<p>Formal Strategy</p>
+<ol type="1">
+<li><p>Use informal tests- eye ball data and correlogram</p></li>
+<li><p>Incorporate Time trend if data is upwards trending</p></li>
+<li><p>Specification of ADF test - how many lags should we incorporate to avoid serial correlation?</p></li>
+</ol>
 </section>
-<section id="example---real-gdp-2000-prices-seasonally-adjusted" class="slide level2">
-<h2>Example - Real GDP (2000 Prices) Seasonally Adjusted</h2>
+<section id="example" class="slide level2">
+<h2>Example</h2>
+<ul>
+<li>Real GDP (2000 Prices) Seasonally Adjusted</li>
+</ul>
 <ol type="1">
 <li>Plot Time Series- Non-Stationary (i-e. time varying mean and correlogram non-zero)</li>
 </ol>
@@ -589,133 +598,7 @@ Trade-off parsimony vs.&nbsp;residual variance</p>
 <h2>Unit Root Testing</h2>
 <p>1) Plot first difference of time series- Stationary</p>
 
-<img data-src="images/paste-545C4AD8.png" class="r-stretch"></section>
-<section id="section-10" class="slide level2">
-<h2></h2>
-<div class="columns">
-<div>
-<p><img data-src="images/paste-DC77E919.png"></p>
-</div>
-</div>
-<div>
-<p><img data-src="images/paste-3A9B6966.png"></p>
-</div>
-<p>:::</p>
-<p>:::</p>
-</section>
-<section id="section-11" class="slide level2">
-<h2></h2>
-<table>
-<caption>Table 4.1: Selected Autocorrelation From Nelson and Plosser</caption>
-<thead>
-<tr class="header">
-<th></th>
-<th>Rho1</th>
-<th>Rho2</th>
-<th>r(1)</th>
-<th>r(2)</th>
-<th>d(1)</th>
-<th>d(2)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Real GNP</td>
-<td>0.95</td>
-<td>0.90</td>
-<td>34</td>
-<td>0.04</td>
-<td>0.87</td>
-<td>0.66</td>
-</tr>
-<tr class="even">
-<td>Nominal GNP</td>
-<td>0.95</td>
-<td>0.89</td>
-<td>0.44</td>
-<td>0.08</td>
-<td>0.93</td>
-<td>0.79</td>
-</tr>
-<tr class="odd">
-<td>Industrial Production</td>
-<td>0.97</td>
-<td>0.94</td>
-<td>0.03</td>
-<td>-0.11</td>
-<td>0.84</td>
-<td>0.67</td>
-</tr>
-<tr class="even">
-<td>Unemployment Rate</td>
-<td>0.75</td>
-<td>0.47</td>
-<td>0.09</td>
-<td>-0.29</td>
-<td>0.75</td>
-<td>0.46</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="section-12" class="slide level2">
-<h2></h2>
-
-<img data-src="images/paste-56ABF03F.png" class="r-stretch"></section>
-<section id="unit-roots-and-regression-residuals" class="slide level2">
-<h2>Unit Roots and Regression Residuals</h2>
-<p><span class="math inline">\(y_t=b_0+b_1 Z_t+\epsilon_t\)</span></p>
-<ul>
-<li><p>Assumptions of the classical model:</p>
-<ul>
-<li><p>both the <span class="math inline">\(y_t\)</span> and <span class="math inline">\(z_t\)</span> sequences be stationary</p></li>
-<li><p>the errors have a zero mean and a finite variance.</p></li>
-<li><p>In the presence of nonstationary variables, there might be what Grander and Newbold(1974) call a <strong>spurious regression</strong></p></li>
-</ul></li>
-<li><p>A spurious regression has a high <span class="math inline">\(R^2\)</span> and <span class="math inline">\(t-statistics\)</span> that appear to be significant, but the results are without any economic meaning.</p></li>
-<li><p>The regression output “looks good” because the least squares estimates are not consistent and the customary tests of statistical inference do not hold.</p></li>
-</ul>
-</section>
-<section id="four-cases" class="slide level2">
-<h2>Four cases</h2>
-<ul>
-<li><strong>CASE 1</strong> : Both {yt} and {zt} are stationary.
-<ul>
-<li>the classical regression model is appropriate.</li>
-</ul></li>
-<li><strong>CASE 2</strong> : The {yt} and {zt} sequences are integrated of different orders.
-<ul>
-<li>Regression equations using such variables are meaningless</li>
-</ul></li>
-<li><strong>CASE 3</strong> : The nonstationary {yt} and {zt} sequences are integrated of the same order and the residual sequence contains a stochastic trend.
-<ul>
-<li><p>This is the case in which the regression is spurious.</p></li>
-<li><p>In this case, it is often recommended that the regression equation be estimated in first differences.</p></li>
-</ul></li>
-<li><strong>CASE 4</strong>: The nonstationary {yt} and {zt} sequences are integrated of the same order and the residual sequence is stationary.
-<ul>
-<li>In this circumstance, {yt} and {zt} are cointegrated.</li>
-</ul></li>
-</ul>
-</section>
-<section id="spurious-regression-example-1" class="slide level2">
-<h2>Spurious regression: example 1</h2>
-<p><img data-src="images/paste-CA0E9C0B.png"></p>
-<p><img data-src="images/paste-181B2A5B.png"></p>
-</section>
-<section id="section-13" class="slide level2">
-<h2></h2>
-</section>
-<section id="quarterly-real-u.s.-gdp" class="slide level2">
-<h2>Quarterly Real U.S. GDP</h2>
-
-<img data-src="images/paste-05588AC4.png" class="r-stretch"><p>The t-statistic on the coefficient for lrgdpt–1 is -2.59. Table indicates that with 244 usable observations, the 10% and 5% critical value of <span class="math inline">\(\tau_{\tau}\)</span> are about -3.13 and -3.43, respectively. As such, we cannot reject the null hypothesis of a unit root.</p>
-<p>The sample value of <span class="math inline">\(\phi_3\)</span> for the null hypothesis b2 = <span class="math inline">\(\beta\)</span> = 0 is 4.12. As Table B indicates that the 10% critical value is 5.39, we cannot reject the joint hypothesis of a unit root and no deterministic time trend. The sample value of <span class="math inline">\(\phi_2\)</span> is 20.20. As such, the growth rate of the real GDP series acts as a random walk plus drift plus the irregular term <span class="math inline">\(0.3426\Delta lrgdp_{t–1}\)</span>.</p>
-</section>
-<section id="real-exchange-rate-estimation" class="slide level2">
-<h2>Real Exchange Rate Estimation</h2>
-
-<img data-src="images/paste-B8022CEA.png" class="r-stretch"></section></section>
+<img data-src="images/paste-545C4AD8.png" class="r-stretch"></section></section>
 <section>
 <section id="general-to-specific-or-specific-to-general-techinque" class="title-slide slide level1 center">
 <h1>General to Specific or Specific to General Techinque</h1>
@@ -725,17 +608,15 @@ Trade-off parsimony vs.&nbsp;residual variance</p>
 <h2>Multiple Roots</h2>
 <p><span class="math inline">\(\Delta^2 y_t=b_0+\beta_1 \Delta y_{t-1}+\epsilon_t\)</span></p>
 <p>If <span class="math inline">\(\beta_1\)</span> does differ from zero, estimate</p>
-<p><span class="math inline">\(\Delta^2 y_t=b_0+\beta_1 \Delta y_{t-1}+\beta_2 y_{t-1} +\epsilon_t\)</span></p>
+<p><span class="math inline">\(\Delta^2 y_t=b_0+\beta_1 \Delta y_{t-1}+\beta_2 y_{t-1}    +\epsilon_t\)</span></p>
 <p>If you reject the null hypothesis <span class="math inline">\(\beta_2\)</span>=0, conclude <span class="math inline">\(y_t\)</span> is stationary.</p>
-</section></section>
-<section>
-<section id="seasonal-unit-roots-will-skip" class="title-slide slide level1 center">
-<h1>Seasonal Unit Roots (will skip)</h1>
-
 </section>
-<section id="panel-unit-root-tests" class="slide level2">
+<section id="panel-unit-root-tests" class="slide level2 scrollable">
 <h2>Panel Unit Root Tests</h2>
-<p><span class="math inline">\(\Delta y_{it}=b_{io}+\gamma_i y_{it-1}+\sum_{i=1}^n p_i \Delta y_{it-j}+\epsilon_{it}\)</span> &gt; One way to obtain a more powerful test is to pool the estimates from a number separate series and then test the pooled value. The theory underlying the test is very simple: if you have n independent and unbiased estimates of a parameter, the mean of the estimates is also unbiased. More importantly, so long as the estimates are independent, the central limit theory suggests that the sample mean will be normally distributed around the true mean.</p>
+<p><span class="math inline">\(\Delta y_{it}=b_{io}+\gamma_i y_{it-1}+\sum_{i=1}^n p_i \Delta y_{it-j}+\epsilon_{it}\)</span></p>
+<blockquote>
+<p>One way to obtain a more powerful test is to pool the estimates from a number separate series and then test the pooled value. The theory underlying the test is very simple: if you have n independent and unbiased estimates of a parameter, the mean of the estimates is also unbiased. More importantly, so long as the estimates are independent, the central limit theory suggests that the sample mean will be normally distributed around the true mean.</p>
+</blockquote>
 <ul>
 <li><pre><code>The difficult issue is to correct for cross equation correlation</code></pre></li>
 <li>Because the lag lengths can differ across equations, you should perform separate lag length tests for each equation. Moreover, you may choose to exclude the deterministic time trend. However, if the trend is included in one equation, it should be included in all</li>
@@ -748,67 +629,9 @@ Trade-off parsimony vs.&nbsp;residual variance</p>
 <li><p>At this point, there is substantial disagreement about the asymptotic theory underlying the test. Sample size can approach infinity by increasing n for a given T, increasing T for a given n, or by simultaneously increasing n and T.</p></li>
 <li><p>For small T and large n, the critical values are dependent on the magnitudes of the various <span class="math inline">\(\beta_{ij}\)</span>. The test requires that that the error terms be serially uncorrelated and contemporaneously uncorrelated. You can determine the values of <span class="math inline">\(p_i\)</span> to ensure that the autocorrelations of <span class="math inline">\(\epsilon_{it}\)</span> are zero. Nevertheless, the errors may be contemporaneously correlated in that <span class="math inline">\(E(\epsilon_{it}\epsilon_{jt})\neq 0\)</span> The example above illustrates a common technique to correct for correlation across equations. As in the example, you can subtract a common time effect from each observation. However, there is no assurance that this correction will completely eliminate the correlation. Moreover, it is quite possible that is nonstationary. Subtracting a nonstationary component from each sequence is clearly at odds with the notion that the variables are stationary.</p></li>
 </ul>
-</section></section>
-<section>
-<section id="train-and-evaluate-models" class="title-slide slide level1 center" data-background-color="#CA225E">
-<h1>Train and evaluate models</h1>
-
-</section>
-<section id="why-tidymodels" class="slide level2">
-<h2>Why tidymodels?</h2>
-</section>
-<section id="why-tidymodels-consistency" class="slide level2">
-<h2>Why tidymodels?  <em>Consistency</em></h2>
-<div class="fragment">
-<div class="columns">
-<div class="column" style="width:50%;">
-<p>With <code>lm()</code>:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>model <span class="ot">&lt;-</span> </span>
-<span id="cb2-2"><a href="#cb2-2"></a>  <span class="fu">lm</span>(mpg <span class="sc">~</span> ., mtcars)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div><div class="column" style="width:50%;">
-<p>With tidymodels:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3" data-code-line-numbers="|3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>model <span class="ot">&lt;-</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>  <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a>  <span class="fu">fit</span>(mpg <span class="sc">~</span> ., mtcars)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="why-tidymodels-consistency-1" class="slide level2">
-<h2>Why tidymodels?  <em>Consistency</em></h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p>With glmnet:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>model <span class="ot">&lt;-</span> </span>
-<span id="cb4-2"><a href="#cb4-2"></a>  <span class="fu">glmnet</span>(</span>
-<span id="cb4-3"><a href="#cb4-3"></a>    <span class="fu">as.matrix</span>(mtcars[<span class="dv">2</span><span class="sc">:</span><span class="dv">11</span>]),</span>
-<span id="cb4-4"><a href="#cb4-4"></a>    mtcars<span class="sc">$</span>mpg</span>
-<span id="cb4-5"><a href="#cb4-5"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div><div class="column" style="width:50%;">
-<p>With tidymodels:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5" data-code-line-numbers="3||3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>model <span class="ot">&lt;-</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>  <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a>  <span class="fu">set_engine</span>(<span class="st">"glmnet"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a>  <span class="fu">fit</span>(mpg <span class="sc">~</span> ., mtcars)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
-</div>
-</section>
-<section id="slide-with-a-pause" class="slide level2">
-<h2>Slide with a pause</h2>
-<p>content before the pause</p>
-<div class="fragment">
-<p>content after the pause</p>
+<div class="quarto-auto-generated-content">
 <div class="footer footer-default">
-<p><a href="https://zahidasghar.com">Zahid Asghar</a></p>
+
 </div>
 </div>
 </section></section>
@@ -839,7 +662,6 @@ Trade-off parsimony vs.&nbsp;residual variance</p>
       Reveal.initialize({
 'controlsAuto': true,
 'previewLinksAuto': false,
-'smaller': false,
 'pdfSeparateFragments': false,
 'autoAnimateEasing': "ease",
 'autoAnimateDuration': 1,
@@ -866,7 +688,7 @@ Trade-off parsimony vs.&nbsp;residual variance</p>
         progress: true,
 
         // Display the page number of the current slide
-        slideNumber: false,
+        slideNumber: 'c/t',
 
         // 'all', 'print', or 'speaker'
         showSlideNumber: 'all',
@@ -991,9 +813,9 @@ Trade-off parsimony vs.&nbsp;residual variance</p>
         // The "normal" size of the presentation, aspect ratio will be preserved
         // when the presentation is scaled to fit different resolutions. Can be
         // specified using percentage units.
-        width: 1600,
+        width: 1050,
 
-        height: 900,
+        height: 700,
 
         // Factor of the display size that should remain empty around the content
         margin: 0.1,
@@ -1026,42 +848,80 @@ Trade-off parsimony vs.&nbsp;residual variance</p>
       });
     </script>
     
+
     <script>
+
       // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+
       // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+
       // slide changes (different for each slide format).
+
       (function () {
+
         // dispatch for htmlwidgets
+
         function fireSlideEnter() {
+
           const event = window.document.createEvent("Event");
+
           event.initEvent("slideenter", true, true);
+
           window.document.dispatchEvent(event);
+
         }
+
+    
 
         function fireSlideChanged(previousSlide, currentSlide) {
+
           fireSlideEnter();
 
+    
+
           // dispatch for shiny
+
           if (window.jQuery) {
+
             if (previousSlide) {
+
               window.jQuery(previousSlide).trigger("hidden");
+
             }
+
             if (currentSlide) {
+
               window.jQuery(currentSlide).trigger("shown");
+
             }
+
           }
+
         }
+
+    
 
         // hookup for slidy
+
         if (window.w3c_slidy) {
+
           window.w3c_slidy.add_observer(function (slide_num) {
+
             // slide_num starts at position 1
+
             fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+
           });
+
         }
 
+    
+
       })();
+
     </script>
+
+    
 
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
@@ -1095,18 +955,7 @@ Trade-off parsimony vs.&nbsp;residual variance</p>
         }
         return false;
       }
-      const clipboard = new window.ClipboardJS('.code-copy-button', {
-        text: function(trigger) {
-          const codeEl = trigger.previousElementSibling.cloneNode(true);
-          for (const childEl of codeEl.children) {
-            if (isCodeAnnotation(childEl)) {
-              childEl.remove();
-            }
-          }
-          return codeEl.innerText;
-        }
-      });
-      clipboard.on('success', function(e) {
+      const onCopySuccess = function(e) {
         // button target
         const button = e.trigger;
         // don't keep focus
@@ -1138,11 +987,50 @@ Trade-off parsimony vs.&nbsp;residual variance</p>
         }, 1000);
         // clear code selection
         e.clearSelection();
+      }
+      const getTextToCopy = function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+        text: getTextToCopy
       });
-      function tippyHover(el, contentFn) {
+      clipboard.on('success', onCopySuccess);
+      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+        // For code content inside modals, clipBoardJS needs to be initialized with a container option
+        // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+          text: getTextToCopy,
+          container: window.document.getElementById('quarto-embedded-source-code-modal')
+        });
+        clipboardModal.on('success', onCopySuccess);
+      }
+        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+        var mailtoRegex = new RegExp(/^mailto:/);
+          var filterRegex = new RegExp('/' + window.location.host + '/');
+        var isInternal = (href) => {
+            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+        }
+        // Inspect non-navigation links and adorn them if external
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+        for (var i=0; i<links.length; i++) {
+          const link = links[i];
+          if (!isInternal(link.href)) {
+            // undo the damage that might have been done by quarto-nav.js in the case of
+            // links that we want to consider external
+            if (link.dataset.originalHref !== undefined) {
+              link.href = link.dataset.originalHref;
+            }
+          }
+        }
+      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
         const config = {
           allowHTML: true,
-          content: contentFn,
           maxWidth: 500,
           delay: 100,
           arrow: false,
@@ -1152,8 +1040,17 @@ Trade-off parsimony vs.&nbsp;residual variance</p>
           interactive: true,
           interactiveBorder: 10,
           theme: 'light-border',
-          placement: 'bottom-start'
+          placement: 'bottom-start',
         };
+        if (contentFn) {
+          config.content = contentFn;
+        }
+        if (onTriggerFn) {
+          config.onTrigger = onTriggerFn;
+        }
+        if (onUntriggerFn) {
+          config.onUntrigger = onUntriggerFn;
+        }
           config['offset'] = [0,0];
           config['maxWidth'] = 700;
         window.tippy(el, config); 
@@ -1167,7 +1064,11 @@ Trade-off parsimony vs.&nbsp;residual variance</p>
           try { href = new URL(href).hash; } catch {}
           const id = href.replace(/^#\/?/, "");
           const note = window.document.getElementById(id);
-          return note.innerHTML;
+          if (note) {
+            return note.innerHTML;
+          } else {
+            return "";
+          }
         });
       }
       const findCites = (el) => {

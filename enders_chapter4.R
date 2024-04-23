@@ -8,9 +8,15 @@
 ### PAGE 134
 library("gdata")
 library("rugarch")
-data = read.xls("/Users/user/Google Drive/Website/Book/Enders/RGDP.xls")
+library(readxl)
+data = read_excel("data/RGDP.xls")
+
 data$DATE=as.Date(as.character(data$DATE))
 
+# Convert data to xts object
+data_xts <- xts(data[, -which(names(data) == "DATE")], order.by = data$DATE)
+
+autoplot(data_xts$RGDP)
 par(mfcol = c(1,1), oma = c(0,0,1,0) + 0.2, mar = c(0,1,0,0) + 1, mgp = c(0, 0.2, 0))
 plot(data$DATE,data$RGDP,type="l",xaxs="i",las=1,xlab="",ylab="",col="steelblue4",tck=0.02)
 t = 1:nrow(data)
@@ -64,13 +70,13 @@ df.gdp@testreg
 
 
 ### PAGE 219
-data = read.xls("/Users/user/Google Drive/Website/Book/Enders/LAGLENGTH.XLS")
+data = read_excel("data/LAGLENGTH.XLS")
 data$time
 adf1 = ur.df(data$Y,type="trend",lag=4)
 adf1@testreg
 
 
-data = read.xls("/Users/user/Google Drive/Website/Book/Enders/BREAK.XLS")
+data = read_excel("data/BREAK.XLS")
 par(mfrow=c(2,1))
 plot(data$Y1,type="l",las=1,xaxs="i",xlab="",ylab="",tck=0.02,col="steelblue4")
 plot(data$Y2,type="l",las=1,xaxs="i",xlab="",ylab="",tck=0.02,col="steelblue4")
@@ -107,7 +113,7 @@ lines(lm1$fitted.values,col="steelblue4",lty=1)
 
 
 ###PAGE 242
-data = read.xls("/Users/user/Google Drive/Website/Book/Enders/ERSTEST.XLS")
+data = read_excel("data/ERSTEST.XLS")
 data$ylag = c(0,embed(data$y,2)[,-1])
 
 alpha = 1-13.5/200
@@ -142,7 +148,7 @@ df1@testreg
 
 ### PAGE 251
 ### BEVEREGE NELSON DECOMPOSITION
-data = read.xls("/Users/user/Google Drive/Website/Book/Enders/REAL.XLS")
+data = read_excel("data/REAL.XLS")
 data$DATE=as.Date(as.character(data$DATE))
 data$LGDP = log(data$RGDP)
 data$LGDP[1]

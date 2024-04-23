@@ -11,8 +11,8 @@
   <meta name="generator" content="quarto-1.5.9">
 
   <meta name="author" content="Zahid Asghar, Professor, School of Economics, QAU">
-  <meta name="dcterms.date" content="2024-04-02">
-  <title>Macroeconomic Forecasting Lec_02</title>
+  <meta name="dcterms.date" content="2024-04-12">
+  <title>Nonstationary Series</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -329,7 +329,7 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title"><span class="flow">Macroeconomic Forecasting Lec_02</span></h1>
+  <h1 class="title"><span class="flow">Nonstationary Series</span></h1>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -339,26 +339,8 @@
 </div>
 </div>
 
-  <p class="date">2024-04-02</p>
+  <p class="date">2024-04-12</p>
 </section>
-<section>
-<section id="properties-of-time-series" class="title-slide slide level1 center">
-<h1>Properties of Time Series</h1>
-
-</section>
-<section id="introduction" class="slide level2">
-<h2>Introduction</h2>
-<ul>
-<li>General comments
-<ul>
-<li>Univariate analysis</li>
-<li>Two general “classes” of processes</li>
-<li>Both science and art (judgement):</li>
-<li>Understanding behavior and forecasting</li>
-<li>Assessing/testing</li>
-</ul></li>
-</ul>
-</section></section>
 <section>
 <section id="nonstationary-series" class="title-slide slide level1 center">
 <h1>Nonstationary Series</h1>
@@ -387,9 +369,9 @@
 </section>
 <section class="slide level2">
 
-<p>Thus, if any of these conditions does not hold, we say that y is nonstationary:</p>
+<p>Thus, if any of these conditions does not hold, we say that <span class="math inline">\(y_t\)</span> is nonstationary:</p>
 <p>There is no long-run mean to which the series returns (economic concept of long-term <span style="color:red;">equilibrium</span>)</p>
-<p>The variance is time-dependent. For example, could go to infinity as the number of observations goes to infinity</p>
+<p>The variance is time-dependent. As time goes on, the variance of the series increases or decreases.</p>
 <p>Theoretical autocorrelations do not decay, sample autocorrelations do so very slowly.</p>
 </section>
 <section class="slide level2">
@@ -410,8 +392,8 @@
 <ul>
 <li><p><span style="color:blue;">Stochastic</span>: random trend, varies over time</p>
 <ul>
-<li><p>Random Walk: <span class="math inline">\(y_t=b y_{t-1}+u_t\)</span></p></li>
-<li><p>Random Walk with Drift: <span class="math inline">\(y_t=\mu+y_{t-1}=b y_{t-1}+u_t\)</span> (as before, <span class="math inline">\(u_t\)</span> is iid)</p></li>
+<li><p>Random Walk: <span class="math inline">\(y_t=b y_{t-1}+\epsilon_t\)</span></p></li>
+<li><p>Random Walk with Drift: <span class="math inline">\(y_t=\mu+y_{t-1}+\epsilon_t\)</span> (as before, <span class="math inline">\(\epsilon_t\)</span> is iid)</p></li>
 </ul></li>
 <li><p><span class="math inline">\(\mu\)</span> is the “Drift”;<br>
 if <span class="math inline">\(\mu&gt;0\)</span>, then <span class="math inline">\(y_t\)</span> will be increasing</p></li>
@@ -531,10 +513,10 @@ if <span class="math inline">\(\mu&gt;0\)</span>, then <span class="math inline"
 
 <p>Can extend simple DF test in previous slide:</p>
 <ul>
-<li>Intercept: <span class="math inline">\(\Delta y_t=\mu+by_{t-1}+\epsilon_t\)</span></li>
-<li>Intercept and time trend: <span class="math inline">\(\Delta y_t=\mu+by_{t-1}+\alpha t+\epsilon_t\)</span><br>
+<li>Intercept: <span class="math inline">\(\Delta y_t=\mu+\Psi y_{t-1}+\epsilon_t\)</span></li>
+<li>Intercept and time trend: <span class="math inline">\(\Delta y_t=\mu+\Psi y_{t-1}+\alpha t+\epsilon_t\)</span><br>
 </li>
-<li>In all three cases, <span class="math inline">\(H_0:b=0;\)</span> <span class="math inline">\(y\)</span> has a unit root</li>
+<li>In all three cases, <span class="math inline">\(H_0:\Psi=0;\)</span> <span class="math inline">\(y\)</span> has a unit root</li>
 </ul>
 <h4 id="rejecting-the-unit-root-test">Rejecting the unit root test =</h4>
 <p>find that <span class="math inline">\(y\)</span> is stationary</p>
@@ -592,7 +574,7 @@ if <span class="math inline">\(\mu&gt;0\)</span>, then <span class="math inline"
 
 <h4 id="kwiatkowskiphillipsschmidtshin-kpsstest">Kwiatkowski–Phillips–Schmidt–Shin (KPSS)Test:</h4>
 <ul>
-<li><p>Null hypothesis: y is trend stationary</p></li>
+<li><p>Null hypothesis: <span class="math inline">\(y_t\)</span> is trend stationary</p></li>
 <li><p>Formulation: <span class="math inline">\(y_t=\beta_0 D_t+\mu_t+u_t\)</span> <span class="math inline">\(\mu_t=\mu_{t-1}+\epsilon_t\)</span><br>
 </p></li>
 <li><p>Where <span class="math inline">\(D_t\)</span> contains deterministic components (constant or constant plus time trend), <span class="math inline">\(\mu_t\)</span> is a random walk</p></li>

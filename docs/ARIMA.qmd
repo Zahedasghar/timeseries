@@ -9,6 +9,7 @@ format:
     
 execute: 
   warning: false
+  echo: false
 ---
 
 
@@ -22,7 +23,7 @@ library(zoo)
 library(xts)
 library(readxl)
 library(gt)
-ar <- read_csv("data/BondReturns.csv")
+ar <- read_csv("D:/RepTemplates/timeseries/data/BondReturns.csv")
 
 ar 
 
@@ -54,7 +55,7 @@ We will be focusing on the bond return variable b1ret throughout this analysis. 
 ### a) Plot the TS variable and comment on its features.
 
 ```{r}
-
+#| label: fig-plot
 ggplot(ar_df)+
   aes(x=date,y=b1ret)+geom_line()+
   labs(title="1 year bonds monthly return from 1942-2021")+
@@ -62,7 +63,7 @@ ggplot(ar_df)+
 
 ```
 
-This graph indicates that around 1980s, these bond returns were highly volatile and from 1970-1990s period is also of high return period. In mid 2010, these returns show very promising growth but then after 2008 crisis bonds return have least volatility closely mirroring 1940s.
+This @fig-plot indicates that around 1980s, these bond returns were highly volatile and from 1970-1990s period is also of high return period. In mid 2010, these returns show very promising growth but then after 2008 crisis bonds return have least volatility closely mirroring 1940s.
 
 ### b) Estimate a quadratic trend for this TS variable. Write down the equation and test the regression residuals "Res1" for stationary and autocorrelation.
 
@@ -84,6 +85,8 @@ tidy(model_trend)
 ### c) Using the ACF and PACF for the stationary version of Res1 to propose an initial ARIMA model for Res1.
 
 ```{r}
+#| label: fig-plot1 
+#| fig.cap: ACF plots of the residuals of the quadratic trend model
 # Assuming you have a model object called 'model' and a data frame called 'data' with the dependent variable 'y' and independent variables 'x1', 'x2', etc.
 
 # Fit the model
@@ -93,10 +96,25 @@ model1 <- lm(b1ret ~ Date + I(Date^2), data = ar_df)
 Res1 <- residuals(model1)
 
 # Assuming 'Res1' is a time series object
-acf_res1 <- acf(Res1, lag.max = 20)
 
+acf_res1 <- acf(Res1, lag.max = 20)
+``` 
+
+
+
+```{r}
+#| label: fig-plot2
+#| fig.cap: PACF plots of the residuals of the quadratic trend model
 pacf_res1 <- pacf(Res1, lag.max = 20)
+
 ```
+
+
+@fig-plot1 and @fig-plot2 indicates that residuals are not stationary and have significant autocorrelation at lag 1. So we may need to further investigate the model.
+
+
+
+
 
 ### d) Provide several ARIMA models and discuss which ARIMA model you would pick as the final model. Explain your reasoning.
 
@@ -133,6 +151,8 @@ print(results)
 ```
 
 
+As per @fig-plot we have observed in the plot that the bond returns are not stationary and have significant autocorrelation at lag 1. So we may need to further investigate the model. We have estimated a quadratic trend model and residuals are not stationary. We have calculated ACF and PACF of residuals and found that residuals are not stationary and have significant autocorrelation at lag 1. We have estimated several ARIMA models and the
+
 Best model comes out to be ARIMA(1,0,1). So we are estimating model as follows:
 
 ```{r}
@@ -162,6 +182,9 @@ print(forecast_result$mean)
 
 ### Forecast from quadratic trend model
 
+$$y_t = \beta_0 + \beta_1 t + \beta_2 t^2 + \epsilon_t$$ {#eq-qt}
+
+
 
 ```{r}
 # Assuming you have a data frame called 'data' with 'x' as the independent variable and 'y' as the dependent variable
@@ -179,8 +202,11 @@ new_data <- data.frame(date = seq(min(ar_df$Date), max(ar_df$Date) + 1, by = 1),
 
 # Print the forecasted values
 #print(forecasts)
-```
-### 2. (50 points)
+``` 
+
+As @eq-qt suggests, we can use the quadratic trend model to forecast the bond returns.
+
+### 2. 
 
 In this problem, we are interested in examining the factors affecting the petrol prices. Petrol prices in New Zealand is split into three components: importer cost, importer's margin, and the taxes. We collect the weekly data on the following variables from 2004W16 (week 16) to 2020W23 (week 23):
 
@@ -198,7 +224,7 @@ We will be focusing on the variable Margin and Cost throughout this analysis. We
 
 
 ```{r}
-petpr <- read_csv("data/Petrol_Prices_2020.csv")
+petpr <- read_csv("D:/RepTemplates/timeseries/data/Petrol_Prices_2020.csv")
 
 petpr |> glimpse()
 ```

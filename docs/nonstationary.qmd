@@ -1,5 +1,5 @@
 ---
-title: "[Macroeconomic Forecasting Lec_02]{.flow}"
+title: "[Nonstationary Series]{.flow}"
 author: "[[Zahid Asghar, Professor, School of Economics, QAU](https://zahedasghar.netlify.app)]{style=color:blue;}"
 date: "today"
 format: 
@@ -10,17 +10,6 @@ format:
 execute: 
   freeze: auto
 ---
-
-# Properties of Time Series
-
-## Introduction
-
--   General comments
-    -   Univariate analysis
-    -   Two general "classes" of processes
-    -   Both science and art (judgement):
-    -   Understanding behavior and forecasting
-    -   Assessing/testing
 
 
 # Nonstationary Series
@@ -38,19 +27,19 @@ execute:
 Recall from earlier part on stationarity:
 
 -   Covariance stationarity of y implies that, over time, y has:
--   Constant mean
--   Constant variance
--   Co-variance between different observations that do not depend on that time (t), only on the "distance" or "lag" between them (j):
+  -   Constant mean
+  -   Constant variance
+  -   Co-variance between different observations that do not depend on that time (t), only on the "distance" or "lag" between them (j):
 
 $Cov(Y_t,Y_{tj})= Cov(Y_s,Y_{s+j})= \gamma_j$
 
 - - -
 
-Thus, if any of these conditions does not hold, we say that y is nonstationary:
+Thus, if any of these conditions does not hold, we say that $y_t$ is nonstationary:
 
 There is no long-run mean to which the series returns (economic concept of long-term [equilibrium]{style="color:red;"})
 
-The variance is time-dependent. For example, could go to infinity as the number of observations goes to infinity
+The variance is time-dependent. As time goes on, the variance of the series increases or decreases.
 
 Theoretical autocorrelations do not decay, sample autocorrelations do so very slowly.
 
@@ -102,10 +91,10 @@ Non-stationary series can have a trend:
 
 -   [Stochastic]{style=color:blue;}: random trend, varies over time 
 
-    -   Random Walk: $y_t=b y_{t-1}+u_t$ 
+    -   Random Walk: $y_t=b y_{t-1}+\epsilon_t$ 
     
-    -   Random Walk with Drift: $y_t=\mu+y_{t-1}=b y_{t-1}+u_t$
-        (as before, $u_t$ is iid)  
+    -   Random Walk with Drift: $y_t=\mu+y_{t-1}+\epsilon_t$
+        (as before, $\epsilon_t$ is iid)  
         
         
 -   $\mu$ is the "Drift";  
@@ -307,10 +296,10 @@ $H_0: \Psi=0$
 
 Can extend simple DF test in previous slide: 
 
--   Intercept:    $\Delta y_t=\mu+by_{t-1}+\epsilon_t$ 
+-   Intercept:    $\Delta y_t=\mu+\Psi y_{t-1}+\epsilon_t$ 
 -   Intercept and time trend: 
-$\Delta y_t=\mu+by_{t-1}+\alpha t+\epsilon_t$  
-- In all three cases, $H_0:b=0;$ $y$ has a unit root
+$\Delta y_t=\mu+\Psi y_{t-1}+\alpha t+\epsilon_t$  
+- In all three cases, $H_0:\Psi=0;$ $y$ has a unit root
 
 #### Rejecting the unit root test = 
 find that $y$ is stationary 
@@ -380,7 +369,7 @@ So alternative tests have been designed.
 
 #### Kwiatkowski–Phillips–Schmidt–Shin (KPSS)Test:
 
--   Null hypothesis: y is trend stationary
+-   Null hypothesis: $y_t$ is trend stationary
 -   Formulation: $y_t=\beta_0 D_t+\mu_t+u_t$ 
   $\mu_t=\mu_{t-1}+\epsilon_t$  
 -   Where $D_t$ contains deterministic components (constant or constant plus time trend), $\mu_t$ is a random walk 

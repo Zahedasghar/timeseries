@@ -51,20 +51,20 @@ rmt_reports_html <- rmt_long |>
   )
 
 # PDF reports
-
-rmt_reports_pdf <- rmt_reports_html |>
-  mutate(
-    output_file = gsub("html", "pdf", output_file),
-    output_format = gsub("html", "pdf", output_format)
-  )
-
-# Bind HTML and PDF report dataframes together
-
-rmt_reports <- rbind(rmt_reports_html, rmt_reports_pdf)
+# 
+# rmt_reports_pdf <- rmt_reports_html |>
+#   mutate(
+#     output_file = gsub("html", "pdf", output_file),
+#     output_format = gsub("html", "pdf", output_format)
+#   )
+# 
+# # Bind HTML and PDF report dataframes together
+# 
+# rmt_reports <- rbind(rmt_reports_html, rmt_reports_pdf)
 
 # Subset to first 2 cat/dog breeds =============================================
 
-rmt_reports_subset <- rmt_reports |>
+rmt_reports_subset <- rmt_reports_html |>
   slice_head(n = 2, by = c(country, output_format)) |>
   select(output_file, output_format, execute_params)
 
@@ -73,7 +73,7 @@ rmt_reports_subset <- rmt_reports |>
 pwalk(
   rmt_reports_subset,
   quarto_render,
-  input = here("remittances.qmd"),
+  input = here("docs","remittances.qmd"),
   .progress = TRUE
 )
 
@@ -82,7 +82,7 @@ pwalk(
 output_dir <- "reports"
 
 # List files that contain ".html" or ".pdf".
-files <- dir_ls(here(), regexp = ".html$|.pdf$")
+files <- dir_ls(here(), regexp = ".html$")
 
 # Create directory if needed
 dir_create(output_dir)

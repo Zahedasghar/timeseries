@@ -1,5 +1,5 @@
 ---
-title: "SES, Holt's, Holt-Winters and ARIMA Methods for Forecasting Using R"
+title: "Forecasting in R with Prophet"
 title-block-banner: true
 author: "Zahid Asghar"
 #date: "`r format(Sys.time(), '%d %B, %Y')`"

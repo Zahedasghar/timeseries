@@ -24,7 +24,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 In previous lectures [Causal Explanation of Autonomy & Invariance of Regression Relationships](https://weapedagogy.wordpress.com/2021/04/19/causal-explanation-of-autonomy-invariance-of-regression-relationships/), we have seen the essential importance of analyzing the causal structure of the variables under study via path diagrams. In this lecture, we study one aspect of this which creates serious problems for understanding and interpreting regression results. This is the problem of a common cause.
 
-$Z$ is a common cause of $X$ and $Y$ if $Z$ $\Rightarrow$ $X$ and $Z$ $\Rightarrow$ $Y$. When this happens, $X$ and $Y$ will be correlated, but neither variable causes the other. In such situations, a regression of $Y$ on $X$ will give results which show, according to standard methods for analysis, that $X$ is a strong determinant of $Y$. This is called a *spurious* regression, or a *nonsense* regression. In this lecture, we will study some examples of this phenomena in real world data. @rehmat2022
+$Z$ is a common cause of $X$ and $Y$ if $Z$ $\Rightarrow$ $X$ and $Z$ $\Rightarrow$ $Y$. When this happens, $X$ and $Y$ will be correlated, but neither variable causes the other. In such situations, a regression of $Y$ on $X$ will give results which show, according to standard methods for analysis, that $X$ is a strong determinant of $Y$. This is called a *spurious* regression, or a *nonsense* regression. In this lecture, we will study some examples of this phenomena in real world data.
 
 ## A Causal Relationship: A Consumption Function
 
@@ -87,14 +87,14 @@ g12<-barplot(tren_mod$residuals)
 
 Random residuals frequently switch signs. They do not display any patterns in sequencing. The patterned residuals in the consumption function prove that the regression is not valid. In such situations, econometricians typically assume that the problem is due to missing regressors or wrong functional form. By adding suitable additional regressors, and modifying the functional form, one can generally ensure that the residuals appear to satisfy the assumptions made about them. But, solving the problem of random residuals by this search over regression models creates a serious problem. This can be explained as follows. Some of the fits in the data reflect a genuine real-world relationship. Other patterns are only accidental, and do not reflect any genuine relationship. The more we search, the more likely we are to end up with an accidental pattern. The fact that most regression relationships breakdown very frequently is due to the fact that most of them are accidental patterns in the data without any counterpart in reality.
 
-The coefficient of the regressor is supposed to be a measure of the causal effect. According to the regression above, if SgpGDP goes up by \$100, then \$49 of it will be spent on consumption. This means that the enormously high proportion of 51% of the income will be saved. Since savings translate to investments, this could account for the dramatic growth of Singapore over the period in question. However, the patterns shown in the errors show that we cannot rely on the validity of this estimate. Vast amounts of experience with estimating this kind of regression function leads to two major conclusions.
+The coefficient of the regressor is supposed to be a measure of the causal effect. According to the regression above, if SgpGDP goes up by $\$100$, then $\$49$ of it will be spent on consumption. This means that the enormously high proportion of 51% of the income will be saved. Since savings translate to investments, this could account for the dramatic growth of Singapore over the period in question. However, the patterns shown in the errors show that we cannot rely on the validity of this estimate. Vast amounts of experience with estimating this kind of regression function leads to two major conclusions.
 
-```         
-1.The estimate 0.49 of the causal effect is highly unstable – by adding many
+        
+> 1.The estimate 0.49 of the causal effect is highly unstable – by adding many
 different plausible variables, we can make it change over a great range of
 values. Thus, these regressions do not provide accurate estimates of the key
-parameter we want to estimate.
-2.The best fitting regressions very often make huge forecasting errors, and
+parameter we want to estimate. 
+> 2.The best fitting regressions very often make huge forecasting errors, and
 therefore are not very useful for policy. 
 ```
 
@@ -104,7 +104,7 @@ Even though the regression is not very useful in estimating the size of the caus
 
 First, let us just demonstrate the problem by running a nonsense regression of SgpCon on SAfGDP -- what is the relationship of Singapore Consumption with South African GDP. Before running the regression, we know that it is nonsense -- there should be no relationship, or very little relationship between these two variables. Here is a graph of the two series, re-scaled:
 
-A regression of SgpCon on SAfGDP yields: SgpCon = 16.99 + 0.517 SAfGDP: $R^2$ is 97%, and the $t-stat$ of 40.8 on the coefficient 0.517 is very high. Based on the p-value of 0.000, we can safely reject the null hypothesis that the coefficient of SAfGDP is 0. But this is a nonsensical conclusion, if interpreted causally. It is not even remotely possible that a 100 Rand increase in South African GDP will increase consumption in Singapore by 51.7 Singapore Dollars. The central goal of this lecture is to highlight the dramatic difference between this regression and the previous one. While the previous equation of SgpCon on SgpGDP suffers from many defects, it is built on the right foundations of a causal relationship: SgpGDP =\> SgpCon. The estimated causal coefficient of 0.486 is most likely wrong, because the residuals show patterns violating the assumptions of the regression model. But there is a right coefficient, and we can have hope that we can get to a better estimate by adjusting the equation to fix the flaws in it. In contrast, there is no causal relationship between SAfGDP and SgpCon. The estimated coefficient 0.517 of SAfGDP in the second equation is purely mythical -- it is measuring something which does not exist. What lesson do we learn from the fact that, despite this difference, both equations look more or less the same on the surface, with respect to the statistics produced by the regression package? This is discussed in the next section.
+A regression of SgpCon on SAfGDP yields: $SgpCon = 16.99 + 0.517 SAfGDP$: $R^2$ is 97%, and the $t-stat$ of 40.8 on the coefficient 0.517 is very high. Based on the p-value of 0.000, we can safely reject the null hypothesis that the coefficient of SAfGDP is 0. But this is a nonsensical conclusion, if interpreted causally. It is not even remotely possible that a 100 Rand increase in South African GDP will increase consumption in Singapore by 51.7 Singapore Dollars. The central goal of this lecture is to highlight the dramatic difference between this regression and the previous one. While the previous equation of SgpCon on SgpGDP suffers from many defects, it is built on the right foundations of a causal relationship: $SgpGDP \rightarrow SgpCon$. The estimated causal coefficient of 0.486 is most likely wrong, because the residuals show patterns violating the assumptions of the regression model. But there is a right coefficient, and we can have hope that we can get to a better estimate by adjusting the equation to fix the flaws in it. In contrast, there is no causal relationship between SAfGDP and SgpCon. The estimated coefficient 0.517 of SAfGDP in the second equation is purely mythical -- it is measuring something which does not exist. What lesson do we learn from the fact that, despite this difference, both equations look more or less the same on the surface, with respect to the statistics produced by the regression package? This is discussed in the next section.
 
 ## The Distinction Between Nominal and Real Econometrics
 
@@ -124,7 +124,7 @@ In the second regression, which regresses SgpCon on SAfGDP, the regression has a
 
 ## Variable Transformation to Stationarity:
 
-The reason for the failure of trend fit may be due to the reasonable assumption that the growth rate is stable across time, so that con_gr=(SgpCon-lag(SgpCon,1))/lag(SgpCon,1)*100,gdp_gr=(SgpGDP-lag(SgpGDP,1))/lag(SgpGDP,1)*100,gdp_gr_Saf=(SAfGDP-lag(SAfGDP,1))/lag(SAfGDP,1)\*100 would be uncorrelated with time. This can be checked by graphing this variable against time, as follows:
+The reason for the failure of trend fit may be due to the reasonable assumption that the growth rate is stable across time, so that $con_gr=(SgpCon-lag(SgpCon,1))/lag(SgpCon,1)*100$,$gdp_gr=(SgpGDP-lag(SgpGDP,1))/lag(SgpGDP,1)*100$,$gdp_gr_Saf=(SAfGDP-lag(SAfGDP,1))/lag(SAfGDP,1)*100$ would be uncorrelated with time. This can be checked by graphing this variable against time, as follows:
 
 ```{r, echo=FALSE, warning=FALSE,message=FALSE}
 con_inc<-con_inc %>% mutate(con_gr=(SgpCon-lag(SgpCon,1))/lag(SgpCon,1)*100,gdp_gr=(SgpGDP-lag(SgpGDP,1))/lag(SgpGDP,1)*100,gdp_gr_Saf=(SAfGDP-lag(SAfGDP,1))/lag(SAfGDP,1)*100)
@@ -134,7 +134,7 @@ growth_mod<-lm(con_gr~gdp_gr,data=con_inc)
 huxreg(growth_mod)
 ```
 
-This variable is also uncorrelated with time, at least visually. The variable transformation of taking growth rates has removed the common time trend from both variables. Now it should be possible to run a regression of Consumption on Income which does not suffer from the spurious correlation between the two variables created by the common trend. Unfortunately, this strategy also fails to differentiate between genuine and spurious regressions as we will see. First, let us look at the genuine causal regression of Gr_SgpC on Gr_SgfG: Gr_SdpC = 0.009 + 0.634 Gr_SgpG $R^2$ is now 69%. It has gone down because we have removed the correlation due to the common factor of time-trend, but it is still very high. The regression provides a good fit. Also, for the first time, the residuals from this regression look random:
+This variable is also uncorrelated with time, at least visually. The variable transformation of taking growth rates has removed the common time trend from both variables. Now it should be possible to run a regression of Consumption on Income which does not suffer from the spurious correlation between the two variables created by the common trend. Unfortunately, this strategy also fails to differentiate between genuine and spurious regressions as we will see. First, let us look at the genuine causal regression of Gr_SgpC on Gr_SgfG: $Gr_SdpC = 0.009 + 0.634 Gr_SgpG$, $R^2$ is now 69%. It has gone down because we have removed the correlation due to the common factor of time-trend, but it is still very high. The regression provides a good fit. Also, for the first time, the residuals from this regression look random:
 
 ```{r, echo=FALSE}
 barplot(growth_mod$residuals)
@@ -186,4 +186,4 @@ Putting in growth rates of both Singapore and South Africa leads to the right re
 
 *Econometricians* have been working on finding methods to discriminate between nonsense and sensible regressions for decades, without success. We have discussed three strategies for doing so in this lecture. All three lead to failure, although the third one can be salvaged. Currently, it is the third strategy which dominates the scene. However, it also suffers from failures in many different cases. The reason for this failure is that solutions to causal problems cannot be found in nominal econometrics. Without having a good grasp of the causal structures which relate the regressors to the dependent variables, it is not possible to estimate causal effects.
 
-POSTSCRIPT: Regressions for the lecture above were done using the RegressIt package for EXCEL -- available from:[data](https://regressit.com/) . The WDI Data Set for Singapore and South Africa, Consumption and GDP, is available from [Singapore Data](https://onedrive.live.com/view.aspx?resid=F5F6A4108BE920A5!46844&ithint=file%2cxlsx&authkey=!AA5r8iTFTqYaIfU)
+POSTSCRIPT: This lecture is mainly taken from Prof.Dr. Asad Zaman post on spurious regression and reproduced using R after his permission. The WDI Data Set for Singapore and South Africa, Consumption and GDP, is available from [Singapore Data](#0)

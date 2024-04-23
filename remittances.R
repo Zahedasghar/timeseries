@@ -21,12 +21,20 @@ rmt <- read.csv("data/remittances_karandaaz.csv")
 
 # Inspect the data
 
-rmt |> head()
+rmt |> head(10) |> View()
+
+# Inspect data 
+
+rmt |> glimpse() 
 
 rmt <- rmt[-1,] # remove the first row
-rmt |> glimpse()
+
+
+
 # Convert the remaining columns to numeric
-rmt[, -1] <- lapply(rmt[, -1], as.numeric)
+rmt <-  rmt |> mutate_at(vars(-1), as.numeric)
+
+rmt |> head() |> View()
 
 dates <- seq(as.Date("2024-02-01"), as.Date("2010-07-01"), by = "-1 month")
 
@@ -41,6 +49,7 @@ rmt <- rmt %>% select(-Period) |> select(date, everything())
 
 rmt_long <- rmt %>% pivot_longer(-date, names_to = "country", values_to = "remittances")
 
+rmt_long |> distinct(country) 
 
 
 
@@ -67,15 +76,6 @@ rmt_share_long |> filter(country!="Total" , share>0.08) |>
        x = "Date",
        y = "Remittances") +
   theme_minimal()
-
-rmt_share_long |> filter(country!="Total", country=="Malaysia") |>
-  ggplot()+ aes(x = date, y = share, color = country) +
-  geom_line() +
-  labs(title = "Remittances by Country",
-       x = "Date",
-       y = "Remittances") +
-  theme_minimal()
-
 
 
 
@@ -107,7 +107,6 @@ ts_data <- as_tsibble(rmt_long, key = country, index = month_year)
 
 total_rem <- ts_data %>% filter(country == "Total") |> select(-country) |> 
   select(-date) 
-total_rem |> head()
 
 
 library(fabletools)
@@ -123,7 +122,57 @@ ts_data |> filter(country == "USA") |> model(SNAIVE(remittances ~ lag(12))) |> f
 ts_data |> filter(country == "United.Kingdom") |> model(SNAIVE(remittances ~ lag(12))) |> forecast(h = 12) |> autoplot(ts_data)
 
 ts_data |> filter(country == "EU.Countries") |> model(SNAIVE(remittances ~ lag(12))) |> forecast(h = 12) |> autoplot(ts_data)
-table(ts_data$country)
+
+
+
+saudi_rem <- ts_data %>% filter(country == "Saudi.Arabia") |> select(-country) |> 
+  select(-date) 
+
+autoplot(decompose(saudi_rem))+ ggtitle("Decomposition of Total Remittances")+
+  theme_minimal()
+
+
+saudi_rem <- ts(saudi_rem$remittances, start = c(year(min(total_rem$month_year)), month(min(total_rem$month_year))),
+                end = c(year(max(total_rem$month_year)), month(max(total_rem$month_year))), frequency = 12)
+
+autoplot(saudi_rem)
+
+
+## Simple exponential smoothing
+
+ses(saudi_rem, h = 12) |> forecast() |> autoplot()
+
+
+## Holt's method
+
+holt(saudi_rem, h = 12) |> forecast() |> autoplot()
+
+
+## Holt-Winters method
+
+hw(saudi_rem, h = 12) |> forecast() |> autoplot()
+
+ets(saudi_rem, model = "AAA") |> forecast(h = 12) |> autoplot()
+
+
+
+
+
+
+fit_ARIMA <- auto.arima(saudi_rem, stepwise = FALSE, approximation = FALSE)
+summary(fit_ARIMA)
+
+fit_ARIMA %>% forecast(h=24) %>% autoplot()
+
+fit_ARIMA %>% forecast(h=24)
+
+fit_ARIMA_total <- auto.arima(total_rem_ts, stepwise = FALSE, approximation = FALSE)
+
+summary(fit_ARIMA_total)
+
+fit_ARIMA_total %>% forecast(h=24) %>% autoplot()
+
+fit_ARIMA_total %>% forecast(h=12)
 
 
 # Create a ts object
@@ -144,32 +193,3 @@ ets(total_rem_ts, model = "AZZ") |> forecast(h = 12) |> autoplot()
 ets(total_rem_ts, model = "ZZZ") |> forecast(h = 12) |> autoplot()
 
 
-autoplot(decompose(total_rem_ts))+ ggtitle("Decomposition of Total Remittances")+
-  theme_minimal()
-
-saudi_rem <- ts_data %>% filter(country == "Saudi.Arabia") |> select(-country) |> 
-  select(-date) 
-
-saudi_rem <- ts(saudi_rem$remittances, start = c(year(min(total_rem$month_year)), month(min(total_rem$month_year))),
-                   end = c(year(max(total_rem$month_year)), month(max(total_rem$month_year))), frequency = 12)
-
-autoplot(saudi_rem)
-
-ets(saudi_rem, model = "AAA") |> forecast(h = 12) |> autoplot()
-
-
-
-holt.saudi <- holt(saudi_rem, h = 12)
-autoplot(holt.saudi)
-
-holt.saudi <- holt(saudi_rem, h = 12, damped = TRUE)
-autoplot(holt.saudi)
-
-
-
-fit_ARIMA <- auto.arima(rmt_reversed, stepwise = FALSE, approximation = FALSE)
-summary(fit_ARIMA)
-fit_ARIMA %>% forecast(h=24) %>% autoplot()
-auto.arima(rev(rmt$Saudi.Arabia)) %>% forecast(h=24) %>% autoplot()
-
-rmt_long |> distinct(country) 

@@ -11,8 +11,8 @@
   <meta name="generator" content="quarto-1.5.9">
 
   <meta name="author" content="Zahid Asghar, Professor, School of Economics, QAU">
-  <meta name="dcterms.date" content="2024-04-01">
-  <title>Macroeconomic Forecasting Lec_01</title>
+  <meta name="dcterms.date" content="2024-04-09">
+  <title>Sationary and Nonstationary Series</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -394,7 +394,8 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title"><span class="flow">Macroeconomic Forecasting Lec_01</span></h1>
+  <h1 class="title"><span class="flow">Sationary and Nonstationary Series</span></h1>
+  <p class="subtitle">Macroeconomic Forecasting Lecture</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -404,56 +405,13 @@
 </div>
 </div>
 
-  <p class="date">2024-04-01</p>
+  <p class="date">2024-04-09</p>
 </section>
 <section>
 <section id="properties-of-time-series" class="title-slide slide level1 center">
 <h1>Properties of Time Series</h1>
 
 </section>
-<section id="introduction" class="slide level2">
-<h2>Introduction</h2>
-<ul>
-<li>General comments
-<ul>
-<li>Univariate analysis</li>
-<li>Two general “classes” of processes</li>
-<li>Both science and art (judgement):</li>
-<li>Understanding behavior and forecasting</li>
-<li>Assessing/testing</li>
-</ul></li>
-</ul>
-</section>
-<section id="univariate-analysis" class="slide level2">
-<h2>Univariate Analysis</h2>
-
-<img data-src="images/prob_density.png" class="quarto-figure quarto-figure-center r-stretch"><p>Each distribution is a draw from a <strong>random process</strong>.</p>
-</section>
-<section id="introduction-1" class="slide level2">
-<h2>Introduction</h2>
-<ul>
-<li>Two general “classes” of processes
-<ul>
-<li>stationary vs nonstationary</li>
-<li>Unchanged distribution (pdf) over time?</li>
-<li>Covariance stationary:
-<ol type="i">
-<li>Unconditional mean <span class="math inline">\(E(Y_t)=E(Y_{t+j})=\mu\)</span><br>
-</li>
-<li>variance constant <span class="math inline">\(Var(Y_t)=Var(Y_{t+j})=\sigma^2_y\)</span> and</li>
-<li>Covariance depnds on time j that has elapsed between observations, not on reference period <span class="math inline">\(Cov(Y_t,Y_{t+j})=Cov(Y_s,Y_{s+j})=\gamma_j\)</span></li>
-</ol></li>
-</ul></li>
-</ul>
-</section>
-<section id="section" class="slide level2">
-<h2></h2>
-
-<img data-src="images/stationary.png" class="quarto-figure quarto-figure-center r-stretch"><p class="caption">Stochastic Process vs time series</p></section>
-<section id="section-1" class="slide level2">
-<h2></h2>
-
-<img data-src="images/arma.png" class="quarto-figure quarto-figure-center r-stretch"><p class="caption">Diagnostic-ARMA</p></section>
 <section id="outline" class="slide level2">
 <h2>Outline</h2>
 <h3 id="part-1-stationary-processes">Part 1 : Stationary processes</h3>
@@ -466,6 +424,31 @@
 <ul>
 <li><p>Characterization</p></li>
 <li><p>Testing</p></li>
+</ul>
+</section>
+<section id="univariate-analysis" class="slide level2">
+<h2>Univariate Analysis</h2>
+
+<img data-src="images/prob_density.png" class="quarto-figure quarto-figure-center r-stretch"><p>Each distribution is a draw from a <strong>random process</strong>.</p>
+</section>
+<section id="strong-statinarity" class="slide level2 scrollable">
+<h2>Strong statinarity</h2>
+<ul>
+<li>Strong statinarity vs weak stationarity (covariance stationarity)
+<ul>
+<li>Strong stationarity:
+<ol type="i">
+<li>Same distribution over time</li>
+<li>Same covariance structure over time But its only a theoretical concept. In practice, we use covariance stationarity.</li>
+</ol></li>
+<li>Covariance stationary:
+<ol type="i">
+<li>Unconditional mean <span class="math inline">\(E(Y_t)=E(Y_{t+j})=\mu\)</span><br>
+</li>
+<li>variance constant <span class="math inline">\(Var(Y_t)=Var(Y_{t+j})=\sigma^2_y\)</span> and</li>
+<li>Covariance depends on time j that has elapsed between observations, not on reference period <span class="math inline">\(Cov(Y_t,Y_{t+j})=Cov(Y_s,Y_{s+j})=\gamma_j\)</span></li>
+</ol></li>
+</ul></li>
 </ul>
 </section>
 <section id="part1-stationary-process" class="slide level2">
@@ -538,7 +521,7 @@
 <p>Moving Average : MA(process) : <span class="math inline">\(y_t=\mu+\phi_1\epsilon_{t-1}+\phi_2\epsilon_{t-1}+...+\phi_q\epsilon_{t-1}+\epsilon_t\)</span></p>
 <p>Combined ARMA-process <span class="math inline">\(y_t=a+b_1y_{t-1}+b_2y_{t-2}+...+b_py_{t-p}+\\\phi_1\epsilon_{t-1}+\phi_2\epsilon_{t-1}+...+\phi_q\epsilon_{t-1}+\epsilon_t\)</span></p>
 </section>
-<section id="section-2" class="slide level2">
+<section id="section" class="slide level2">
 <h2></h2>
 <p>Some notation: AR(p), MA(q), ARMA(p,q), where p,q refer to the order (maximum lag) of the process</p>
 <p><span class="math inline">\(\epsilon_t\)</span> is a white noise disturbance:</p>
@@ -556,7 +539,7 @@
 <p>tools to help identify</p>
 </blockquote>
 </section>
-<section id="section-3" class="slide level2">
+<section id="section-1" class="slide level2">
 <h2></h2>
 <p>Autocovariance and autocorrelation relations between observations at different lags:</p>
 <ul>
@@ -565,7 +548,7 @@
 <li>ACF or Correlogram : graph of autocorrelations at each lag</li>
 </ul>
 </section>
-<section id="section-4" class="slide level2">
+<section id="section-2" class="slide level2">
 <h2></h2>
 <div class="columns">
 <div class="column" style="width:50%;">
@@ -611,7 +594,7 @@
 </div>
 </div>
 </section>
-<section id="section-5" class="slide level2">
+<section id="section-3" class="slide level2">
 <h2></h2>
 <div class="columns">
 <div class="column" style="width:50%;">
@@ -931,7 +914,7 @@
 </div>
 </div>
 </section>
-<section id="section-6" class="slide level2">
+<section id="section-4" class="slide level2">
 <h2></h2>
 <p><strong>Now let’s work with real world data</strong></p>
 <div class="cell">

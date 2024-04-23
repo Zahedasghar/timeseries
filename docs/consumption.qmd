@@ -5,7 +5,7 @@ author: '*Zahid Asghar *'
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 format:
   html:
-    theme: [default, custom.scss]
+    theme: [default]
     toc: true
     code-fold: true
     keep-md: false
@@ -17,11 +17,7 @@ execute:
 editor: visual
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-## Section 1: Keynesian Consumption Function
+## Keynesian Consumption Function for Pakistan
 
 Time series models are those where the data occurs in sequential time periods, so that there is a concept of progression of time. As opposed to this we have cross section models, where the data is from the same period of time but taken from different places. Within time series models, the simplest type is the static model. In static models, all the action takes place within one time period, and there is no effect of activity in one time period on the next. The simplest consumption function is the Keynesian consumption function, which is a static function. It says that current consumption depends only on current income, so that $C_t = f(Y_t)$. Assuming that the function is linear, and that there can be a random error, leads to the simplest Keynesian consumption function: $C_t =\alpha + \beta Y_t + \epsilon_t$
 
@@ -49,9 +45,11 @@ cons_inc<-cons_inc %>% mutate(Trend=1:52)
 
 ```
 
-Data on annual income and consumption for Pakistan with some approximations due to definition issues of consumption expenditure over time (main source :WDI) has been used for this lecture. Following is the graph for consumption per captia and income per capita.
+Data on annual income and consumption for Pakistan with some approximations due to definition issues of consumption expenditure over time (main source :WDI) has been used for this lecture. @fig-plot indicates that both consumption and income are trending variables.
 
 ```{r}
+#| label: fig-plot
+#| fig.cap: "Consumption and Income per capita over time"
 #| echo: false
 #| warning: false
 #| message: false
@@ -62,9 +60,11 @@ ggplot(cons_inc)+aes(x=year)+geom_line(aes(y = C), color = "darkred",size=0.8) +
   geom_line(aes(y = Y), color="steelblue", linetype="twodash",size=0.8)+labs(x="Income per capita",y="Consumption per captia",title = "Consumption Income pattern over time for Pakistan")+theme_minimal()
 ```
 
-The Keynesian consumption function is one of the most widely accepted and estimated regression models. The causal hypothesis is that Income (GDP) determines Consumption (Con): GDP $Rightarrow$ Con. The simplest regression model which embodies this relationship is: $C = \alpha + \beta Y$. Running this regression on the data leads to the following results:
+The Keynesian consumption function is one of the most widely accepted and estimated regression models. The causal hypothesis is that Income (GDP) determines Consumption (Con): $GDP \Rightarrow Con$. The simplest regression model which embodies this relationship is: $C = \alpha + \beta Y$. Running this regression on the data @tbl-regression_points gives the first five observations of the regression results.   
 
 ```{r, echo=FALSE, warning=FALSE,message=FALSE}
+#| label: tbl-regression_points
+
 #| echo: false
 #| warning: false
 #| message: false
@@ -74,13 +74,20 @@ library(broom)
 library(moderndive)
 con_mod<-lm(C~Y,data = cons_inc)
 regression_points <- get_regression_points(con_mod)
-regression_points
+regression_points |> slice_head(n=5)
+```
+
+Now we have regression results in @tbl-cy. 
+
+```{r}
+#| label: tbl-cy
+#| tbl-cap: "Regression results of Consumption on Income"
 library(ggfortify)
 library(modelsummary)
-autoplot(con_mod)
+
 cons_inc<-cons_inc|>mutate(resid=residuals(con_mod))
-tidy(con_mod)
-modelsummary(con_mod)
+
+modelsummary(con_mod, stars = TRUE)
 #get_regression_table(con_mod)
 #library(modelsummary)
 #modelsummary(con_mod)
@@ -88,26 +95,30 @@ modelsummary(con_mod)
 
 The regression has $R^2$ of 0.97, which is interpreted to mean that $97\%$ of the variation in Pakistani Consumption can be explained by the Pakistani GDP. The $t-stat=\frac{0.785}{0.020}=39$ shows that the coefficient income is highly significant. The $p-value$ of $0.000$ means we can reject the null hypothesis that the true coefficient is zero, corresponding to the idea that $Y$ has no influence on $C$. Validity of regression results depends on a large number of assumptions, which are discussed in econometrics textbooks.
 
-Here are the results of regressing Per Capita consumption in Pakistan on Per Capita GDP from 1967 to 2018. A plot of the regression residuals is given below:
+Here is the plot of residuals of regressing Per Capita consumption in Pakistan on Per Capita GDP from 1967 to 2018. 
 
 ```{r}
-#acf(resid)
-#pacf(resid)
-#adf.test(resid)
+#| label: fig-resid
 ggplot(cons_inc)+aes(x=year, y=resid)+geom_col()
 ```
 
-One of the central assumptions is that the regression residuals should be random, and should come from a common distribution. Residuals in the graph indicate high correlation among the residuals and these dont follow random pattern. To verify further,we have some more analysis of these residuals to assess normality, heteroscedasticity and independence:
+
+One of the central assumptions is that the regression residuals should be random, and should come from a common distribution. @fig-resid indicates high correlation among the residuals and these dont follow random pattern. This plot shows serious problems, since these residuals display systematic behavior. They are all negative and small early. To see how these patterns differ from independent random variables, we provide a graph of independent random variables with mean 0 and standard error 4.579, matching the estimated regression model standard error. The Keynesian consumption function is one of the most widely accepted and estimated regression models. To verify further,we have some more analysis of these residuals to assess normality, heteroscedasticity and independence given in @fig-residpanel.
+
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
+#| label: fig-residpanel
+#| tbl-cap: "Residuals analysis of Consumption on Income"
 library(ggResidpanel)
 resid_panel(con_mod,plots = 'default',smoother = TRUE)
 
 ```
 
-This plot shows serious problems, since these residuals display systematic behavior. They are all negative and small early. To see how these patterns differ from independent random variables, we provide a graph of independent random variables with mean 0 and standard error 4.579, matching the estimated regression model standard error. The Keynesian consumption function is one of the most widely accepted and estimated regression models. The causal hypothesis is that Income (GDP) determines Consumption (Con): GDP $\Rightarrow$ Con. There may be a deterministic trend and now I regress consumption on trend and show graphical results of trend model as follows:
-
+ The causal hypothesis is that Income (GDP) determines Consumption (Con): $GDP \Rightarrow Con$. There may be a deterministic trend and now I regress consumption on trend and show graphical results of trend model and residuals are given in @fig-trend.:
+ 
 ```{r, echo=FALSE}
+#| label: fig-trend
+#| fig.cap: "Consumption and Income per capita over time"
 library(gridExtra)
 g11<-ggplot(cons_inc, aes(x = Trend, y = C)) +
   geom_point() +
@@ -137,11 +148,11 @@ The main message of correlated residuals is that variables from one period ago h
 
 Thus in order to fix up the problem of correlated residuals, we need to build a dynamic model. The simplest dynamic extension of the Keynesian model is the following: $$C_t=\alpha+\beta Y_t+\gamma C_{t-1}+\delta Y_{t-1}+e_t$$
 
-We put in ALL the information we have about ALL the variables in the model at period $t-1$. Similarly we could go back to period $t-2$.
+We put in `ALL` the information we have about ALL the variables in the model at period $t-1$. Similarly we could go back to period $t-2$.
 
 ### General-to-Simple vs. Simple-to-General Modelling:
 
-In fixing problems detected by tests, there are two strategies which are commonly used. The older and more traditional strategy is called the bottom-up or simple-to-general strategy. In this strategy, we would start with the simplest model, which is a static Keynesian model. Then we note that the errors are correlated. Then we make the simplest dynamic extension. Next we test the errors. If the problem of autocorrelation has been eliminated then we stop here. If there is still autocorrelation, it follows that a higher order dynamic model is needed. So we go to a second order model. We keep increasing the order (and complexity) of the model until we get to a point where the errrors are not autocorrelated. This is one aspect of simple-to-general modelling.
+In fixing problems detected by tests, there are two strategies which are commonly used. The older and more traditional strategy is called the bottom-up or simple-to-general strategy. In this strategy, we would start with the simplest model, which is a static Keynesian model. Then we note that the errors are correlated. Then we make the simplest dynamic extension. Next we test the errors. If the problem of autocorrelation has been eliminated then we stop here. If there is still autocorrelation, it follows that a higher order dynamic model is needed. So we go to a second order model. We keep increasing the order (and complexity) of the model until we get to a point where the errors are not autocorrelated. This is one aspect of simple-to-general modelling.
 
 The alternative to this which has recently been proposed, and shown to have superior properties, is general to simple modelling. In this method, we note that errors seem to be correlated upto the fourth order. So we start with a fourth order dynamic model. In general the goal is to start with the biggest model you might possibly need and simplify it down to a simpler model. This is called the top-down or general to simple strategy. We have illustrated this on the data set as well. The final model which emerges from our analysis is $C_t = \alpha + \beta Y_t + \gamma C_{t-1} + e_t$. However, this model suffers from both structural change and heteroskedasticity. This suggests that we should try a log transformation to get rid of the heteroskedasticity. Perhaps this will eliminate or reduce the structural change problem as well.
 
@@ -154,6 +165,8 @@ How should we proceed? Experience with consumption functions shows that they ver
 We start with **General to Specific** approach and include upto three lags of both consumption and income. There is no hard and fast rule but it is suggested that number of regressors should not exceed number of observations. We have in total 52 observations we can select 3 or 4 lages of each (had it been quarterly data we would have selected 4 lags of each). Some studies suggest to have regressor should not exceed one third of the total number of observations.
 
 ```{r}
+#| label: tbl-dyn
+#| tbl-cap: "Dynamic Consumption Function"
 #| warning: false
 #| echo: false
 #| message: false
@@ -162,32 +175,34 @@ g2s<-lm(C~Y+lag(Y,1)+lag(C,1)+lag(Y,2)+lag(C,2)+lag(Y,3)+lag(C,3),data=cons_inc)
 modelsummary(g2s,estimate = c("{estimate} ({std.error}){stars}"))
 ```
 
-Results indicate that $Y$ and first lag of $C$ are highly significant and second lag of Y is significant at 10%. So by standard statistical procedure, one should drop all variables and re-run the regression with significant variables as follows:
+Results in @tbl-dyn indicate that $Y$ and first lag of $C$ are highly significant and second lag of Y is significant at 10%. So by standard statistical procedure, one should drop all variables and re-run the regression with significant variables as follows:
 
 ```{r}
-#| warning: false
-#| echo: false
-#| message: false
+#| label: tbl-dyn2
+#| tbl-cap: "Dynamic Consumption Function"
 
 g2s1<-lm(C~Y+lag(C,1)+lag(Y,2),data=cons_inc)
 dyn_inc<-cons_inc|>filter(year>1968)|>mutate(g2s1res=g2s1$residuals)|>na.omit()
 dyn_inc|>glimpse()
-g13<-ggplot(dyn_inc)+aes(x=year, y=g2s1res)+geom_col()
+
 
 modelsummary(g2s1,estimate = c("{estimate} ({std.error}){stars}"))
 
 ```
 
-Oh great now we have all the variables are highly significant and if residuals satisfy all standard assumptions, it will be perfect fit. So lets have a look at the residuals behavior.
+Oh great now we have all the variables are highly significant  in @tbl-dyn2 and if residuals satisfy all standard assumptions, it will be perfect fit. So lets have a look at the residuals behavior.
 
 Lets have first look at residuals plot over time.
 
 ```{r}
+#| label: fig-dyn
+#| fig.cap: "Residuals of Dynamic Consumption Function"
 #| echo: false
+g13<-ggplot(dyn_inc)+aes(x=year, y=g2s1res)+geom_col()+labs(title="Residuals of Dynamic Consumption Function",x="Year",y="Residuals")
 g13
 ```
 
-It seems residuals are behaving randomly. Lets apply some more tests before I finalize the model.
+From @fig-dyn, it seems residuals are behaving randomly. Lets apply some more tests before I finalize the model.
 
 ```{r}
 #| warning: false

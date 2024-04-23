@@ -1,34 +1,18 @@
 ---
 title: "Unit Roots Tests: Methods and Problems"
-subtitle: "Economic Forecasting and Panel Data Analysis"
-format:
+author: "[[Zahid Asghar, Professor, School of Economics, QAU](https://zahedasghar.netlify.app)]{style=color:blue;}"
+date: "today"
+format: 
   revealjs:
     theme: [default, custom.css,styles.scss]
-    logo: ""
-    footer: "[Zahid Asghar](https://zahidasghar.com)"
-    height: 900
-    width: 1600
     chalkboard: true
-    keep-md: false
-    title-slide-attributes: 
-      #data-background-image: images/peacock.jpg
-      #data-background-size: 15%
-      #data-background-position: 95% 95%
-      data-background-color: "#447099"
-overview: true
+    slide-number: c/t
 execute:
   echo: false
   warning: false
   freeze: auto
 ---
 
-##  {.centered background-color="#447099"}
-
-[Economic Forecasting --- Unit Roots Test]{.custom-title}
-
-[Dr. Zahid Asghar <br> Professor of Economics]{.custom-author}
-
-[<a href="mailto:zasghar@qau.edu.pk"><i class="fa fa-paper-plane fa-fw"></i>zasghar\@qau.edu.pk</a> <br> <a href="https://github.com/zahedasghar"><i class="fa fa-github fa-fw"></i>zahedasghar</a><br> <a href="https://QMR.zahidasghar.com"> <i class="fa fa-globe fa-fw"></i>zahidasghar.com</a><br>]{.custom-institution}
 
 ```{r}
 #| label: setup
@@ -39,21 +23,20 @@ library(patchwork)
 library(fontawesome)
 library(gapminder)
 library(scales)
-knitr::opts_chunk$set(echo=T,
-                      message=F,
-                      warning=F)
+
 ```
 
-# Unit Roots Tests {background-color="#CA225E"}
+# Augmented Dickey-Fuller and Phillips-Perron Unit Roots Tests using R {background-color="#CA225E"}
 
 
 ## Unit Roots Tests 
 
-### How do you find out if a series is stationary or not?
+#### How do you find out if a series is stationary or not?
 
-## Order of integration of a Series
+#### Order of integration of a Series
 
-A series which is stationary after being differenced once is said to integrated of order 1 and is being denoted by *I(1)*.In general a series which is stationary after being differenced $d$ times is said to be integrated of order $d$, denoted $I(d)$. A series, which is stationary without differencing, is said to be $I(0)$
+A series which is stationary after being differenced once is said to integrated of order 1 and is being denoted by *I(1)*. 
+In general a series which is stationary after being differenced $d$ times is said to be integrated of order $d$, denoted $I(d)$. A series, which is stationary without differencing, is said to be $I(0)$
 
 $Y_t=b_0+Y_{t-1}+\epsilon_t$ --\> $I(1)$
 
@@ -73,88 +56,101 @@ $\Delta{Y_t}= Y_t-Y_{t-1}=b_0+\epsilon_t$ --\> $I(0)$
 :::
 :::
 
-## 
-
-### 2. Diagnostic test - Correlogram
+## Diagnostic test - Correlogram
 
 Correlation between 1980 and 1980+K.
 
 For stationary process correlelogram dies out rapidly. Series has no memory. 1980 is not related to 1985.
 
-![](images/paste-4BA97D8D.png)
+::: columns
+::: {.column width="49%"} 
+![stationary](images/paste-4BA97D8D.png)
 
-## 
+:::
 
-For a random walk the correlogram does not die out. High autocorrelation for large values of k.
+::: {.column width="49%"}
 
-![](images/paste-24AC630E.png)
+![non-stationary](images/paste-24AC630E.png)
+
+:::
+::: 
 
 ## Statistical tests for sationarity: Simple t-test
 
 Set up $AR(1)$ process with drift ($b_0$)
 
-$Y_t=b_0+b_1Y_{t-1}+\epsilon_t \\ \epsilon_t~iid(0,\sigma^2)$
+$Y_t = b_0 + bY_{t-1} + \epsilon_t$ where $\epsilon_t \sim \text{iid}(0, \sigma^2)$
 
-Simple approach is to estimate eq(1) using OLS and examine $b_1$.
+Simple approach is to estimate eq(1) using OLS and examine $b$.
 
--   Use a t-test with null $H_0: b_1=1$ (non-stationary)
+-   Use a t-test with null $H_0: b=1$ (non-stationary)
 
--   against alternative $H_a: b_1<1$ (stationary)
+-   against alternative $H_a: b<1$ (stationary)
 
--   Test Statistics : TS=$(b_1-1)/SE(b_1)$ reject null hypothesis when test statistics is large negative 5% critical value is -1.65
+-   Test Statistics : TS=$(b-1)/SE(b)$ reject null hypothesis when test statistics is large negative 5% critical value is -1.65
 
 ## 
 
 Simple t-test based on AR(1) process with drift ($b_0$)
 
-$Y_t=b_0+b_1Y_{t-1}+\epsilon_t \\ \epsilon_t~iid(0,\sigma^2)$ --\> (1)
+$Y_t=b_0+bY_{t-1}+\epsilon_t \\ \epsilon_t \sim iid(0,\sigma^2)$ --\> (1)
 
-Problem with simple test approach 1. lagged dependent variables ==\> $b_1$ biased downwards in small samples (i-e dynamic bias) 2. When $b_1=1$, we have non-stationary process and standard regression analysis is invalid (i-e non-standard distribution)
 
-## Dickey Fuller (DF) approach to non-stationary testing
 
-Dickey and Fuller (1979) suggest we subtract $Y_{t-1}$ from both sides of eq(1).
+Problem with simple test approach  
 
-$Y_t-Y_{t-1}=b_0+b_1Y_{t-1}-Y_{t-1}+\epsilon_t \\ \epsilon_t~iid(0,\sigma^2)$
+1. lagged dependent variables ==\> $b$ biased downwards in small samples (i-e dynamic bias)  
+
+2. When $b=1$, we have non-stationary process and standard regression analysis is invalid (i-e non-standard distribution)
+
+## Dickey Fuller (DF) Test
+
+Subtract $Y_{t-1}$ from both sides of eq(1).
+
+$Y_t-Y_{t-1}=b_0+bY_{t-1}-Y_{t-1}+\epsilon_t \\ \epsilon_t \sim iid(0,\sigma^2)$
 
 $$\Delta{Y_t}= b_0+\beta Y_{t-1}+\epsilon_t \\\beta=b_1-1$$
 
 Use a t-test with: null $H_0: \beta=0$ (non-stationary or **Unit Root**) against alternative $H_0: \beta<0$
 
 -   Large negative test statistics reject non-stationary
--   This is know as unit root test since in eq(1) $H_0: b_1=0$
+-   This is known as unit root test since in eq(1) $H_0: b=0$
 
 ## Variants of DF test
 
 The different regression can be used to test the presence of a unit root
 
-$\Delta Y=\beta Y_{t-1}+\epsilon$
+$\Delta Y=\beta Y_{t-1}+\epsilon_t$
 
-$\Delta Y=b_0+\beta Y_{t-1}+\epsilon$
+$\Delta Y=b_0+\beta Y_{t-1}+\epsilon_t$
 
-$\Delta Y=b_0+\beta Y_{t-1}+b_2 t+\epsilon$
+$\Delta Y=b_0+\beta Y_{t-1}+b_2 t+\epsilon_t$
 
 1.  For testing if Y is a pure Random Walk
 2.  For testing if Y is Random Walk with Drift
-3.  For testing if Y is a Random walk with Drift and Deterministi Trend
+3.  For testing if Y is a Random walk with Drift and  Deterministi Trend
 
-## 
+## {.scrollable}
 
-The simplest model (appropriately **only** if you think there are no other terms present in the *true* regression model) $\Delta Y=\beta Y_{t-1}+\epsilon$ Use the t-statistics and compare it with the table of critical values computed by the DF. If your t value is outside the confidence interval, the null of unit root is rejected.
+The simplest model (appropriate **only** if you think there are no other terms present in the *true* regression model)  
+$\Delta Y=\beta Y_{t-1}+\epsilon$  
+
+Use the t-statistics and compare it with the table of critical values computed by the DF. If your t value is outside the confidence interval, the null of unit root is rejected.
 
 $\tau$ Statistics
 
-A more general modeel (allowing for `drift`)
+A more general model (allowing for `drift`)
 
 $\Delta Y=b_0+\beta Y_{t-1}+\epsilon$
 
 $\phi_1$ Statistics- Use F statistics if $\beta=b_0=0$ using the non standard tables
 
-$\tau_{\mu}$ Statistics - use the t statistics to check if $\beta=0$, against non-standard tables.
+$\tau_{\mu}$ Statistics  
+- use the t statistics to check if $\beta=0$, against non-standard tables.
 
 ## Examples
 
-Sample size of n=25 at 5% level of signinficance for eq(2)
+Sample size of n=25 at 5% level of significance for eq(2)
 
 $\tau$ - critical value=-3.00
 
@@ -162,9 +158,9 @@ t-test critical value=-1.65
 
 $\Delta p_t=-0.007-0.190p_{t-1} \\ (-1.05) (-1.49)$
 
-$\beta=-0.0190$ $\tau_{\mu}=-1.49>-3.00$
+$\beta=-0.190$ $\tau=-1.49>-3.00$ 
 
-hence cannot reject $H_0$ and so unit root.
+hence cannot reject $H_0$ of unit root.
 
 ## Incorporating time trends in DF test for unit root
 
@@ -205,7 +201,7 @@ Conside the following series and its correlogram
 
 The variable Y is clealry trended and question is whether trend : Deterministic or Stochastic
 
-## 
+
 
 ## 
 
@@ -223,21 +219,40 @@ $$\Delta Y_t=b_0+\beta Y_{t-1}+\epsilon$$
 
 AIC, SBC, HQC or some other criteria maybe used beside having judgement for appropriate lag selection.
 
+## ADF vs PP
+
+```{r}
+# Load necessary libraries
+library(knitr)
+
+# Create the table
+comparison_table <- data.frame(
+  Feature = c("Underlying Assumption", "Applicability", "Implementation", "Advantages", "Disadvantages"),
+  `ADF Test` = c("No serial correlation in error terms", "Data with no significant serial correlation", "Requires lag selection", "Common, well-established test", "Requires attention to serial correlation"),
+  `PP Test` = c("No assumptions about serial correlation", "Data with potential serial correlation", "No lag selection required", "More robust to serial correlation", "Less common, may be computationally expensive")
+)
+
+# Print the table using kable
+kable(comparison_table, caption = "Comparison of ADF Test and PP Test Features")
+
+```
+
+
+## Choosing ADF or PP
+
+-   If you're confident there's no serial correlation in your data, ADF can be a good choice. 
+
+-   If you suspect serial correlation or are unsure, the PP test is generally recommended for its robustness. 
+
+-   In practice, it's often recommended to run both tests and compare the results. If they agree on the presence or absence of a unit root, you can be more confident in the conclusion.
+
+
 ## 
 
 ![](images/paste-E90AFB05.png)
 
-## Alternative statistical test for stationarity
 
-One further approach is the Sargan and Bhargave (1983) test which uses the Durbin-Watson statistics.
-
-If $Y_t$ is regressed on a constant alone, we then examine the residuals for serial correlation.
-
-Serial correlation in the residuals (long memory) will fail the DW test in a low value for this test.
-
-This test has not proven so popular.
-
-### Three main aspects of Unit root testing
+## Three main aspects of Unit root testing
 
 -   Determining components (constant , time trend).
 
@@ -249,9 +264,19 @@ This test has not proven so popular.
 
 ## Three Strategy for Unit Roots
 
-Formal Strategy 1. Use informal tests- eye ball data and correlogram 2. Incorporate Time trend if data is upwards trending 3. Specification of ADF test - how many lags should we incorporate to avoid serial correlation?
+Formal Strategy  
 
-## Example - Real GDP (2000 Prices) Seasonally Adjusted
+1. Use informal tests- eye ball data and correlogram   
+
+
+2. Incorporate Time trend if data is upwards trending   
+
+
+3. Specification of ADF test - how many lags should we incorporate to avoid serial correlation?
+
+## Example 
+
+- Real GDP (2000 Prices) Seasonally Adjusted
 
 1.  Plot Time Series- Non-Stationary (i-e. time varying mean and correlogram non-zero)
 
@@ -263,89 +288,7 @@ Formal Strategy 1. Use informal tests- eye ball data and correlogram 2. Incorpor
 
 ![](images/paste-545C4AD8.png)
 
-## 
 
-::: columns
-<div>
-
-![](images/paste-DC77E919.png)
-
-</div>
-:::
-
-<div>
-
-![](images/paste-3A9B6966.png)
-
-</div>
-
-:::
-
-:::
-
-## 
-
-|                       | Rho1 | Rho2 | r(1) | r(2)  | d(1) | d(2) |
-|-----------------------|------|------|------|-------|------|------|
-| Real GNP              | 0.95 | 0.90 | 34   | 0.04  | 0.87 | 0.66 |
-| Nominal GNP           | 0.95 | 0.89 | 0.44 | 0.08  | 0.93 | 0.79 |
-| Industrial Production | 0.97 | 0.94 | 0.03 | -0.11 | 0.84 | 0.67 |
-| Unemployment Rate     | 0.75 | 0.47 | 0.09 | -0.29 | 0.75 | 0.46 |
-
-: Table 4.1: Selected Autocorrelation From Nelson and Plosser
-
-## 
-
-![](images/paste-56ABF03F.png)
-
-## Unit Roots and Regression Residuals
-
-$y_t=b_0+b_1 Z_t+\epsilon_t$
-
--   Assumptions of the classical model:
-
-    -   both the $y_t$ and $z_t$ sequences be stationary
-
-    -   the errors have a zero mean and a finite variance.
-
-    -   In the presence of nonstationary variables, there might be what Grander and Newbold(1974) call a **spurious regression**
-
--   A spurious regression has a high $R^2$ and $t-statistics$ that appear to be significant, but the results are without any economic meaning.
-
--   The regression output "looks good" because the least squares estimates are not consistent and the customary tests of statistical inference do not hold.
-
-## Four cases
-
--   **CASE 1** : Both {yt} and {zt} are stationary.
-    -   the classical regression model is appropriate.
--   **CASE 2** : The {yt} and {zt} sequences are integrated of different orders.
-    -   Regression equations using such variables are meaningless
--   **CASE 3** : The nonstationary {yt} and {zt} sequences are integrated of the same order and the residual sequence contains a stochastic trend.
-    -   This is the case in which the regression is spurious.
-
-    -   In this case, it is often recommended that the regression equation be estimated in first differences.
--   **CASE 4**: The nonstationary {yt} and {zt} sequences are integrated of the same order and the residual sequence is stationary.
-    -   In this circumstance, {yt} and {zt} are cointegrated.
-
-## Spurious regression: example 1
-
-![](images/paste-CA0E9C0B.png)
-
-![](images/paste-181B2A5B.png)
-
-## 
-
-## Quarterly Real U.S. GDP
-
-![](images/paste-05588AC4.png)
-
-The t-statistic on the coefficient for lrgdpt--1 is -2.59. Table indicates that with 244 usable observations, the 10% and 5% critical value of $\tau_{\tau}$ are about -3.13 and -3.43, respectively. As such, we cannot reject the null hypothesis of a unit root.
-
-The sample value of $\phi_3$ for the null hypothesis b2 = $\beta$ = 0 is 4.12. As Table B indicates that the 10% critical value is 5.39, we cannot reject the joint hypothesis of a unit root and no deterministic time trend. The sample value of $\phi_2$ is 20.20. As such, the growth rate of the real GDP series acts as a random walk plus drift plus the irregular term $0.3426\Delta lrgdp_{t–1}$.
-
-## Real Exchange Rate Estimation
-
-![](images/paste-B8022CEA.png)
 
 # General to Specific or Specific to General Techinque
 
@@ -359,15 +302,14 @@ $\Delta^2 y_t=b_0+\beta_1 \Delta y_{t-1}+\beta_2 y_{t-1}    +\epsilon_t$
 
 If you reject the null hypothesis $\beta_2$=0, conclude $y_t$ is stationary. 
 
-# Seasonal Unit Roots (will skip)
 
+## Panel Unit Root Tests {.scrollable}
 
-## Panel Unit Root Tests
+$\Delta y_{it}=b_{io}+\gamma_i y_{it-1}+\sum_{i=1}^n p_i \Delta y_{it-j}+\epsilon_{it}$  
 
-$\Delta y_{it}=b_{io}+\gamma_i y_{it-1}+\sum_{i=1}^n p_i \Delta y_{it-j}+\epsilon_{it}$ 
 > One way to obtain a more powerful test is to pool the estimates from a number separate series and then test the pooled value. The theory underlying the test is very simple: if you have n independent and unbiased estimates of a parameter, the mean of the estimates is also unbiased. More importantly, so long as the estimates are independent, the central limit theory suggests that the sample mean will be normally distributed around the true mean. 
 
-  -     The difficult issue is to correct for cross equation correlation
+-     The difficult issue is to correct for cross equation correlation
 
 -   Because the lag lengths can differ across equations, you should perform separate lag length tests for each equation. Moreover, you may choose to exclude the deterministic time trend. However, if the trend is included in one equation, it should be included in all
 
@@ -382,93 +324,4 @@ The example above illustrates a common technique to correct for correlation acro
 
 
 
-# Train and evaluate models {background-color="#CA225E"}
 
-## Why tidymodels? 
-
-## Why tidymodels?  *Consistency*
-
-. . .
-
-:::: {.columns}
-
-::: {.column width="50%"}
-
-With `lm()`:
-
-```{r eng-lm-model}
-#| echo: true
-#| eval: false
-model <- 
-  lm(mpg ~ ., mtcars)
-
-```
-
-:::
-
-::: {.column width="50%"}
-
-With tidymodels:
-
-```{r tm-lm}
-#| echo: true
-#| eval: false
-#| code-line-numbers: "|3"
-model <-
-  linear_reg() %>%
-  set_engine("lm") %>%
-  fit(mpg ~ ., mtcars)
-```
-
-
-:::
-
-::::
-
-## Why tidymodels?  *Consistency*
-
-:::: {.columns}
-
-::: {.column width="50%"}
-
-With glmnet:
-
-```{r eng-glmnet-model}
-#| echo: true
-#| eval: false
-model <- 
-  glmnet(
-    as.matrix(mtcars[2:11]),
-    mtcars$mpg
-  )
-```
-
-:::
-
-::: {.column width="50%"}
-
-With tidymodels:
-
-```{r tm-glmnet}
-#| echo: true
-#| eval: false
-#| code-line-numbers: "3||3"
-model <-
-  linear_reg() %>%
-  set_engine("glmnet") %>%
-  fit(mpg ~ ., mtcars)
-```
-
-
-:::
-
-::::
-
-
-## Slide with a pause
-
-content before the pause
-
-. . .
-
-content after the pause

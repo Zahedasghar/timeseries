@@ -1,8 +1,8 @@
 ---
-title: "[Macroeconomic Forecasting Lec_01]{.flow}"
+title: "[Sationary and Nonstationary Series]{.flow}"
+subtitle: "Macroeconomic Forecasting Lecture"
 author: "[[Zahid Asghar, Professor, School of Economics, QAU](https://zahedasghar.netlify.app)]{style=color:blue;}"
 date: "today"
-
 format: 
   revealjs:
     theme: [default, custom.css,styles.scss]
@@ -13,39 +13,6 @@ execute:
 ---
 
 # Properties of Time Series
-
-## Introduction
-
--   General comments
-    -   Univariate analysis
-    -   Two general "classes" of processes
-    -   Both science and art (judgement):
-    -   Understanding behavior and forecasting
-    -   Assessing/testing
-
-## Univariate Analysis
-
-![](images/prob_density.png){fig-align="center"}
-
-Each distribution is a draw from a **random process**.
-
-## Introduction
-
--   Two general "classes" of processes
-    -   stationary vs nonstationary
-    -   Unchanged distribution (pdf) over time?
-    -   Covariance stationary:
-        i)  Unconditional mean $E(Y_t)=E(Y_{t+j})=\mu$\
-        ii) variance constant $Var(Y_t)=Var(Y_{t+j})=\sigma^2_y$ and
-        iii) Covariance depnds on time j that has elapsed between observations, not on reference period $Cov(Y_t,Y_{t+j})=Cov(Y_s,Y_{s+j})=\gamma_j$
-
-## 
-
-![Stochastic Process vs time series](images/stationary.png){fig-align="center"}
-
-## 
-
-![Diagnostic-ARMA](images/arma.png){fig-align="center"}
 
 ## Outline
 
@@ -60,6 +27,30 @@ Each distribution is a draw from a **random process**.
 -   Characterization
 
 -   Testing
+
+
+
+## Univariate Analysis
+
+![](images/prob_density.png){fig-align="center"}
+
+Each distribution is a draw from a **random process**.
+
+## Strong statinarity {.scrollable}
+
+-   Strong statinarity vs weak stationarity (covariance stationarity) 
+    -   Strong stationarity:
+        i)  Same distribution over time
+        ii) Same covariance structure over time
+ But its only a theoretical concept. In practice, we use covariance stationarity.
+
+    -   Covariance stationary:
+        i)  Unconditional mean $E(Y_t)=E(Y_{t+j})=\mu$\
+        ii) variance constant $Var(Y_t)=Var(Y_{t+j})=\sigma^2_y$ and
+        iii) Covariance depends on time j that has elapsed between observations, not on reference period $Cov(Y_t,Y_{t+j})=Cov(Y_s,Y_{s+j})=\gamma_j$
+
+
+
 
 ## Part1 : Stationary Process
 
@@ -215,8 +206,7 @@ time_series_data <- data.frame(Time = 1:n, Value = ar1_trend_data, Difference = 
 # Create a ggplot2 line plot of the differences
 ggplot(time_series_data, aes(x = Time, y = Difference)) +
   geom_line(linewidth=1) +
-  labs(title = "AR(1) Model with Trend: Differences", x = "Time", y = "Difference") +
-  theme_minimal()
+  labs(title = "AR(1) Model with Trend: Differences", x = "Time", y = "Difference") +  theme_minimal()
 
 
 ```
