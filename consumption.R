@@ -10,7 +10,7 @@ cons_inc$year<-as_date(cons_inc$year)
 cons_inc<-cons_inc %>% mutate(Trend=1:52)
 
 
-#cons_inc<-ts(con_inc,start = 1960, end=2019)
+cons_inc<-ts(con_inc,start = 1960, end=2019)
 
 #cons_inc<-as_tibble(con_inc)
 ggplot(cons_inc)+aes(x=year)+geom_line(aes(y = C), color = "darkred",size=0.8) + 
@@ -76,7 +76,7 @@ library(corrplot)
 cons_inc<-cons_inc|>mutate(lagY1=lag(Y,1),lagY2=lag(Y,2),lagY3=lag(Y,3),lagC1=lag(C,1),lagC2=lag(C,2),lagC3=lag(C,3))
 M<-cons_inc|>select(C,Y,lagY1,lagY2,lagY3,lagC1,lagC2,lagC3)|>na.omit()
 M1<-cor(M)
-round(M1,3)
+round(M1,3) |> as.data.frame() |> kable() |> kable_styling()
 
 g2s2<-lm(C~Y+lag(C,1)+lag(Y,1),data=cons_inc)
 

@@ -1,11 +1,12 @@
 ---
 title: "KSE-30 Interactive Time Series Plot"
-
 author: "Zahid Asghar"
 format: html
 execute: 
   echo: false
   freeze: auto
+editor_options: 
+  chunk_output_type: console
 ---
 
 
@@ -20,11 +21,15 @@ library(dygraphs) # for interactive time series plots
 ```{r}
 #| message: false
 #| warning: false
-kse30 <- read_csv("data/kse_30_index.csv")
+kse30 <- read_csv("docs/data/kse_30_index_v2.csv")
+
+## Format date variable
 
 
 
-kse30$date <- as.Date(kse30$Date,format = "%m/%d/%Y") # Deal with date variable
+kse30$date <- as.Date(kse30$date, format = "%d-%b-%y")
+ # Deal with date variable
+glimpse(kse30)
 
 ```
 
@@ -34,7 +39,7 @@ kse30$date <- as.Date(kse30$Date,format = "%m/%d/%Y") # Deal with date variable
 
 kse30 %>% glimpse()
 
-kse30 <- kse30 %>% select(date, Price, Open, High, Low) # Select only required variables
+kse30 <- kse30 %>% select(date, open, hig,close, low) # Select only required variables
 
 ```
 
@@ -42,44 +47,63 @@ kse30 <- kse30 %>% select(date, Price, Open, High, Low) # Select only required v
 
 
 ```{r}
-kse30  %>%
-  dygraph(main = "KSE-30  index") %>%
-  dyAxis("y", label = "Price") %>%
-  dyAxis("x", label = "date") |> 
-  dyRangeSelector()
+library(tidyverse)
+library(dygraphs)
+library(xts)
 
-```
+# Convert to xts
+kse30_xts <- kse30 %>%
+  select(date, open) %>%
+  drop_na() %>%  # Important: Remove any NA values
+  arrange(date) %>%  # Make sure dates are sorted
+  xts::xts(order.by = .$date)
 
-```{r}
-#| fig.align: center
-kse30 %>% 
-  select(date, Price) %>%
-  dygraph(main = "KSE-30 index") %>%
-  dyAxis("y", label = "Price") %>%
-  dyAxis("x", label = "date")  |> 
-  dyRangeSelector()
+# Get range
+start_date <- min(index(kse30_xts))
+end_date <- max(index(kse30_xts))
+
+# Plot
+dygraph(kse30_xts, main = "KSE-30 Index (Open Price)") %>%
+  dyAxis("y", label = "open") %>%
+  dyAxis("x", label = "date") %>%
+  dyRangeSelector(dateWindow = c(start_date, end_date))
+
 
 ```
 
 ## Difference of kse30 index plot
 
 ```{r}
-kse30 %>% mutate(p_diff=Price - lag(Price)) |> 
-    select(date, p_diff) %>%
-    dygraph(main = "KSE-30  index") %>%
-    dyAxis("y", label = "Price") %>%
-    dyAxis("x", label = "date")  |> 
-    dyRangeSelector()
+library(dplyr)
+library(dygraphs)
+library(xts)
+
+# Prepare data first (no xts yet)
+kse30_diff <- kse30 %>%
+  mutate(p_diff = close - dplyr::lag(close)) %>%
+  dplyr::select(date, p_diff) %>%
+  drop_na() %>%
+  arrange(date)
+
+# Now convert to xts (outside of pipe)
+kse30_xts <- xts::xts(kse30_diff$p_diff, order.by = kse30_diff$date)
+
+# Now plot
+dygraph(kse30_xts, main = "KSE-30 Daily Close Change") %>%
+  dyAxis("y", label = "Change") %>%
+  dyAxis("x", label = "Date") %>%
+  dyRangeSelector()
 ```
+
 
 ## KSE30 index plot with moving average
 
 ```{r}
 
-kse30 %>% mutate(ma=rollmean(Price, 15, fill = NA)) |> 
-    select(date, Price, ma) %>%
+kse30 %>% mutate(ma=rollmean(close, 15, fill = NA)) |> 
+    select(date, close, ma) %>%
     dygraph(main = "KSE-30 index") %>%
-    dyAxis("y", label = "Price") %>%
+    dyAxis("y", label = "close") %>%
     dyAxis("x", label = "date")  |> 
     dyRangeSelector()
 

@@ -109,7 +109,8 @@ pcdtest(inv ~ value + capital, data = Grunfeld,
 pcdtest(inv ~ value + capital, data = Grunfeld, model = "within",
         effect = "twoways", index = c("firm", "year"))
 
-## test on panelmodel object
+
+## test on panel model object
 g <- plm(inv ~ value + capital, data = Grunfeld, index = c("firm", "year"))
 pcdtest(g)
 
@@ -117,7 +118,8 @@ pcdtest(g)
 pcdtest(g, test = "sclm")
 
 ## test on pseries
-pGrunfeld <- pdata.frame(Grunfeld)
+pGrunfeld <- pdata.frame(Grunfeld) 
+
 pcdtest(pGrunfeld$value)
 
 ## local test
@@ -126,3 +128,4 @@ w <- matrix(0, ncol= 10, nrow=10)
 w[2,1] <- w[3,2] <- w[4,2] <- w[5,2] <- 1
 pcdtest(g, w = w)
 w
+??Grunfeld

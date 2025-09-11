@@ -4,7 +4,7 @@ author: "Zahid Asghar"
 date: today
 footer: "[Forecasting](zahidasghar.com/courses)"
 format:
-  html:
+  typst:
     theme: [default, custom.css,styles.scss]
     
 execute: 

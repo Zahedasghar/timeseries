@@ -16,6 +16,7 @@ f_data |>  glimpse()
 ts_data <- ts(f_data$RCHRG_SUM, frequency = 7, start = c(2023, 6, 1))
 f_data$ds <- as.Date(f_data$RCHRG_DT_KEY,format = "%m/%d/%Y") 
 
+autoplot(ts_data)
 f_data <- f_data |> select(ds,RCHRG_SUM)
 View(summary(f_data))
 plot(RCHRG_SUM~ds , f_data, type = "l")
@@ -33,11 +34,11 @@ prophet_plot_components(m, forecast)
 
 
 
-
+ts_data
 
 # Fit a forecasting model (e.g., auto.arima)
 model <- auto.arima(ts_data)
-
+model
 # Forecast the next 90 days
 forecast_result <- forecast(model, h = 90)
 

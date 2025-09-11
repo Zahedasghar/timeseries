@@ -46,18 +46,28 @@ lm1 <- lm(y ~ z + w, data = data)
 lm2 <- lm(z ~ y + w, data = data)
 lm3 <- lm(w ~ y + z, data = data)
 
+
+
 lm1 |> tidy()
 lm2 |> tidy()
 lm3 |> tidy()
 
-library("urca")
 
 ## acf and pacf of each series
-acf(data$y)
+
+library(patchwork)
+p1 <- acf(data$y)
+p2 <- pacf(data$y)
+
+# Have both plots in one figure
+
+p1 
+p2
+
 acf(data$z)
-acf(data$w)
-pacf(data$y)
 pacf(data$z)
+acf(data$w)
+
 pacf(data$w)
 
 ### adf unit root tests at lag 0 and 4
@@ -91,19 +101,23 @@ adf3@testreg
 DATA <-  data[-1,]
 
 for (i in 1:ncol(DATA)) {
-   DATA[,i] <- diff(data[,i])
+  DATA[, i] <- c(NA, diff(data[, i]))
 }
+
+for (i in 1:ncol(DATA)) {
+  DATA[,i] <- c(0, diff(DATA[,i]))
+}
+
 library("vars")
 e.w <-  lm3$residuals
 VAR(DATA,p=1,exogen=e.w[-length(e.w)])
 
 
 ### PAGE 390
-jo.ci = ca.jo(data,type="trace")
+data_cj_final <- data_cj[, c("y", "z", "w")]
+jo.ci <- ca.jo(data_cj_final, type="trace")
 summary(jo.ci)
-jo.ci@lambda
-var.ci = vec2var(jo.ci,r=1)
-var.ci
+
 
 # Extract the cointegrating vector
 beta <- jo.ci@V[, 1]
@@ -114,9 +128,13 @@ coint_ca
 
 summary(coint_ca)
 
-ecm = jo.ci@V[,1]%*%t(data)
+# Compute the error correction term using only y, z, w
+ecm <- as.numeric(jo.ci@V[, 1] %*% t(as.matrix(data_cj_final)))
 
-lines(c(ecm),col="steelblue4",lwd=2)
+plot(ecm, type = "l", col = "steelblue4", lwd = 2, xlab = "Time", ylab = "ECM")
+
+lines(ecm, col = "steelblue4", lwd = 2)
+var.ci <- vec2var(jo.ci, r = 1)
 
 plot(irf(var.ci))
 

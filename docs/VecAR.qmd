@@ -9,29 +9,31 @@ format:
     
     chalkboard: true
     slide-number: c/t
+    title-slide-attributes: 
+      data-background-image: "https://www.slidekit.com/wp-content/uploads/2023/12/Aesthetic-Google-Slide-Background.jpg"
 execute: 
   freeze: auto
 ---
 
-# Introduction
+# Introduction {background-image="https://www.slidekit.com/wp-content/uploads/2023/12/Aesthetic-Google-Slide-Background.jpg"}
 
 Del Negro and Schorfheide (2011): 
 
 > At first glance, VARs appear to be straightforward multivariate generalizations of univariate autoregressive models. At second sight, they turn out to be one of the key empirical tools in modern macroeconomics.
 
-## What are VARs ?
+## What are VARs ? {background-image="https://www.slidekit.com/wp-content/uploads/2023/12/Aesthetic-Google-Slide-Background.jpg"}
 
 -   multivariate linear time-series models
 -   endogenous variable in the system are functions of lagged values of all endogenous variables
 -   simple and flexible alternative to the traditional multiple-equations models
 
-## Historical Overview : Sims' Critique
+## Historical Overview : Sims' Critique {background-image="https://www.slidekit.com/wp-content/uploads/2023/12/Aesthetic-Google-Slide-Background.jpg"}
 
 -   In the 1980s criticized the large-scale macro-econometric models of the time
 
 -   Proposed VARs as an alternative that allowed one to model macroeconomic data informatively
 
-## What Are VARs Used For?
+## What Are VARs Used For? {background-image="https://www.slidekit.com/wp-content/uploads/2023/12/Aesthetic-Google-Slide-Background.jpg"}
 
 #### Forecasting
 
@@ -45,7 +47,7 @@ Del Negro and Schorfheide (2011):
 
 ![VAR models roadmap](images/VAR.png){fig-align="center"}
 
-# Estimation of VARs
+# Estimation of VARs {background-image="https://www.slidekit.com/wp-content/uploads/2023/12/Aesthetic-Google-Slide-Background.jpg"}
 
 ## Introduction to VARs
 
@@ -55,7 +57,7 @@ $y_t=[y_{1,t} y_{2,t} . . . y_{n,t}]'$
 
 -   A [p-order vector autoregressive process]{style="color:red;"} generalize a one-variable AR(p) process to n variables:
 
-$y_t=G_0+G_1y_{t-1}+G_2y_{t-2}+...+G_py{t-p}+e_t$ **Reduced Form VAR**
+$y_t=G_0+G_1y_{t-1}+G_2y_{t-2}+...+G_py_{t-p}+e_t$ **Reduced Form VAR**
 
 ::: columns
 ::: {.column width="60%"}
@@ -75,9 +77,9 @@ $E[e_t e_{\tau}'= \Omega , if t=\tau \\ 0 otherwise$
 
 ## Example : A VAR(1) in 2 Variables
 
-$y_{1,t}=g_{11}y_{1,t}+g_{12}y_{2,t}+e_{1,t}$
+$y_{1,t}=g_{11}y_{1,t-1}+g_{12}y_{2,t-1}+e_{1,t}$
 
-$y_{2,t}=g_{21}y_{1,t}+g_{22}y_{2,t}+e_{2,t}$
+$y_{2,t}=g_{21}y_{1,t-1}+g_{22}y_{2,t-1}+e_{2,t}$
 
 ::: columns
 ::: {.column width="40%"}
@@ -159,7 +161,8 @@ $G(L)y_t=G_0+e_t$ For $y_t$ to be stationary, the matrix polynomial in the lag o
 
 ::: columns
 ::: {.column width="55%"}
-A VAR(p) process is stationary (thus) - A VAR(p) if all the np roots of the [characteristic polynomial]{style="color:red;"} are (in modulus) outside the unit imaginary
+A VAR(p) process is stationary (thus) 
+- A VAR(p) if all the np roots of the [characteristic polynomial]{style="color:red;"} are (in modulus) outside the unit imaginary
 
 $det(I_n-G_1L-G_2L^2-\dots-G_pL^p)=0$
 
@@ -173,14 +176,14 @@ Softwares sometimes **inverse roots** of the characteristic AR polynomial, which
 
 ## Vector Moving Average Representation of a VAR
 
--   If a VAR is stationary, the yt vector can be expressed as a sum of all of the past white noise shocks et (VMA(∞) representation $y_t=\mu+G(L)^{-1}e_t$, where $\mu=G(L)^{-1}G_0$ $y_t=\mu+(I_n+\Psi_1L+\Psi L^2+\dots)e_t$ $y_t=\mu+e_t+\Psi e\_{t-1}+\Psi e\_{t-2}+\dots$
+-   If a VAR is stationary, the $y_t$ vector can be expressed as a sum of all of the past white noise shocks $e_t$ (VMA(∞) representation $y_t=\mu+G(L)^{-1}e_t$, where $\mu=G(L)^{-1}G_0$ $y_t=\mu+(I_n+\Psi_1L+\Psi L^2+\dots)e_t$ $y_t=\mu+e_t+\Psi e_{t-1}+\Psi e_{t-2}+\dots$
 
 $y_t=\mu+\sum_{i=1}^{n} \Psi_i e_{t-i}$
 
 -   where $\Psi_i$ is a (n x n) matrix of coefficients, and $\Psi_0$ is the identity matrix.
--   From the VMA($\infty$) representation it is possible to obtain impulse response functions
+-   From the VMA($\infty$) it is possible to obtain IRF
 
-# Lag Specification Criteria
+# Lag Specification Criteria{background-image="https://www.slidekit.com/wp-content/uploads/2023/12/Aesthetic-Google-Slide-Background.jpg"}
 
 ## Lags Needed for the VAR
 
@@ -196,7 +199,7 @@ What number is most appropriate? ...
 
 -   In a VAR(p) we have [p]{.blue} matrices of dimension nxn : $G_1, ...,G_p$
 -   Assume $G_0$ is an intercept vector (dimension: nx1)
--   The number of [total]{style="color:red;"} coefficients/parameters to be estimated as : $[n+n.n.p=n(1+np)]{style="color:red;"}
+-   The number of [total]{style="color:red;"} coefficients/parameters to be estimated as : $[n+n.n.p=n(1+np)]${style="color:red;"}
 
 ## Overfitting versus Omitted Variable Bias
 
@@ -222,7 +225,7 @@ What number is most appropriate? ...
 -   The effective constraint is [np<T/3]{style="color:red;"}
 -   Example: T=100, $n le 7$, p=4
 
-# Forecasting using VARs
+# Forecasting using VARs{background-image="https://www.slidekit.com/wp-content/uploads/2023/12/Aesthetic-Google-Slide-Background.jpg"}
 
 ## Forecasting using the Estimated VAR
 

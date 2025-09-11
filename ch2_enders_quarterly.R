@@ -2,32 +2,63 @@ library(tidyverse)
 library("zoo")
 library(xts)
 library(forecast)
-
-
+library(readxl)
+library(tseries)
 ### PAGE 88
 data = read_excel("data/quarterly.xlsx")
 
 data$DATE = as.yearqtr(data$DATE)
 data$spread = data$r5-data$Tbill
 # 
-# spread_xts <- xts(data$spread,order.by=data$DATE)
-# colnames(spread_xts) <- c("spread")
-# ## Make an autoplot and mean line of spread
+ spread_xts <- xts(data$spread,order.by=data$DATE)
+colnames(spread_xts) <- c("spread")
+## Make an autoplot and mean line of spread
+
+autoplot(spread_xts)
 # 
-# autoplot(spread_xts) 
-# 
-# autoplot(diff(spread_xts)) 
+ autoplot(diff(spread_xts)) 
 
-par(mfrow=c(2,1))
-plot(data$DATE,data$spread,type="l",las=1,xaxs="i",yaxs="i",xlab="",ylab="",main="The Interest Rate Spread",tck=0.02,col="steelblue4",ylim=c(-2,4))
-abline(h=0)
-plot(data$DATE[-1],diff(data$spread),type="l",las=1,xaxs="i",yaxs="i",xlab="",ylab="",main="First-Difference of The Spread",tck=0.02,col="steelblue4",ylim=c(-3,3))
-abline(h=0)
+library(ggplot2)
+library(dplyr)
 
-par(mfrow=c(2,1))
-acf(data$spread,lag=12,tck=.02,xlab="",ylab="",main="",las=1)
-pacf(data$spread,lag=12,tck=.02,xlab="",ylab="",main="",las=1)
+# Assuming 'data' is your dataframe with columns 'DATE' and 'spread'
+data <- data %>% mutate(diff_spread = c(NA, diff(spread)))
 
+# Plot 1: The Interest Rate Spread
+p1 <- ggplot(data, aes(x = DATE, y = spread)) +
+  geom_line(color = "steelblue4") +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(title = "The Interest Rate Spread", x = "", y = "") +
+  theme_minimal()
+
+# Plot 2: First Difference of The Spread
+p2 <- ggplot(data %>% filter(!is.na(diff_spread)), aes(x = DATE, y = diff_spread)) +
+  geom_line(color = "steelblue4") +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(title = "First-Difference of The Spread", x = "", y = "") +
+  theme_minimal()
+
+
+p1
+p2
+# Displaying the plots side-by-side
+library(patchwork)
+p1 / p2
+
+
+
+# Plotting ACF using ggAcf
+p3 <- ggAcf(data$spread, lag.max = 12) + 
+  labs(title = "ACF of The Spread") +
+  theme_minimal()
+
+# Plotting PACF using ggPacf
+p4 <- ggPacf(data$spread, lag.max = 12) + 
+  labs(title = "PACF of The Spread") +
+  theme_minimal()
+
+# Displaying the plots side-by-side
+p3 / p4
 
 ### PAGE 91
 
@@ -48,7 +79,10 @@ ar2 <- Arima(data$spread,order=c(2,0,0))
 ar127 <- arima(data$spread, 
                      xreg = data.frame(ar1 = lag(data$spread, 1), ar2 = lag(data$spread, 2), ar7 = lag(data$spread, 7)))
 
-msummary(ar127)
+## Have msummary with asterics
+
+msummary(ar127, stars = TRUE, gof_map = "AIC|BIC", coef_map = c("ar1" = "AR(1)", "ar2" = "AR(2)", "ar7" = "AR(7)"))
+
 arma11 <- Arima(data$spread,order=c(1,0,1))
 
 
@@ -59,33 +93,43 @@ arma21 <- Arima(data$spread,order=c(2,0,1))
 # Fit ARIMA model with AR(1), MA(1), and MA(7)
 # Fit ARIMA model with AR(1), MA(1), and MA(7)
 # Fit ARIMA model with AR(1), MA(1), and MA(7)
-Arima(data$spread, order = c(1, 0, c(1, 0, 7)))
+Arima(data$spread, order = c(1, 0, 1))
+
 
 # Fit ARIMA model with AR(1), MA(1), and MA(7)
-arima1_17 <- Arima(data$spread, order = c(1, 0, 0), seasonal = list(order = c(0, 0, 0), period = NA),
-                     xreg = cbind(lag(data$spread, 1), lag(data$spread, 7)))
-msummary(arima1_17)
 
-models <- list(ar7,ar6,ar2,ar127, arma11,arma21, arima1_17)
 
-# Names you want to assign to each model
-model_names <- c("ar7", "ar6", "ar2")
+# Fitting multiple ARIMA models
+ar7 <- Arima(data$spread, order = c(1, 0, 7))
+ar6 <- Arima(data$spread, order = c(1, 0, 6))
+ar2 <- Arima(data$spread, order = c(1, 0, 2))
+ar127 <- Arima(data$spread, order = c(1, 0, 0), 
+               seasonal = list(order = c(0, 0, 0), period = NA),
+               xreg = cbind(lag(data$spread, 1), lag(data$spread, 7)))
+arma11 <- Arima(data$spread, order = c(1, 0, 1))
+arma21 <- Arima(data$spread, order = c(2, 0, 1))
+arima1_17 <- Arima(data$spread, order = c(1, 0, 7))
 
-# Use add_models to add models with custom names
-ms <- modelsummary::add_models(NULL, models, model.names = model_names)
+# Store models in a named list
+models <- list("AR(7)" = ar7,
+               "AR(6)" = ar6,
+               "AR(2)" = ar2,
+               "AR(1,7)" = ar127,
+               "ARMA(1,1)" = arma11,
+               "ARMA(2,1)" = arma21,
+               "ARIMA(1,0,7)" = arima1_17)
 
-# Assuming you have a list of time series models named 'models'
-msummary(models)
-
-# Create a modelsummary table
+# Create a summary table
 summary_table <- modelsummary(
   models,
   stars = TRUE,  # Display stars for significance
-  gof_omit = c("AIC", "BIC"),  # Omit AIC and BIC from goodness-of-fit statistics
-  coef_map = list(ar7 = "AR(7)", ar6 = "AR(6)", ar2 = "AR(2)", ar127 = "AR(1,7)", 
-                  arma11 = "ARMA(1,1)", arma21 = "ARMA(2,1)", arima1_17 = "ARIMA(1,1,7)")
+  gof_omit = "AIC|BIC",  # Omit AIC and BIC using a regex pattern
+  coef_map = c("ar1" = "AR(1)", 
+               "ma1" = "MA(1)", 
+               "ma7" = "MA(7)")
 )
 
+summary_table
 
 
 # Create a list to store the ARIMA models
@@ -141,20 +185,12 @@ modelsummary(model_summary)
 # Print the summary of the model
 library(tseries)
 arma(data$spread, lag=list(ar=1,ma=c(1,7))) 
-
-
- arima(data$spread, order = c(1, 0, c(1, 7)))
-msummary(arima_model)
-# Fit ARIMA model with the specified order
-arima_model <- arima(spread_data, order = ar_order)
-
-# Summarize AR model using modelsummary
-summary_table <- modelsummary(ar_model)
-print(summary_table)
 ### TABLE 2.4
 # Install and load the fracdiff package
 #install.packages("fracdiff")
 library(fracdiff)
+#install.packages("rugarch")
+library(rugarch)
 
 # Now you should be able to use the arfimaspec function
 spec.ar7 = arfimaspec(mean.model = list(armaOrder = c(7, 0), include.mean = TRUE))
@@ -214,15 +250,31 @@ Box.test(res.arma21,lag=8,type="Ljung-Box")
 Box.test(res.arma21,lag=12,type="Ljung-Box")
 
 
-spec.arma27 = arfimaspec(mean.model=list(armaOrder=c(2,7),include.mean=TRUE),
-                         fixed.pars=list(ma2=0,ma3=0,ma4=0,ma5=0,ma6=0))
-fit.arma27 = arfimafit(spec=spec.arma27,data=data$spread,solver="nlminb")
-fit.arma27
-res.arma27 = fit.arma27@fit$residuals
-Box.test(res.arma27,lag=4,type="Ljung-Box")
-Box.test(res.arma27,lag=8,type="Ljung-Box")
-Box.test(res.arma27,lag=12,type="Ljung-Box")
+# Define your ARFIMA model specification
+spec.arma27 <- ugarchspec(
+  variance.model = list(model = "sGARCH", garchOrder = c(1, 1)),
+  mean.model = list(armaOrder = c(2, 7), include.mean = TRUE, arfima = TRUE),
+  distribution.model = "norm"
+)
 
+# Fit the model
+fit.arma27 <- tryCatch(
+  ugarchfit(spec = spec.arma27, data = data$spread),
+  error = function(e) e
+)
+
+# Check if the model converged properly
+if (inherits(fit.arma27, "try-error") || fit.arma27@fit$convergence != 0) {
+  print("Model did not converge properly. Try simplifying your model.")
+} else {
+  # Extract residuals only if the model converged
+  res.arma27 <- fit.arma27@fit$residuals
+  
+  # Perform Ljung-Box test on residuals
+  print(Box.test(res.arma27, lag = 4, type = "Ljung-Box"))
+  print(Box.test(res.arma27, lag = 8, type = "Ljung-Box"))
+  print(Box.test(res.arma27, lag = 12, type = "Ljung-Box"))
+}
 
 ### PAGE 94
 data$DATE[163]
@@ -274,46 +326,52 @@ acf.d
 
 ### SEASONALITY
 ### PAGE 98
-par(mfrow=c(2,1))
-plot(data$DATE,data$M1NSA,type="l",las=1,xaxs="i",yaxs="i",xlab="",ylab="",main="",tck=0.02,col="steelblue4",ylim=c(0,2500))
+library(forecast)
 
-mg = 100*diff(log(data$M1NSA))
-plot(data$DATE[-1],mg,type="l",las=1,xaxs="i",yaxs="i",xlab="",ylab="",main="",tck=0.02,col="steelblue4",ylim=c(-4,8))
+par(mfrow=c(2,1))
+
+# Plotting M1NSA
+plot(data$DATE, data$M1NSA, type="l", las=1, xaxs="i", yaxs="i", xlab="", ylab="", 
+     main="M1NSA Over Time", tck=0.02, col="steelblue4", ylim=c(0, 2500))
+
+# Plotting Growth Rate of M1NSA
+mg <- 100 * diff(log(data$M1NSA))
+plot(data$DATE[-1], mg, type="l", las=1, xaxs="i", yaxs="i", xlab="", ylab="", 
+     main="Growth Rate of M1NSA", tck=0.02, col="steelblue4", ylim=c(-4, 8))
 abline(h=0)
 
-### PANEL A
+# ACF and PACF Analysis (PANEL A)
 par(mfrow=c(2,1))
-acf.mg = acf(mg,lag=25,tck=.02,xlab="",ylab="",main="")
-acf.mg
-pacf.mg = pacf(mg,lag=25,tck=.02,xlab="",ylab="",main="")
-pacf.mg
+acf(mg, lag.max=25, main="ACF of Growth Rate of M1NSA")
+pacf(mg, lag.max=25, main="PACF of Growth Rate of M1NSA")
 
+# Seasonal Differencing
 par(mfrow=c(1,1))
-smg = diff(diff(log(data$M1NSA),4))
-plot(smg,type="l",las=1,xaxs="i",yaxs="i",xlab="",ylab="",main="",tck=0.02,col="steelblue4")
+smg <- diff(diff(log(data$M1NSA), 4))  # Seasonal differencing
+plot(smg, type="l", las=1, xaxs="i", yaxs="i", xlab="", ylab="", 
+     main="Seasonally Differenced M1NSA", tck=0.02, col="steelblue4")
 abline(h=0)
 
-### PANEL B
+# ACF and PACF Analysis (PANEL B)
 par(mfrow=c(2,1))
-acf.mg = acf(smg,lag=25,tck=.02,xlab="",ylab="",main="")
-acf.mg
-pacf.mg = pacf(smg,lag=25,tck=.02,xlab="",ylab="",main="")
-pacf.mg
+acf(smg, lag.max=25, main="ACF of Seasonally Differenced M1NSA")
+pacf(smg, lag.max=25, main="PACF of Seasonally Differenced M1NSA")
 
-spec.arma14 = arfimaspec(mean.model=list(armaOrder=c(4,4),include.mean=TRUE),
-                         fixed.pars=list(ar2=0,ar3=0,ar4=0,ma1=0,ma2=0,ma3=0))
-fit.arma14 = arfimafit(spec=spec.arma14,data=smg,solver="nlminb")
-fit.arma14
-res.arma14 = fit.arma14@fit$residuals
-Box.test(res.arma14,lag=4,type="Ljung-Box")
-Box.test(res.arma14,lag=8,type="Ljung-Box")
-Box.test(res.arma14,lag=12,type="Ljung-Box")
+# Fit ARIMA model (Equivalent to ARMA(4,4) with some terms set to zero)
+fit.arma14 <- Arima(smg, order = c(4, 0, 4), fixed = c(NA, 0, 0, NA, 0, 0, 0, NA))
+summary(fit.arma14)
 
+# Extract residuals
+res.arma14 <- residuals(fit.arma14)
 
+# Perform Ljung-Box tests
+Box.test(res.arma14, lag = 4, type = "Ljung-Box")
+Box.test(res.arma14, lag = 8, type = "Ljung-Box")
+Box.test(res.arma14, lag = 12, type = "Ljung-Box")
 
 
 ### PARAMETER INSTABILITY
-data = read.xls("/Users/user/Google Drive/Website/Book/Enders/QUARTERLY.xls")
+data = read_excel("data/QUARTERLY.xls")
 library("zoo")
 data$DATE = as.yearqtr(data$DATE)
 data$spread = data$r5-data$Tbill
@@ -345,153 +403,107 @@ fit.arma27.ex
 
 ### ENDOGENOUS BREAKS
 ### PAGE 104
-Break = read.xls("/Users/user/Google Drive/Website/Book/Enders/y_break.xls")
-br = Break[,-1]
-par(mfrow=c(1,1))
-
-plot(br,type="l",xax="i",las=1,xaxs="i",tck=0.02,col="steelblue4",xlab="",ylab="")
-spec.ar1 = arfimaspec(mean.model=list(armaOrder=c(1,0),include.mean=TRUE))
-fit.ar1 = arfimafit(spec.ar1,data=br)
-fit.ar1
-fit.ar1@fit$coef[1]*(1-fit.ar1@fit$coef[2]) # arma(br, order=c(1,0)) # both are correct however one shows the unconditional mean and the other the intercept
-
-Break$Indicator=1
-Break$Indicator[1:100]=0
-break_y = embed(as.matrix(Break),2)
-break_y = break_y[,-c(1,4,6)]
-
-### PAGE 108
-summary(lm(break_y[,1]~break_y[,3]+break_y[,2]))
-summary(lm(break_y[,1]~break_y[,3]+break_y[,2]+I(break_y[,3]*break_y[,2])))
-
-arma(br,c(1,0,0))
-arma(br[c(1:100)],c(1,0,0))
-arma(br[-c(1:100)],c(1,0,0))
 
 
-# AR1
-# CUMSUM PLOT
-forecasts = NULL
-for (i in 1:(length(br)-2)){
-  model = arima(br[1:(2+i-1)],c(1,0,0))
-  forecasts[i] = forecast(model,h=1)$mean # Gives the one-step forecast
+# Load the data
+Break <- read_excel("data/y_break.xlsx")
+br <- Break %>% select(-1)  # Remove the first column if it is not part of the data
+colnames(br) <- c("Value")
+br$Index <- 1:nrow(br)
+
+# Plot the data using ggplot2
+ggplot(br, aes(x = Index, y = Value)) +
+  geom_line(color = "steelblue4") +
+  labs(title = "Break Data Plot", x = "Index", y = "Value") +
+  theme_minimal()
+
+# Convert the data to a numeric vector
+br_numeric <- as.numeric(unlist(br$Value))
+
+# Fit an AR(1) model using forecast::Arima()
+fit.ar1 <- Arima(br_numeric, order = c(1, 0, 0))
+summary(fit.ar1)
+
+# Extract coefficients
+intercept <- coef(fit.ar1)["intercept"]
+ar1_coef <- coef(fit.ar1)["ar1"]
+unconditional_mean <- intercept / (1 - ar1_coef)
+
+cat("Intercept:", intercept, "\n")
+cat("AR(1) Coefficient:", ar1_coef, "\n")
+cat("Unconditional Mean:", unconditional_mean, "\n")
+
+# Forecasting next 10 periods
+forecast_ar1 <- forecast(fit.ar1, h = 10)
+
+# Plotting forecast with original data using ggplot2
+forecast_df <- data.frame(
+  Index = (length(br_numeric) + 1):(length(br_numeric) + 10),
+  Forecast = as.numeric(forecast_ar1$mean)
+)
+
+ggplot() +
+  geom_line(data = br, aes(x = Index, y = Value), color = "steelblue4") +
+  geom_line(data = forecast_df, aes(x = Index, y = Forecast), color = "red", linetype = "dashed") +
+  labs(title = "Original Data and Forecast", x = "Index", y = "Value") +
+  theme_minimal()
+
+# AR(1) Model Residual Analysis and CUSUM Calculation
+forecasts <- NULL
+for (i in 1:(length(br_numeric)-2)){
+  model <- Arima(br_numeric[1:(2+i-1)], order = c(1, 0, 0))
+  forecasts[i] <- forecast(model, h = 1)$mean
 }
-res = br[-c(1:2)]-forecasts
+res <- br_numeric[-c(1:2)] - forecasts
 
-# INTERCEPT PLOT
-slope.est=intercept.est=slope.sigma.est=int.sigma.est=NULL
-for (i in 1:(length(br)-3)){
-  y.br = embed(br[1:(3+i)],2)
-  model=lm(y.br[,1]~y.br[,-1])
-  intercept.est[i]=coef(model)[1]
-  slope.est[i]=coef(model)[2]
-  int.sigma.est[i]=summary(model)$coefficients[1,2]
-  slope.sigma.est[i]=summary(model)$coefficients[2,2]
-}
-int.upper.band=intercept.est+2*int.sigma.est
-int.lower.band=intercept.est-2*int.sigma.est
-slope.upper.band=slope.est+2*slope.sigma.est
-slope.lower.band=slope.est-2*slope.sigma.est
+# CUSUM Calculation
+CUMSUM <- cumsum(res / sd(res))
 
-par(mfrow=c(3,1))
-plot(intercept.est, type="l",xlab="",ylab="",ylim=c(-2,4),xaxs="i",las=1,tck=.02,main="Intercept")
-lines(int.upper.band, col="steelblue4")
-lines(int.lower.band, col="steelblue4")
-abline(h=0,lty=2)
+ggplot(data.frame(Index = 1:length(CUMSUM), CUMSUM = CUMSUM), aes(x = Index, y = CUMSUM)) +
+  geom_line(color = "steelblue4") +
+  labs(title = "CUSUM Test", x = "Index", y = "CUSUM") +
+  theme_minimal()
 
-plot(slope.est, type="l",xlab="",ylab="",ylim=c(-2,2),xaxs="i",las=1,tck=.02,main="Autoregressive Parameter")
-lines(slope.upper.band, col="steelblue4")
-lines(slope.lower.band, col="steelblue4")
-abline(h=0,lty=2)
+# Calculate Forecast Errors and Variances
+fore_error <- res
+forecast_error_variance <- var(fore_error)
 
+cat("Forecast Error Variance:", forecast_error_variance, "\n")
 
-CUMSUM=NULL
-for (i in 1:length(br)){
-  CUMSUM=c(CUMSUM,sum(res[1:i])/sd(res))
-}
+# Calculate Optimal Weighted Forecast (Assuming you have different models to compare)
+# Example: Using two different AR models
+fit.ar2 <- Arima(br_numeric, order = c(2, 0, 0))
+fit.ar3 <- Arima(br_numeric, order = c(3, 0, 0))
 
-lower=upper=NULL
-for (i in 1:length(br)){
-  upper[i]= 0.948*(length(br)^0.5)+2*(i-1)*(length(br)^-0.5)
-  lower[i]=-0.948*(length(br)^0.5)-2*(i-1)*(length(br)^-0.5)
-}
+forecasts_combined <- cbind(
+  forecast(fit.ar1, h = 10)$mean,
+  forecast(fit.ar2, h = 10)$mean,
+  forecast(fit.ar3, h = 10)$mean
+)
 
-plot(CUMSUM, type="l", xlim=c(0,150),ylim=c(-40,50),las=1,xaxs="i",xlab="",ylab="",tck=0.02,main="The CUMSUM Test")
-lines(upper, col="steelblue4",lty=2)
-lines(lower, col="steelblue4",lty=2)
-abline(h=0,lty=2)
+# Equally Weighted Forecast
+equally_weighted_forecast <- rowMeans(forecasts_combined)
 
+# Optimal Weights Calculation
+forecast_errors <- apply(forecasts_combined, 2, function(f) br_numeric[(length(br_numeric)-9):length(br_numeric)] - f)
+forecast_variances <- apply(forecast_errors, 2, var)
+optimal_weights <- 1 / forecast_variances
+optimal_weights <- optimal_weights / sum(optimal_weights)
 
+# Optimal Weighted Forecast
+optimal_forecast <- forecasts_combined %*% optimal_weights
 
-### COMBINING FORECASTS
-data$spread
-fore = NULL
-space=51
-### ONE STEP AHEAD OUT-OF-SAMPLE FORECAST (last on is out of analysed sample)
-for (i in 1:space) {
-  sample = data$spread[1:(length(data$spread)-space+i)]
-  
-  spec.ar7 = arfimaspec(mean.model=list(armaOrder=c(7,0),include.mean=TRUE))
-  fit.ar7 = arfimafit(spec=spec.ar7,data=sample,solver="gosolnp")
-  fore.ar7 = arfimaforecast(fit.ar7,n.ahead=1)@forecast$seriesFor
-  
-  spec.ar6 = arfimaspec(mean.model=list(armaOrder=c(6,0),include.mean=TRUE))
-  fit.ar6 = arfimafit(spec=spec.ar6,data=sample,solver="gosolnp")
-  fore.ar6 = arfimaforecast(fit.ar6,n.ahead=1)@forecast$seriesFor
-  
-  spec.ar2 = arfimaspec(mean.model=list(armaOrder=c(2,0),include.mean=TRUE))
-  fit.ar2 = arfimafit(spec=spec.ar2,data=sample,solver="gosolnp")
-  fore.ar2 = arfimaforecast(fit.ar2,n.ahead=1)@forecast$seriesFor
-  
-  spec.ar127 = arfimaspec(mean.model=list(armaOrder=c(7,0),include.mean=TRUE),
-                          fixed.pars=list(ar3=0,ar4=0,ar5=0,ar6=0))
-  fit.ar127 = arfimafit(spec=spec.ar127,data=sample,solver="gosolnp")
-  fore.ar127 = arfimaforecast(fit.ar127,n.ahead=1)@forecast$seriesFor
-  
-  spec.arma11 = arfimaspec(mean.model=list(armaOrder=c(1,1),include.mean=TRUE))
-  fit.arma11 = arfimafit(spec=spec.arma11,data=sample,solver="gosolnp")
-  fore.arma11 = arfimaforecast(fit.arma11,n.ahead=1)@forecast$seriesFor
-  
-  spec.arma21 = arfimaspec(mean.model=list(armaOrder=c(2,1),include.mean=TRUE))
-  fit.arma21 = arfimafit(spec=spec.arma21,data=sample,solver="gosolnp")
-  fore.arma21 = arfimaforecast(fit.arma21,n.ahead=1)@forecast$seriesFor
-  
-  spec.arma217 = arfimaspec(mean.model=list(armaOrder=c(2,7),include.mean=TRUE),
-                            fixed.pars=list(ma2=0,ma3=0,ma4=0,ma5=0,ma6=0))
-  fit.arma217 = arfimafit(spec=spec.arma217,data=sample,solver="gosolnp")
-  fore.arma217 = arfimaforecast(fit.arma217,n.ahead=1)@forecast$seriesFor
-  
-  fore = cbind(fore,c(fore.ar7,fore.ar6,fore.ar2,fore.ar127,fore.arma11,fore.arma21,fore.arma217))
-}
+# Plotting Combined Forecasts
+forecast_combined_df <- data.frame(
+  Index = (length(br_numeric) + 1):(length(br_numeric) + 10),
+  EquallyWeighted = equally_weighted_forecast,
+  OptimalWeighted = as.vector(optimal_forecast)
+)
 
-### EQUALLY WEIGHTED FORECAST
-sum((1/nrow(fore))*fore[,51])
-
-actual = data$spread[(length(data$spread)-49):length(data$spread)]
-fore.error = t(fore[,-ncol(fore)])-actual
-
-
-### OPTIMAL WEIGHTED FORECAST
-weight%*%fore[,51]
-
-plot(c(actual,NA),type="l",xlab="",ylab="",main="",las=1,xaxs="i",tck=0.02,ylim=c(min(fore),max(fore)),lty=2)
-for (i in 1:nrow(fore)) {
-  lines(fore[i,],col=paste0("grey",round(100/10*i)))
-}
-lines(t(fore)%*%weight,col="steelblue4",lwd=2)
-
-lm1 = summary(lm(actual~t(fore[,-ncol(fore)])+0))
-lm1
-ind1 = which(lm1$coefficients[,1]<0)
-lm2 = summary(lm(actual~t(fore[-ind1,-ncol(fore)])+0))
-lm2
-sum(lm2$coefficients[,1]*t(fore[-ind,ncol(fore)]))
-
-forecast.error.variance.opt = apply(fore.error[,-ind],2,var)
-weight.opt = forecast.error.variance.opt/sum(forecast.error.variance.opt)
-weight.opt # optimal weights
-
-opt.fore = weight.opt%*%fore[-ind,]
-lines(c(opt.fore),col="steelblue1",lwd=2,lty=2)
-
+ggplot() +
+  geom_line(data = br, aes(x = Index, y = Value), color = "steelblue4") +
+  geom_line(data = forecast_combined_df, aes(x = Index, y = EquallyWeighted), color = "orange", linetype = "dashed") +
+  geom_line(data = forecast_combined_df, aes(x = Index, y = OptimalWeighted), color = "purple", linetype = "dashed") +
+  labs(title = "Combined Forecasts (Equally vs. Optimally Weighted)", x = "Index", y = "Forecasted Value") +
+  theme_minimal()
 ### END

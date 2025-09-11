@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Zahid Asghar ">
-<meta name="dcterms.date" content="2024-04-22">
+<meta name="dcterms.date" content="2024-04-23">
 
 <title>Understanding econometric modeling with simple   Consumption Function for Pakistan</title>
 <style>
@@ -84,8 +84,8 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#load-data" id="toc-load-data" class="nav-link" data-scroll-target="#load-data">Load data</a></li>
   </ul></li>
-  <li><a href="#what-to-do-when-errors-are-not-independent" id="toc-what-to-do-when-errors-are-not-independent" class="nav-link" data-scroll-target="#what-to-do-when-errors-are-not-independent">2. What to do when errors are not independent?</a></li>
-  <li><a href="#static-versus-dynamic-models" id="toc-static-versus-dynamic-models" class="nav-link" data-scroll-target="#static-versus-dynamic-models">STATIC VERSUS DYNAMIC MODELS</a>
+  <li><a href="#sec-autocorr" id="toc-sec-autocorr" class="nav-link" data-scroll-target="#sec-autocorr">2. What to do when errors are not independent?</a></li>
+  <li><a href="#sec-static_dynamic" id="toc-sec-static_dynamic" class="nav-link" data-scroll-target="#sec-static_dynamic">STATIC VERSUS DYNAMIC MODELS</a>
   <ul class="collapse">
   <li><a href="#general-to-simple-vs.-simple-to-general-modelling" id="toc-general-to-simple-vs.-simple-to-general-modelling" class="nav-link" data-scroll-target="#general-to-simple-vs.-simple-to-general-modelling">General-to-Simple vs.&nbsp;Simple-to-General Modelling:</a></li>
   </ul></li>
@@ -117,7 +117,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 22, 2024</p>
+      <p class="date">April 23, 2024</p>
     </div>
   </div>
   
@@ -300,17 +300,17 @@ Figure&nbsp;4: Consumption and Income per capita over time
 <p>Random residuals frequently switch signs. They do not display any patterns in sequencing. The patterned residuals in the consumption function prove that the regression is not valid. In such situations, econometricians typically assume that the problem is due to missing regressors or wrong functional form. By adding suitable additional regressors, and modifying the functional form, one can generally ensure that the residuals appear to satisfy the assumptions made about them.</p>
 </section>
 </section>
-<section id="what-to-do-when-errors-are-not-independent" class="level2">
-<h2 class="anchored" data-anchor-id="what-to-do-when-errors-are-not-independent">2. What to do when errors are not independent?</h2>
+<section id="sec-autocorr" class="level2">
+<h2 class="anchored" data-anchor-id="sec-autocorr">2. What to do when errors are not independent?</h2>
 <p>Note that <span class="math inline">\(e_t=y_t-\hat{\beta}x_t\)</span> and <span class="math inline">\(e_{t-1}=y_{t-1}-\hat{\beta}x_{t-1}\)</span>. A relationship between the two errors shows that what happens in period <span class="math inline">\(t-1\)</span> has an effect on what happens in period <span class="math inline">\(t\)</span>. In other words, we have a dynamic model instead of a static model.</p>
 </section>
-<section id="static-versus-dynamic-models" class="level2">
-<h2 class="anchored" data-anchor-id="static-versus-dynamic-models">STATIC VERSUS DYNAMIC MODELS</h2>
+<section id="sec-static_dynamic" class="level2">
+<h2 class="anchored" data-anchor-id="sec-static_dynamic">STATIC VERSUS DYNAMIC MODELS</h2>
 <p>A model of the type <span class="math inline">\(C_t = \alpha + \beta Y_t + e_t\)</span> is called a static model. Events in time period <span class="math inline">\(t\)</span> are isolated from those of period <span class="math inline">\(t-1\)</span> and <span class="math inline">\(t+1\)</span>. As opposed to this, if data from period <span class="math inline">\(t-1\)</span> enters into the equation for period <span class="math inline">\(t\)</span>, then we have dynamic model.</p>
 <p>Suppose that we conduct tests and learn that <span class="math inline">\(e_t\)</span> is correlated with <span class="math inline">\(e_{t-1}\)</span>. Note that <span class="math inline">\(e_{t-1}=C_{t-1}-\alpha-\beta Y_{t-1}\)</span>. It follows that <span class="math inline">\(C_{t-1}\)</span> and <span class="math inline">\(Y_{t-1}\)</span> have an effect on current consumption.</p>
-<p>The main message of correlated residuals is that variables from one period ago have an effect on current period.</p>
+<p>The main message of correlated residuals is that variables from one period ago have an effect on current period. <strong>?@sec-static-dynamic</strong> shows that the static model is not valid.</p>
 <p>Thus in order to fix up the problem of correlated residuals, we need to build a dynamic model. The simplest dynamic extension of the Keynesian model is the following: <span class="math display">\[C_t=\alpha+\beta Y_t+\gamma C_{t-1}+\delta Y_{t-1}+e_t\]</span></p>
-<p>We put in <code>ALL</code> the information we have about ALL the variables in the model at period <span class="math inline">\(t-1\)</span>. Similarly we could go back to period <span class="math inline">\(t-2\)</span>.</p>
+<p>We put in <code>ALL</code> the information we have about ALL the variables in the model at period <span class="math inline">\(t-1\)</span>. Similarly we could go back to period <span class="math inline">\(t-2\)</span>. As in <a href="#sec-autocorr" class="quarto-xref">Section&nbsp;2</a>, we could have <span class="math inline">\(e_t\)</span> correlated with <span class="math inline">\(e_{t-1}\)</span> and <span class="math inline">\(e_{t-2}\)</span>. This would suggest a second order dynamic model. We could keep increasing the order of the model until we get to a point where the errors are not correlated.</p>
 <section id="general-to-simple-vs.-simple-to-general-modelling" class="level3">
 <h3 class="anchored" data-anchor-id="general-to-simple-vs.-simple-to-general-modelling">General-to-Simple vs.&nbsp;Simple-to-General Modelling:</h3>
 <p>In fixing problems detected by tests, there are two strategies which are commonly used. The older and more traditional strategy is called the bottom-up or simple-to-general strategy. In this strategy, we would start with the simplest model, which is a static Keynesian model. Then we note that the errors are correlated. Then we make the simplest dynamic extension. Next we test the errors. If the problem of autocorrelation has been eliminated then we stop here. If there is still autocorrelation, it follows that a higher order dynamic model is needed. So we go to a second order model. We keep increasing the order (and complexity) of the model until we get to a point where the errors are not autocorrelated. This is one aspect of simple-to-general modelling.</p>
@@ -450,7 +450,7 @@ Table&nbsp;3: Dynamic Consumption Function
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 50
 Columns: 11
-$ year        &lt;date&gt; 1975-05-24, 1975-05-25, 1975-05-26, 1975-05-27, 1975-05-2…
+$ year        &lt;dbl&gt; 1969, 1970, 1971, 1972, 1973, 1974, 1975, 1976, 1977, 1978…
 $ C           &lt;dbl&gt; 348.4950, 380.0568, 365.3227, 356.0221, 367.2798, 396.0909…
 $ Y           &lt;dbl&gt; 433.0744, 469.4377, 459.0634, 450.3759, 469.0675, 472.1552…
 $ lnc         &lt;dbl&gt; 5.853624, 5.940320, 5.900781, 5.874993, 5.906124, 5.981644…

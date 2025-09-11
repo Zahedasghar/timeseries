@@ -9,6 +9,8 @@ format:
     
     chalkboard: true
     slide-number: c/t
+    title-slide-attributes: 
+      data-background-image: "https://www.slidekit.com/wp-content/uploads/2023/12/Aesthetic-Google-Slide-Background.jpg"
 execute: 
   freeze: auto
 ---
@@ -332,7 +334,7 @@ $r_t+a_{21}y_t=\beta_0+\beta_1 y_{t-1}+\beta_2 r_{t-1}+u_{rt}$
 
 -   If $r$ is the policy rate, then the recursive ordering is consistent with the view that monetary policy responds to output gap $y$ with a lag, but responds to the interest rate $r$ contemporaneously.
 
-## SVAR Identification: recursive ordering
+## SVAR Identification: recursive ordering {.scrollable}
 
 -    Another example: a three-variable recursive ordering with $y$, $\pi$(inflation) and $r$:
 
@@ -352,8 +354,10 @@ e_{rt}\\
 u_{yt}\\
 u_{\pi t}\\
 u_{rt}\\
-\end{bmatrix}$$
-- If movements of $r$ are monetary policy(MP) decisions, policy is reacting to output $y$ and inflation $\pi$ within the period. All shocks have contemporaneous effects on $r$.
+\end{bmatrix}$$ 
+
+- If movements of $r$ are monetary policy(MP) decisions, policy is reacting to output $y$ and inflation $\pi$ within the period. All shocks have contemporaneous effects on $r$. 
+
 - The policy rate $r$ affects output $y$ with a lag, and inflation $\pi$ with a lag.
 
 ## SVAR Identification: recursive ordering
@@ -370,7 +374,8 @@ u_{rt}\\
 
 -   Why? substitute $e_t=A^{-1}u_t$ into $Ee_t e_t'=\Sigma_e$ and get $A^{-1}\Sigma_u A^{-1'}=\Sigma_e$. 
 
--   Assuming that $u_tu_t'$ is diagonal, then $A^{-1}IA^{-1}'=\Sigma_e$ same as $\Sigma_e=A^{-1}A^{-1'}$. The inverse of $A$ is lower triangular consistent with a recursive ordering.
+-   Assuming that $u_tu_t'$ is diagonal, then 
+$A^{-1}I (A^{-1})'=\Sigma_e$ same as $\Sigma_e=A^{-1}A^{-1'}$. The inverse of $A$ is lower triangular consistent with a recursive ordering.
 
 Not that assuming $\Sigma_u=1$ implies that $A$ will not have $1s$ on the diagonal.
 

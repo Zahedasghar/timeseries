@@ -12,6 +12,7 @@ library(ggfortify) # To plot regression diagnostics
 
 library(ggResidpanel) # To plot regression diagnostics
 
+library(modelsummary) # To get regression output in a table
 
 con_inc <- read_excel("docs/data/SgpCon2Models.xlsx")
 
@@ -35,7 +36,7 @@ con_mod <- lm(SgpCon ~ SgpGDP, data = con_inc)
 regression_points <- get_regression_points(con_mod)
 regression_points
 
-
+summary(con_mod)
 autoplot(con_mod)
 
 barplot(con_mod$residuals)
@@ -89,6 +90,7 @@ resid_panel(growth_mod1,plots = 'default',smoother = TRUE)
 
 growth_mod2<-lm(con_gr~gdp_gr_Saf+gdp_gr,data=con_inc) 
 
+library(huxtable)
 huxreg(growth_mod2)
 
 

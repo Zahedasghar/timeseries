@@ -9,8 +9,8 @@ format:
     #   buttons: false
     preview-links: auto
     theme: [simple, custom.scss]
-    #title-slide-attributes:
-      #data-background-color: "#495efc"
+    # title-slide-attributes: 
+    #   data-background-image: "https://www.slidekit.com/wp-content/uploads/2023/12/Aesthetic-Google-Slide-Background.jpg"
 resources:
   - slides.pdf
 ---
@@ -148,7 +148,7 @@ These are p-values for F-statistics for joint tests on lags. So
 unemployment helps predict inflation (2% level), but fed funds does not
 help predict inflation (27% level).
 
-## Forecast Variance Error Decomposition
+## Forecast Variance Error Decomposition {.scrollable}
 
 Here is a variance decomposition for the recursive VAR orders as ff, u,
 R. (1960-2000, quarterly). The variance decomposition (forecast error

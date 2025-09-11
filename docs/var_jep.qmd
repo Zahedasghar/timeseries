@@ -1,169 +1,162 @@
 ---
-title: "VAR and SVAR in R"
-subtitle: "Vector Autoregression by Stock and Watson JEP-2001"
+title: "Vector Autoregressions"
 author: "Zahid Asghar"
-date: 12/14/2023
-date-format: long
-format: 
-  html:
-    toc: true
-    toc_float: true
-    number_sections: true
-    theme: solarized
-    highlight: tango
-    code_folding: true
-execute:
-  freeze: auto
-  echo: false
-  warning: false
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+format:
+  revealjs: 
+    slide-number: true
+    # chalkboard: 
+    #   buttons: false
+    preview-links: auto
+    theme: [simple, custom.scss]
+    #title-slide-attributes:
+      #data-background-color: "#495efc"
+resources:
+  - slides.pdf
 ---
 
-# Vector Autoregression
-
-## Introduction
-
-In this post I am going to reproduce results of article by [**Stock, James H., and Mark W. Watson, "Vector Autoregressions," Journal of Economic Perspectives, Vol. 15 No. 4 (Fall 2001), 101-115.**](https://www.aeaweb.org/articles?id=10.1257/jep.15.4.101) using R.
-
-## Load necessary libraries
-
-```{r}
-#| warnings: false
-library(tidyverse) # An umbrella library consisting of 9 R packages
-library(vars)
-library(svars)
-library(lmtest)
-library(forecast)
-library(haven) # To read data from stata/spss
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+##all images in documents directory
 ```
 
-## Load data
+## Vector Autoregressions (VARs) 
 
-```{r}
-sw_df <- read_dta("data/var_jep.dta")
-```
+**Primary Source: Stock, James H., and Mark W. Watson, “Vector Autoregressions,” Journal of Economic Perspectives, Vol. 15 No. 4 (Fall 2001), 101-115.**
 
-## Inspect data
+_Macroeconometricians do 4 things_ 
 
-`head()` and `tail()` provides first 6 and last 6 observations, respectively. One can use `glimpse` to see nature of each variable.
+    1. Describe and summarize macroeconomic data, 
 
-```{r}
-sw_df |> head()
-sw_df |> tail()
-```
+    2. Make macroeconomic forecasts,  
 
-## Set the time series data
+    3. Quantify what we know about the true structure of the macroeconomy, 
 
-```{r}
-sw_df <- ts(sw_df, start = c(1960, 1), frequency = 4)
+    4. Advise or act as policymakers. 
 
-sw_df1 <- sw_df[,2:4]
+   Following the problems of the 1970s, none of the structural models or univariate time series approaches seemed trustworthy. VARs arose in this vacuum. 
 
-## Plot the time series data
-plot(sw_df1, main = "Time Series Plot", ylab = "Percent", xlab = "Year")
-```
+## _VARs come in three varieties:_ 
 
-## Estimate Reduced form model
+     1. Reduced Form 
 
-As I have explained {{< video https://youtu.be/Y1NTXEDQtHs?si=WFuASo1OnuxHTYtn >}} that reduced VAR is used only for forecasting and it has lags of all endogenous variables. First we select appropriate lags using `lag length selection criteria` as follows:
+     2. Recursive 
 
-```{r}
-# Estimate VAR model
-VARselect(sw_df1, lag.max = 4,
-          type = "const", season = 4)
-```
+     3. Structural 
 
-## Estimation of VAR model with lag order 4
+  A __reduced-form__ VAR expresses each variable as a linear function of its own past values and the past values of all other variables being considered and a serially uncorrelated error term.
+  
+  ***
+  
+  $\begin{aligned}\text{UNEM}_t = \beta_{10} &+ \beta_{11}\text{UNEM}_{t-1} + \beta_{12}\text{UNEM}_{t-2}+ \gamma_{11}\text{INFL}_{t-1}\\& + \gamma_{12}\text{INFL}_{t-2} + \phi_{11}\text{R}_{t-1} + \phi_{12}\text{R}_{t-2}+ \mu_{1t}\end{aligned}$ 
+    
+  $\begin{aligned}\text{INFL}_t = \beta_{20} &+ \beta_{21}\text{UNEM}_{t-1} + \beta_{22}\text{UNEM}_{t-2}+ \gamma_{21}\text{INFL}_{t-1}\\& + \gamma_{22}\text{INFL}_{t-2} + \phi_{21}\text{R}_{t-1} + \phi_{22}\text{R}_{t-2}+ \mu_{2t}\end{aligned}$
+    
+  $\begin{aligned}\text{R}_t = \beta_{30} &+ \beta_{31}\text{UNEM}_{t-1} + \beta_{32}\text{UNEM}_{t-2}+ \gamma_{31}\text{INFL}_{t-1}\\& + \gamma_{32}\text{INFL}_{t-2}+ \phi_{31}\text{R}_{t-1} + \phi_{32}\text{R}_{t-2}+ \mu_{3t}\end{aligned}$
+  
+  ***
+  
+  In theory, the VAR uses all available or relevant past values. In practice, frequently the Akaike (AIC) or Bayes (BIC) information criteria are used. 
+  
+  The error terms are viewed as “surprises”—movements in the variables after taking its past into account. If the different variables are correlated with each other, then the error terms will also be correlated across equations. 
 
-In original article there are four lags selected and AIC and FPE is also indicating 4 lags, therefore, I estimate VAR model with 4 lags:
+ *** 
+ 
+  A __recursive VAR__ constructs the error terms in each regression to be uncorrelated with the error term in the preceding equation. This is done by adding carefully- selected contemporaneous values as regressors. Estimation of each equation by OLS produces residuals that are uncorrelated across equations. 
+  
+  $\begin{aligned}\text{UNEM}_t = \beta_{10} &+ \beta_{11}\text{UNEM}_{t-1} + \beta_{12}\text{UNEM}_{t-2}+ \gamma_{11}\text{INFL}_{t-1} + \gamma_{12}\text{INFL}_{t-2}\\ &+ \phi_{11}\text{R}_{t-1} + \phi_{12}\text{R}_{t-2}+ \mu_{1t}\end{aligned}$
+  
+  $\begin{aligned}\text{INFL}_t = \beta_{20} &+ \delta_{21}\text{UNEM}_{t} + \beta_{21}\text{UNEM}_{t-1} + \beta_{22}\text{UNEM}_{t-2}\\ &+ \gamma_{21}\text{INFL}_{t-1} + \gamma_{22}\text{INFL}_{t-2}+ \phi_{21}\text{R}_{t-1} + \phi_{22}\text{R}_{t-2}+ \mu_{2t}\end{aligned}$
+  
+ $\begin{aligned}\text{R}_t = \beta_{30} &+ \delta_{21}\text{UNEM}_{t} + \beta_{31}\text{UNEM}_{t-1} + \beta_{32}\text{UNEM}_{t-2}+ \delta_{31}\text{INFL}_{t}\\ & +\gamma_{31}\text{INFL}_{t-1} + \gamma_{32}\text{INFL}_{t-2}+ \phi_{31}\text{R}_{t-1} + \phi_{32}\text{R}_{t-2}+ \mu_{3t}\end{aligned}$ 
+ 
+ The recursive VAR amounts to estimating the reduced form, then computing the Cholesky factorization of the reduced form VAR covariance matrix. (See the book by Lutkepohl, 1993). 
 
-```{r}
-var_model <- VAR(sw_df1, p = 4, type = "const")
-summary(var_model)
-```
+---
+  
+  Unfortunately the results depend on the order of the variables. Changing the order changes the VAR equations, coefficients, and residuals, and there are n! recursive VARs possible considering the possible reorderings. 
+  
+  A __structural VAR__ uses economic theory to sort out contemporaneous links among the variables. Structural VARs require “identifying assumptions” that establish causal links among variables. These produce instrumental variables. 
+  
+---   
 
-::: callout-note
-Individual coefficients in VAR model should not be interpreted and current VAR model form is only for forecasting.
-:::
+  Stock and Watson offer this example of a structural VAR 
+based on a Taylor rule: 
+$R_t= r^*+1.5({\overline \pi_t - \pi^*})+1.25({\overline u_t - u^*})$+ lagged values of $R_t$,$\pi_t$,_u_+$\epsilon_t$ 
 
-## Perform granger causality test
+The asterisked values are desired values and bar values are 4 quarter trailing averages. This equation becomes the  interest rate equation in the structural VAR. 
 
-Assuming var_model is your VAR model with lag order 4
+  First the reduced form VAR and a recursive VAR are estimated to summarize the co-movements of the three series involved. 
+  
+ Second, the reduced form VAR is used to forecast the variables. 
+ 
+---
+ 
+ Third, the structural VAR is used to estimate the effect of a policy-induced change in the fed funds rate on inflation and unemployment. 
+    
+  __Standard practice__ is to report 
+  
+    Granger-causality tests
+    
+    impulse responses, and 
+    
+    forecast error variance decompositions. 
+    
+(These are more informative to understanding the relationships than the VAR regression coefficients or $R^2$  statistics.) 
 
-```{r}
-# Perform Granger causality test for each effect variable separately
-granger_causality_unrate <- causality(var_model, cause = "inflation")
-granger_causality_ffr <- causality(var_model, cause = "unrate")
-granger_causality_inf <- causality(var_model, cause = "ffr")
-granger_causality_inf
-granger_causality_unrate
-granger_causality_ffr
-```
+## Granger Causality 
 
-## If one has to go by pair of variables
+  ![](/Users/hp/Documents/granger.png) 
 
-::: callout-caution
-Granger causality is test of descriptive statistics, so dont interpret it in structural inference sense. For reference, please read paper I am reproducing here.
-:::
+## Forecast Variance Error Deceomposition  
+  
+  ![](/Users/hp/Documents/vardecomp.png)
 
-```{r}
+## Impulse Response Function 
 
-grangertest(inflation ~ ffr,order = 4, data = sw_df1)
+![](/Users/hp/Documents/irf.png) 
 
-grangertest(inflation ~ unrate,order = 4, data = sw_df1)
+  In these we see the effect of a 1% change in each variable as it works through the recursive VAR system with the coefficients estimated from actual data. Also plotted are ±1 standard deviation error bands, yielding roughly 66% confidence intervals. 
+  
+  The reduced-form VAR model can also be used to iterate forward to forecast. Stock and Watson then replace the interest rate equation with two forms of the Taylor rule (one backward looking and one forward looking), and compare impulse responses of monetary policy shocks. 
 
-```
+## Forecasting 
 
-## Forecast Error Variance Decomposition
+  ![](/Users/hp/Documents/forecast.png) 
+  
+## Structural Inference 
 
-Another descriptive measure in reduced form VAR model
+![](/Users/hp/Documents/fig2_jep.png) 
 
-Forecast error variance decomposition only at 4, 8 and 12 quarters
+## Policy Analysis 
 
-```{r}
-fevd_model1<- fevd(var_model, n.ahead = 1)
-fevd_model2 <- fevd(var_model, n.ahead = 4)
-fevd_model3 <- fevd(var_model, n.ahead = 8)
+ Two type of policies: surprise monetary policy interventions and changing the policy rule, like shifting from a Taylor rule  (with weight on both unemployment and inflation) to explicit inflation targetting rule.
+   
+## Assessment 
 
-fevd_model4 <- fevd(var_model, n.ahead = 12)
+VARs are good at capturing co-movements of multiple time series. Granger-causality tests, impulse response functions and variance decompositions are well-accepted and widely used. 
+Small VARs have become the benchmarks against which new forecasting systems are judged. 
 
-fevd_model1
-fevd_model2
+  Sims (1993) allows for time-varying parameters to capture important drifts in coefficients. Adding variables involves costs. A 9-variable, four lag VAR as 333 unknown coefficients (including intercepts). Estimation of all of these requires restrictions. Bayesian approaches have helped control the number of parameters in large VAR models. 
+  
+  ***
+  
+  Structural inference is tougher. A lot of the success of these models depends upon evaluation of shocks. VAR shocks reflect omitted variables. If the omitted variables (factors or information) correlate with included variables, then the estimates will contain omitted variable bias. Also, if agents are forward looking, impulse responses may suggest bizarre causal responses. 
+ 
+  Changing policy rules may lead to misspecification in constant parameter structural VARs just as they might in standard multi-equation structural models. 
+  
+  ***
+  
+  Researchers also seem to be attempting to rationalize a specific causal relationship in order to be able to justify a 7particular recursive ordering so that their structural VAR 
+collapses to a recursive VAR, which makes analysis easier. With regard to forecast error variances, Spencer (JMCB, 1989), finds: 
+  Ordering of variables: ordering of the variables is critically important. It is of greater importance for temporally aggregated data since the contemporaneous correlation of the pre-orthogonalized aggregated data is likely to be greater. There is less problem for monthly data than for quarterly, semi-annual, and annual data. 
+  
+  Trend removal: the method of detrending can make a substantial difference to variance decomposition results. Lag length: In a mrpy model, a second year of lags to the 
 
-```
-
-## Impulse response function
-
-Third measure of descriptive statistics for reduced VAR. IRF is also from SVAR, so its important to distinguish which VAR model one is working with.
-
-```{r}
-# Estimate impulse response function from VAR
-irf_model <- irf(var_model, impulse = c("inflation", "unrate", "ffr"), response = c("inflation", "unrate", "ffr"), n.ahead = 20)
-
-plot(irf_model, yline = 0, ncol = 3, by = "response", main = "Impulse Response Function")
-```
-
-## Structural VAR
-
-Difference between Reduced VAR, Recursive VAR and SVAR is already explained in SVAR {{< video https://youtu.be/W622vevJ6VA?si=tMG9DsKMC4DjHaxs >}} . Therefore, I am only estimating it here using `R`.
-
-```{r}
-# Define the A and B matrices for SVAR
-A <- matrix(c(1, 0, 0, NA, 1, 0, NA, NA, 1), nrow = 3, byrow = TRUE)
-B <- matrix(c(NA, 0, 0, 0, NA, 0, 0, 0, 1), nrow = 3, byrow = TRUE)
-```
-
-```{r}
-
-# Perform SVAR
-svar_model <- SVAR(var_model, A = A, B = B)
-
-svar_model
-```
-
-```{r}
-
-irf_ffr <- irf(svar_model, impulse = "ffr", response = c("inflation", "unrate", "ffr"), boot =
-      FALSE)
-
-plot(irf_ffr)
-```
+  VAR gives increased estimates of the importance of money in explaining industrial production. Adding lags also seems to improve the stability of results across orderings. 
+Level of temporal aggregation: While aggregation may reduce noise in series, it increases cont. correlation. 
+  
+  
+  
+  
+  

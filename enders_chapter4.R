@@ -9,6 +9,7 @@
 library("gdata")
 library("rugarch")
 library(readxl)
+library(xts)
 data = read_excel("data/RGDP.xls")
 
 data$DATE=as.Date(as.character(data$DATE))
@@ -24,6 +25,10 @@ lm1 = lm(data$RGDP~t+I(t^2)+I(t^3))
 summary(lm1)
 lines(data$DATE,lm1$fitted.values,col="steelblue4",lty=2)
 
+## Bar plot of residuals 
+
+par(mfrow=c(1,1))
+plot(data$DATE,lm1$residuals,type="l",xaxs="i",las=1,xlab="",ylab="",col="steelblue4",tck=0.02)
 
 ### PAGE 194
 dlgdp = diff(log(data$RGDP))
@@ -190,3 +195,4 @@ lines(data$DATE,data$Rinv/1000,col="steelblue1")
 lines(data$DATE,exp(hp.RInv$trend)/1000,col="steelblue1",lty=2)
 
 ### END
+

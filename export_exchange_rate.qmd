@@ -1,0 +1,187 @@
+
+
+## Understanding the Impact of Exchange Rates on Pakistan's Exports
+
+In this blog, we explore the intricate relationship between exchange rates and export performance in Pakistan, using economic theory, data visualization, and statistical analysis in R.
+
+### Introduction
+
+Briefly introduce the topic, its economic significance, and the peculiar case of Pakistan where traditional economic expectations do not always align with observed data trends.
+
+### Economic Theory Behind Exchange Rates and Exports
+
+Provide a detailed explanation of how exchange rates are expected to influence exports:
+
+1. **Competitiveness**
+   - Discuss how depreciation makes goods cheaper internationally, potentially boosting exports, and vice versa.
+
+2. **Pricing and Profits**
+   - Explain how exchange rate fluctuations can affect exporter profits by altering the value of foreign earnings when converted to local currency.
+
+3. **Cost of Inputs**
+   - Mention how a weaker currency can increase the cost of imported inputs, potentially negating some benefits of a depreciated currency.
+
+### Factors Complicating the Exchange Rate-Export Relationship
+
+Highlight the complexities in the relationship which might explain the anomalies in the Pakistan scenario:
+
+- **Elasticity of Demand**
+- **Global Economic Conditions**
+- **Structural and Policy Issues**
+- **Long-term Contracts and Pricing in USD**
+
+### Data Preparation and Analysis with R
+
+Embed the R code used for data loading, cleaning, and preparation:
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(tidyquant)
+library(timetk)
+library(modeltime)
+library(lubridate)
+library(zoo)
+library(boot)
+
+# Code to load and clean data
+df_exports_raw <- read_csv('data/total_export_receipts_krndaz.csv', skip = 1)
+df_exports <- df_exports_raw %>%
+  rename(date = Monthly, exports = `US$  (Millions)`) %>%
+  mutate(date = as.yearmon(date, format = "%b %Y")) %>%
+  mutate(exports = str_remove_all(exports, "[^0-9\\.]+")) %>%
+  mutate(exports = as.numeric(exports)) %>%
+  drop_na() %>%
+  mutate(exports = exports / lag(exports) - 1) %>%
+  drop_na()
+
+# Continue with the loading and cleaning of exchange rate and KSE-100 index data
+```
+
+## Other data sets
+
+```{r}
+df_usdpkr <- 
+  tq_get("PKR=x", to = "2024-07-01") %>% 
+  tq_transmute(select = "close",
+               mutate_fun = to.monthly) %>% 
+  tq_transmute(mutate_fun = periodReturn,
+               period = "monthly",
+               col_rename = "usd_pkr")
+
+# Print to verify the data
+print("USD/PKR Data:")
+print(head(df_usdpkr))
+
+# Monthly change (%) of KSE-100 index
+# https://finance.yahoo.com/quote/%5EKSE/
+df_kse100 <- 
+  tq_get("^KSE", to = "2024-07-01") %>% 
+  tq_transmute(select = "close",
+               mutate_fun = to.monthly) %>% 
+  tq_transmute(mutate_fun = periodReturn,
+               period = "monthly",
+               col_rename = "kse100")
+
+# Print to verify the data
+print("KSE-100 Data:")
+print(head(df_kse100))
+
+# Merging series
+df_merged <- 
+  df_exports %>% 
+  left_join(df_usdpkr, by = "date") %>% 
+  left_join(df_kse100, by = "date") %>% 
+  drop_na()
+
+# Print to verify the merged data
+print("Merged Data:")
+print(head(df_merged))
+
+```
+
+
+
+
+
+### Visualizing Data
+
+Incorporate the `ggplot2` visualizations that depict the relationship over time:
+
+```{r}
+# Plotting code to visualize monthly percentage changes
+df_merged %>% 
+  pivot_longer(-date, names_to = "vars") %>%
+  ggplot(aes(date, value, color = vars)) +
+  geom_line() +
+  labs(subtitle = "Monthly percentage changes in exports, USD/PKR exchange rates, and KSE-100 index")
+```
+
+### Statistical Analysis
+
+Embed the code for regression and bootstrap analysis to statistically examine the effects of exchange rates on exports:
+
+
+```{r}
+# Filter data for the last 10 years
+start_date <- as.yearmon(Sys.Date()) - 10
+df_merged_filtered <- df_merged %>% filter(date >= start_date)
+
+# Print to verify the filtered data
+print("Filtered Merged Data:")
+print(head(df_merged_filtered))
+
+# Determine the last date in the dataset
+end_date <- max(df_merged_filtered$date)
+```
+
+
+```{r}
+
+# Bootstrap confidence intervals using the `boot` package
+set.seed(12345)
+
+# Define the regression function
+regression_function <- function(data, indices) {
+  d <- data[indices, ]  # allows boot to select sample
+  fit <- glm(exports ~ usd_pkr, data = d)
+  return(coef(fit))
+}
+
+# Bootstrapping
+boot_results <- boot(data = df_merged_filtered, statistic = regression_function, R = 1000)
+
+# Extract bootstrap estimates
+boot_estimates <- boot_results$t
+
+# Create a data frame for plotting
+boot_df <- as.data.frame(boot_estimates)
+colnames(boot_df) <- names(coef(glm(exports ~ usd_pkr, data = df_merged_filtered)))
+
+# Plotting the bootstrap confidence intervals
+boot_df %>%
+  pivot_longer(cols = everything(), names_to = "term", values_to = "estimate") %>%
+  ggplot(aes(estimate, fill = term)) +
+  geom_vline(xintercept = 0, size = 1.5, lty = 2, color = "gray50") +
+  geom_histogram(alpha = 0.8, show.legend = FALSE) +
+  labs(x = "", 
+       y = "",
+       subtitle = "The distribution includes zero which means there is no significant effect",
+       title = "The estimated effect of USD/PKR rates on exports in Pakistan") +
+  theme_minimal(base_size = 16) +
+  theme(axis.text = element_text(size = 16),
+        plot.title = element_text(size = 16))
+
+```
+
+### Discussion of Findings
+
+Discuss the results from the visual and statistical analysis, highlighting any insights or contradictions observed in the context of economic theories and the peculiar economic environment of Pakistan.
+
+### Conclusion
+
+Conclude with a summary of findings, their implications for economic policy and business practice in Pakistan, and suggestions for future research.
+
+### Further Analysis (Optional)
+
+Optionally, suggest further lines of inquiry or different methodological approaches that might provide additional insights, such as sector-specific analyses or the impact of macroeconomic indicators other than exchange rates.

@@ -1,0 +1,287 @@
+
+
+## https://visualizingsociety.com/slides/08-slides.pdf 
+
+
+
+```{r}
+library(here) # manage file paths
+library(socviz) # data and some useful things, especially %nin%
+library(tidyverse) # your friend and mine
+library(scales) # Convenient scale labels
+ 
+# install.packages("tsibble") # Time series objects
+# install.packages("feasts") # Time series feature analysis
+# install.packages("slider") # Moving averages and related methods
+#remotes::install_github("kjhealy/demog") # Some US demographic data
+library(tsibble)
+library(feasts)
+library(slider)
+library(demog)
+```
+
+## ATime Series: US Monthly Births
+
+```{r}
+boom <- okboomer |> 
+filter(country == "United States") |> 
+select(date, total_pop, births_pct_day) |> 
+rename(births = births_pct_day)
+boom
+```
+
+## Looking at the Data
+
+```{r}
+boom |> 
+ggplot(mapping = aes(x = date,
+y = births)) +
+geom_line()
+```
+
+## smooth the data
+
+```{r}
+boom |> 
+ggplot(mapping = aes(x = date,
+y = births)) +
+geom_line() + geom_smooth()
+  
+```
+
+## Centered Moving Averages: slider 
+
+```{r}
+boom |> 
+mutate(
+ma3 = slide_dbl(births, mean,
+.before = 1, .after = 1,
+.complete = TRUE))
+```
+
+## Centered Moving Averages: slider 
+
+```{r}
+boom |>
+mutate(
+ma3 = slide_dbl(births, mean,
+.before = 1, .after = 1,
+.complete = TRUE)) |>
+ggplot(aes(x = date, y = births)) +
+geom_line() +
+geom_line(aes(x = date, y = ma3), linewidth = rel(1.2), color = "firebrick") +
+labs(title = "MA Order 3 (1 month either side)")
+```
+
+## Centered Moving Averages: Order 5
+
+```{r}
+boom |> 
+ mutate(
+ma5 = slide_dbl(births, mean,
+.before = 2, .after = 2,
+.complete = TRUE)) |>
+ggplot(aes(x = date, y = births)) +
+geom_line() +
+geom_line(aes(x = date, y = ma5), linewidth = rel(1.2), color = "firebrick") 
+  
+  
+```
+
+## Centered Moving Averages: Order 7
+
+```{r}
+boom |> 
+ mutate(
+ma7 = slide_dbl(births, mean,
+.before = 3, .after = 3,
+.complete = TRUE)) |>
+ggplot(aes(x = date, y = births)) +
+geom_line() +
+geom_line(aes(x = date, y = ma7), linewidth = rel(1.2), color = "firebrick") 
+
+```
+
+## Centered Moving Averages: Order 12
+
+Its calculated in two steps
+
+```{r}
+boom |> 
+mutate(
+mav12 = slide_dbl(births, mean,
+.before = 5, .after = 6,
+.complete = TRUE),
+mav2x12 = slide_dbl(mav12, mean,
+.before = 1, .after = 0,
+.complete = TRUE))
+```
+
+```{r}
+  boom |> 
+mutate(
+mav12 = slide_dbl(births, mean,
+.before = 5, .after = 6,
+.complete = TRUE),
+mav2x12 = slide_dbl(mav12, mean,
+.before = 1, .after = 0,
+.complete = TRUE)) |> 
+ggplot() +
+geom_line(aes(x = date, y = births)) +
+geom_line(aes(x = date, y = mav2x12), linewidth = rel(1.2), color = "firebrick") +
+labs(title = "12 month moving average")
+```
+
+## 5 Year Moving Average
+
+```{r}
+boom |> 
+mutate(
+mav12 = slide_dbl(births, mean,
+.before = 29, .after = 30,
+.complete = TRUE),
+mav2x12 = slide_dbl(mav12, mean,
+.before = 1, .after = 0,
+.complete = TRUE)) |> 
+ggplot() +
+geom_line(aes(x = date, y = births)) +
+geom_line(aes(x = date, y = mav2x12), linewidth = rel(1.2), color = "firebrick") +
+labs(title = "5 year moving average")
+
+```
+
+Wider the window, smoother the line and we lose the details
+
+## Seasonal Decomposition
+
+```{r}
+#Seasonality in US Birth Rates
+boom |> 
+filter(date > as.Date("1950-12-01"),
+date < as.Date("1957-01-01")) |> 
+ggplot() +
+geom_line(aes(x = date, y = births)) +
+scale_x_date(date_breaks = "3 months",
+date_labels = "%b")
+
+```
+
+## Calculate the Trend part
+This is the moving average we just calculated.
+
+```{r}
+
+
+boom_t <- boom |> 
+  dplyr::select(date, births) |> 
+  mutate(
+    month = lubridate::month(date),
+    mav12 = slide_dbl(births, mean, .before = 5, .after = 6, .complete = TRUE),
+    t = slide_dbl(mav12, mean, .before = 1, .after = 0, .complete = TRUE)
+  ) |> 
+  dplyr::select(-mav12) # Don't need this anymore
+
+boom_t
+```
+## Calculate the Seasonal part
+
+```{r}
+boom_t |> 
+mutate(detrended = births - t)
+```
+## Calculate the Seasonal part
+Then take the average by month.
+
+```{r}
+boom_t |> 
+mutate(detrended = births - t,
+month = lubridate ::month(date)) |> 
+group_by(month) |> 
+summarize(seasonal = mean(detrended, na.rm = TRUE))
+```
+
+
+## Mean centered Seasonal Part
+
+```{r}
+boom_t |> 
+mutate(detrended = births - t) |> 
+group_by(month) |> 
+summarize(sm = mean(detrended, na.rm = TRUE)) |> 
+mutate(s = sm - mean(sm))
+```
+
+## 
+Put this in an object 
+
+```{r}
+boom_s <-  boom_t |> 
+mutate(detrended = births - t) |> 
+group_by(month) |> 
+summarize(sm = mean(detrended, na.rm = TRUE)) |> 
+mutate(s = sm - mean(sm)) |> 
+dplyr::select(-sm) # don't need this anymore
+boom_s
+```
+## Calculate the seasonal part
+
+Join the trend and seasonal parts
+
+```{r}
+boom_ts <-  boom_t |> 
+left_join(boom_s, by = "month")
+boom_ts
+```
+
+
+## Calculate the seasonal part
+In `Classical` decomposition, the seasonal part is the average of the seasonal values for each month and it just repeats.
+
+```{r}
+boom_ts |> 
+ggplot(aes(x = date, y = s)) +
+geom_line()
+
+```
+
+## Calculate the remainder part
+
+The remainder is just what’s left over from y (i.e., births) after we have
+calculated t and s.
+
+```{r}
+boom_tsr <-  boom_ts |> 
+mutate(r = births - t - s)
+boom_tsr
+```
+
+
+## There’s no need to it manually
+
+```{r}
+boom |> 
+mutate(date = yearmonth(date)) |> 
+as_tsibble(index = "date") |> 
+model(
+classical_decomposition(births,
+type = "additive")
+) |> 
+components() |> 
+select(-.model)
+```
+
+
+## Plot the components
+
+```{r}
+boom |> 
+mutate(date = yearmonth(date)) |> 
+as_tsibble(index = "date") |> 
+model(
+classical_decomposition(births,
+type = "additive")
+) |> 
+components() |> 
+  autoplot()
+```
+

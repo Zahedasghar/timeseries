@@ -1,5 +1,5 @@
 ---
-title: "Spurious Regression"
+title: "Spurious Regression" 
 title-block-banner: true
 author: "Zahid Asghar"
 #date: "`r format(Sys.time(), '%d %B, %Y')`"
@@ -19,7 +19,17 @@ execute:
   freeze: auto
 ---
 
-# Spurious Regression
+
+
+
+
+## Complete Blog on Spurious Regression
+
+
+https://zahidasghar.com/timeseries/spurious_regression 
+
+
+## Spurious Regression
 
 $y_t = a_0 + a_1z_t + e_t$ 
 
@@ -45,8 +55,12 @@ In the presence of nonstationary variables, there might be what Granger and Newb
 
 **CASE 2:** The {yt} and {zt} sequences are integrated of different orders. Regression equations using such variables are meaningless. 
 
-**CASE 3:** The nonstationary {yt} and {zt} sequences are integrated of the same order and the residual sequence contains a stochastic trend. This is the case in which the regression is spurious. In this case, it is often recommended that the regression equation be estimated in first differences. 
----
+--- 
+
+**CASE 3:** The nonstationary {yt} and {zt} sequences are integrated of the same order and the residual sequence contains a stochastic trend. This is the case in which the regression is spurious. In this case, it is often recommended that the regression equation be estimated in first differences.  
+
+--- 
+
 **CASE 4:** The nonstationary {yt} and {zt} sequences are integrated of the same order and the residual sequence is stationary. In this circumstance, {yt} and {zt} are cointegrated.
 
 ## Load libraries and generate data
@@ -66,9 +80,10 @@ library(ggfortify) # To plot regression diagnostics
 library(ggResidpanel) # To plot regression diagnostics
 ```
 
+## Simulate data
 
 ```{r}
-T <- 1000
+T <- 200
 set.seed(1357)
 y <- ts(rep(0,T))
 vy <- ts(rnorm(T))
@@ -82,13 +97,27 @@ vx <- ts(rnorm(T))
 for (t in 2:T){
   x[t] <- x[t-1]+vx[t]
 }
-y <- ts(y[300:1000])
-x <- ts(x[300:1000])
+y <- ts(y[50:200])
+x <- ts(x[50:200])
+```
+
+## Plot the data
+
+```{r}
 ts.plot(y,x, ylab="y and x")
 
 ``` 
 
 
+
+
+## 
+
+```{r}
+
+summary(lm(y~x))
+
+```
 
 
 ## 

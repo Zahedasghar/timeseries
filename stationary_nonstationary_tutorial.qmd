@@ -1,0 +1,235 @@
+---
+title: "Stationary and Nonstationary Series"
+subtitle: "Macroeconomic Forecasting Lecture"
+author: "[Zahid Asghar, Professor, School of Economics, QAU](https://zahedasghar.netlify.app)"
+date: today
+format: 
+  html: 
+    toc: true
+    number-sections: true
+    theme: cosmo
+execute:
+  freeze: auto
+---
+
+# Properties of Time Series
+
+## Outline
+
+### Part 1: Stationary Processes
+- Identification
+- Estimation & Model Selection
+- Putting it all together
+
+### Part 2: Nonstationary Processes
+- Characterization
+- Testing
+
+## Univariate Analysis
+
+![](images/prob_density.png){fig-align="center"}
+
+Each distribution is a draw from a **random process**.
+
+## Strong Stationarity
+
+- **Strong stationarity vs weak stationarity (covariance stationarity)**  
+  - Strong stationarity:
+    - Same distribution over time
+    - Same covariance structure over time  
+    - But it's only a theoretical concept. In practice, we use covariance stationarity.
+  - Covariance stationary:
+    - Unconditional mean $E(Y_t)=E(Y_{t+j})=\mu$
+    - Variance constant $Var(Y_t)=Var(Y_{t+j})=\sigma^2_y$
+    - Covariance depends on time j that has elapsed between observations, not on reference period $Cov(Y_t,Y_{t+j})=Cov(Y_s,Y_{s+j})=\gamma_j$
+
+---
+
+# Part 1: Stationary Process
+
+Just to remind you...
+- Identification
+- Estimation & Model Selection
+- Putting it all together
+
+**The first step is visual inspection: graph and observe your data.**
+
+> "You can observe a lot just by watching" — Yogi Berra
+
+## Plot Your Data
+
+```{r}
+# Load necessary libraries
+library(tidyverse)
+library(forecast)
+library(ggplot2)
+
+# Set parameters
+phi <- 0.8  
+n <- 200    
+
+# Simulate AR(1) data
+set.seed(123)
+ar1_data <- arima.sim(model = list(ar = phi), n = n)
+
+# Create a time series plot
+ggplot(data.frame(Time = 1:n, Value = ar1_data), aes(x = Time, y = Value)) +
+  geom_line(linewidth=1) +
+  labs(title = "AR(1) Model", x = "Time", y = "Value") +
+  theme_minimal()
+```
+
+---
+
+## Differenced Model of a Trend Variable
+
+Differencing can remove a trend:
+
+$$ y_t^{*} = y_t - y_{t-1} $$
+
+```{r}
+# Simulate AR(1) data with trend
+set.seed(123)
+beta <- 0.1
+n <- 200
+ar1_trend_data <- arima.sim(model = list(order = c(1, 0, 0), ar = 0.7), n = n) + beta * (1:n)
+
+# Compute first difference
+differences <- diff(ar1_trend_data)
+
+# Plot the differenced series
+ggplot(data.frame(Time = 2:n, Difference = differences), aes(x = Time, y = Difference)) +
+  geom_line(linewidth=1) +
+  labs(title = "Differenced AR(1) with Trend", x = "Time", y = "Difference") +
+  theme_minimal()
+```
+
+---
+
+## Identification
+
+The three basic models of interest:
+- **Autoregressive (AR)**: $y_t = a + b_1 y_{t-1} + b_2 y_{t-2} + \dots + b_p y_{t-p} + \epsilon_t$
+- **Moving Average (MA)**: $y_t = \mu + \phi_1 \epsilon_{t-1} + \dots + \phi_q \epsilon_{t-q} + \epsilon_t$
+- **ARMA (Autoregressive Moving Average)**: Combination of both.
+
+---
+
+## ACF and PACF for Identification
+
+```{r}
+# Simulate AR(1) time series
+set.seed(123)
+ar1_data <- arima.sim(model = list(order = c(1, 0, 0), ar = 0.7), n = 200)
+
+# Plot ACF and PACF
+par(mfrow = c(1,2))
+acf(ar1_data, main = "ACF of AR(1)")
+pacf(ar1_data, main = "PACF of AR(1)")
+```
+
+---
+
+# Part 2: Nonstationary Series
+
+## What is Nonstationarity?
+
+A **nonstationary** time series does not have:
+- A constant mean
+- A constant variance
+- Autocorrelations that decay over time
+
+## Simulating a Nonstationary Series
+
+### Deterministic Trend Model
+```{r}
+set.seed(1269)
+date <- ts(c(1:100))
+trend <- 0.45 * (1:length(date))
+noise <- rnorm(length(date), mean = 0, sd = 1)
+yt <- trend + noise
+
+df <- data.frame(date=date, yt=yt)
+ggplot(df) + aes(x=date, y=yt) + geom_line() + labs(title = "Nonstationary Series with Trend")
+```
+
+---
+
+## Checking for Nonstationarity
+
+Use **Autocorrelation Function (ACF)** to check for nonstationarity.
+
+```{r}
+acf(yt, main="ACF of Nonstationary Series")
+```
+
+A slow decay in ACF suggests nonstationarity.
+
+---
+
+## Differencing the Series
+
+```{r}
+diff_yt <- diff(yt)
+ggplot(data.frame(date=2:100, yt_diff=diff_yt)) + 
+  aes(x=date, y=yt_diff) + 
+  geom_line() + 
+  labs(title="First Differenced Series")
+```
+
+Now the series appears stationary.
+
+---
+
+# Real-World Example: U.S. Price Earnings Ratio (PE)
+
+## Load and Inspect Data
+```{r}
+library(readr)
+pe <- read_csv("data/pe.csv")
+glimpse(pe)
+```
+
+## Plot the U.S. PE Ratio
+```{r}
+pe_us <- pe |> select(date, pe_usa)
+ggplot(pe_us, aes(x=date, y=pe_usa)) + geom_line() + theme_minimal()
+```
+
+## Identify the Model Using ACF & PACF
+```{r}
+acf(pe_us$pe_usa)
+pacf(pe_us$pe_usa)
+```
+
+## Differencing the Series
+```{r}
+acf(diff(pe_us$pe_usa))
+pacf(diff(pe_us$pe_usa))
+```
+
+The differenced series suggests an **ARIMA(0,1,1)** model.
+
+## Auto-ARIMA Selection
+```{r}
+auto.arima(pe_us$pe_usa)
+```
+
+The automatic model selection suggests **ARIMA(1,1,1)**.
+
+---
+
+# Summary and Next Steps
+
+- **Stationary series**: Mean, variance, and autocorrelation structure remain constant over time.
+- **Nonstationary series**: These properties change over time.
+- **ACF & PACF**: Useful tools for identifying stationarity and model structure.
+- **Differencing**: Helps to remove trends and make a series stationary.
+- **Model selection**: Using **AIC, BIC, and Auto-ARIMA**.
+
+Next steps:
+- Apply these methods to your own datasets.
+- Experiment with different ARMA models.
+- Compare **forecast accuracy** between models.
+
+Happy coding! 🚀

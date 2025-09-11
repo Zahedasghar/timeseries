@@ -1,0 +1,181 @@
+---
+title: "Panel Data Modeling in R"
+author: "Zahid Asghar"
+format:
+  html: 
+    highlight: tango
+    number_sections: yes
+    theme: united
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 2
+execute:
+  freeze: auto
+---
+
+# Introduction
+
+This presentation demonstrates panel data modeling using the `plm` package in R. We will use the `Produc` dataset, which contains data on gross state product in the United States.
+
+# Load Libraries and Data
+
+```{r}
+library(plm)
+library(tidyverse)
+library(tseries)
+library(lmtest)
+library(sandwich)
+
+# Load the data
+data("Produc", package = "plm")
+head(Produc)
+```
+
+# Data Description
+
+The `Produc` dataset contains the following variables: 
+
+- `state`: State name
+- `year`: Year
+- `region`: Region
+- `pcap`: Real per capita personal consumption expenditures
+- `hwy`: Real per capita "highway" expenditure
+- `water`: Real per capita "water" expenditure
+- `util`: Real per capita "utility" expenditure
+- `pc`: Real per capita net income
+- `gsp`: Real gross state product
+- `emp`: Employment
+- `unemp`: Unemployment rate
+
+## Ploting GSP over Time
+
+```{r}
+ggplot(Produc, aes(x = year, y = gsp, color = state)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = "Gross State Product over Time",
+       x = "Year",
+       y = "Gross State Product (GSP)")
+
+```
+
+## Correlation plot
+
+```{r}
+correlation_matrix <- Produc %>% select_if(is.numeric) %>% cor()
+corrplot::corrplot(correlation_matrix, method = "color", type = "upper", tl.cex = 0.7)
+```
+## Boxplot of GSP by Region
+
+```{r}
+ggplot(Produc, aes(x = region, y = gsp, fill = region)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Gross State Product by Region",
+       x = "Region",
+       y = "Gross State Product (GSP)")
+```
+## Boxplot of Employment by Region
+
+```{r}
+ggplot(Produc, aes(x = region, y = emp, fill = region)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Employment by Region",
+       x = "Region",
+       y = "Employment")
+```
+
+## Scatterplot of GSP vs. Employment by State
+
+
+```{r}
+ggplot(Produc, aes(x = emp, y = gsp, color = state)) +
+  geom_point() +
+  theme_minimal() +
+  labs(title = "Gross State Product vs. Employment by State",
+       x = "Employment",
+       y = "Gross State Product (GSP)")
+```
+
+
+
+## Unit Root Tests
+
+```{r}
+# Selecting only numeric columns for the ADF test
+numeric_cols <- Produc %>% select_if(is.numeric) |> select( -year)
+
+# Applying unit root test for panel data
+adf_test <- sapply(numeric_cols, function(x) adf.test(x)$p.value)
+adf_test
+
+```
+
+## Fit Pooled OLS Model
+
+## Pooled OLS model 
+
+```{r}
+pooled_ols <- plm(gsp ~ emp + unemp + pc, data = Produc, model = "pooling")
+summary(pooled_ols) 
+
+``` 
+
+## Fixed Effects Model
+
+```{r}
+fixed_effects <- plm(gsp ~ emp + unemp + pc, data = Produc, model = "within")
+summary(fixed_effects) 
+
+```
+
+## Random Effects Model
+
+```{r}
+random_effects <- plm(gsp ~ emp + unemp + pc, data = Produc, model = "random")
+summary(random_effects) 
+
+```
+
+## Hausman Test
+
+```{r}
+hausman_test <- phtest(fixed_effects, random_effects)
+hausman_test
+
+```
+
+## Model comparison Breusch-Pagan test
+
+```{r}
+bp_test <- plmtest(fixed_effects, effect = "twoways", type = "bp")
+bp_test
+
+```
+
+## Model comparison F-test
+
+```{r}
+f_test <- pFtest(fixed_effects, random_effects)
+f_test
+
+```
+
+## Robustness Check with Clustered Standard Errors 
+
+```{r}
+clustered_se <- coeftest(fixed_effects, vcov = vcovHC(fixed_effects, type = "HC1"))
+clustered_se
+
+```
+
+## Summary 
+
+This presentation demonstrated panel data modeling using the plm package in R. We covered data exploration, unit root testing, fitting pooled, fixed, and random effects models, and comparing these models using statistical tests. 
+
+These results can help us understand the relationships between gross state product and other economic indicators while accounting for individual state effects. 
+
+From this analysis, we can conclude that the fixed effects model is preferred over the random effects model based on the Hausman test results. The pooled OLS model is not appropriate due to the presence of individual-specific effects.
+

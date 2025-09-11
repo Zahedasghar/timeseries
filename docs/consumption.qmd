@@ -2,14 +2,11 @@
 title: 'Understanding econometric modeling with simple <br> Consumption Function for Pakistan  '
 subtitle: "Model Selection, Multicollinearity, G2S <br> Course: Economic Forecasting and Modeling"
 author: '*Zahid Asghar *'
-date: "`r format(Sys.time(), '%d %B, %Y')`"
 format:
-  html:
-    theme: [default]
+  typst:
     toc: true
-    code-fold: true
-    keep-md: false
-overview: true
+    section-numbering: 1.1.a
+    columns: 2
 execute:
   echo: false
   warning: false
@@ -40,7 +37,7 @@ library(fpp3)
 #| message: false
 cons_inc<-read_dta("data/Consumption_Income_Pakistan.dta")
 library(tseries)
-cons_inc$year<-as_date(cons_inc$year)
+
 cons_inc<-cons_inc %>% mutate(Trend=1:52)
 
 ```
@@ -57,12 +54,12 @@ Data on annual income and consumption for Pakistan with some approximations due 
 
 #cons_inc<-as_tibble(con_inc)
 ggplot(cons_inc)+aes(x=year)+geom_line(aes(y = C), color = "darkred",size=0.8) + 
-  geom_line(aes(y = Y), color="steelblue", linetype="twodash",size=0.8)+labs(x="Income per capita",y="Consumption per captia",title = "Consumption Income pattern over time for Pakistan")+theme_minimal()
+  geom_line(aes(y = Y), color="steelblue", linetype="twodash",size=0.8)+labs(x="",y="Consumption per captia",title = "Consumption Income pattern over time for Pakistan")+theme_minimal()
 ```
 
 The Keynesian consumption function is one of the most widely accepted and estimated regression models. The causal hypothesis is that Income (GDP) determines Consumption (Con): $GDP \Rightarrow Con$. The simplest regression model which embodies this relationship is: $C = \alpha + \beta Y$. Running this regression on the data @tbl-regression_points gives the first five observations of the regression results.   
 
-```{r, echo=FALSE, warning=FALSE,message=FALSE}
+```{r}
 #| label: tbl-regression_points
 
 #| echo: false
@@ -134,21 +131,21 @@ g11+g12
 
 Random residuals frequently switch signs. They do not display any patterns in sequencing. The patterned residuals in the consumption function prove that the regression is not valid. In such situations, econometricians typically assume that the problem is due to missing regressors or wrong functional form. By adding suitable additional regressors, and modifying the functional form, one can generally ensure that the residuals appear to satisfy the assumptions made about them.
 
-## 2. What to do when errors are not independent?
+## 2. What to do when errors are not independent? {#sec-autocorr}
 
 Note that $e_t=y_t-\hat{\beta}x_t$ and $e_{t-1}=y_{t-1}-\hat{\beta}x_{t-1}$. A relationship between the two errors shows that what happens in period $t-1$ has an effect on what happens in period $t$. In other words, we have a dynamic model instead of a static model.
 
-## STATIC VERSUS DYNAMIC MODELS
+## STATIC VERSUS DYNAMIC MODELS {#sec-static_dynamic}
 
 A model of the type $C_t = \alpha + \beta Y_t + e_t$ is called a static model. Events in time period $t$ are isolated from those of period $t-1$ and $t+1$. As opposed to this, if data from period $t-1$ enters into the equation for period $t$, then we have dynamic model.
 
 Suppose that we conduct tests and learn that $e_t$ is correlated with $e_{t-1}$. Note that $e_{t-1}=C_{t-1}-\alpha-\beta Y_{t-1}$. It follows that $C_{t-1}$ and $Y_{t-1}$ have an effect on current consumption.
 
-The main message of correlated residuals is that variables from one period ago have an effect on current period.
+The main message of correlated residuals is that variables from one period ago have an effect on current period. @sec-static-dynamic shows that the static model is not valid.
 
 Thus in order to fix up the problem of correlated residuals, we need to build a dynamic model. The simplest dynamic extension of the Keynesian model is the following: $$C_t=\alpha+\beta Y_t+\gamma C_{t-1}+\delta Y_{t-1}+e_t$$
 
-We put in `ALL` the information we have about ALL the variables in the model at period $t-1$. Similarly we could go back to period $t-2$.
+We put in `ALL` the information we have about ALL the variables in the model at period $t-1$. Similarly we could go back to period $t-2$. As in @sec-autocorr, we could have $e_t$ correlated with $e_{t-1}$ and $e_{t-2}$. This would suggest a second order dynamic model. We could keep increasing the order of the model until we get to a point where the errors are not correlated.
 
 ### General-to-Simple vs. Simple-to-General Modelling:
 

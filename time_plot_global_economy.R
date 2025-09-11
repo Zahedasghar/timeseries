@@ -1,5 +1,5 @@
 library(fpp3)
-
+library(tidyverse)
 global_economy |>
   filter(Country == "Pakistan") |>
   autoplot(Exports) +
@@ -118,7 +118,7 @@ wdi_data |> filter(country %in% c("Pakistan","Japan", "China")) |>
 ## observed same patterns in tax to GDP. So we can have natural growth rate for
 ## increase in GDP but unless we increase our share in export/capita (in which
 ## we are among the bottom 10 countries), it simply means we are not
-## competitive in the world.
+## competitive in the world.
 #' Without increasing our share in export, its not possible to meet external debt obligations which 
 #' have to be paid in foreign currency. 
 #' 
@@ -130,3 +130,12 @@ wdi_data |> filter(country %in% c("Pakistan","India", "Bangladesh")) |>
   labs(y = "% of GDP", title = "Bangladesh, India and Pakistan imports as % of GDP", caption = "By Zahid, source:WDI")+
   theme_minimal()+ theme(legend.position = "top")
 
+## Data sets in fpp3 package
+
+data(package = "fpp3")
+
+
+
+tsa |>
+  mutate(week = week(date),
+         year = year(date))

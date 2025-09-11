@@ -8,10 +8,14 @@
 ### PAGE 134
 library("gdata")
 library("rugarch")
-data = read.xls("/Users/user/Google Drive/Website/Book/Enders/OIL.xls")
-data$Date = as.Date(as.character(data$Date),"%b %d, %Y")
+library(readxl)
+data = read_excel("data/oil.xls")
+
+
+# data$Date = as.Date(as.character(data$Date),"%b %d, %Y")
 data$ret = c(0,diff(log(data$Spot),1))
 
+data <- na.omit(data)
 par(mfcol = c(2,1), oma = c(0,0,1,0) + 0.2, mar = c(0,1,0,0) + 1, mgp = c(0, 0.2, 0))
 plot(data$Date,data$Spot,type="l",las=1,xaxs="i",xlab="",ylab="",tck=0.02,col="steelblue4")
 plot(data$Date,data$ret,type="l",las=1,xaxs="i",xlab="",ylab="",tck=0.02,col="steelblue4")
@@ -55,8 +59,8 @@ fit.ar4
 
 
 ### PAGE 136
-data = read.xls("/Users/user/Google Drive/Website/Book/Enders/RGDP.xls")
-data$DATE = as.Date(as.character(data$DATE),"%Y-%m-%d")
+data = read_excel("data/RGDP.xls")
+#data$DATE = as.Date(as.character(data$DATE),"%Y-%m-%d")
 
 ### FIGURE 3.1
 par(mfcol = c(1,1), oma = c(0,0,1,0) + 0.2, mar = c(0,2,0,0) + 1, mgp = c(0, 0.2, 0))
@@ -68,34 +72,6 @@ lines(data$DATE,data$Rinv,lty=4,col="steelblue4")
 plot(data$DATE[-c(1)],100*diff(log(data$RGDP,4)),type="l",las=1,xaxs="i",xlab="",ylab="",tck=.02,yaxs="i",col="steelblue4",ylim=c(-3,4))
 abline(h=0)
 
-### PAGE 134
-data = read.xls("/Users/user/Google Drive/Website/Book/Enders/OIL.xls")
-dim(data)
-data$ret = c(0,100*diff(log(data$Spot),1))
-spec.ma3 = arfimaspec(mean.model=list(armaOrder=c(0,3)),
-                      fixed.pars=list(ma2=0))
-fit.ma3 = arfimafit(spec.ma3,data=data$ret)
-res.ma3 = fit.ma3@fit$residuals
-
-spec.ar4 = arfimaspec(mean.model=list(armaOrder=c(4,0)))
-fit.mcleodli.ar4 = arfimafit(spec.ar4,data=res.ma3^2)
-fit.mcleodli.ar4
-
-### PAGE 135
-spec.ma1garch11 = ugarchspec(mean.model=list(armaOrder=c(0,1)),
-                             variance.model=list(garchOrder=c(1,1)))
-fit.ma1garch11 = ugarchfit(spec.ma1garch11,data=data$ret)
-fit.ma1garch11
-sres.ma1garch11 = fit.ma1garch11@fit$z
-acf1 = acf(sres.ma1garch11)
-acf1
-acf2 = acf(sres.ma1garch11^2)
-acf2
-
-Box.test(sres.ma1garch11,lag=4,type="Ljung-Box")
-Box.test(sres.ma1garch11,lag=8,type="Ljung-Box")
-Box.test(sres.ma1garch11^2,lag=4,type="Ljung-Box")
-Box.test(sres.ma1garch11^2,lag=8,type="Ljung-Box")
 
 ### PAGE 136
 data = read.xls("/Users/user/Google Drive/Website/Book/Enders/RGDP.xls")

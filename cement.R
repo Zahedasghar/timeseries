@@ -17,7 +17,7 @@ library(DT)
 
 
 ## ---------------------------------
-library(readr) # To load data from csv file, if one needs to load data from excel, then use excel file
+# To load data from csv file, if one needs to load data from excel, then use excel file
 cement<-read_csv("cement.csv")
 glimpse(cement)
 

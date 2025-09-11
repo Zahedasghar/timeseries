@@ -34,8 +34,8 @@ glimpse(rmt_long)
 
 # HTML reports
 
-rmt_reports_html <- rmt_long |>
-  distinct(country) |>
+rmt_reports_html <- rmt_long %>%
+  distinct(country) %>%
   mutate(
     output_format = "html",
     output_file = paste(
@@ -43,12 +43,12 @@ rmt_reports_html <- rmt_long |>
       "report.html",
       sep = "-"
     ),
-    execute_params = map2(
-      country,
-      
-      \(country) list(country = country)
+    execute_params = map(
+      country, country,  # Corrected: using the same variable as the vector
+      ~ list(country = .x)  # Using formula notation to create the list
     )
   )
+
 
 # PDF reports
 # 

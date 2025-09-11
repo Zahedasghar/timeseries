@@ -1,0 +1,65 @@
+---
+title: "Modelling Volatility"
+subtitle: "ARCH and GARCH Processes"
+format: revealjs
+---
+Slides from 
+file:///C:/Users/92300/Dropbox/Applied%20Econometrics%20SBP/Univariate%20(FC,%20SES,%20X-12%20etc)/ARCH%20and%20GARCH%20Processes.pdf
+
+## ARCH and GARCH Processes {.scrollable}
+
+In conventional econometrics, the variance of the disturbance term is assumed to be constant.
+
+Many economic time series exhibit periods of unusually large volatility followed by periods of relative tranquility.
+
+-    Common examples of such series include stock prices, foreign exchange rates and other prices determined in financial markets (i.e. exchange rates and other prices determined in financial markets (i.e. where volatility seems to vary over time).
+
+-   In such circumstances the assumption of constant variance (homoscedasticity) is inappropriate.
+
+-   ARCH and GARCH models are methods of modelling such volatility
+
+## Why Volatility Modelling? {.scrollable}
+
+There are a number of reasons that you may wish to model and/or forecast the conditional variance of a series.
+
+-    Variance forecasts may be of direct interest. For example, asset holders may be interested in forecasting not only the rate of return of an asset but also its volatility to assess the assets risk.
+
+-    While the optimal forecast is the conditional mean of a series, volatility is relevant for forecasting confidence intervals. The variances volatility is relevant for forecasting confidence intervals. The variances of the conditional distributions are needed for setting up forecast intervals. More accurate forecast intervals can be obtained by modelling the variance of the errors therefore.
+
+-    The volatility in a market and therefore the risk of an investment may affect the expectations of market participants and thus have a feedback effect on the original series of interest.
+
+-    More efficient estimators can be obtained if heteroscedasticity in the errors is handled properly. 
+
+## Background {.scrollable}
+
+-  Engle (1982) shows that it is possible to simultaneously model the mean and variance of a series. 
+
+-    ARCH models are designed to model and forecast conditional variances, with the variance of the dependent variable modelled as a function of past values of the dependent variable and independent, exogenous variables. 
+
+-    ARCH models were introduced by Engle (1982) and generalised (GARCH) by Bollerslev (1986). 
+
+## Heteroscedasticity (A reminder) {.scrollable}
+
+-    Consider the following autoregressive process, 
+
+$$y_t = \phi_1 y_{t-1} + ... + \phi_p y_{t-p} + \delta + \epsilon_t$$
+
+-    The assumption that the variance of the errors is constant is known as homoscedasticity, i.e. 
+$Var(\epsilon_t) = \sigma^2$ 
+
+-    If the variance of the errors is not constant we have heteroscedasticity, and estimates of the standard errors of the coefficients could be wrong. 
+
+-    Tests for heteroscedasticity include the Goldfeldt-Quandt and Breusch-Pagan test. 
+## ARCH Models {.scrollable}
+
+-   So rather than use a model assuming homoscedasticity we use a model that doesn‘t assume that the variance is constant. 
+
+-   In particular ARCH models assume that the current value of the variance depends upon previous squared error terms. 
+
+-   The simplest autoregressive conditionally heteroscedastic model for the variance of the errors can therefore be written as,
+$\sigma^2_t = \alpha_0 + \alpha_1 \epsilon^2_{t-1}$ 
+
+-   Where $\alpha_0$ and $\alpha_1$ are parameters to be estimated. 
+
+-   The ARCH(1) model is the simplest form of ARCH model, where the variance of the error term in the current period is a function of the squared error term in the previous period. 
+

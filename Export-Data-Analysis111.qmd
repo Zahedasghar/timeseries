@@ -1,0 +1,201 @@
+---
+title: Exploring Export Data of Pakistan with its partner countries
+author: "Zahid Asghar"
+date: "Last updated on `r Sys.Date()`"
+format: html
+---
+![](images/Export.jpg)
+
+```{r, include=FALSE}
+# Do not edit this code block/chunk
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning = FALSE, fig.width = 16/2.5, fig.height = 9/2.5)
+```
+
+
+# Why R
+
+There is an increasing recognition of reproducibility of research, though it has limited recognition in social sciences.  The document in your hand is written in `RMarkdown`. 
+`RMarkown` which can be used for pdf, html, word, PowerPoint/Slidy/Beamer Presentations, Webpages, LaTex and many others. 
+Besides learning basics of R-coding, another objective of this workshop is understanding the importance of reproducibility. Building this new habit of reproducible work at times maybe little challenging occasionally. Getting rid of culture of copying and pasting, and sparing this time for doing data analysis and research is one of the objectives of this or coming workshops. Purpose is to help you to get away from this tedious activity so that you can spend more time __doing science__.
+
+# Uploaded data and required R packages
+
+Understanding data sets requires many hours/days or in some cases weeks.There are many commercially available software but open source community based software have now dominated and R is one of these. R makes data understanding process as easy as possible through the dplyr package. It is one of the easiest solution for code-based data analysis. We will learn in this training how to do it. I have already uploaded videos for downloading packages and relevant information. video links....
+
+I will explore the [Export Data](https://wits.worldbank.org/countrystats.aspx?lang=en) and will explain how one can use basic **dplyr** verbs for data wrangling. Here's how to load in all required packages:
+
+```{r, echo=FALSE,message=FALSE,warning=FALSE}
+# Load all necessary packages here:
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+```
+
+## Exort Data Analysis
+
+```{r, results='asis'}
+### Load data in csv format
+export_pak <- read_csv("data/export_pak.csv")
+## Reading data in tibble
+X_pk<- as_tibble(export_pak)
+#kable(X_pk[1:5,], caption="Export in Thousand of USD")
+X_pk<-X_pk|>mutate(value_1000_USD=`TradeValue in 1000 USD`)
+X_pk|>glimpse()
+```
+
+Once data are uploaded, now to get an overview of this data, we display first few rows of data by recalling **X_pk** data. **glimpse** command helps to get an overall view of this data. **str** command will also describe data.
+
+```{r}
+X_pk %>% select(ProductCode, value_1000_USD, PartnerName,ReporterName ) |> head()
+
+```
+
+```{r}
+glimpse(X_pk)
+#str(X_pk)
+
+```
+
+This indicate that there are 10 variables and 92951 observations. From having an overview of above mentioned variables, we are interested to select few of these variables. For this we use one of the verb **select** as follows:
+
+```{r}
+xport<-X_pk %>% select(ReporterName, PartnerName, value_1000_USD, ProductCode)
+kable(xport[1:5,],caption="Export in thousad of USD")
+
+```
+
+Or we can drop variables which are not required by using the same **select** verb but with -ve signs for the variables which we want to drop.
+
+```{r}
+
+## How to drop variables not required
+X_pk %>% select(-ReporterISO3,-PartnerISO3, -Nomenclature) |> head()
+
+
+```
+
+Wait a minute, despite selection of desired variables or droping undesired variables, we have not lost orginal data. This is a very unique feature unlike some softwares where if we drop some variables, we cant re-use those unless we go back and open original file. If we type **X_pk** we will get same data having 10 variables with 92,951 rows.
+
+## Filter and select verb
+
+One may use **filter** command to keep observations meeting certain criteria and then use **select** for keeping desired variables.
+
+```{r}
+## Data Filtering
+X_pk %>% filter(Year==2018) %>% select(ReporterName,PartnerName, value_1000_USD,ProductCode) |> head()
+```
+
+This table shows data only for 2018 year and have four variables selected.
+
+```{r}
+## Multiple Filtering
+### Selecting only export with Chinar for 2018
+X_pk %>% filter(Year==2018, PartnerName=="China") %>% select(ProductCode, Nomenclature, value_1000_USD) |> head()
+
+```
+
+```{r}
+## If we want to select multiple countries
+
+X_pk %>% filter(Year==2018, PartnerName%in%c("China","United States", "United Kingdom")) %>% select(ReporterName,PartnerName,
+                                                             value_1000_USD, ProductCode) |> 
+  head()
+```
+
+## Ordering by using arranage function
+
+```{r}
+X_pk %>% filter(Year==2018,
+                PartnerName%in%c("China","United States", "United Kingdom")) %>%
+  select(ReporterName,PartnerName,value_1000_USD, ProductCode) %>% 
+  arrange(desc(value_1000_USD)) |> 
+  head()
+
+
+```
+
+## group_by and summarising
+
+```{r}
+## Ordering for top 10
+top10<-X_pk %>% filter(Year==2018) %>%
+  select(ReporterName,PartnerName,value_1000_USD, ProductCode) %>% 
+  group_by(PartnerName) %>% 
+  summarise(sum=sum(value_1000_USD)) %>% 
+  arrange(desc(sum)) %>% 
+  top_n(10) 
+
+```
+
+## Rename variables
+
+```{r}
+
+top10$exp_value<-top10$sum 
+## Rename PartnerName as Country
+top10$Country <- factor(top10$PartnerName, levels = top10$PartnerName)
+```
+
+```{r}
+export<-ggplot(top10)+aes(x=Country,y=exp_value)+geom_bar(stat="identity",fill = "#FF6666") +
+  coord_flip()
+export+ggtitle("Export value in thousand of USD with top 10 countries ")
+```
+
+## Summary
+
+```{r}
+X_pk %>% filter(Year==2018,
+                PartnerName%in%c("China","United States", "United Kingdom")) %>%
+  select(ReporterName,PartnerName,value_1000_USD, ProductCode) %>% 
+  group_by(PartnerName) %>% 
+  summarise(sum=sum(value_1000_USD)) |>head() 
+
+```
+
+## Arrange and Arrange(desc()) For each year
+
+```{r}
+X_pk %>% filter(
+                PartnerName%in%c("China","United States", "United Kingdom")) %>%
+  select(ReporterName,PartnerName,value_1000_USD, ProductCode, Year) %>% 
+  group_by(PartnerName, Year) %>% 
+  summarise(sum=sum(value_1000_USD)) %>% 
+  arrange(desc(sum)) |> head()
+```
+
+## Group by product name
+
+```{r}
+X_pk %>% filter(Year==2019, 
+  PartnerName%in%c("China","United States", "United Kingdom")) %>%
+  select(ReporterName,PartnerName,value_1000_USD, ProductCode,Year) %>% 
+  group_by(ProductCode, PartnerName) %>% 
+  summarise(sum=sum(value_1000_USD)) %>% 
+  arrange(desc(sum)) %>% 
+  top_n(5)
+```
+
+```{r}
+X_pk %>% filter(Year==2019, ProductCode==630710) %>% 
+  summarise(sum=sum(value_1000_USD)) |> head()
+```
+
+```{r}
+X_pk %>% filter(Year==2019) %>%
+  select(ReporterName,PartnerName,value_1000_USD, ProductCode,Year) %>% 
+  group_by(ProductCode, PartnerName) %>% 
+  summarise(Total_value=sum(value_1000_USD)) %>% 
+  arrange(desc(Total_value)) %>% 
+  top_n(5)
+```
+
+```{r}
+X_pk %>% filter(Year==2019) %>%
+  select(ReporterName,PartnerName,value_1000_USD, ProductCode,Year) %>% 
+  group_by( PartnerName, ProductCode) %>% 
+  summarise(sum=sum(value_1000_USD)) %>% 
+  arrange(desc(sum)) %>% 
+  top_n(-10)
+
+```

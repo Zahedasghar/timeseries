@@ -313,7 +313,7 @@ $\Delta y_{it}=b_{io}+\gamma_i y_{it-1}+\sum_{i=1}^n p_i \Delta y_{it-j}+\epsilo
 
 -   Because the lag lengths can differ across equations, you should perform separate lag length tests for each equation. Moreover, you may choose to exclude the deterministic time trend. However, if the trend is included in one equation, it should be included in all
 
-## Limitations 
+## Limitations {.scrollable}
 -   The null hypothesis for the IPSE test $\gamma_1=\gamma_2=...=\gamma_1=0$. Reject of the null hypothesis means that at least  one of the $\gamma_i's$ differs from zero. 
 
 -   At this point, there is substantial disagreement about the asymptotic theory underlying the test. Sample size can approach infinity by increasing n for a given T, increasing T for a given n, or by simultaneously increasing n and T. 
@@ -324,4 +324,8 @@ The example above illustrates a common technique to correct for correlation acro
 
 
 
+## ARDL 
 
+Lags of the dependent variable and lags of the independent variables are included in the regression equation.
+
+$Y_t = \beta_0 + \sum_{i=1}^{p} \beta_i Y_{t-i} + \sum_{j=0}^{q_1} \alpha_{1j} X_{1,t-j} + \sum_{j=0}^{q_2} \alpha_{2j} X_{2,t-j} + \sum_{j=0}^{q_3} \alpha_{3j} X_{3,t-j} + \sum_{j=0}^{q_4} \alpha_{4j} X_{4,t-j} + \varepsilon_t$

@@ -59,12 +59,11 @@ tax_df<-tax %>% select('SCODE', 'SERVICE','Date','TAX_PERIOD','Year', 'Month',
 
 ```
 
-
 # Overall Tax
 
 ## Overall Tax Summary
-The `tax_summary` dataset provides a summary of the tax collected from around 178 services in Pakistani Rs. This data is for each fiscal year from 2012 to 2018. There are 1,033,223 observations with data on 28 variables.
-After some basic data operations, we present here a summary of `tax_output` which is tax on each service sector. This `yearly` data does not include `2022` as its full data are yet not available.
+
+The `tax_summary` dataset provides a summary of the tax collected from around 178 services in Pakistani Rs. This data is for each fiscal year from 2012 to 2018. There are 1,033,223 observations with data on 28 variables. After some basic data operations, we present here a summary of `tax_output` which is tax on each service sector. This `yearly` data does not include `2022` as its full data are yet not available.
 
 ## 
 
@@ -91,7 +90,6 @@ ggplot(yearly_tax,aes(year, tax_by_serv))+geom_line()+labs(
 
 ## Monthly tax summary
 
-
 ```{r tax-monthly, echo=FALSE}
 ggplot(total_tax, aes(x = Date, y = tax_mill)) +
   geom_line() +
@@ -102,29 +100,18 @@ ggplot(total_tax, aes(x = Date, y = tax_mill)) +
   )+theme_economist()
 ```
 
-
-::: notes
+:::: notes
 There is sharp dip from early 2018 till 2019 in overall revenue from all services. Why there is a dip in `tax_output`, we shall explore this issue while doing separate analaysis for `Cellular Telephone` sector. This sector generated more than 31% total services tax in the given period, while its share in fiscal year 2020, 2021 and ongoing 2022 is around 29%. In 2018, tax on the sector was brought at par with other sector and this led to a fall in revenue and tax was again raised in 2019. :::
 
-
-
-
-
 ## Forecasting overall tax_output
-There are more than 170 services and if one needs to forecast , it is better to use some statistical forecasting methods in simple possible way. There are several methods but most commonly used methods are 
-- Naive Forecasting
-- Autoregressive Moving Average Models (ARIMA Models)
-- Exponential Smoothing Methods (ETS) and
-- Artificial Nueral Network (ANN)
-## ARIMA models 
-ARIMA models are one of the most useful. We shall apply all these four but results will be discussed mainly on the basis of ARIMA models. Monthly forecasting is more reliable as sufficient data are availbe but requirement is to provide annual forecasting for which we have around 10 observations. These 10 observations serve the purpose as per Hyndman book __Forecasting : Principle and Practice__. According to him
 
+There are more than 170 services and if one needs to forecast , it is better to use some statistical forecasting methods in simple possible way. There are several methods but most commonly used methods are - Naive Forecasting - Autoregressive Moving Average Models (ARIMA Models) - Exponential Smoothing Methods (ETS) and - Artificial Nueral Network (ANN) \## ARIMA models ARIMA models are one of the most useful. We shall apply all these four but results will be discussed mainly on the basis of ARIMA models. Monthly forecasting is more reliable as sufficient data are availbe but requirement is to provide annual forecasting for which we have around 10 observations. These 10 observations serve the purpose as per Hyndman book **Forecasting : Principle and Practice**. According to him
 
 ::: notes
 > Some textbooks provide rules-of-thumb giving minimum sample sizes for various time series models. These are misleading and unsubstantiated in theory or practice. Further, they ignore the underlying variability of the data and often overlook the number of parameters to be estimated as well. There is, for example, no justification whatever for the magic number of 30 often given as a minimum for ARIMA modelling. The only theoretical limit is that we need more observations than there are parameters in our forecasting model. However, in practice, we usually need substantially more observations than that.
 :::
-We are providing both monthly and annual forecast with the methods mentioned above.
 
+We are providing both monthly and annual forecast with the methods mentioned above.
 
 ## Annual Forecasting
 
@@ -154,10 +141,10 @@ fcast2
 accuracy(NN)
 ```
 
-
 ## Monthly forecasting for total tax over time
- In this case data quite smooth except one dip which was due to Supreme Court decision to make cellular taxes the same as in other services. As monthly data are available and more granularity always helps to get better insight, therefore, forecasting with three methods : seasonal naive, arima and ANN is given below.  
-### Seasonal Naive Forecasting
+
+In this case data quite smooth except one dip which was due to Supreme Court decision to make cellular taxes the same as in other services. As monthly data are available and more granularity always helps to get better insight, therefore, forecasting with three methods : seasonal naive, arima and ANN is given below.\
+\### Seasonal Naive Forecasting
 
 ```{r forecasting, echo=FALSE}
 fit_SN <- snaive(total_tax$tax_mill)
@@ -170,6 +157,7 @@ forecast::snaive((total_tax$tax_mill), h = 24) %>% autoplot()
 ```
 
 ### Autoregressive Integrated Moving Average Models
+
 ```{r forecasting-arima, echo=FALSE}
 fit_ARIMA <- auto.arima(total_tax$tax_mill, stepwise = FALSE, approximation = FALSE)
 summary(fit_ARIMA)
@@ -178,6 +166,7 @@ auto.arima(total_tax$tax_mill) %>% forecast(h=24)  %>% kable(digits = 2, caption
 
 
 ```
+
 ### Artificial Nueral Network Forecasting
 
 ```{r, echo=FALSE}
@@ -190,8 +179,8 @@ accuracy(SNN) %>% kable(digits = 2,caption = "Forecast accuracy using ANN")
 
 ```
 
-
 ## Service sector share in total tax by service category
+
 Top 10 sectors tax share is almost 65% .
 
 ```{r tables, echo=FALSE}
@@ -237,11 +226,11 @@ ggplot(top10, aes( x=SCODE,y=percent_share))+
 sum(top10$percent_share)
 
 ```
+
 This indicates that 65% of tax share is from 10 services while remaining 35% is from remaining almost 166 services .
 
-
 ## Forecasting for Service having Tax rate 16%
- 
+
 ```{r }
 #| warning: false
 #| message: false
@@ -256,6 +245,7 @@ tax_at_all %>% summarise(sum(tax_at_all$total))
 ```
 
 ### Tax forecast for services having 16% tax-rate
+
 Top 10 sectors with maximum tax collection with 16% rates applied are as follows.
 
 ```{r}
@@ -270,7 +260,6 @@ tax_rate %>% group_by(SCODE)%>% filter( rate==16) %>%
 ```
 
 ## 
-
 
 ```{r}
 #| warning: false
@@ -301,9 +290,8 @@ ggplot(tax_rate_yr,aes(year, tax_by_serv))+geom_line()+labs(
 auto.arima(tax_rate_yr$tax_by_serv, stepwise = FALSE, approximation = FALSE) %>% forecast(h=1)
 
 ```
-So __Rs. 60.5__ billion rupees tax will be collected from sectors where 16% tax rate is appplied. If tax rate is reduced by 1%, it will reduce tax collection by __Rs. 378__ million in a year. 
-Now we calculate impact of loss in revenue if tax is reduced by 1% in top 10 sectors having tax rate of 16%.
 
+So **Rs. 60.5** billion rupees tax will be collected from sectors where 16% tax rate is appplied. If tax rate is reduced by 1%, it will reduce tax collection by **Rs. 378** million in a year. Now we calculate impact of loss in revenue if tax is reduced by 1% in top 10 sectors having tax rate of 16%.
 
 ```{r }
 #| warning: false
@@ -326,3 +314,4 @@ ggplot(top_10_yr,aes(year, tax_by_serv))+geom_line()+labs(
   )+theme_economist()
 auto.arima(top_10_yr$tax_by_serv, stepwise = FALSE, approximation = FALSE) %>% forecast(h=1)
 ```
+::::

@@ -1,0 +1,619 @@
+---
+title: "EC614: Macroeconomic Forecasting"
+subtitle: "Lecture 1: Introduction to Macroeconomic Time Series"
+author: "Prof. Dr. Zahid Asghar"
+institute: "School of Economics, Quaid-i-Azam University"
+date: today
+format:
+  revealjs:
+    theme: [default, custom.css]
+    slide-number: true
+    chalkboard: true
+    preview-links: auto
+    logo: images/qau_logo.png
+    footer: "EC614: Macroeconomic Forecasting | QAU"
+execute:
+  warning: false
+  message: false
+---
+
+## Course Overview {background-color="#1e3a8a"}
+
+:::: {.columns}
+
+::: {.column width="30%"}
+![](images/zahid1.png){width="300"}
+:::
+
+::: {.column width="70%"}
+**EC614: Macroeconomic Forecasting**
+
+- **Focus**: Multivariate econometric methods for policy analysis
+- **Core Topics**: VAR, SVAR, Cointegration, VECM, Panel Data
+- **Tools**: R, Python, Real macroeconomic data
+- **Applications**: Central banking, policy transmission, forecasting
+
+*"Understanding how economic variables interact over time"*
+:::
+
+::::
+
+## What Makes Macroeconomic Data Special? {.smaller}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Traditional Data Characteristics:**
+- Cross-sectional independence
+- Fixed relationships
+- Static analysis
+
+**Time Series Properties:**
+- **Temporal dependence**
+- **Trending behavior** 
+- **Seasonal patterns**
+- **Structural breaks**
+- **Cointegration relationships**
+:::
+
+::: {.column width="50%"}
+**Key Questions We'll Answer:**
+
+1. How do we model economic relationships that evolve over time?
+2. What happens when monetary policy changes?
+3. How do external shocks transmit through the economy?
+4. Can we distinguish temporary from permanent effects?
+5. How do we forecast in real-time?
+:::
+
+::::
+
+## The Four Components of Time Series {background-color="#f8fafc"}
+
+Every macroeconomic time series can be decomposed into:
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**1. Trend (T~t~)**
+- Long-term direction
+- GDP growth, inflation trends
+
+**2. Seasonal (S~t~)**
+- Regular patterns within year
+- Agricultural output, energy consumption
+
+**3. Cyclical (C~t~)**
+- Business cycle fluctuations
+- Recessions, expansions
+
+**4. Irregular (I~t~)**
+- Random shocks
+- Natural disasters, policy surprises
+:::
+
+::: {.column width="50%"}
+**Decomposition Models:**
+
+**Additive:** Y~t~ = T~t~ + S~t~ + C~t~ + I~t~
+
+**Multiplicative:** Y~t~ = T~t~ × S~t~ × C~t~ × I~t~
+
+Choice depends on whether seasonal fluctuations are constant (additive) or proportional to trend level (multiplicative).
+:::
+
+::::
+
+## Pakistan's GDP: A Classic Example
+
+::: {.panel-tabset}
+
+## R Code
+
+```{r}
+#| echo: true
+#| eval: false
+library(tidyverse)
+library(fpp3)
+library(lubridate)
+
+# Create sample Pakistan GDP data (quarterly)
+pak_gdp <- tibble(
+  date = seq.Date(from = as.Date("2000-01-01"), 
+                  to = as.Date("2023-10-01"), by = "quarter"),
+  gdp = 100 * exp(0.015 * 1:length(date)) * 
+        (1 + 0.05 * sin(2 * pi * (1:length(date))/4)) + 
+        rnorm(length(date), 0, 2)
+) %>%
+  as_tsibble(index = date)
+
+# Decomposition
+pak_gdp %>%
+  model(STL(gdp)) %>%
+  components() %>%
+  autoplot() +
+  labs(title = "Pakistan GDP Decomposition",
+       subtitle = "Trend, Seasonal, and Remainder Components",
+       y = "GDP (Billions PKR)")
+```
+
+## Python Code
+
+```{python}
+#| echo: true
+#| eval: false
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from statsmodels.tsa.seasonal import seasonal_decompose
+import seaborn as sns
+
+# Create sample Pakistan GDP data
+dates = pd.date_range('2000-01-01', '2023-10-01', freq='Q')
+trend = 100 * np.exp(0.015 * np.arange(len(dates)))
+seasonal = 1 + 0.05 * np.sin(2 * np.pi * np.arange(len(dates)) / 4)
+noise = np.random.normal(0, 2, len(dates))
+gdp = trend * seasonal + noise
+
+pak_gdp = pd.Series(gdp, index=dates, name='gdp')
+
+# Decomposition
+decomposition = seasonal_decompose(pak_gdp, model='additive')
+fig, axes = plt.subplots(4, 1, figsize=(12, 10))
+decomposition.observed.plot(ax=axes[0], title='Pakistan GDP')
+decomposition.trend.plot(ax=axes[1], title='Trend')
+decomposition.seasonal.plot(ax=axes[2], title='Seasonal')
+decomposition.resid.plot(ax=axes[3], title='Residual')
+plt.tight_layout()
+plt.show()
+```
+
+## Key Insights
+
+**What We Learn:**
+
+- **Trend**: Pakistan's GDP shows steady growth with some volatility
+- **Seasonal**: Agricultural effects create regular quarterly patterns  
+- **Cyclical**: Business cycle effects embedded in trend-cycle
+- **Irregular**: Policy shocks, external events create noise
+
+**Why This Matters:**
+- Understanding components helps design appropriate models
+- Different components require different forecasting approaches
+- Policy effects vary by component (temporary vs permanent)
+
+:::
+
+## Why Multivariate Methods Matter {background-color="#fef3c7"}
+
+:::: {.columns}
+
+::: {.column width="60%"}
+**The Macroeconomic Reality:**
+
+- Economic variables don't move in isolation
+- GDP ↔ Inflation ↔ Interest Rates ↔ Exchange Rates
+- **System-wide thinking** is essential
+
+**Univariate Limitations:**
+- Ignores cross-variable relationships
+- Cannot analyze policy transmission
+- Misses structural relationships
+- Poor out-of-sample forecasting
+:::
+
+::: {.column width="40%"}
+**Course Progression:**
+
+**Weeks 1-5:** Univariate foundations
+- Time series properties
+- ARIMA models
+- Stationarity testing
+
+**Weeks 6-12:** Multivariate core
+- **VAR**: System modeling
+- **SVAR**: Structural analysis  
+- **Cointegration**: Long-run relationships
+- **VECM**: Error correction
+- **Panel Data**: Cross-country analysis
+:::
+
+::::
+
+## Exploring Macroeconomic Relationships
+
+::: {.panel-tabset}
+
+## R Visualization
+
+```{r}
+#| echo: true
+#| eval: false
+library(fredr)
+library(patchwork)
+
+# Set FRED API key (you need to register)
+# fredr_set_key("YOUR_API_KEY")
+
+# Get US macro data for demonstration
+macro_data <- tibble(
+  date = seq.Date(from = as.Date("2000-01-01"), 
+                  to = as.Date("2023-12-01"), by = "month"),
+  gdp_growth = rnorm(length(date), 2.5, 1.5),
+  inflation = 2 + 0.5 * sin(2 * pi * (1:length(date))/12) + 
+              rnorm(length(date), 0, 0.8),
+  interest_rate = 3 + 0.3 * lag(inflation, 1) + 
+                  rnorm(length(date), 0, 0.5),
+  unemployment = 6 - 0.2 * gdp_growth + rnorm(length(date), 0, 0.3)
+) %>%
+  pivot_longer(-date, names_to = "variable", values_to = "value")
+
+# Create dashboard
+p1 <- macro_data %>%
+  ggplot(aes(x = date, y = value, color = variable)) +
+  geom_line(size = 1) +
+  facet_wrap(~variable, scales = "free_y", ncol = 2) +
+  theme_minimal() +
+  labs(title = "Macroeconomic Indicators Dashboard",
+       subtitle = "Interconnected movements over time") +
+  theme(legend.position = "none")
+
+print(p1)
+```
+
+## Python Visualization
+
+```{python}
+#| echo: true
+#| eval: false
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from datetime import datetime
+
+# Create synthetic macro data
+np.random.seed(42)
+dates = pd.date_range('2000-01-01', '2023-12-01', freq='M')
+n = len(dates)
+
+# Generate correlated macroeconomic variables
+gdp_growth = np.random.normal(2.5, 1.5, n)
+inflation = 2 + 0.5 * np.sin(2 * np.pi * np.arange(n) / 12) + np.random.normal(0, 0.8, n)
+interest_rate = 3 + 0.3 * np.roll(inflation, 1) + np.random.normal(0, 0.5, n)
+unemployment = 6 - 0.2 * gdp_growth + np.random.normal(0, 0.3, n)
+
+macro_df = pd.DataFrame({
+    'GDP Growth': gdp_growth,
+    'Inflation': inflation,
+    'Interest Rate': interest_rate,
+    'Unemployment': unemployment
+}, index=dates)
+
+# Create subplot dashboard
+fig, axes = plt.subplots(2, 2, figsize=(15, 10))
+axes = axes.ravel()
+
+for i, col in enumerate(macro_df.columns):
+    axes[i].plot(macro_df.index, macro_df[col], linewidth=2)
+    axes[i].set_title(f'{col}', fontsize=14, fontweight='bold')
+    axes[i].grid(True, alpha=0.3)
+
+plt.suptitle('Macroeconomic Indicators Dashboard', fontsize=16, fontweight='bold')
+plt.tight_layout()
+plt.show()
+
+# Correlation heatmap
+plt.figure(figsize=(8, 6))
+correlation_matrix = macro_df.corr()
+sns.heatmap(correlation_matrix, annot=True, cmap='RdBu_r', center=0,
+            square=True, cbar_kws={'label': 'Correlation'})
+plt.title('Macroeconomic Variables Correlation Matrix')
+plt.tight_layout()
+plt.show()
+```
+
+## Key Patterns
+
+**Cross-Variable Relationships:**
+
+- **Phillips Curve**: Inflation ↔ Unemployment (negative correlation)
+- **Taylor Rule**: Interest rates respond to inflation
+- **Okun's Law**: GDP growth ↔ Unemployment (negative correlation)
+
+**Why Correlation Matrices Matter:**
+- Reveal contemporaneous relationships
+- Guide VAR model specification
+- Identify potential cointegration relationships
+- Inform structural identification in SVAR models
+
+:::
+
+## Data Sources for Macroeconomic Analysis {.smaller}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Pakistan Data Sources:**
+
+- **State Bank of Pakistan (SBP)**
+  - Monetary policy rates
+  - Exchange rates
+  - Money supply (M0, M1, M2)
+  - Banking sector data
+
+- **Pakistan Bureau of Statistics (PBS)**
+  - GDP components
+  - CPI, inflation indices
+  - Employment statistics
+  - Industrial production
+
+- **Ministry of Finance**
+  - Fiscal indicators
+  - Government debt
+  - Budget data
+:::
+
+::: {.column width="50%"}
+**International Sources:**
+
+- **Federal Reserve Economic Data (FRED)**
+  - High-quality, API access
+  - 800,000+ time series
+
+- **World Bank Open Data**
+  - Cross-country panels
+  - Development indicators
+
+- **IMF Data**
+  - International Financial Statistics
+  - Balance of payments
+
+- **OECD Statistics**
+  - Advanced economy indicators
+:::
+
+::::
+
+## Accessing Data Programmatically
+
+::: {.panel-tabset}
+
+## R Data Access
+
+```{r}
+#| echo: true
+#| eval: false
+# Multiple data source packages
+library(fredr)      # FRED data
+library(WDI)        # World Bank
+library(IMFData)    # IMF
+library(OECD)       # OECD
+library(readxl)     # Local files
+
+# FRED example
+fredr_set_key("YOUR_API_KEY")
+us_gdp <- fredr(series_id = "GDP")
+
+# World Bank example  
+pak_indicators <- WDI(
+  country = "PK",
+  indicator = c("NY.GDP.MKTP.CD", "FP.CPI.TOTL.ZG"),
+  start = 2000,
+  end = 2023
+)
+
+# Local Pakistan data
+sbp_data <- read_excel("data/sbp_monetary_data.xlsx")
+
+# Combine and clean
+macro_panel <- pak_indicators %>%
+  left_join(sbp_data, by = "year") %>%
+  mutate(across(where(is.numeric), ~na_if(., ""))) %>%
+  drop_na()
+```
+
+## Python Data Access
+
+```{python}
+#| echo: true
+#| eval: false
+import pandas as pd
+import yfinance as yf
+import pandas_datareader as pdr
+from fredapi import Fred
+import wbdata
+import quandl
+
+# FRED API
+fred = Fred(api_key='YOUR_API_KEY')
+us_gdp = fred.get_series('GDP', start='2000-01-01')
+
+# World Bank
+pak_gdp = wbdata.get_data('NY.GDP.MKTP.CD', country='PK')
+
+# Yahoo Finance for financial data
+stock_data = yf.download('^KSE100', start='2000-01-01')
+
+# Quandl for additional sources
+quandl.ApiConfig.api_key = "YOUR_API_KEY"
+commodity_data = quandl.get("OPEC/ORB", start_date="2000-01-01")
+
+# Local files
+sbp_data = pd.read_excel('data/sbp_monetary_data.xlsx')
+
+# Merge datasets
+macro_data = pd.merge(pak_gdp, sbp_data, on='date', how='outer')
+macro_data = macro_data.dropna()
+```
+
+## Best Practices
+
+**Data Collection Guidelines:**
+
+1. **Version Control**: Track data vintage and revisions
+2. **Documentation**: Metadata for each series
+3. **Frequency Alignment**: Monthly, quarterly conversions
+4. **Missing Values**: Interpolation vs exclusion
+5. **Seasonal Adjustment**: When and how to apply
+
+**Common Pitfalls:**
+- Using different seasonal adjustment methods
+- Mixing real vs nominal variables
+- Ignoring data revisions
+- Inconsistent frequencies
+- Missing structural breaks
+
+:::
+
+## Course Roadmap: From Simple to Complex {background-color="#f0fdf4"}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Phase 1: Foundations (Weeks 1-5)**
+- Time series properties
+- Stationarity and unit roots  
+- ARIMA modeling
+- Structural breaks
+
+**Phase 2: Multivariate Core (Weeks 6-12)**
+- VAR: System relationships
+- SVAR: Structural identification
+- Cointegration: Long-run relationships
+- VECM: Error correction dynamics
+- Panel Data: Cross-country analysis
+:::
+
+::: {.column width="50%"}
+**Phase 3: Modern Methods (Weeks 13-15)**
+- Machine learning integration
+- High-dimensional forecasting
+- Nowcasting techniques
+- Policy applications
+
+**Assessment Strategy:**
+- 25% Midterm (Traditional methods)
+- 30% Final (Comprehensive)
+- 20% Labs (Hands-on practice)
+- 20% Research project
+- 5% Participation
+:::
+
+::::
+
+## Next Week Preview: Time Series Properties {.smaller}
+
+**What We'll Cover in Lecture 2:**
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Theoretical Concepts:**
+- Stationarity (weak vs strong)
+- Autocovariance functions
+- White noise processes
+- Random walks vs trend-stationary
+
+**Practical Skills:**
+- ACF and PACF interpretation
+- Unit root testing
+- Data transformation techniques
+:::
+
+::: {.column width="50%"}
+**Preparation:**
+- **Read**: FPP3 Chapters 2-3, Enders Ch. 2
+- **Install**: Required R/Python packages
+- **Download**: Practice datasets from course website
+- **Lab**: Stationarity testing with Pakistan macro data
+
+**Key Question**: "How do we know if our data is suitable for modeling?"
+:::
+
+::::
+
+## Software Setup and Resources {background-color="#fef2f2"}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Required Software:**
+
+**R Environment:**
+```r
+install.packages(c(
+  "fpp3", "forecast", "vars", 
+  "urca", "tsDyn", "fredr",
+  "tidyverse", "lubridate"
+))
+```
+
+**Python Environment:**
+```python
+pip install pandas numpy matplotlib
+pip install statsmodels scikit-learn
+pip install fredapi yfinance wbdata
+```
+:::
+
+::: {.column width="50%"}
+**Key Resources:**
+
+- **Course Website**: All slides, data, assignments
+- **Textbooks**: FPP3 (free online), Enders (library)
+- **Software Help**: Office hours, online tutorials
+- **Data Sources**: FRED, World Bank APIs
+- **Discussion Forum**: Course Q&A platform
+
+**Office Hours**: Tuesday & Thursday 2-4 PM
+:::
+
+::::
+
+## Questions and Discussion {background-color="#1e3a8a"}
+
+:::: {.columns}
+
+::: {.column width="60%"}
+**Key Takeaways from Today:**
+
+1. Macroeconomic time series have unique properties requiring specialized methods
+2. Decomposition reveals trend, seasonal, cyclical, and irregular components  
+3. Multivariate methods are essential for understanding economic systems
+4. We'll progress from univariate foundations to advanced policy applications
+5. Both R and Python provide excellent tools for time series analysis
+:::
+
+::: {.column width="40%"}
+**Coming Up:**
+
+- **Next Lecture**: Time series properties and stationarity
+- **Lab Session**: Hands-on data exploration
+- **Assignment 1**: Due next Friday
+- **Reading**: FPP3 Ch. 2-3
+
+**Questions?**
+
+Contact: zahid.asghar@qau.edu.pk
+:::
+
+::::
+
+---
+
+## References {.smaller}
+
+**Primary Textbooks:**
+- Hyndman, R.J., & Athanasopoulos, G. (2021). *Forecasting: principles and practice*, 3rd edition. OTexts.
+- Enders, W. (2014). *Applied Econometric Time Series*, 4th edition. Wiley.
+
+**Key Papers:**
+- Sims, C.A. (1980). Macroeconomics and reality. *Econometrica*, 48(1), 1-48.
+- Engle, R.F., & Granger, C.W.J. (1987). Co-integration and error correction. *Econometrica*, 55(2), 251-276.
+
+**Software Documentation:**
+- R: [fpp3.com](https://fpp3.com), [CRAN Task View: Time Series](https://cran.r-project.org/web/views/TimeSeries.html)
+- Python: [statsmodels.org](https://www.statsmodels.org/), [pandas.pydata.org](https://pandas.pydata.org/)
+
+---

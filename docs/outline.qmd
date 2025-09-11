@@ -12,7 +12,7 @@ execute:
 
 ::: columns
 ::: {.column width="30%"}
-![](images/zahid.png){width="512"}
+![](images/zahid1.png){width="512"}
 :::
 
 ::: {.column width="70%"}
@@ -24,19 +24,35 @@ Quaid-i-Azam University, Islamabad
 :::
 :::
 
-## Course overview and learning outcomes
+## Course Overview and Learning Outcomes
 
-Research in economics, business and finance requires extensive use of sophisticated and refined quantitative skills. In this course you will be introduced to the models and econometric issues that occur when dealing with time series data. Applications of time series methods to economics and finance will be stressed. Students completing this class will be able to decompose time series into its constituent parts, apply the relevant econometric model to data, be able to understand and deal with underlying dynamic macroeconometric models and be able to estimate and interpret univariate and multivariate time series econometric models. Students will also be able to use estimated time series models for policy analysis and forecasting. Students will acquire competence in the tools and methods used in modern econometric research with a focus on theoretical knowledge, critical reasoning, problem solving, interpretation and evaluation. X-12 ARIMA and seasonal adjustment of macroeconomic series will also be learnt.
+Research in economics, business and finance requires extensive use of sophisticated and refined quantitative skills. This course provides a comprehensive introduction to modern macroeconomic forecasting methods, combining traditional econometric approaches with contemporary machine learning techniques. Students will master the art and science of forecasting economic variables, with special attention to emerging sectors like renewable energy, technological adoption, and digital economies that often defy conventional modeling approaches.
+
+**Upon completion, students will be able to:**
+- Decompose complex time series into constituent components using advanced visualization and statistical methods
+- Apply appropriate econometric models to various types of macroeconomic data
+- Understand and implement dynamic macroeconometric models for policy analysis
+- Estimate and interpret both univariate and multivariate time series models
+- Utilize machine learning techniques for non-linear and high-dimensional forecasting problems
+- Handle unconventional data sources and forecast technology-driven variables (solar energy adoption, digital payment systems, etc.)
+- Conduct seasonal adjustment using X-12 ARIMA and advanced methods
+- Integrate multiple data sources for robust forecasting frameworks
+- Critically evaluate forecast performance and uncertainty
 
 ## Instructional Method
 
-**Structure** -- The course has 3 main parts: evaluating patterns using visualization, capturing trend and seasonality to model univariate and multivariate data, and learning each and every step by doing using R and STATA software.
+**Structure** -- The course integrates three complementary approaches: 
 
-## Books
+1. **Traditional Econometrics**: Foundation in time series analysis and classical forecasting 
 
-Main books I will follow are :
+2. **Modern Machine Learning**: Advanced techniques for complex, non-linear patterns 
 
-. . .
+3. **Applied Innovation**: Real-world applications including renewable energy forecasting, technology adoption curves, and digital economy indicators 
+
+
+Students will learn through hands-on practice using R, Python, and specialized forecasting software, working with both conventional macroeconomic data and emerging technology-related datasets.
+
+## Required Texts and Resources
 
 ::: columns
 ::: {.column width="33%"}
@@ -52,59 +68,32 @@ Main books I will follow are :
 :::
 :::
 
-# Article [How is machine learning useful for macroeconomic forecasting?](https://onlinelibrary.wiley.com/doi/abs/10.1002/jae.2910)
+**Key Articles:**
+- [How is machine learning useful for macroeconomic forecasting?](https://onlinelibrary.wiley.com/doi/abs/10.1002/jae.2910)
+- Recent papers on renewable energy forecasting and technology adoption models
+- Central bank nowcasting methodologies
 
-## Course contents
 
-+-------------+-----------------------------------------------------------------+---------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------+
-| **Week**    | **Title**                                                       | **Topics covered**                                                                          | **Essential reading**                                                            |
-+:============+:================================================================+:============================================================================================+:=================================================================================+
-| 1           | Introduction to Macroeconomic Series(plotting with Excel and R) | Visualizing and assessing four time series component                                        | Chapter 1 of FPP3 and Doing Economics                                            |
-+-------------+-----------------------------------------------------------------+---------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------+
-| 2           | Exponential Smoothing                                           | -   Exploring and visualizing time series                                                   |                                                                                  |
-|             |                                                                 |                                                                                             |                                                                                  |
-|             |                                                                 | -   Simple benchmark methods for forecasting                                                |                                                                                  |
-|             |                                                                 |                                                                                             |                                                                                  |
-|             |                                                                 | -   Decomposition of Series                                                                 |                                                                                  |
-+-------------+-----------------------------------------------------------------+---------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------+
-|             | Concept of dependence and independence                          | -   Measuring dependence in a time series: The autocovariance and autocorrelation functions |                                                                                  |
-|             |                                                                 |                                                                                             |                                                                                  |
-|             |                                                                 | -   The partial autocorrelation function.                                                   |                                                                                  |
-|             |                                                                 |                                                                                             |                                                                                  |
-|             |                                                                 | -   Estimation of ACF and PACF.                                                             |                                                                                  |
-|             |                                                                 |                                                                                             |                                                                                  |
-|             |                                                                 | -   ARMA, ARIMA, SARIMA model                                                               |                                                                                  |
-+-------------+-----------------------------------------------------------------+---------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------+
-| 3           |                                                                 |                                                                                             |                                                                                  |
-+-------------+-----------------------------------------------------------------+---------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------+
-| 4           |                                                                 | Continue                                                                                    |                                                                                  |
-+-------------+-----------------------------------------------------------------+---------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------+
-| 5           | Statistical Forecasting                                         | Advanced forecasting methods                                                                |                                                                                  |
-|             |                                                                 |                                                                                             |                                                                                  |
-|             |                                                                 | Measuring forecast accuracy                                                                 |                                                                                  |
-|             |                                                                 |                                                                                             |                                                                                  |
-|             |                                                                 | Choosing the best method                                                                    |                                                                                  |
-+-------------+-----------------------------------------------------------------+---------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------+
-| 7           | Labs                                                            | Labs with Cement Production, M2, CPI and Sales Tax data                                     | Application of all the concepts learnt so far                                    |
-+-------------+-----------------------------------------------------------------+---------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------+
-| 7           | Trends and Nonstationarity                                      | Stochastic vs Deterministic Trends                                                          | Ch4. Walter Ender Applied Econometrics                                           |
-+-------------+-----------------------------------------------------------------+---------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------+
-| 8           | Continued                                                       | continued                                                                                   | continued                                                                        |
-+-------------+-----------------------------------------------------------------+---------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------+
-| 9           | VAR, SVAR models                                                | Vector Autoregression                                                                       | JEP paper VAR and its reproducibility                                            |
-+-------------+-----------------------------------------------------------------+---------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------+
-| 10          | continued                                                       | continued                                                                                   |                                                                                  |
-+-------------+-----------------------------------------------------------------+---------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------+
-| 11          | Cointegration                                                   |                                                                                             |                                                                                  |
-+-------------+-----------------------------------------------------------------+---------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------+
-| 12          | Panel Data                                                      | Long Panel Data                                                                             | With applications with R and learning web API data use                           |
-+-------------+-----------------------------------------------------------------+---------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------+
-| 13          | Panel Data Cointegration                                        |                                                                                             | WDI and other public data sets                                                   |
-+-------------+-----------------------------------------------------------------+---------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------+
-| 14          | Machine Learning and Macroeconomic Forecasting                  |                                                                                             | [ML&macro forecasting](https://onlinelibrary.wiley.com/doi/abs/10.1002/jae.2910) |
-+-------------+-----------------------------------------------------------------+---------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------+
-| 15          | Continued                                                       |                                                                                             |                                                                                  |
-+-------------+-----------------------------------------------------------------+---------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------+
+## Detailed Course Schedule
+
+| **Week** | **Topic** | **Content & Skills** | **Readings & Applications** |
+|---:|---|---|---|
+| **1** | Introduction to Modern Macroeconomic Forecasting | • Four components of time series analysis<br>• Data visualization with R/Python<br>• Introduction to unconventional data sources | • FPP3 Chapter 1<br>• Doing Economics Ch. 1–2<br>• Lab: Solar energy production data exploration |
+| **2** | Time Series Decomposition & Exponential Smoothing | • Classical decomposition methods<br>• STL decomposition<br>• Exponential smoothing family<br>• Handling irregular seasonality in tech adoption | • FPP3 Chapters 3–8<br>• Case study: Wind power generation forecasting<br>• Seasonal patterns in renewable energy |
+| **3** | Dependence Structures & Correlation Analysis | • Autocorrelation and partial autocorrelation<br>• Non-linear dependence detection<br>• Cross-correlation analysis for technology spillovers | • Enders Ch. 2<br>• Application: Cryptocurrency adoption patterns<br>• Lab: EV sales dependencies |
+| **4** | ARIMA Modeling & Extensions | • Box–Jenkins methodology<br>• ARIMA model selection and diagnosis<br>• SARIMA for seasonal data<br>• Regime-switching models for technology transitions | • FPP3 Chapters 9–10<br>• Enders Ch. 2–3<br>• Case study: Smart grid adoption forecasting |
+| **5** | Advanced Forecasting Methods & Accuracy Assessment | • Dynamic regression models<br>• Forecast combination techniques<br>• Forecast evaluation metrics<br>• Handling structural breaks | • FPP3 Chapters 10–12<br>• Diebold–Mariano test applications<br>• Lab: Solar panel cost forecasting |
+| **6** | Applied Forecasting Laboratory | • Integrated lab session with multiple datasets<br>• Pakistan macroeconomic indicators<br>• Renewable energy production forecasting<br>• Technology sector applications | • Real-time data: Cement, M2, CPI<br>• Energy sector: Solar/wind capacity<br>• Technology adoption: Mobile banking, e-commerce |
+| **7** | Nonstationarity & Unit Root Analysis | • Stochastic vs deterministic trends<br>• Unit root tests (ADF, PP, KPSS)<br>• Structural breaks and disruptions | • Enders Ch. 4<br>• Technology learning curves analysis<br>• Lab: Battery cost decline modeling |
+| **8** | Multivariate Time Series: VAR Models | • Vector Autoregression (VAR)<br>• Impulse response analysis<br>• Forecast error variance decomposition<br>• Technology shock transmission | • Classic VAR papers<br>• Sims (1980) replication<br>• Energy–economy interactions |
+| **9** | Structural VAR & Advanced Multivariate Methods | • Identification strategies in SVAR<br>• Long-run restrictions<br>• Time-varying parameter models | • Modern SVAR literature<br>• Technology adoption spillovers<br>• Green technology policy impacts |
+| **10** | Cointegration & Error Correction Models | • Johansen cointegration methodology<br>• Vector Error Correction Models (VECM)<br>• Long-run relationships in technology markets | • Enders Ch. 6<br>• Energy prices & renewable adoption<br>• Lab: EV & charging infrastructure |
+| **11** | Panel Data Methods for Forecasting | • Dynamic panel models<br>• Panel cointegration<br>• Cross-sectional dependence<br>• Country-specific adoption patterns | • Cross-country diffusion studies<br>• WDI renewable indicators<br>• Global solar capacity forecasting |
+| **12** | Machine Learning for Macroeconomic Forecasting I | • Ridge, LASSO, Elastic Net<br>• Principal Component Analysis for forecasting<br>• Factor models and FAVAR<br>• Text data & sentiment analysis | • Coulombe et al. (2022)<br>• High-dimensional solar irradiance data<br>• Web scraping energy sentiment |
+| **13** | Machine Learning for Macroeconomic Forecasting II | • Random Forest & tree-based methods<br>• Neural networks for time series<br>• Deep learning applications<br>• Ensemble methods and model averaging | • Recent ML forecasting papers<br>• Weather data for renewables<br>• Satellite data for economic nowcasting |
+| **14** | Nowcasting & Real-time Forecasting | • Mixed-frequency data models (MIDAS)<br>• Google Trends & alternative data<br>• Real-time data challenges<br>• Nowcasting with unconventional indicators | • Central bank nowcasting models<br>• COVID-19 economic tracking innovations<br>• High-frequency energy market indicators |
+| **15** | Final Projects & Advanced Applications | • Student project presentations<br>• Forecast combination strategies<br>• Policy simulation & scenario analysis<br>• Climate econometrics & carbon forecasting | • Individual forecasting projects<br>• Technology sector applications<br>• Climate–economy modeling<br>• Peer review & methodology critique |
+
 
 ```{r}
 #| label: setup
@@ -115,38 +104,30 @@ library(patchwork)
 library(fontawesome)
 library(gapminder)
 library(scales)
+library(forecast)
+library(prophet)
 ```
 
-## Data Science
-
--   [You go into data analysis with the tools you know, not the tools you need]{.hi}
-
--   The next 2-3 weeks are all about giving you the tools you need
-
-    -   Admittedly, a bit before you know what you need them *for*
-
--   We will extend them as we learn specific models
-
-## R
+## Why R and Python for Modern Forecasting?
 
 ::: columns
 ::: {.column width="50%"}
--   **Free** and **open source**
+-   **Free** and **open source** with vast forecasting ecosystem
 
--   A very large community
+-   Cutting-edge packages for modern forecasting:
+    -   `fable` for tidy forecasting framework
+    -   `forecast` for classical methods
+    -   `tidymodels` for machine learning integration
+    -   `torch` for deep learning (when needed)
 
-    -   Written by statisticians for statistics
-    -   Most packages are written for `R` first
+-   Handles any data format including:
+    -   Satellite imagery for economic nowcasting
+    -   Social media sentiment data
+    -   High-frequency energy market data
 
--   Can handle virtually any data format
+-   Seamless integration with Python and cloud platforms
 
--   Makes replication easy
-
--   Can integrate into documents (with `R markdown`)
-
--   R is a *language* so it can do *everything*
-
-    -   A good stepping stone to learning other languages like *Python*
+-   Reproducible research with R Markdown/Quarto
 :::
 
 ::: {.column width="50%"}
@@ -154,59 +135,117 @@ library(scales)
 :::
 :::
 
-## Excel (or Stata) Can't Do This
+## Modern Forecasting Capabilities
 
 ::: panel-tabset
-## Code
+## Traditional + ML Code
 
 ```{r}
 #| echo: true
 #| eval: false
-ggplot(data = gapminder, 
-       aes(x = gdpPercap,
-           y = lifeExp,
-           color = continent))+
-  geom_point(alpha=0.3)+
-  geom_smooth(method = "lm")+
-	scale_x_log10(breaks=c(1000,10000, 100000),
-	              label=scales::dollar)+
-	labs(x = "GDP/Capita",
-	     y = "Life Expectancy (Years)")+
-  facet_wrap(~continent)+
-  guides(color = F)+
-  theme_light()
+# Combine ARIMA with machine learning
+library(fable)
+library(tidymodels)
+
+# Solar energy forecasting with multiple methods
+solar_forecasts <- energy_data %>%
+  model(
+    arima = ARIMA(solar_production ~ temperature + sunlight_hours),
+    prophet = prophet(solar_production ~ growth() + season('day') + 
+                     regressor(temperature, sunlight_hours)),
+    rf = rand_forest() %>% 
+      set_engine("ranger") %>%
+      fit(solar_production ~ lag(solar_production, 1:7) + 
+          temperature + season + trend)
+  ) %>%
+  forecast(h = "30 days")
+
+# Ensemble forecasting
+ensemble_forecast <- solar_forecasts %>%
+  summarise(
+    point_forecast = mean(point_forecast),
+    lower_95 = quantile(distribution, 0.025),
+    upper_95 = quantile(distribution, 0.975)
+  )
 ```
 
-## Output
+## Advanced Visualization
 
 ```{r}
 #| echo: false
 #| eval: true
-ggplot(data = gapminder, 
-       aes(x = gdpPercap,
-           y = lifeExp,
-           color = continent))+
-  geom_point(alpha=0.3)+
-  geom_smooth(method = "lm")+
-	scale_x_log10(breaks=c(1000,10000, 100000),
-	              label=scales::dollar)+
-	labs(x = "GDP/Capita",
-	     y = "Life Expectancy (Years)")+
-  facet_wrap(~continent)+
-  guides(color = F)+
-  theme_light()
+# Create sample renewable energy data for visualization
+set.seed(123)
+dates <- seq.Date(from = as.Date("2020-01-01"), 
+                  to = as.Date("2023-12-31"), by = "month")
+
+renewable_data <- tibble(
+  date = dates,
+  solar = 100 + cumsum(rnorm(length(dates), 2, 5)) + 
+          20 * sin(2 * pi * (as.numeric(format(dates, "%m")) - 1) / 12),
+  wind = 80 + cumsum(rnorm(length(dates), 1.5, 4)) + 
+         15 * sin(2 * pi * (as.numeric(format(dates, "%m")) - 3) / 12),
+  total_renewable = solar + wind
+) %>%
+  pivot_longer(cols = -date, names_to = "energy_type", values_to = "capacity_mw")
+
+ggplot(renewable_data, aes(x = date, y = capacity_mw, color = energy_type)) +
+  geom_line(size = 1.2) +
+  geom_smooth(method = "loess", se = TRUE, alpha = 0.2) +
+  scale_y_continuous(labels = scales::comma_format(suffix = " MW")) +
+  scale_color_viridis_d(name = "Energy Source", 
+                        labels = c("Solar", "Total Renewable", "Wind")) +
+  labs(
+    title = "Renewable Energy Capacity Forecasting",
+    subtitle = "Combining seasonal patterns with growth trends",
+    x = "Year",
+    y = "Installed Capacity (MW)",
+    caption = "Example: Non-linear growth in renewable energy requires advanced forecasting methods"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    legend.position = "bottom"
+  )
 ```
 :::
 
-## Or This
+## Assessment and Grading
 
-::: panel-tabset
-### Input
+| Component | Weight | Description |
+|-----------|---------|-------------|
+| **Midterm Exam** | 25% | Traditional econometric methods and theory |
+| **Final Exam** | 0% | Comprehensive examination including ML methods |
+| **Lab Assignments** | 20% | Hands-on forecasting exercises (5 assignments × 4%) |
+| **Research Project** | 20% | Original forecasting study with unconventional data |
+| **Class Participation** | 5% | Active engagement and peer review activities |
 
-The average GDP per capita is `` ` r dollar(mean(gapminder$gdpPercap)) ` `` with a standard deviation of `` ` r dollar(sd(gapminder$gdpPercap)) ` ``.
+**Research Project Options:**
+- **Monetary policy transmission analysis using SVAR**
+- **International business cycle synchronization using panel VAR**
+- **Exchange rate dynamics and purchasing power parity using VECM**
+- **Inflation forecasting using factor-augmented VAR (FAVAR)**
+- **Central bank nowcasting models with mixed-frequency data**
+- **Cross-country growth convergence using panel cointegration**
 
-### Output
+## Prerequisites and Software Requirements
 
-The average GDP per capita is `r dollar(mean(gapminder$gdpPercap))` with a standard deviation of `r dollar(sd(gapminder$gdpPercap))`.
-:::
+**Prerequisites:**
+- Basic econometrics (equivalent to undergraduate econometrics course)
+- Elementary statistics and probability
+- Familiarity with Excel or basic data analysis
 
+**Software Setup:**
+- R and RStudio (primary environment)
+- Python (optional, for advanced ML applications)
+- Access to macroeconomic databases (FRED, World Bank, IMF)
+- Weather/satellite data APIs for technology applications
+
+## Office Hours and Support
+
+Regular office hours: Wednesday & Thursday 2-4 PM 
+
+Online consultation available via email scheduling (whatsapp not preferred) 
+Dedicated help sessions before major assignments 
+
+Peer learning groups encouraged for complex topics

@@ -1,0 +1,219 @@
+---
+title: "Remittances in Pakistan: Trends and Forecasting"
+author: "Zahid Asghar"
+date: "2024-12-XX"
+format: 
+  html:
+    toc: true
+    toc-depth: 2
+execute:
+  echo: true
+editor_options: 
+  chunk_output_type: console
+---
+
+## Introduction
+
+This blog post explores remittance data for Pakistan—from various countries—to understand historical trends and forecast future remittance flows. We will:
+- Load and clean the remittance data
+- Visualize remittance trends by country
+- Calculate each country’s share of total remittances
+- Forecast remittance series using several time series models
+
+We will use R packages such as **fable**, **fpp3**, **tsibble**, **dplyr**, **ggplot2**, **forecast**, and **plotly** for our analysis.
+
+---
+
+## Load Libraries and Data
+
+```{r}
+# Load necessary libraries
+library(fable)       # Forecasting tools
+library(fpp3)        # Time series analysis and forecasting
+library(tsibble)     # Time series data manipulation
+library(dplyr)       # Data manipulation
+library(ggplot2)     # Data visualization
+library(xts)         # Time series manipulation
+library(lubridate)   # Date manipulation
+library(tidyr)       # Data transformation
+library(forecast)    # Forecasting functions
+library(plotly)      # Interactive plots
+
+# Load remittance data (up to December 2024 from Karandaz)
+rmt <- read_csv("data/remittances_122024.csv")
+
+# Inspect data
+rmt |> glimpse()
+
+# Remove the first row if it is not needed and convert columns (except Period) to numeric
+rmt <- rmt[-1,] |> 
+  mutate(across(-Period, as.numeric))
+
+# Create a date column: generate dates from December 2024 to July 2010 (monthly)
+dates <- seq(as.Date("2024-12-01"), as.Date("2010-07-01"), by = "-1 month")
+rmt$date <- dates
+
+# Reorder columns so that date is first
+rmt <- rmt %>% select(-Period) %>% select(date, everything())
+```
+
+---
+
+## Data Transformation and Visualization 
+
+After loading and cleaning the data, we will transform it into a long format for easier plotting by country. We will then visualize remittance trends by country and calculate each country's share of total remittances.
+
+### Wide to Long Format
+
+```{r}
+# Convert data from wide to long format for easier plotting by country
+rmt_long <- rmt %>% 
+  pivot_longer(-date, names_to = "country", values_to = "remittances")
+
+# List distinct countries (excluding "Total" if needed)
+rmt_long |> distinct(country)
+```
+
+### Remittances by Country
+
+```{r}
+# Plot remittances for each country (excluding the "Total" column)
+rmt_long |> 
+  filter(country != "Total") |> 
+  ggplot(aes(x = date, y = remittances, color = country)) +
+  geom_line() +
+  labs(title = "Remittances by Country", x = "Date", y = "Remittances") +
+  theme_minimal()
+```
+
+### Calculate Country Share
+
+```{r}
+# Calculate each country's share of total remittances
+rmt_share <- rmt |> 
+  mutate(across(-date, ~ . / Total)) 
+
+# Convert to long format for visualization
+rmt_share_long <- rmt_share %>% 
+  pivot_longer(-date, names_to = "country", values_to = "share")
+
+# Plot share for countries with a share greater than 8%
+rmt_share_long |> 
+  filter(country != "Total", share > 0.08) |>
+  ggplot(aes(x = date, y = share, color = country)) +
+  geom_line() +
+  labs(title = "Country Share of Total Remittances", x = "Date", y = "Share") +
+  theme_minimal() -> p1
+ggplotly(p1)
+```
+
+### Interactive Plot 
+
+
+
+```{r}
+# Create an interactive plot using plotly (excluding "Total")
+p <- rmt_long |> 
+  filter(country != "Total") |>
+  ggplot(aes(x = date, y = remittances, color = country)) +
+  geom_line() +
+  labs(title = "Remittances by Country", x = "Date", y = "Remittances") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+ggplotly(p)
+```
+
+---
+
+## Time Series Forecasting
+
+### Preparing the Data as a tsibble 
+
+In this section, we will convert the long-format data into a tsibble object, which is a time series data structure in R. We will then use the Seasonal Naive (SNAIVE) model to forecast total remittances and selected countries.
+
+```{r}
+# Create a year-month index for tsibble conversion
+rmt_long <- rmt_long |> 
+  mutate(month_year = yearmonth(date))
+
+# Convert to a tsibble, keyed by country
+ts_data <- as_tsibble(rmt_long, key = country, index = month_year)
+```
+
+### Forecasting with SNAIVE
+
+We will use the Seasonal Naive (SNAIVE) model to forecast total remittances and selected countries. The SNAIVE model uses the last observed value from the same season as the forecast.
+
+```{r}
+# Forecast Total remittances using a seasonal naive (SNAIVE) model
+ts_data |> 
+  filter(country == "Total") |> 
+  model(SNAIVE(remittances ~ lag(12))) |> 
+  forecast(h = "12 months") |> 
+  autoplot(ts_data) +
+  labs(title = "12-Month Forecast for Total Remittances")
+```
+
+Forecasts for selected countries (e.g., Saudi Arabia, United Arab Emirates, USA, United Kingdom, EU Countries):
+
+```{r}
+countries <- c("Saudi.Arabia", "United.Arab.Emirates", "USA", "United.Kingdom", "EU.Countries")
+for (ctry in countries) {
+  ts_data |> 
+    filter(country == ctry) |> 
+    model(SNAIVE(remittances ~ lag(12))) |> 
+    forecast(h = "12 months") |> 
+    autoplot(ts_data) +
+    labs(title = paste("12-Month Forecast for", ctry)) -> p
+  print(p)
+}
+```
+
+### Decomposition and Alternative Models
+
+```{r}
+# Decomposition for one selected country (e.g., Saudi Arabia)
+saudi_ts <- ts_data |> 
+  filter(country == "Saudi.Arabia") |> 
+  select(month_year, remittances) |> 
+  as_tsibble(index = month_year)
+
+decomp <- saudi_ts |> model(STL(remittances ~ season(window = "periodic"))) |> components()
+autoplot(decomp) + ggtitle("STL Decomposition for Saudi Arabia Remittances") + theme_minimal()
+
+# Convert the Saudi Arabia series to a ts object for exponential smoothing methods
+saudi_rem_ts <- ts(saudi_ts$remittances, 
+                   start = c(year(min(saudi_ts$month_year)), month(min(saudi_ts$month_year))),
+                   frequency = 12)
+
+# Forecast using Simple Exponential Smoothing, Holt's and Holt-Winters methods
+autoplot(forecast(ses(saudi_rem_ts, h = 12))) + ggtitle("SES Forecast")
+autoplot(forecast(holt(saudi_rem_ts, h = 12))) + ggtitle("Holt's Linear Trend Forecast")
+autoplot(forecast(hw(saudi_rem_ts, h = 12))) + ggtitle("Holt-Winters Forecast")
+```
+
+### ARIMA Model
+
+```{r}
+# Fit an ARIMA model for Saudi Arabia remittances
+fit_ARIMA <- auto.arima(saudi_rem_ts, stepwise = FALSE, approximation = FALSE)
+summary(fit_ARIMA)
+
+# Forecast using the ARIMA model
+autoplot(forecast(fit_ARIMA, h = 24)) + ggtitle("ARIMA Forecast for Saudi Arabia Remittances")
+```
+
+---
+
+## Conclusion
+
+In this post, we:
+- Loaded and cleaned remittance data for Pakistan
+- Transformed the data to visualize trends and country shares
+- Explored forecasting techniques including seasonal naive models, exponential smoothing, and ARIMA
+
+This analysis helps illustrate the dynamics of remittance flows and provides insights that may inform policy and economic forecasting. Future work might involve further model comparisons and the inclusion of exogenous variables.
+
+Happy forecasting!
+

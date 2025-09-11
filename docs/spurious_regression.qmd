@@ -16,10 +16,6 @@ editor: visual
 bibliography: references.bib
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 ## Introduction
 
 In previous lectures [Causal Explanation of Autonomy & Invariance of Regression Relationships](https://weapedagogy.wordpress.com/2021/04/19/causal-explanation-of-autonomy-invariance-of-regression-relationships/), we have seen the essential importance of analyzing the causal structure of the variables under study via path diagrams. In this lecture, we study one aspect of this which creates serious problems for understanding and interpreting regression results. This is the problem of a common cause.

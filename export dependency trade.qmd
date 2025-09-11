@@ -1,0 +1,229 @@
+---
+title: "Trade and Economic Indicators for South Asia"
+format: typst
+editor: visual
+---
+
+```{r}
+library(parallel)
+
+# Detect all available cores and leave one out
+num_cores <- detectCores() - 1
+
+```
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(WDI)
+```
+
+
+## Load and Prepare Trade Data
+
+```{r}
+# Import trade data
+trade <- read_csv("data/TradeData_all-world-16-20.csv")
+
+# Select and rename columns
+trade <- trade |> 
+  select(RefYear, ReporterDesc, FlowDesc, PartnerDesc, PrimaryValue) |> 
+  rename(year = RefYear, reporter = ReporterDesc, trade_direction = FlowDesc, 
+         partner = PartnerDesc, trade_value_usd = PrimaryValue)
+
+trade
+```
+
+## TDI: Trade Dependence Index (Pakistan, 2016–2020)
+
+```{r}
+TDI <-  trade %>% 
+  filter(reporter == "Pakistan") %>% 
+  select(year, trade_direction, trade_value_usd) %>% 
+  spread(trade_direction, trade_value_usd)
+
+gdp <- WDI(indicator = c("GDP" = "NY.GDP.MKTP.CD"), country = "PAK", start = 1990, end = 2020)
+
+TDI <- merge(TDI, gdp, by = "year") %>% 
+  select(year, Export, Import, GDP)
+
+TDI$tdi <- (TDI$Export + TDI$Import) / TDI$GDP * 100 
+TDI <- TDI %>% select(year, tdi)
+TDI$tdi <- round(TDI$tdi, 0)
+
+TDI
+```
+
+## TDI: South Asia (2020)
+
+```{r}
+SouthAsia <- c("India", "Pakistan", "Bangladesh", "Sri Lanka", "Nepal", "Bhutan", "Maldives")
+
+x <- trade %>% 
+  filter(reporter %in% SouthAsia & year == 2020) %>% 
+  select(reporter, trade_direction, trade_value_usd) %>% 
+  spread(trade_direction, trade_value_usd)
+
+gdp <- WDI(indicator = c("GDP" = "NY.GDP.MKTP.CD"), 
+           country = c("IND", "PAK", "BGD", "LKA", "NPL", "BTN"), 
+           start = 2020, end = 2020)
+
+x <- merge(x, gdp, by.x = "reporter", by.y = "country") %>% 
+  select(reporter, Export, Import, GDP)
+
+x$tdi <- (x$Export + x$Import)/x$GDP * 100
+x$tdi <- round(x$tdi, 0)
+
+x[, c("reporter", "tdi")]
+```
+
+### Plot: TDI by Country
+
+```{r}
+TDI_plot <- ggplot(x, aes(x = tdi, y = reorder(reporter, desc(tdi)))) +
+  geom_col(aes(fill = tdi), width = 0.6, show.legend = FALSE) +
+  labs(title = "Trade Dependence Index for South Asian Economies (2020)", x = NULL, y = NULL) +
+  theme_minimal()
+
+TDI_plot
+```
+
+## Import Penetration Index (Pakistan)
+
+```{r}
+IP <- trade %>% 
+  filter(reporter == "Pakistan") %>% 
+  select(year, trade_direction, trade_value_usd) %>% 
+  spread(trade_direction, trade_value_usd)
+
+gdp <- WDI(indicator= c("GDP" = "NY.GDP.MKTP.CD"), country="PAK", start=2016, end=2020)
+
+IP <- merge(IP, gdp, by = "year") %>% 
+  select(year, Export, Import, GDP)
+
+IP$Domestic_Demand <- IP$GDP - IP$Export + IP$Import
+IP$ip <- (IP$Import / IP$Domestic_Demand) * 100
+
+IP <- IP %>% select(year, ip) %>% mutate(ip = round(ip, 0))
+IP
+```
+
+## Import Penetration: South Asia (2020)
+
+```{r}
+x <- x %>% select(-tdi)
+x$Domestic_Demand <- x$GDP - x$Export + x$Import
+x$ip <- (x$Import / x$Domestic_Demand) * 100
+x$ip <- round(x$ip, 0)
+
+x[, c("reporter", "ip")]
+```
+
+### Plot: IP by Country
+
+```{r}
+IP_plot <- ggplot(x, aes(x = ip, y = reorder(reporter, desc(ip)))) +
+  geom_col(aes(fill = ip), width = 0.6, show.legend = FALSE) +
+  labs(title = "Import Penetration Index for SouthAsian-4 Economies (2020)", x = NULL, y = NULL) +
+  theme_minimal()
+
+IP_plot
+```
+
+## Export Propensity (Pakistan and Region)
+
+```{r}
+EP <- trade %>% 
+  filter(reporter == "Pakistan" & trade_direction == "Export") %>% 
+  select(year, trade_value_usd) %>%
+  rename(Export = trade_value_usd)
+
+gdp <- WDI(indicator= c("GDP" = "NY.GDP.MKTP.CD"), country="PAK", start=2016, end=2020)
+
+EP <- merge(EP, gdp, by = "year")  %>% select(year, Export, GDP)
+
+EP$ep <- (EP$Export / EP$GDP) * 100
+EP$ep <- round(EP$ep, 0)
+
+EP %>% select(year, ep)
+```
+
+```{r}
+x <- x %>% select(reporter, Export, GDP)
+x$ep <- (x$Export / x$GDP) * 100
+x$ep <- round(x$ep, 0)
+
+x %>% select(reporter, ep)
+```
+
+### Plot: EP by Country
+
+```{r}
+EP_plot <- ggplot(x, aes(x = ep, y = reorder(reporter, desc(ep)))) +
+  geom_col(aes(fill = ep), width = 0.6, show.legend = FALSE) +
+  labs(title = "Export Propensity Index for SouthAsian Economies (2020)", x = NULL, y = NULL) + 
+  theme_minimal()
+
+EP_plot
+```
+
+## Marginal Propensity to Import (Pakistan)
+
+```{r}
+PKM <- trade %>% 
+  filter(reporter == "Pakistan" & trade_direction == "Import") %>% 
+  select(year, trade_value_usd) %>%
+  rename(Import = trade_value_usd)
+
+PKM <- merge(PKM, gdp, by = "year") %>% select(year, Import, GDP)
+
+PKM$dImport <- PKM$Import - lag(PKM$Import)
+PKM$dGDP <- PKM$GDP - lag(PKM$GDP)
+
+PKM$PKM <- PKM$dImport / PKM$dGDP
+PKM$PKM <- round(PKM$PKM, 2)
+
+PKM %>% select(year, PKM)
+```
+
+## Marginal Propensity to Import: South Asia
+
+```{r}
+x <- trade %>% 
+  filter(reporter %in% SouthAsia & trade_direction == "Import") %>% 
+  select(reporter, year, trade_value_usd)
+
+gdp <- WDI(indicator = c("GDP" = "NY.GDP.MKTP.CD"), 
+           country = c("IND", "PAK", "BGD", "LKA", "NPL", "BTN"), 
+           start = 2020, end = 2020)
+
+gdp$country <- ifelse(gdp$country == "Pakistan", "Pakistan", gdp$country)
+
+x <- merge(x, gdp, by.x = c("year", "reporter"), 
+           by.y = c("year", "country")) %>% 
+  select(year, reporter, trade_value_usd, GDP)
+
+x <- x %>% 
+  group_by(reporter) %>%
+  mutate(dImports = trade_value_usd - lag(trade_value_usd, n = 1, default = NA),
+         dGDP = GDP - lag(GDP, n = 1, default = NA),
+         PKM = dImports / dGDP) %>%
+  ungroup() %>% 
+  select(year, reporter, PKM) %>%
+  spread(reporter, PKM)
+
+x <- x[-1,]
+
+x <- x %>% pivot_longer(cols = India:`Sri Lanka`, names_to = "country", values_to = "PKM")
+```
+
+### Plot: PKM over Time
+
+```{r}
+PKM_plot <- ggplot(x, aes(x = year, y = PKM, color = country)) + 
+  geom_line() + 
+  scale_color_brewer(palette = "Set1") +
+  labs(title = "PKM for SAsian economies (2016-2020)", x = NULL, y = NULL, color = "Economies") +
+  theme_minimal()
+
+PKM_plot
+```

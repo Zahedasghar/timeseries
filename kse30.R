@@ -5,7 +5,10 @@ library(forecast)
 library(ggfortify)
 library(readxl)
 library(xts)
-kse30 <- read_csv("docs/data/kse_30_index.csv")
+
+# https://www.investing.com/indices/karachi-30-historical-data 
+
+kse30 <- read_csv("docs/data/kse_30_index_v2.csv")
 
 kse30 |> dim()
 
@@ -13,13 +16,16 @@ kse30 |>  glimpse()
 
 
 
-kse30$date <- as.Date(kse30$Date,format = "%m/%d/%Y")
+kse30$date <- as.Date(kse30$date,format = "%d-%b-%y")
 
 kse30$day <- weekdays(kse30$date)
 
 kse30 |> glimpse()
+
+# rename hig as high
+kse30 <- kse30 |> rename(high = hig)
 # Create an xts time series object
-kse_xts <- xts(kse30[, c("Price", "Open", "High", "Low")], order.by = kse30$date)
+kse_xts <- xts(kse30[, c("close", "open", "high", "low")], order.by = kse30$date)
 
 kse_xts |> head()
 # Locate the weeks
@@ -33,6 +39,13 @@ endpoints(kse_xts, on = "weeks", k = 2)
 # Locate every 4 weeks
 endpoints(kse_xts, on = "weeks", k = 4)
 
+library(xts)
+
+# Example: Create monthly endpoints
+ep <- endpoints(kse_xts, on = "weeks")
+
+# Apply mean across each period (by column)
+week_means <- period.apply(kse_xts, INDEX = ep, FUN = colMeans)
 
 # Now calculate the weekly mean and display the results
 period.apply(kse_xts, INDEX = ep, FUN = mean) 
@@ -149,12 +162,12 @@ kse_xts[index]
 
 
 
-kse30 |> select(Price, date) |> glimpse()
+kse30 |> select(close, date) |> glimpse()
 
 # Create an xts time series
 daily_kse30 <- xts(kse30)
 
-ggplot(kse30)+aes(x=date,y=Price)+
+ggplot(kse30)+aes(x=date,y=close)+
   geom_line() +geom_smooth(method="lm",se=FALSE)
 
 
@@ -164,9 +177,9 @@ library(dygraphs)
 
 
 kse30 |> 
-  select(date, Price) |> 
+  select(date, open) |> 
   dygraph(main="KSE-30 price index") |> 
-  dyAxis("y", label = "Price") |> 
+  dyAxis("y", label = "Open") |> 
   dyAxis("x", label = "date") |> 
   dyOptions(drawPoints = TRUE)
 
@@ -174,32 +187,36 @@ kse30 |>
 #https://www.geeksforgeeks.org/how-to-use-interactive-time-series-graph-using-dygraphs-in-r/
  
 # Assuming kse30 is your data frame containing 'date' and 'Price' columns
-kse30  %>%
-  dygraph(main = "KSE-30 price index") %>%
-  dyAxis("y", label = "Price") %>%
-  dyAxis("x", label = "date") %>%
-  dyOptions(drawAxis = TRUE)
+library(dygraphs)
+library(xts)
+
+# Convert to xts object first
+kse30_xts <- xts(kse30[, -1], order.by = as.Date(kse30$date))
+
+# Ensure all columns except date are numeric, and preserve column names
+kse30_xts <- xts(x = as.matrix(kse30[, c("open", "high", "low", "close", "volume", "change", "day")]),
+                 order.by = as.Date(kse30$date))
+
+# Plotting
+dygraph(kse30_xts, main = "KSE-30 Price Index") %>%
+  dySeries("close", label = "KSE-30", color = "black") %>%
+  dyShading(from = "2022-10-13", to = "2025-04-11", color = "#FFE6E6") %>%
+  dyShading(from = "2024-01-01", to = "2025-01-01", color = "#CCEBD6")
 kse30 |> colnames()
 # plot graph 
 
 dygraph(kse30, main = "KSE-30 Price Index") %>%  
-  dySeries(label = "", 
-           color = "black") %>% 
-  dyShading(from = "2018-1-1", 
-            to = "2019-12-1",  
-            color = "#FFE6E6") %>% 
-  dyShading(from = "2020-1-1",  
-            to = "2021-1-1", 
-            color = "#CCEBD6")
-  dyRangeSelector()
-  
+  dySeries("Index", label = "KSE-30", color = "black") %>% 
+  dyShading(from = "2022-10-13", to = "2025-04-11", color = "#FFE6E6") %>% 
+  dyShading(from = "2024-01-01", to = "2025-01-01", color = "#CCEBD6")
+
   
 kse30  
 
 kse30 %>% 
-  select(date, Price) %>%
+  select(date, open) %>%
   dygraph(main = "KSE-30 price index") %>%
-  dyAxis("y", label = "Price") %>%
+  dyAxis("y", label = "Open") %>%
   dyAxis("x", label = "date")  |> 
   dyRangeSelector()
 
@@ -218,3 +235,5 @@ kse30 %>%
   
   dyShading(from = "2020-1-1", to = "2021-6-1", color = "#FFE6E6") %>%
     dyShading(from = "2022-4-1", to = "2023-4-1", color = "#CCEBD6")
+
+  

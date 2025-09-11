@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.29">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Zahid Asghar">
+
+<title>Time Series Machine Learning</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Machine_Learning_Forecasting_Using_Time_Series_Signature_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Machine_Learning_Forecasting_Using_Time_Series_Signature_files/libs/quarto-html/quarto.js"></script>
+<script src="Machine_Learning_Forecasting_Using_Time_Series_Signature_files/libs/quarto-html/popper.min.js"></script>
+<script src="Machine_Learning_Forecasting_Using_Time_Series_Signature_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Machine_Learning_Forecasting_Using_Time_Series_Signature_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Machine_Learning_Forecasting_Using_Time_Series_Signature_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Machine_Learning_Forecasting_Using_Time_Series_Signature_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Machine_Learning_Forecasting_Using_Time_Series_Signature_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Machine_Learning_Forecasting_Using_Time_Series_Signature_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Machine_Learning_Forecasting_Using_Time_Series_Signature_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link" data-scroll-target="#prerequisites">Prerequisites</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  <li><a href="#train-test" id="toc-train-test" class="nav-link" data-scroll-target="#train-test">Train / Test</a></li>
+  <li><a href="#modeling" id="toc-modeling" class="nav-link" data-scroll-target="#modeling">Modeling</a>
+  <ul class="collapse">
+  <li><a href="#recipe-preprocessing-specification" id="toc-recipe-preprocessing-specification" class="nav-link" data-scroll-target="#recipe-preprocessing-specification">Recipe Preprocessing Specification</a></li>
+  <li><a href="#model-specification" id="toc-model-specification" class="nav-link" data-scroll-target="#model-specification">Model Specification</a></li>
+  <li><a href="#workflow" id="toc-workflow" class="nav-link" data-scroll-target="#workflow">Workflow</a></li>
+  <li><a href="#training" id="toc-training" class="nav-link" data-scroll-target="#training">Training</a></li>
+  <li><a href="#hyperparameter-tuning" id="toc-hyperparameter-tuning" class="nav-link" data-scroll-target="#hyperparameter-tuning">Hyperparameter Tuning</a></li>
+  </ul></li>
+  <li><a href="#forecasting-with-modeltime" id="toc-forecasting-with-modeltime" class="nav-link" data-scroll-target="#forecasting-with-modeltime">Forecasting with Modeltime</a>
+  <ul class="collapse">
+  <li><a href="#modeltime-table" id="toc-modeltime-table" class="nav-link" data-scroll-target="#modeltime-table">Modeltime Table</a></li>
+  <li><a href="#calibration" id="toc-calibration" class="nav-link" data-scroll-target="#calibration">Calibration</a>
+  <ul class="collapse">
+  <li><a href="#forecast-testing-set" id="toc-forecast-testing-set" class="nav-link" data-scroll-target="#forecast-testing-set">Forecast (Testing Set)</a></li>
+  <li><a href="#accuracy-testing-set" id="toc-accuracy-testing-set" class="nav-link" data-scroll-target="#accuracy-testing-set">Accuracy (Testing Set)</a></li>
+  </ul></li>
+  <li><a href="#refit-and-forecast-forward" id="toc-refit-and-forecast-forward" class="nav-link" data-scroll-target="#refit-and-forecast-forward">Refit and Forecast Forward</a></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a>
+  <ul class="collapse">
+  <li><a href="#time-series-is-changing" id="toc-time-series-is-changing" class="nav-link" data-scroll-target="#time-series-is-changing">Time Series is Changing</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Time Series Machine Learning</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Zahid Asghar </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>This vignette covers <strong>Machine Learning for Forecasting</strong> using the <em>time-series signature</em>, a collection calendar features derived from the timestamps in the time series.</p>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>The time series signature is a collection of useful features that describe the time series index of a time-based data set. It contains a wealth of features that can be used to forecast time series that contain patterns.</p>
+<p>In this vignette, the user will learn methods to implement machine learning to predict future outcomes in a time-based data set. The vignette example uses a well known time series dataset, the Bike Sharing Dataset, from the UCI Machine Learning Repository. The vignette follows an example where we’ll use <code>timetk</code> to build a basic Machine Learning model to predict future values using the time series signature. The objective is to build a model and predict the next six months of Bike Sharing daily counts.</p>
+</section>
+<section id="prerequisites" class="level1">
+<h1>Prerequisites</h1>
+<p>Before we get started, load the following packages.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(timetk)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(recipes)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(parsnip)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(workflows)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rsample)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Used to convert plots from interactive to static</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>interactive <span class="ot">=</span> <span class="cn">FALSE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="data" class="level1">
+<h1>Data</h1>
+<p>We’ll be using the <a href="https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset">Bike Sharing Dataset</a> from the UCI Machine Learning Repository.</p>
+<p><em>Source: Fanaee-T, Hadi, and Gama, Joao, ‘Event labeling combining ensemble detectors and background knowledge’, Progress in Artificial Intelligence (2013): pp.&nbsp;1-15, Springer Berlin Heidelberg</em></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read data</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>bike_transactions_tbl <span class="ot">&lt;-</span> bike_sharing_daily <span class="sc">%&gt;%</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">date =</span> dteday, <span class="at">value =</span> cnt)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>bike_transactions_tbl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 731 × 2
+   date       value
+   &lt;date&gt;     &lt;dbl&gt;
+ 1 2011-01-01   985
+ 2 2011-01-02   801
+ 3 2011-01-03  1349
+ 4 2011-01-04  1562
+ 5 2011-01-05  1600
+ 6 2011-01-06  1606
+ 7 2011-01-07  1510
+ 8 2011-01-08   959
+ 9 2011-01-09   822
+10 2011-01-10  1321
+# ℹ 721 more rows</code></pre>
+</div>
+</div>
+<p>Next, visualize the dataset with the <code>plot_time_series()</code> function. Toggle <code>.interactive = TRUE</code> to get a plotly interactive plot. <code>FALSE</code> returns a ggplot2 static plot.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>bike_transactions_tbl <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_time_series</span>(date, value, <span class="at">.interactive =</span> interactive)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Machine_Learning_Forecasting_Using_Time_Series_Signature_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:95.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="train-test" class="level1">
+<h1>Train / Test</h1>
+<p>Next, use <code>time_series_split()</code> to make a train/test set.</p>
+<ul>
+<li>Setting <code>assess = "3 months"</code> tells the function to use the last 3-months of data as the testing set.</li>
+<li>Setting <code>cumulative = TRUE</code> tells the sampling to use all of the prior data as the training set.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>splits <span class="ot">&lt;-</span> bike_transactions_tbl <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">time_series_split</span>(<span class="at">assess =</span> <span class="st">"3 months"</span>, <span class="at">cumulative =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, visualize the train/test split.</p>
+<ul>
+<li><code>tk_time_series_cv_plan()</code>: Converts the splits object to a data frame</li>
+<li><code>plot_time_series_cv_plan()</code>: Plots the time series sampling data using the “date” and “value” columns.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>splits <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tk_time_series_cv_plan</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_time_series_cv_plan</span>(date, value, <span class="at">.interactive =</span> interactive)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Machine_Learning_Forecasting_Using_Time_Series_Signature_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:95.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="modeling" class="level1">
+<h1>Modeling</h1>
+<p>Machine learning models are more complex than univariate models (e.g.&nbsp;ARIMA, Exponential Smoothing). This complexity typically requires a <strong><em>workflow</em></strong> (sometimes called a <em>pipeline</em> in other languages). The general process goes like this:</p>
+<ul>
+<li><strong>Create Preprocessing Recipe</strong></li>
+<li><strong>Create Model Specifications</strong></li>
+<li><strong>Use Workflow to combine Model Spec and Preprocessing, and Fit Model</strong></li>
+</ul>
+<section id="recipe-preprocessing-specification" class="level2">
+<h2 class="anchored" data-anchor-id="recipe-preprocessing-specification">Recipe Preprocessing Specification</h2>
+<p>The first step is to add the <em>time series signature</em> to the training set, which will be used this to learn the patterns. New in <code>timetk</code> 0.1.3 is integration with the <code>recipes</code> R package:</p>
+<ul>
+<li><p>The <code>recipes</code> package allows us to add preprocessing steps that are applied sequentially as part of a data transformation pipeline.</p></li>
+<li><p>The <code>timetk</code> has <code>step_timeseries_signature()</code>, which is used to add a number of features that can help machine learning models.</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(recipes)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Add time series signature</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>recipe_spec_timeseries <span class="ot">&lt;-</span> <span class="fu">recipe</span>(value <span class="sc">~</span> ., <span class="at">data =</span> <span class="fu">training</span>(splits)) <span class="sc">%&gt;%</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">step_timeseries_signature</span>(date) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can see what happens when we apply a prepared recipe <code>prep()</code> using the <code>bake()</code> function. Many new columns were added from the timestamp “date” feature. These are features we can use in our machine learning models.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bake</span>(<span class="fu">prep</span>(recipe_spec_timeseries), <span class="at">new_data =</span> <span class="fu">training</span>(splits))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 641 × 29
+   date       value date_index.num date_year date_year.iso date_half
+   &lt;date&gt;     &lt;dbl&gt;          &lt;dbl&gt;     &lt;int&gt;         &lt;int&gt;     &lt;int&gt;
+ 1 2011-01-01   985     1293840000      2011          2010         1
+ 2 2011-01-02   801     1293926400      2011          2010         1
+ 3 2011-01-03  1349     1294012800      2011          2011         1
+ 4 2011-01-04  1562     1294099200      2011          2011         1
+ 5 2011-01-05  1600     1294185600      2011          2011         1
+ 6 2011-01-06  1606     1294272000      2011          2011         1
+ 7 2011-01-07  1510     1294358400      2011          2011         1
+ 8 2011-01-08   959     1294444800      2011          2011         1
+ 9 2011-01-09   822     1294531200      2011          2011         1
+10 2011-01-10  1321     1294617600      2011          2011         1
+# ℹ 631 more rows
+# ℹ 23 more variables: date_quarter &lt;int&gt;, date_month &lt;int&gt;,
+#   date_month.xts &lt;int&gt;, date_month.lbl &lt;ord&gt;, date_day &lt;int&gt;,
+#   date_hour &lt;int&gt;, date_minute &lt;int&gt;, date_second &lt;int&gt;, date_hour12 &lt;int&gt;,
+#   date_am.pm &lt;int&gt;, date_wday &lt;int&gt;, date_wday.xts &lt;int&gt;,
+#   date_wday.lbl &lt;ord&gt;, date_mday &lt;int&gt;, date_qday &lt;int&gt;, date_yday &lt;int&gt;,
+#   date_mweek &lt;int&gt;, date_week &lt;int&gt;, date_week.iso &lt;int&gt;, date_week2 &lt;int&gt;, …</code></pre>
+</div>
+</div>
+<p>Next, I apply various preprocessing steps to improve the modeling behavior. If you wish to learn more, I have an <a href="https://mailchi.mp/business-science/time-series-forecasting-course-coming-soon">Advanced Time Series course</a> that will help you learn these techniques.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>recipe_spec_final <span class="ot">&lt;-</span> recipe_spec_timeseries <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">step_fourier</span>(date, <span class="at">period =</span> <span class="dv">365</span>, <span class="at">K =</span> <span class="dv">5</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">step_rm</span>(date) <span class="sc">%&gt;%</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">step_rm</span>(<span class="fu">contains</span>(<span class="st">"iso"</span>), <span class="fu">contains</span>(<span class="st">"minute"</span>), <span class="fu">contains</span>(<span class="st">"hour"</span>),</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>            <span class="fu">contains</span>(<span class="st">"am.pm"</span>), <span class="fu">contains</span>(<span class="st">"xts"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">step_normalize</span>(<span class="fu">contains</span>(<span class="st">"index.num"</span>), date_year) <span class="sc">%&gt;%</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">step_dummy</span>(<span class="fu">contains</span>(<span class="st">"lbl"</span>), <span class="at">one_hot =</span> <span class="cn">TRUE</span>) </span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="fu">juice</span>(<span class="fu">prep</span>(recipe_spec_final))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 641 × 47
+   value date_index.num date_year date_half date_quarter date_month date_day
+   &lt;dbl&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;int&gt;        &lt;int&gt;      &lt;int&gt;    &lt;int&gt;
+ 1   985          -1.73    -0.869         1            1          1        1
+ 2   801          -1.72    -0.869         1            1          1        2
+ 3  1349          -1.72    -0.869         1            1          1        3
+ 4  1562          -1.71    -0.869         1            1          1        4
+ 5  1600          -1.71    -0.869         1            1          1        5
+ 6  1606          -1.70    -0.869         1            1          1        6
+ 7  1510          -1.70    -0.869         1            1          1        7
+ 8   959          -1.69    -0.869         1            1          1        8
+ 9   822          -1.68    -0.869         1            1          1        9
+10  1321          -1.68    -0.869         1            1          1       10
+# ℹ 631 more rows
+# ℹ 40 more variables: date_second &lt;int&gt;, date_wday &lt;int&gt;, date_mday &lt;int&gt;,
+#   date_qday &lt;int&gt;, date_yday &lt;int&gt;, date_mweek &lt;int&gt;, date_week &lt;int&gt;,
+#   date_week2 &lt;int&gt;, date_week3 &lt;int&gt;, date_week4 &lt;int&gt;, date_mday7 &lt;int&gt;,
+#   date_sin365_K1 &lt;dbl&gt;, date_cos365_K1 &lt;dbl&gt;, date_sin365_K2 &lt;dbl&gt;,
+#   date_cos365_K2 &lt;dbl&gt;, date_sin365_K3 &lt;dbl&gt;, date_cos365_K3 &lt;dbl&gt;,
+#   date_sin365_K4 &lt;dbl&gt;, date_cos365_K4 &lt;dbl&gt;, date_sin365_K5 &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+</section>
+<section id="model-specification" class="level2">
+<h2 class="anchored" data-anchor-id="model-specification">Model Specification</h2>
+<p>Next, let’s create a model specification. We’ll use a Elastic Net penalized regression via the <code>glmnet</code> package.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>model_spec_lm <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">"regression"</span>, </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">penalty =</span> <span class="fl">0.1</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">set_engine</span>(<span class="st">"glmnet"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="workflow" class="level2">
+<h2 class="anchored" data-anchor-id="workflow">Workflow</h2>
+<p>We can mary up the preprocessing recipe and the model using a <code>workflow()</code>.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>workflow_lm <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">add_recipe</span>(recipe_spec_final) <span class="sc">%&gt;%</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">add_model</span>(model_spec_lm)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>workflow_lm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>══ Workflow ════════════════════════════════════════════════════════════════════
+Preprocessor: Recipe
+Model: linear_reg()
+
+── Preprocessor ────────────────────────────────────────────────────────────────
+6 Recipe Steps
+
+• step_timeseries_signature()
+• step_fourier()
+• step_rm()
+• step_rm()
+• step_normalize()
+• step_dummy()
+
+── Model ───────────────────────────────────────────────────────────────────────
+Linear Regression Model Specification (regression)
+
+Main Arguments:
+  penalty = 0.1
+
+Computational engine: glmnet </code></pre>
+</div>
+</div>
+</section>
+<section id="training" class="level2">
+<h2 class="anchored" data-anchor-id="training">Training</h2>
+<p>The workflow can be trained with the <code>fit()</code> function.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">requireNamespace</span>(<span class="st">"glmnet"</span>)) {</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  workflow_fit_lm <span class="ot">&lt;-</span> workflow_lm <span class="sc">%&gt;%</span> <span class="fu">fit</span>(<span class="at">data =</span> <span class="fu">training</span>(splits))</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="hyperparameter-tuning" class="level2">
+<h2 class="anchored" data-anchor-id="hyperparameter-tuning">Hyperparameter Tuning</h2>
+<p>Linear regression has no parameters. Therefore, this step is not needed. More complex models have hyperparameters that require tuning. Algorithms include:</p>
+<ul>
+<li>Elastic Net</li>
+<li>XGBoost</li>
+<li>Random Forest</li>
+<li>Support Vector Machine (SVM)</li>
+<li>K-Nearest Neighbors</li>
+<li>Multivariate Adaptive Regression Spines (MARS)</li>
+</ul>
+<p>If you would like to learn how to tune these models for time series, then join the waitlist for my advanced <a href="https://mailchi.mp/business-science/time-series-forecasting-course-coming-soon"><strong>Time Series Analysis &amp; Forecasting Course</strong></a>.</p>
+</section>
+</section>
+<section id="forecasting-with-modeltime" class="level1">
+<h1>Forecasting with Modeltime</h1>
+<p><strong>The Modeltime Workflow</strong> is designed to speed up model evaluation and selection. Now that we have several time series models, let’s analyze them and forecast the future with the <code>modeltime</code> package.</p>
+<section id="modeltime-table" class="level2">
+<h2 class="anchored" data-anchor-id="modeltime-table">Modeltime Table</h2>
+<p><strong>The Modeltime Table</strong> organizes the models with IDs and creates generic descriptions to help us keep track of our models. Let’s add the models to a <code>modeltime_table()</code>.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (rlang<span class="sc">::</span><span class="fu">is_installed</span>(<span class="st">"modeltime"</span>)) {</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  model_table <span class="ot">&lt;-</span> modeltime<span class="sc">::</span><span class="fu">modeltime_table</span>(</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  workflow_fit_lm</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>) </span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>model_table</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Modeltime Table
+# A tibble: 1 × 3
+  .model_id .model     .model_desc
+      &lt;int&gt; &lt;list&gt;     &lt;chr&gt;      
+1         1 &lt;workflow&gt; GLMNET     </code></pre>
+</div>
+</div>
+</section>
+<section id="calibration" class="level2">
+<h2 class="anchored" data-anchor-id="calibration">Calibration</h2>
+<p><strong>Model Calibration</strong> is used to quantify error and estimate confidence intervals. We’ll perform model calibration on the out-of-sample data (aka. the Testing Set) with the <code>modeltime::modeltime_calibrate()</code> function. Two new columns are generated (“.type” and “.calibration_data”), the most important of which is the “.calibration_data”. This includes the actual values, fitted values, and residuals for the testing set.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>calibration_table <span class="ot">&lt;-</span> model_table <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  modeltime<span class="sc">::</span><span class="fu">modeltime_calibrate</span>(<span class="fu">testing</span>(splits))</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>calibration_table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Modeltime Table
+# A tibble: 1 × 5
+  .model_id .model     .model_desc .type .calibration_data
+      &lt;int&gt; &lt;list&gt;     &lt;chr&gt;       &lt;chr&gt; &lt;list&gt;           
+1         1 &lt;workflow&gt; GLMNET      Test  &lt;tibble [90 × 4]&gt;</code></pre>
+</div>
+</div>
+<section id="forecast-testing-set" class="level3">
+<h3 class="anchored" data-anchor-id="forecast-testing-set">Forecast (Testing Set)</h3>
+<p>With calibrated data, we can visualize the testing predictions (forecast).</p>
+<ul>
+<li>Use <code>modeltime::modeltime_forecast()</code> to generate the forecast data for the testing set as a tibble.</li>
+<li>Use <code>modeltime::plot_modeltime_forecast()</code> to visualize the results in interactive and static plot formats.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>calibration_table <span class="sc">%&gt;%</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  modeltime<span class="sc">::</span><span class="fu">modeltime_forecast</span>(<span class="at">actual_data =</span> bike_transactions_tbl) <span class="sc">%&gt;%</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  modeltime<span class="sc">::</span><span class="fu">plot_modeltime_forecast</span>(<span class="at">.interactive =</span> interactive)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Machine_Learning_Forecasting_Using_Time_Series_Signature_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:95.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="accuracy-testing-set" class="level3">
+<h3 class="anchored" data-anchor-id="accuracy-testing-set">Accuracy (Testing Set)</h3>
+<p>Next, calculate the testing accuracy to compare the models.</p>
+<ul>
+<li>Use <code>modeltime::modeltime_accuracy()</code> to generate the out-of-sample accuracy metrics as a tibble.</li>
+<li>Use <code>modeltime::table_modeltime_accuracy()</code> to generate interactive and static</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>calibration_table <span class="sc">%&gt;%</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  modeltime<span class="sc">::</span><span class="fu">modeltime_accuracy</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  modeltime<span class="sc">::</span><span class="fu">table_modeltime_accuracy</span>(<span class="at">.interactive =</span> interactive)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<div id="dveccinzvy" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#dveccinzvy table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#dveccinzvy thead, #dveccinzvy tbody, #dveccinzvy tfoot, #dveccinzvy tr, #dveccinzvy td, #dveccinzvy th {
+  border-style: none;
+}
+
+#dveccinzvy p {
+  margin: 0;
+  padding: 0;
+}
+
+#dveccinzvy .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#dveccinzvy .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#dveccinzvy .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#dveccinzvy .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#dveccinzvy .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#dveccinzvy .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#dveccinzvy .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#dveccinzvy .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#dveccinzvy .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#dveccinzvy .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#dveccinzvy .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#dveccinzvy .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#dveccinzvy .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#dveccinzvy .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#dveccinzvy .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#dveccinzvy .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#dveccinzvy .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#dveccinzvy .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#dveccinzvy .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#dveccinzvy .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#dveccinzvy .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#dveccinzvy .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#dveccinzvy .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#dveccinzvy .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#dveccinzvy .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#dveccinzvy .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#dveccinzvy .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#dveccinzvy .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#dveccinzvy .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#dveccinzvy .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#dveccinzvy .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#dveccinzvy .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#dveccinzvy .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#dveccinzvy .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#dveccinzvy .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#dveccinzvy .gt_left {
+  text-align: left;
+}
+
+#dveccinzvy .gt_center {
+  text-align: center;
+}
+
+#dveccinzvy .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#dveccinzvy .gt_font_normal {
+  font-weight: normal;
+}
+
+#dveccinzvy .gt_font_bold {
+  font-weight: bold;
+}
+
+#dveccinzvy .gt_font_italic {
+  font-style: italic;
+}
+
+#dveccinzvy .gt_super {
+  font-size: 65%;
+}
+
+#dveccinzvy .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#dveccinzvy .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#dveccinzvy .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#dveccinzvy .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#dveccinzvy .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#dveccinzvy .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#dveccinzvy .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_heading">
+<th colspan="9" class="gt_heading gt_title gt_font_normal gt_bottom_border">Accuracy Table</th>
+</tr>
+<tr class="odd gt_col_headings">
+<th id=".model_id" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">.model_id</th>
+<th id=".model_desc" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">.model_desc</th>
+<th id=".type" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">.type</th>
+<th id="mae" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">mae</th>
+<th id="mape" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">mape</th>
+<th id="mase" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">mase</th>
+<th id="smape" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">smape</th>
+<th id="rmse" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">rmse</th>
+<th id="rsq" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">rsq</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers=".model_id">1</td>
+<td class="gt_row gt_left" headers=".model_desc">GLMNET</td>
+<td class="gt_row gt_left" headers=".type">Test</td>
+<td class="gt_row gt_right" headers="mae">1244.11</td>
+<td class="gt_row gt_right" headers="mape">331.5</td>
+<td class="gt_row gt_right" headers="mase">1.34</td>
+<td class="gt_row gt_right" headers="smape">29.2</td>
+<td class="gt_row gt_right" headers="rmse">1689.76</td>
+<td class="gt_row gt_right" headers="rsq">0.47</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="refit-and-forecast-forward" class="level2">
+<h2 class="anchored" data-anchor-id="refit-and-forecast-forward">Refit and Forecast Forward</h2>
+<p><strong>Refitting</strong> is a best-practice before forecasting the future.</p>
+<ul>
+<li><code>modeltime::modeltime_refit()</code>: We re-train on full data (<code>bike_transactions_tbl</code>)</li>
+<li><code>modeltime::modeltime_forecast()</code>: For models that only depend on the “date” feature, we can use <code>h</code> (horizon) to forecast forward. Setting <code>h = "12 months"</code> forecasts then next 12-months of data.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>calibration_table <span class="sc">%&gt;%</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  modeltime<span class="sc">::</span><span class="fu">modeltime_refit</span>(bike_transactions_tbl) <span class="sc">%&gt;%</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  modeltime<span class="sc">::</span><span class="fu">modeltime_forecast</span>(<span class="at">h =</span> <span class="st">"12 months"</span>, <span class="at">actual_data =</span> bike_transactions_tbl) <span class="sc">%&gt;%</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  modeltime<span class="sc">::</span><span class="fu">plot_modeltime_forecast</span>(<span class="at">.interactive =</span> interactive)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Machine_Learning_Forecasting_Using_Time_Series_Signature_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:95.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="summary" class="level1">
+<h1>Summary</h1>
+<p>Timetk is part of the amazing Modeltime Ecosystem for time series forecasting. But it can take a long time to learn:</p>
+<ul>
+<li>Many algorithms</li>
+<li>Ensembling and Resampling</li>
+<li>Feature Engineering</li>
+<li>Machine Learning</li>
+<li>Deep Learning</li>
+<li>Scalable Modeling: 10,000+ time series</li>
+</ul>
+<p>Your probably thinking how am I ever going to learn time series forecasting. Here’s the solution that will save you years of struggling.</p>
+<section id="time-series-is-changing" class="level3">
+<h3 class="anchored" data-anchor-id="time-series-is-changing">Time Series is Changing</h3>
+<p>Time series is changing. <strong>Businesses now need 10,000+ time series forecasts every day.</strong> This is what I call a <em>High-Performance Time Series Forecasting System (HPTSF)</em> - Accurate, Robust, and Scalable Forecasting.</p>
+<p><strong>High-Performance Forecasting Systems will save companies by improving accuracy and scalability.</strong> Imagine what will happen to your career if you can provide your organization a “High-Performance Time Series Forecasting System” (HPTSF System).</p>
+<ul>
+<li><strong>Time Series Machine Learning</strong> (cutting-edge) with <code>Modeltime</code> - 30+ Models (Prophet, ARIMA, XGBoost, Random Forest, &amp; many more)</li>
+<li><strong>Deep Learning</strong> with <code>GluonTS</code> (Competition Winners)</li>
+<li><strong>Time Series Preprocessing</strong>, Noise Reduction, &amp; Anomaly Detection</li>
+<li><strong>Feature engineering</strong> using lagged variables &amp; external regressors</li>
+<li><strong>Hyperparameter Tuning</strong></li>
+<li><strong>Time series cross-validation</strong></li>
+<li><strong>Ensembling</strong> Multiple Machine Learning &amp; Univariate Modeling Techniques (Competition Winner)</li>
+<li><strong>Scalable Forecasting</strong> - Forecast 1000+ time series in parallel</li>
+<li>and more.</li>
+</ul>
+<p class="text-center" style="font-size:24px;">
+Become the Time Series Expert for your organization.
+</p>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

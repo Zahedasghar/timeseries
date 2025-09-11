@@ -21,3 +21,4 @@ median <- median(lagged_ma,na.rm = TRUE)
 diff <- lagged_ma- median
 
 View(diff)
+

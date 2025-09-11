@@ -1,5 +1,5 @@
 # Set the parameters
-set.seed(2023)  # For reproducibility
+set.seed(2024)  # For reproducibility
 n_values <- c(50, 100, 200)  # Different sample sizes
 num_replications <- 2500  # Number of replications for each sample size
 
@@ -280,3 +280,6 @@ cat("Estimated Rejection Frequencies at the 5% Significance Level (in first diff
 for (i in 1:length(n_values)) {
   cat(paste("Sample Size n =", n_values[i], ": ", round(rejection_freqs[i], 3), "\n"))
 }
+
+
+

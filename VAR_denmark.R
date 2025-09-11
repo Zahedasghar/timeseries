@@ -38,19 +38,28 @@ nhor <-  12
 
 # selected variables
 data(denmark)
+
 denmark |> dim()
+
 denmark |> colnames()
-df.lev <- denmark |> select(LRM, LRY, IBO, IDE)
+
+df.lev <- denmark |> dplyr::select(LRM, LRY, IBO, IDE)
+
 #df.lev <- denmark[, c("LRM", "LRY", "IBO", "IDE")]
+
 m.lev  <-  as.matrix(df.lev)
+
 nr_lev <-  nrow(df.lev)
+
 nr_lev
 # quarterly centered dummy variables
+
 dum_season <-  data.frame(yyyymm = denmark$ENTRY)
 
 substr.q   <-  as.numeric(substring(denmark$ENTRY, 6,7))
 
 substr.q |> head()
+
 # Extract Q2 from substr.q
 
 dum_season$Q2 <-  (substr.q==2)-1/4
@@ -87,14 +96,18 @@ for(i in 1:4) {
 df.lev <- ts(as.matrix(df.lev))
 VARselect(df.lev, lag.max = 4,
           type = "const", season = 4)
+
 # estimation
 var.model_lev <-  VAR(df.lev, p = 2, 
                      type = "const", season = 4)
 
-df.lev |> head()
+df.lev |> head() 
+
 summary(var.model_lev)
+
 # forecast of lev data
-var.pred <-   predict(var.model_lev, n.ahead = nhor)
+var.pred <-   predict(var.model_lev, n.ahead = nhor) 
+
 x11(); par(mai=rep(0.4, 4)); plot(var.pred)
 x11(); par(mai=rep(0.4, 4)); fanchart(var.pred)
 
@@ -104,8 +117,10 @@ x11(); par(mai=rep(0.4, 4)); fanchart(var.pred)
 #========================================================
 
 # 1st differenced data
-df.diff <-  diff(as.matrix(df.lev), lag = 1)
+df.diff <-  diff(as.matrix(df.lev), lag = 1) 
+
 colnames(df.diff) <-  c("dLRM", "dLRY", "dIBO", "dIDE")
+
 m.diff <- as.matrix(df.diff)
 
 # lag length
@@ -153,6 +168,7 @@ linevare_diff <- lineVar(data = df.lev, lag = 1, include = "const",
 
 # check if both models (vars & tsDyn) yield same coefficients
 linevare_diff 
+
 do.call(rbind,lapply(vare_diff$varresult, 
                      function(x) x$coefficients))
 

@@ -17,7 +17,9 @@ library(tidyr) # for data manipulation
 library(forecast) # for forecasting
 # Load data
 
-rmt <- read.csv("data/remittances_karandaaz.csv")
+#rmt <- read.csv("data/remittances_karandaaz.csv") # Upto February 2024
+
+rmt <- read.csv("docs/data/worker_remittances.csv") # Upto February 2024
 
 # Inspect the data
 
@@ -36,7 +38,7 @@ rmt <-  rmt |> mutate_at(vars(-1), as.numeric)
 
 rmt |> head() |> View()
 
-dates <- seq(as.Date("2024-02-01"), as.Date("2010-07-01"), by = "-1 month")
+dates <- seq(as.Date("2024-04-01"), as.Date("2010-07-01"), by = "-1 month")
 
 rmt$date <- dates
 

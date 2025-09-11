@@ -8,8 +8,9 @@
 
 # Load libraries
 
-library(tidyverse) # for data m~`~anipulation
+library(tidyverse)
 
+library(ggplot2) # for data visualization
 
 library(tsibble) # for time series data manipulation
 
@@ -21,8 +22,28 @@ library(forecast) # for forecasting
 # Load data``
 
 
-total_rem <- read.csv("data/total.csv") 
+#total_rem <- read.csv("data/total.csv") # Upto February 2024
 
+rmt <- read.csv("docs/data/worker_remittances.csv") # Upto February 2024
+
+rmt <- rmt[-1,] # remove the first row
+
+
+
+# Convert the remaining columns to numeric
+rmt <-  rmt |> mutate_at(vars(-1), as.numeric)
+
+rmt |> head() |> View()
+
+dates <- seq(as.Date("2024-04-01"), as.Date("2010-07-01"), by = "-1 month")
+
+rmt$date <- dates
+
+rmt |> View()
+
+total_rem <- rmt |> dplyr::select(date, Total)
+
+View(total_rem)
 
 # Inspect the data
 
@@ -32,27 +53,27 @@ total_rem |> head(10) |> View()
 
 total_rem |> glimpse() 
 
-total_rem <- total_rem[-1,-1] # remove the first row and first column
-
-
-
-# Convert the remaining columns to numeric
-rem <-  total_rem |> mutate_at(vars(-1), as.numeric)
-
-rem |> head() |> View()
-
-rem |> glimpse()
-
-dates <- seq(as.Date("2024-02-01"), as.Date("2010-07-01"), by = "-1 month")
-
-rem$date <- dates
-
-rem |> glimpse()
-
-rem |> head(10) |> View()
-
-
-rem <- rem %>% select(-Period) |> select(date, everything())
+# # total_rem <- total_rem[-1,-1] # remove the first row and first column
+# 
+# 
+# 
+# # Convert the remaining columns to numeric
+# rem <-  total_rem |> mutate_at(vars(-1), as.numeric)
+# 
+# rem |> head() |> View()
+# 
+# rem |> glimpse()
+# 
+# dates <- seq(as.Date("2024-02-01"), as.Date("2010-07-01"), by = "-1 month")
+# 
+# rem$date <- dates
+# 
+# rem |> glimpse()
+# 
+# rem |> head(10) |> View()
+# 
+# 
+ rem <- total_rem |>dplyr:: select(date, Total)
 
 colnames(rem) <- c("date", "remittances")
 
@@ -118,15 +139,29 @@ ets(total_rem, model = "ZZZ") |> forecast(h = 12) |> autoplot()
 
 
 
+# Assuming total_rem is your time series data
+# Exclude last two observations
+total_rem_excluded <- total_rem[1:(length(total_rem) - 1)]
+
+# Fit ARIMA model to the modified time series data
+fit_ARIMA <- auto.arima(total_rem_excluded, stepwise = FALSE, approximation = FALSE)
+
+fit_ARIMA %>% forecast(h=12)
+
+
+
 fit_ARIMA <- auto.arima(total_rem, stepwise = FALSE, approximation = FALSE)
 summary(fit_ARIMA)
+
+
+
 
 fit_ARIMA %>% forecast(h=24) %>% autoplot()
 
 fit_ARIMA %>% forecast(h=24)
 
 
-fit_ARIMA_total %>% forecast(h=12)
+fit_ARIMA %>% forecast(h=12)
 
 
 ets(total_rem, model = "AAA") |> forecast(h = 12) |> autoplot()
@@ -138,3 +173,13 @@ ets(total_rem, model = "AZZ") |> forecast(h = 12) |> autoplot()
 ets(total_rem, model = "ZZZ") |> forecast(h = 12) |> autoplot()
 
 
+
+
+
+# Remove the last two observations of April 2024 and March 2024
+total_rem_excluded <- window(total_rem, end = c(2024, 2))
+
+# Fit ARIMA model to the modified time series data
+fit_ARIMA1 <- auto.arima(total_rem_excluded, stepwise = FALSE, approximation = FALSE)
+
+fit_ARIMA1 %>% forecast(h=12) 

@@ -102,7 +102,7 @@ correlation_table <- correlation_df  |>
     columns = everything(),
     decimals = 2
   )  
-
+library(data.table)
 # Convert the correlation matrix to a data table with variable names
 correlation_table <- data.table(data.frame(Var = colnames(correlation_matrix), correlation_matrix))
 
@@ -151,14 +151,14 @@ pp_test <- as_tibble(pp_test)
 # Load the urca package
 library(urca)
 
-
+library(ARDL)
 ardl_mod <- auto_ardl(lntri~ln_annualised_vol_open+ln_mkt_cap+pe+dy+beta_monthly_leveraged+liqudity, data = ardlf, max_order = 4)
 
-tri amihud_illiqudity turn_over_ratio bid_ask_spread 
-2                 4               0              0
-beta_monthly_leveraged dy annualised_volatility_open market_cap
-              0         4                          4   1
-(2,2,2,1,2,0,0)
+# tri amihud_illiqudity turn_over_ratio bid_ask_spread 
+# 2                 4               0              0
+# beta_monthly_leveraged dy annualised_volatility_open market_cap
+#               0         4                          4   1
+# (2,2,2,1,2,0,0)
               
               
 # The top 20 models according to the AIC

@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.29">
 
   <meta name="author" content="Zahid Asghar">
-  <title>Spurious Regression</title>
+  <title>quarto-input38ea24603d8ed81a</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -392,21 +392,20 @@
   <div class="reveal">
     <div class="slides">
 
-<section id="title-slide" data-background-color="#cf3a36" class="quarto-title-block center">
-  <h1 class="title">Spurious Regression</h1>
 
-<div class="quarto-title-authors">
-<div class="quarto-title-author">
-<div class="quarto-title-author-name">
-Zahid Asghar 
-</div>
-</div>
-</div>
-
+<section id="section" class="slide level2" data-background-color="#cf3a36">
+<h2></h2>
+<h3 id="all-the-teachers-want-their-students-to-be-excellent.-according-to-jack-ma-to-achieve-this-goal">All the teachers want their students to be excellent. According to Jack Ma to achieve this goal:</h3>
+<blockquote>
+<p><span class="flow">Inspire your students, trust your students, believe in your students, enable your students,and above all care your students.</span></p>
+</blockquote>
 </section>
-<section>
-<section id="spurious-regression" class="title-slide slide level1 center">
-<h1>Spurious Regression</h1>
+<section id="complete-blog-on-spurious-regression" class="slide level2">
+<h2>Complete Blog on Spurious Regression</h2>
+<p>https://zahidasghar.com/timeseries/spurious_regression</p>
+</section>
+<section id="spurious-regression" class="slide level2">
+<h2>Spurious Regression</h2>
 <p><span class="math inline">\(y_t = a_0 + a_1z_t + e_t\)</span></p>
 <p>where <span class="math inline">\(y_t\)</span> is the dependent variable, <span class="math inline">\(z_t\)</span> is the independent variable, <span class="math inline">\(a_0\)</span> and <span class="math inline">\(a_1\)</span> are the parameters, and <span class="math inline">\(e_t\)</span> is the error term. Assumptions of the classical model:</p>
 <ul>
@@ -414,20 +413,23 @@ Zahid Asghar
 <li><p>the errors have a zero mean and a finite variance.</p></li>
 </ul>
 </section>
-<section id="section" class="slide level2">
+<section id="section-1" class="slide level2">
 <h2></h2>
 <p>In the presence of nonstationary variables, there might be what Granger and Newbold (1974) call a spurious regression.</p>
 <blockquote>
 <p>A spurious regression has a high <span class="math inline">\(R^2\)</span> and <span class="math inline">\(t\)</span>-statistics that appear to be significant, but the results are without any economic meaning. The regression output “looks good” because the least-squares estimates are not consistent and the customary tests of statistical inference do not hold.</p>
 </blockquote>
 </section>
-<section id="section-1" class="slide level2 fragment">
+<section id="section-2" class="slide level2 fragment">
 <h2></h2>
 </section>
 <section class="slide level2">
 
 <p><strong>CASE 1:</strong> Both {yt} and {zt} are stationary. The classical regression model is appropriate.</p>
 <p><strong>CASE 2:</strong> The {yt} and {zt} sequences are integrated of different orders. Regression equations using such variables are meaningless.</p>
+</section>
+<section class="slide level2">
+
 <p><strong>CASE 3:</strong> The nonstationary {yt} and {zt} sequences are integrated of the same order and the residual sequence contains a stochastic trend. This is the case in which the regression is spurious. In this case, it is often recommended that the regression equation be estimated in first differences.</p>
 </section>
 <section class="slide level2">
@@ -449,8 +451,11 @@ Zahid Asghar
 <span id="cb1-10"><a href=""></a></span>
 <span id="cb1-11"><a href=""></a><span class="fu">library</span>(ggResidpanel) <span class="co"># To plot regression diagnostics</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="simulate-data" class="slide level2">
+<h2>Simulate data</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>T <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>T <span class="ot">&lt;-</span> <span class="dv">200</span></span>
 <span id="cb2-2"><a href=""></a><span class="fu">set.seed</span>(<span class="dv">1357</span>)</span>
 <span id="cb2-3"><a href=""></a>y <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="fu">rep</span>(<span class="dv">0</span>,T))</span>
 <span id="cb2-4"><a href=""></a>vy <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="fu">rnorm</span>(T))</span>
@@ -464,33 +469,64 @@ Zahid Asghar
 <span id="cb2-12"><a href=""></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>T){</span>
 <span id="cb2-13"><a href=""></a>  x[t] <span class="ot">&lt;-</span> x[t<span class="dv">-1</span>]<span class="sc">+</span>vx[t]</span>
 <span id="cb2-14"><a href=""></a>}</span>
-<span id="cb2-15"><a href=""></a>y <span class="ot">&lt;-</span> <span class="fu">ts</span>(y[<span class="dv">300</span><span class="sc">:</span><span class="dv">1000</span>])</span>
-<span id="cb2-16"><a href=""></a>x <span class="ot">&lt;-</span> <span class="fu">ts</span>(x[<span class="dv">300</span><span class="sc">:</span><span class="dv">1000</span>])</span>
-<span id="cb2-17"><a href=""></a><span class="fu">ts.plot</span>(y,x, <span class="at">ylab=</span><span class="st">"y and x"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
+<span id="cb2-15"><a href=""></a>y <span class="ot">&lt;-</span> <span class="fu">ts</span>(y[<span class="dv">50</span><span class="sc">:</span><span class="dv">200</span>])</span>
+<span id="cb2-16"><a href=""></a>x <span class="ot">&lt;-</span> <span class="fu">ts</span>(x[<span class="dv">50</span><span class="sc">:</span><span class="dv">200</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<img data-src="spurious_files/figure-revealjs/unnamed-chunk-2-1.png" width="960" class="r-stretch"></section>
-<section id="section-2" class="slide level2">
-<h2></h2>
+</section>
+<section id="plot-the-data" class="slide level2">
+<h2>Plot the data</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a><span class="co"># barplot of residuals</span></span>
-<span id="cb3-2"><a href=""></a>resid <span class="ot">&lt;-</span> <span class="fu">residuals</span>(<span class="fu">lm</span>(y<span class="sc">~</span>x))</span>
-<span id="cb3-3"><a href=""></a><span class="fu">barplot</span>(resid, <span class="at">ylab=</span><span class="st">"Residuals"</span>, <span class="at">xlab=</span><span class="st">"Observation"</span>, <span class="at">main=</span><span class="st">"Residuals of y~x"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a><span class="fu">ts.plot</span>(y,x, <span class="at">ylab=</span><span class="st">"y and x"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
 <img data-src="spurious_files/figure-revealjs/unnamed-chunk-3-1.png" width="960" class="r-stretch"></section>
+<section id="section-3" class="slide level2">
+<h2></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a><span class="fu">summary</span>(<span class="fu">lm</span>(y<span class="sc">~</span>x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ x)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-6.1121 -2.0348  0.1727  2.0074  6.1537 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  -7.1351     0.7252  -9.839   &lt;2e-16 ***
+x            -0.5410     0.0293 -18.464   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 2.737 on 149 degrees of freedom
+Multiple R-squared:  0.6959,    Adjusted R-squared:  0.6938 
+F-statistic: 340.9 on 1 and 149 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+</section>
+<section id="section-4" class="slide level2">
+<h2></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href=""></a><span class="co"># barplot of residuals</span></span>
+<span id="cb6-2"><a href=""></a>resid <span class="ot">&lt;-</span> <span class="fu">residuals</span>(<span class="fu">lm</span>(y<span class="sc">~</span>x))</span>
+<span id="cb6-3"><a href=""></a><span class="fu">barplot</span>(resid, <span class="at">ylab=</span><span class="st">"Residuals"</span>, <span class="at">xlab=</span><span class="st">"Observation"</span>, <span class="at">main=</span><span class="st">"Residuals of y~x"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="spurious_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"></section>
 <section id="residuals-panel" class="slide level2">
 <h2>Residuals panel</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a><span class="fu">resid_panel</span>(<span class="fu">lm</span>(y<span class="sc">~</span>x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href=""></a><span class="fu">resid_panel</span>(<span class="fu">lm</span>(y<span class="sc">~</span>x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="spurious_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch"><div class="quarto-auto-generated-content">
+<img data-src="spurious_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch"><div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
 </div>
 </div>
-</section></section>
+</section>
     </div>
   </div>
 

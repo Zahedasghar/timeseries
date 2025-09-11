@@ -6,7 +6,7 @@ library(dynlm)
 library(orcutt)
 library(nlme)
 library(stargazer)
-#library(tidyverse)
+library(tidyverse)
 library(vars)
 library(forecast)
 library(tseries)
@@ -87,3 +87,4 @@ orange_SR |> tidy()
 # distributed lag model with 6 lags of freezing degree days
 orange_DLM <- dynlm(FOJC_pctc ~ FDD + L(FDD, 1:6))
 coeftest(orange_DLM, vcov. = vcovHAC)
+

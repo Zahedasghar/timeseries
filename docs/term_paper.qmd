@@ -1,0 +1,117 @@
+---
+title: "Modeling Pakistan’s Macroeconomic Dynamics"
+subtitle: "A Time Series Approach Using VAR, SVAR, and VECM"
+author: "Zahid Asghar"
+date: "2025-05-13"
+format:
+  typst:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+---
+
+## 🎯 Project Aim
+
+To explore and model key macroeconomic relationships in Pakistan using modern time series econometric techniques. This project simulates a real-world macroeconomic research workflow.
+
+## 📈 Variables to be Used (Quarterly Data)
+
+| Variable            | Source            | Notes                                |
+| ------------------- | ----------------- | ------------------------------------ |
+| **Real GDP**        | PBS / SBP         | Convert to log, adjust for inflation |
+| **Govt Spending**   | SBP / IMF IFS     | Central Govt Expenditure (Real)      |
+| **Tax Revenue**     | MoF / SBP         | Use Net Revenue or Tax-to-GDP        |
+| **Inflation (CPI)** | PBS               | Quarterly average of CPI             |
+| **Interest Rate**   | SBP (Policy Rate) | Use as-is                            |
+
+## 🗃️ Data Sources
+
+* [State Bank of Pakistan](https://www.sbp.org.pk/ecodata/index2.asp)
+* [Pakistan Bureau of Statistics](https://www.pbs.gov.pk)
+* \[IMF IFS Data API]
+* [World Bank WDI](https://data.worldbank.org/)
+* [Ministry of Finance](https://www.finance.gov.pk/)
+
+## 🧭 Project Tasks & Workflow
+
+### 1. Data Collection & Cleaning
+
+* Collect at least 10 years (40 quarters) of data
+* Convert to `ts` or `zoo` objects
+* Log-transform and seasonally adjust if necessary
+* Plot and visually inspect time series
+
+### 2. Univariate Time Series Analysis
+
+* Plot and describe patterns for each variable
+* Run ADF and KPSS tests for stationarity
+* Log and/or difference the data
+* Fit ARIMA models where relevant
+
+### 3. Vector Autoregression (VAR)
+
+* Ensure all series are stationary
+* Use `VARselect()` for lag length selection
+* Estimate VAR model
+* Perform:
+
+  * Granger causality tests
+  * Impulse Response Functions (IRFs)
+  * Forecast Error Variance Decomposition (FEVD)
+
+### 4. Structural VAR (SVAR)
+
+* Impose short-run (AB-model) identification
+* Use institutional knowledge (e.g., BP method)
+* Estimate SVAR using `svars` or `vars` package
+* Plot IRFs for:
+
+  * Govt spending → GDP, inflation
+  * Tax → GDP
+  * Interest rate → Inflation
+
+### 5. Cointegration and VECM
+
+* Johansen cointegration test
+* Estimate VECM using `tsDyn` or `urca`
+* Interpret long-run cointegrating vectors
+* Explain short-run adjustments via error correction terms
+
+## 📃 Deliverables
+
+* **Report (6–10 pages)** with:
+
+  * Introduction
+  * Methodology
+  * Results and interpretation
+  * Policy implications for Pakistan
+
+* **RMarkdown or Quarto Notebook** with full code and graphs
+
+## 💻 Tools Recommended
+
+| Task           | R Package               |
+| -------------- | ----------------------- |
+| Data Wrangling | `readxl`, `imfr`, `WDI` |
+| VAR/SVAR       | `vars`, `svars`, `urca` |
+| VECM           | `tsDyn`                 |
+| Plotting       | `ggplot2`, `plotly`     |
+
+## 📊 Evaluation Criteria
+
+| Component                         | Weight |
+| --------------------------------- | ------ |
+| Data Collection & Preprocessing   | 15%    |
+| Model Estimation & Interpretation | 35%    |
+| Diagnostic Tests & Justifications | 20%    |
+| Report Writing & Policy Insight   | 30%    |
+
+## 📌 Suggested Report Structure
+
+1. Introduction
+2. Data and Methodology
+3. Univariate Analysis
+4. VAR Analysis
+5. SVAR Identification & IRFs
+6. Cointegration and VECM
+7. Conclusion & Policy Recommendations

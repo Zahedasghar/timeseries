@@ -1,0 +1,85 @@
+---
+title: "[ARDL Cointegration]{.flow}"
+author: "[[Zahid Asghar, Professor, School of Economics, QAU](https://zahedasghar.netlify.app)]{style=color:blue;}"
+date: "2-06-2025"
+date-format: "DD-MM-YYYY"
+format: 
+  revealjs:
+    theme: [default, custom.css, styles.scss]
+    toc: true
+    code-fold: true
+    keep-md: false
+    chalkboard: true
+    slide-number: c/t
+execute: 
+  freeze: auto
+--- 
+
+## ARDL Cointegration {.scrollable}
+
+::: incremental 
+
+- Pesaran, Shin and Smith (PSS, 2001) developed a bounds testing approach to cointegration that allows for variables of mixed integration orders: I(0) and I(1).
+
+- The test statistic is similar to a Wald or F-test, but it follows a non-standard distribution.
+
+- Critical values are provided for lower bounds (assuming all variables are I(0)) and upper bounds (assuming all are I(1)).
+
+- If the computed F-statistic lies outside these bounds, we can determine whether cointegration exists—**without** needing to pre-test the integration order.
+
+- **Advantages over conventional methods:**
+  1. Works with a mix of I(0) and I(1) regressors.
+  2. Single-equation estimation is simpler to apply and interpret.
+  3. Allows different optimal lag lengths for different variables.
+:::
+
+## ARDL Model (Unrestricted Form)
+
+$$ 
+Y_t = \beta_0 + \sum_{i=1}^{p} \beta_i Y_{t-i} + \sum_{j=0}^{q_1} \alpha_{1j} X_{1,t-j} + \sum_{j=0}^{q_2} \alpha_{2j} X_{2,t-j} + \sum_{j=0}^{q_3} \alpha_{3j} X_{3,t-j} + \sum_{j=0}^{q_4} \alpha_{4j} X_{4,t-j} + \varepsilon_t
+$$
+
+## Assumptions Before Applying ARDL
+
+- None of the variables should be integrated of order 2 or higher (i.e., no I(2) series).
+
+- Next, specify the Error Correction form to test for long-run relationships:
+
+$$
+\begin{aligned}
+\Delta Y_t &= \beta_0 + \sum_{i=1}^{p} \beta_i \Delta Y_{t-i} + \sum_{j=0}^{q_1} \alpha_{1j} \Delta X_{1,t-j} + \sum_{j=0}^{q_2} \alpha_{2j} \Delta X_{2,t-j} + \\
+&\quad \sum_{j=0}^{q_3} \alpha_{3j} \Delta X_{3,t-j} + \sum_{j=0}^{q_4} \alpha_{4j} \Delta X_{4,t-j} + \theta_0 Y_{t-1} + \theta_1 X_{1,t-1} + \\
+&\quad \theta_2 X_{2,t-1} + \theta_3 X_{3,t-1} + \theta_4 X_{4,t-1} + \varepsilon_t
+\end{aligned}
+$$
+
+## Bounds Testing for Cointegration
+
+- Null hypothesis: $$ H_0: \theta_0 = \theta_1 = \dots = \theta_4 = 0 $$ (no long-run relationship)
+- Alternative hypothesis: at least one $$ \theta_i \neq 0 $$
+
+- If the F-statistic > upper bound → **Cointegration exists**
+- If the F-statistic < lower bound → **No cointegration**
+- If in between → **Inconclusive**
+
+## Long-Run Model and ECM
+
+- If cointegration is found, estimate the long-run model:
+
+$$ Y_t = \beta_0 + \alpha_1 X_{1,t} + \alpha_2 X_{2,t} + \alpha_3 X_{3,t} + \alpha_4 X_{4,t} + \varepsilon_t $$
+
+- And the associated Error Correction Model (ECM):
+
+$$
+\Delta Y_t = \beta_0 + \sum_{i=1}^{p} \beta_i \Delta Y_{t-i} + \sum_{j=0}^{q_1} \alpha_{1j} \Delta X_{1,t-j} + \dots + \sum_{j=0}^{q_4} \alpha_{4j} \Delta X_{4,t-j} + \delta Z_{t-1} + \varepsilon_t
+$$
+
+- Where $$ Z_{t-1} $$ is the lagged error correction term:
+
+$$ Z_{t-1} = Y_{t-1} - (\alpha_0 + \alpha_1 X_{1,t-1} + \alpha_2 X_{2,t-1} + \alpha_3 X_{3,t-1} + \alpha_4 X_{4,t-1}) $$
+
+## Resources
+
+👉 [ARDL in STATA and R (blog walkthrough)](http://rizaudinsahlan.blogspot.com/2016/06/ardl-cointegration-test-with-stata.html)
+
+👉 Pesaran, Shin, & Smith (2001): "Bounds Testing Approaches to the Analysis of Level Relationships"
