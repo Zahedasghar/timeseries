@@ -1,0 +1,17 @@
+
+
+
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    var uid = document.querySelector('meta[name="user_id"]')
+    if (uid) {
+      gtag('config', 'G-PHSKEDC1PP', {
+        'user_id': uid.content
+      });
+    } else {
+      gtag('config', 'G-PHSKEDC1PP');
+    }
+  
+

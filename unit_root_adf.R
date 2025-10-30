@@ -46,6 +46,13 @@ lm3 |> tidy()
 library("urca")
 
 ## acf and pacf of each series
+
+acf(data$y)
+ pacf(data$y)
+library(patchwork)
+
+
+
 acf(data$y)
 acf(data$z)
 acf(data$w)

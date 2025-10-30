@@ -9,6 +9,7 @@ data = read_excel("data/quarterly.xlsx")
 
 data$DATE = as.yearqtr(data$DATE)
 data$spread = data$r5-data$Tbill
+
 # 
  spread_xts <- xts(data$spread,order.by=data$DATE)
 colnames(spread_xts) <- c("spread")
@@ -44,8 +45,6 @@ p2
 # Displaying the plots side-by-side
 library(patchwork)
 p1 / p2
-
-
 
 # Plotting ACF using ggAcf
 p3 <- ggAcf(data$spread, lag.max = 12) + 
@@ -507,3 +506,4 @@ ggplot() +
   labs(title = "Combined Forecasts (Equally vs. Optimally Weighted)", x = "Index", y = "Forecasted Value") +
   theme_minimal()
 ### END
+

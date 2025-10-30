@@ -1,0 +1,672 @@
+---
+title: "Pakistan Inflation Dashboard"
+subtitle: "Underlying Inflation Measures & Monetary Policy Tracker"
+author: "State Bank of Pakistan Analysis"
+date: "September 2025"
+format:
+  dashboard:
+    document-css: false
+    link-citations: true
+    date-format: long
+    lang: en
+    page-layout: custom
+    theme: cosmo
+    # logo: ""  # Remove this line or comment it out
+    nav-buttons:
+      - icon: github
+        href: https://github.com
+    orientation: columns
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+# Load required libraries
+library(plotly)
+library(dplyr)
+library(tidyr)
+library(knitr)
+library(DT)
+library(htmltools)
+library(kableExtra)
+
+# Current inflation measures (September 2025)
+inflation_measures <- data.frame(
+  name = c("Headline CPI", "Core CPI", "Food Inflation", 
+           "Non-Food Inflation", "Urban CPI", "Rural CPI"),
+  current = c(5.6, 7.0, 3.8, 8.2, 5.8, 5.3),
+  previous = c(3.0, 7.2, 0.5, 8.5, 3.2, 2.7),
+  target = c(6.0, 6.5, 6.0, 6.0, 6.0, 6.0),
+  description = c("Overall consumer price inflation",
+                  "Excludes food and energy",
+                  "Food and beverages component",
+                  "Excluding food items",
+                  "Urban areas inflation",
+                  "Rural areas inflation"),
+  stringsAsFactors = FALSE
+)
+
+# Add calculated columns
+inflation_measures <- inflation_measures %>%
+  mutate(
+    change = current - previous,
+    diff_from_target = current - target,
+    status = case_when(
+      abs(diff_from_target) <= 0.5 ~ "Within Target",
+      diff_from_target < -0.5 ~ "Below Target",
+      diff_from_target > 0.5 & diff_from_target <= 2 ~ "Above Target",
+      TRUE ~ "Significantly Above"
+    )
+  )
+
+# Historical data (last 24 months)
+historical_data <- data.frame(
+  month = c("Oct-23", "Nov-23", "Dec-23", "Jan-24", "Feb-24", "Mar-24",
+            "Apr-24", "May-24", "Jun-24", "Jul-24", "Aug-24", "Sep-24",
+            "Oct-24", "Nov-24", "Dec-24", "Jan-25", "Feb-25", "Mar-25",
+            "Apr-25", "May-25", "Jun-25", "Jul-25", "Aug-25", "Sep-25"),
+  headline = c(26.9, 29.2, 29.7, 28.3, 23.1, 20.7, 17.3, 11.8, 12.6, 
+               11.1, 9.6, 6.9, 7.2, 4.9, 4.1, 2.7, 1.8, 0.7, 0.5, 
+               3.5, 3.2, 4.5, 3.0, 5.6),
+  core = c(18.5, 19.2, 20.1, 19.8, 17.5, 16.2, 15.1, 14.2, 13.8, 
+           12.5, 11.3, 10.2, 9.8, 9.1, 8.5, 8.2, 7.9, 7.6, 7.4, 
+           7.3, 7.1, 7.0, 7.2, 7.0),
+  food = c(30.5, 34.1, 35.2, 32.8, 26.5, 23.8, 18.5, 10.2, 11.5, 
+           9.8, 7.5, 3.8, 4.2, 1.5, 0.8, -1.2, -2.5, -4.1, -4.8, 
+           1.2, 0.8, 2.5, -0.5, 3.8),
+  policy = c(22.0, 22.0, 22.0, 22.0, 22.0, 22.0, 22.0, 22.0, 22.0,
+             19.5, 19.5, 17.5, 17.5, 15.0, 15.0, 12.0, 12.0, 12.0,
+             12.0, 11.0, 11.0, 11.0, 11.0, 11.0),
+  stringsAsFactors = FALSE
+)
+
+# Component data
+component_data <- data.frame(
+  category = c("Food & Beverages", "Food & Beverages", "Food & Beverages",
+               "Housing & Utilities", "Housing & Utilities", "Housing & Utilities",
+               "Transportation", "Transportation",
+               "Other", "Other", "Other"),
+  item = c("Perishable Foods", "Non-Perishable Foods", "Beverages",
+           "Electricity", "Gas", "Housing Rent",
+           "Motor Fuel", "Transport Services",
+           "Healthcare", "Education", "Communication"),
+  value = c(-2.5, 8.2, 12.5, 25.8, 35.2, 4.5, -8.5, 15.3, 9.8, 14.2, 3.1),
+  stringsAsFactors = FALSE
+)
+
+# Key statistics
+current_policy_rate <- 11.0
+current_headline <- 5.6
+real_rate <- current_policy_rate - current_headline
+inflation_expectations <- 66.6
+```
+
+# Overview {orientation="columns"}
+
+## Column {width=25%}
+
+```{r}
+#| content: valuebox
+#| title: "Current Policy Rate"
+
+list(
+  value = paste0(current_policy_rate, "%"),
+  caption = "Unchanged since May 2025",
+  color = "primary"
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Real Interest Rate"
+
+list(
+  value = paste0(round(real_rate, 1), "%"),
+  caption = "Policy Rate - Headline CPI",
+  color = "success"
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Inflation Expectations"
+
+list(
+  value = round(inflation_expectations, 1),
+  caption = "Consumer Expectations Index ↓ 0.6",
+  color = "info"
+)
+```
+
+## Column {width=75%}
+
+### Inflation Trends & Monetary Policy Rate
+
+```{r}
+#| title: "24-Month Historical View"
+#| padding: 0
+
+# Create ordered factor for proper month ordering
+historical_data_ordered <- historical_data %>%
+  mutate(month_ordered = factor(month, levels = month))
+
+plot_ly(historical_data_ordered) %>%
+  add_trace(
+    x = ~month_ordered, 
+    y = ~headline, 
+    type = 'scatter', 
+    mode = 'lines+markers',
+    name = 'Headline CPI', 
+    line = list(color = '#3b82f6', width = 3),
+    marker = list(size = 4)
+  ) %>%
+  add_trace(
+    x = ~month_ordered, 
+    y = ~core, 
+    type = 'scatter', 
+    mode = 'lines+markers',
+    name = 'Core CPI', 
+    line = list(color = '#f59e0b', width = 2),
+    marker = list(size = 4)
+  ) %>%
+  add_trace(
+    x = ~month_ordered, 
+    y = ~food, 
+    type = 'scatter', 
+    mode = 'lines+markers',
+    name = 'Food Inflation', 
+    line = list(color = '#10b981', width = 2),
+    marker = list(size = 4)
+  ) %>%
+  add_trace(
+    x = ~month_ordered, 
+    y = ~policy, 
+    type = 'scatter', 
+    mode = 'lines',
+    name = 'Policy Rate', 
+    line = list(color = '#ef4444', width = 3, dash = 'dash')
+  ) %>%
+  layout(
+    xaxis = list(
+      title = "", 
+      tickangle = -45,
+      categoryorder = "trace",
+      tickfont = list(size = 10)
+    ),
+    yaxis = list(
+      title = "Percentage (%)",
+      titlefont = list(size = 12)
+    ),
+    hovermode = 'x unified',
+    legend = list(
+      x = 0.02, 
+      y = 0.98,
+      bgcolor = 'rgba(255, 255, 255, 0.8)',
+      bordercolor = '#e2e8f0',
+      borderwidth = 1
+    ),
+    margin = list(l = 50, r = 20, t = 40, b = 80)
+  )
+```
+
+::: {.callout-note}
+## Key Insight
+Pakistan's policy rate has been cut from 22% to 11% since June 2024, as inflation dropped from a peak of nearly 30% to current levels. The State Bank maintained rates at 11% since May 2025 due to energy price adjustments and flood-related risks.
+:::
+
+# Inflation Measures {orientation="rows"}
+
+## Row {height=60%}
+
+### Current Inflation Measures (September 2025)
+
+```{r}
+#| title: "Inflation Indicators - Status Relative to Target"
+
+# Create formatted table
+table_data <- inflation_measures %>%
+  mutate(
+    Measure = name,
+    Description = description,
+    Current = paste0(sprintf("%.1f", current), "%"),
+    Change = paste0(ifelse(change > 0, "+", ""), sprintf("%.1f", change), "pp"),
+    Target = paste0(sprintf("%.1f", target), "%"),
+    Status = status
+  ) %>%
+  select(Measure, Description, Current, Change, Target, Status)
+
+# Color mapping
+color_map <- c(
+  "Within Target" = "#d4edda",
+  "Below Target" = "#d1ecf1",
+  "Above Target" = "#fff3cd",
+  "Significantly Above" = "#f8d7da"
+)
+
+datatable(
+  table_data,
+  options = list(
+    dom = 't',
+    pageLength = 10,
+    ordering = FALSE,
+    columnDefs = list(
+      list(width = '200px', targets = 0),
+      list(width = '300px', targets = 1),
+      list(className = 'dt-center', targets = 2:5)
+    )
+  ),
+  rownames = FALSE,
+  class = 'cell-border stripe'
+) %>%
+  formatStyle(
+    'Status',
+    backgroundColor = styleEqual(
+      names(color_map),
+      unname(color_map)
+    ),
+    fontWeight = 'bold'
+  ) %>%
+  formatStyle(
+    'Current',
+    fontWeight = 'bold',
+    fontSize = '16px'
+  )
+```
+
+## Row {height=40%}
+
+### Target Range Explanation
+
+**Understanding the Status Colors:**
+
+- **🟢 Within Target (Green):** Inflation is within ±0.5 percentage points of the target, indicating price stability.
+
+- **🔵 Below Target (Blue):** Inflation is more than 0.5pp below target, which may indicate weak demand or deflationary pressures.
+
+- **🟡 Above Target (Yellow):** Inflation is 0.5-2.0pp above target, suggesting moderate price pressures that require monitoring.
+
+- **🔴 Significantly Above (Red):** Inflation is more than 2.0pp above target, indicating substantial price pressures requiring policy action.
+
+The State Bank of Pakistan targets inflation in the range of **5-7%** to maintain price stability while supporting economic growth.
+
+# Components {orientation="rows"}
+
+## Row {height=60%}
+
+### Inflation by Component Category
+
+```{r}
+#| title: "Year-over-Year Changes by Category"
+
+# Reorder items by value for better visualization
+component_data_sorted <- component_data %>%
+  arrange(value) %>%
+  mutate(
+    item_ordered = factor(item, levels = item),
+    color = case_when(
+      value > 10 ~ "#dc3545",
+      value > 0 ~ "#ffc107",
+      TRUE ~ "#28a745"
+    )
+  )
+
+plot_ly(component_data_sorted) %>%
+  add_trace(
+    y = ~item_ordered,
+    x = ~value,
+    type = 'bar',
+    orientation = 'h',
+    marker = list(color = ~color),
+    text = ~paste0(sprintf("%.1f", value), "%"),
+    textposition = 'outside',
+    textfont = list(size = 11),
+    hovertemplate = paste(
+      '<b>%{y}</b><br>',
+      'Change: %{x:.1f}%<br>',
+      '<extra></extra>'
+    )
+  ) %>%
+  layout(
+    xaxis = list(
+      title = "Year-over-Year Change (%)",
+      titlefont = list(size = 12)
+    ),
+    yaxis = list(
+      title = "",
+      tickfont = list(size = 10)
+    ),
+    showlegend = FALSE,
+    margin = list(l = 150, r = 50, t = 40, b = 50)
+  )
+```
+
+## Row {height=40%}
+
+### Food & Beverages
+
+```{r}
+food_items <- component_data %>% 
+  filter(category == "Food & Beverages")
+
+kable(
+  food_items %>% select(Item = item, `YoY Change (%)` = value),
+  align = c('l', 'r'),
+  format = 'html'
+) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover"),
+    full_width = FALSE
+  )
+```
+
+### Housing & Utilities
+
+```{r}
+housing_items <- component_data %>% 
+  filter(category == "Housing & Utilities")
+
+kable(
+  housing_items %>% select(Item = item, `YoY Change (%)` = value),
+  align = c('l', 'r'),
+  format = 'html'
+) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover"),
+    full_width = FALSE
+  )
+```
+
+### Transportation
+
+```{r}
+transport_items <- component_data %>% 
+  filter(category == "Transportation")
+
+kable(
+  transport_items %>% select(Item = item, `YoY Change (%)` = value),
+  align = c('l', 'r'),
+  format = 'html'
+) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover"),
+    full_width = FALSE
+  )
+```
+
+### Other Categories
+
+```{r}
+other_items <- component_data %>% 
+  filter(category == "Other")
+
+kable(
+  other_items %>% select(Item = item, `YoY Change (%)` = value),
+  align = c('l', 'r'),
+  format = 'html'
+) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover"),
+    full_width = FALSE
+  )
+```
+
+# Time Series Analysis {orientation="rows"}
+
+## Row {height=50%}
+
+### Headline vs Core Inflation
+
+```{r}
+# Create ordered factor for proper chronological display
+historical_data_ordered <- historical_data %>%
+  mutate(month_ordered = factor(month, levels = month))
+
+plot_ly(historical_data_ordered) %>%
+  add_trace(
+    x = ~month_ordered, 
+    y = ~headline, 
+    type = 'scatter', 
+    mode = 'lines+markers',
+    name = 'Headline CPI', 
+    line = list(color = '#3b82f6', width = 3),
+    marker = list(size = 5)
+  ) %>%
+  add_trace(
+    x = ~month_ordered, 
+    y = ~core, 
+    type = 'scatter', 
+    mode = 'lines+markers',
+    name = 'Core CPI', 
+    line = list(color = '#f59e0b', width = 3),
+    marker = list(size = 5)
+  ) %>%
+  add_trace(
+    x = ~month_ordered, 
+    y = 6.5,
+    type = 'scatter',
+    mode = 'lines',
+    name = 'Target (6.5%)',
+    line = list(color = 'gray', width = 2, dash = 'dot')
+  ) %>%
+  layout(
+    xaxis = list(
+      title = "", 
+      tickangle = -45,
+      categoryorder = "trace",
+      tickfont = list(size = 10)
+    ),
+    yaxis = list(
+      title = "Percentage (%)",
+      titlefont = list(size = 12)
+    ),
+    hovermode = 'x unified',
+    legend = list(
+      x = 0.02, 
+      y = 0.98,
+      bgcolor = 'rgba(255, 255, 255, 0.8)',
+      bordercolor = '#e2e8f0',
+      borderwidth = 1
+    ),
+    margin = list(l = 50, r = 20, t = 20, b = 80)
+  )
+```
+
+### Food Inflation Trend
+
+```{r}
+# Create ordered factor
+historical_data_ordered <- historical_data %>%
+  mutate(month_ordered = factor(month, levels = month))
+
+plot_ly(historical_data_ordered) %>%
+  add_trace(
+    x = ~month_ordered, 
+    y = ~food, 
+    type = 'scatter', 
+    mode = 'lines',
+    name = 'Food Inflation',
+    fill = 'tozeroy',
+    fillcolor = 'rgba(16, 185, 129, 0.2)',
+    line = list(color = '#10b981', width = 3)
+  ) %>%
+  layout(
+    xaxis = list(
+      title = "", 
+      tickangle = -45,
+      categoryorder = "trace",
+      tickfont = list(size = 10)
+    ),
+    yaxis = list(
+      title = "Percentage (%)",
+      titlefont = list(size = 12)
+    ),
+    hovermode = 'x',
+    margin = list(l = 50, r = 20, t = 20, b = 80)
+  )
+```
+
+## Row {height=50%}
+
+### Policy Rate Evolution
+
+```{r}
+# Create ordered factor
+historical_data_ordered <- historical_data %>%
+  mutate(month_ordered = factor(month, levels = month))
+
+plot_ly(historical_data_ordered) %>%
+  add_trace(
+    x = ~month_ordered, 
+    y = ~policy, 
+    type = 'scatter', 
+    mode = 'lines+markers',
+    name = 'Policy Rate',
+    line = list(color = '#ef4444', width = 4),
+    marker = list(size = 7, symbol = 'diamond')
+  ) %>%
+  layout(
+    xaxis = list(
+      title = "", 
+      tickangle = -45,
+      categoryorder = "trace",
+      tickfont = list(size = 10)
+    ),
+    yaxis = list(
+      title = "Policy Rate (%)",
+      titlefont = list(size = 12)
+    ),
+    hovermode = 'x',
+    margin = list(l = 50, r = 20, t = 20, b = 80)
+  )
+```
+
+### Inflation Differential
+
+```{r}
+# Create ordered factor and calculate differential
+historical_data_diff <- historical_data %>%
+  mutate(
+    month_ordered = factor(month, levels = month),
+    diff = headline - core
+  )
+
+plot_ly(historical_data_diff) %>%
+  add_trace(
+    x = ~month_ordered, 
+    y = ~diff, 
+    type = 'bar',
+    name = 'Headline - Core Differential',
+    marker = list(
+      color = ~diff,
+      colorscale = list(
+        c(0, 'rgb(239, 68, 68)'),   # Red for negative
+        c(0.5, 'rgb(255, 255, 255)'),  # White for zero
+        c(1, 'rgb(34, 197, 94)')    # Green for positive
+      ),
+      showscale = FALSE
+    ),
+    hovertemplate = paste(
+      '<b>%{x}</b><br>',
+      'Differential: %{y:.2f}pp',
+      '<extra></extra>'
+    )
+  ) %>%
+  layout(
+    xaxis = list(
+      title = "", 
+      tickangle = -45,
+      categoryorder = "trace",
+      tickfont = list(size = 10)
+    ),
+    yaxis = list(
+      title = "Differential (pp)",
+      titlefont = list(size = 12)
+    ),
+    hovermode = 'x',
+    margin = list(l = 50, r = 20, t = 20, b = 80)
+  )
+```
+
+# About {orientation="rows"}
+
+## Row
+
+### About This Dashboard
+
+#### Purpose
+This dashboard tracks multiple measures of inflation in Pakistan to provide a comprehensive view of price pressures in the economy, similar to the Federal Reserve Bank of Atlanta's Underlying Inflation Dashboard.
+
+#### Data Sources
+- **State Bank of Pakistan (SBP)** - Monetary policy and inflation data
+- **Pakistan Bureau of Statistics (PBS)** - Consumer Price Index
+- **International Monetary Fund (IMF)** - Economic indicators
+
+#### Update Frequency
+**Monthly** - Data is updated following the release of official CPI figures, typically in the first half of each month.
+
+#### Methodology
+Inflation measures are color-coded based on their distance from the SBP's target range of 5-7%:
+
+- **🟢 Green (Within Target):** ±0.5pp from target
+- **🟡 Yellow (Above Target):** 0.5-2.0pp above target  
+- **🔴 Red (Significantly Above):** >2.0pp above target
+- **🔵 Blue (Below Target):** >0.5pp below target
+
+### Key Indicators
+
+#### Headline CPI
+Overall consumer price inflation measuring the average change in prices paid by consumers for a basket of goods and services.
+
+#### Core CPI
+Excludes volatile food and energy prices to show underlying inflation trends. This measure is closely watched by the State Bank of Pakistan for monetary policy decisions.
+
+#### Food Inflation
+Measures price changes in food and beverages, which constitute a significant portion of household expenditure in Pakistan.
+
+#### Policy Rate
+The State Bank of Pakistan's benchmark interest rate, used to control inflation and influence economic activity. Current rate: **11.0%**
+
+#### Real Interest Rate
+The policy rate adjusted for inflation (Policy Rate - Headline CPI). Positive real rates help control inflation by encouraging savings over spending.
+
+### Recent Developments
+
+#### Monetary Policy Actions (2024-2025)
+
+- **June 2024:** Started rate cutting cycle from 22%
+- **Multiple cuts:** Reduced rates by 1,100 basis points total
+- **May 2025:** Final cut to 11%
+- **June-September 2025:** Held rates steady at 11%
+
+#### Key Factors
+
+**Disinflation Success:**
+- Inflation fell from 30% peak to current 5.6%
+- Food prices moderated significantly
+- Core inflation remains elevated at 7%
+
+**Ongoing Challenges:**
+- Energy tariff adjustments (gas +35%, electricity +26%)
+- Flood-related agricultural impacts
+- Global commodity price volatility
+- Exchange rate pressures
+
+**Outlook:**
+The State Bank expects inflation to stabilize in the 5-7% target range, with continued focus on maintaining positive real interest rates to anchor inflation expectations.
+
+### Contact & Feedback
+
+For questions, suggestions, or feedback about this dashboard:
+
+📧 Email: analytics@example.com  
+🌐 Website: www.sbp.org.pk  
+📱 Twitter: @StateBank_Pak
+
+---
+
+**Dashboard Version:** 1.0  
+**Last Updated:** September 2025  
+**Next Update:** Mid-October 2025
+
+*This dashboard is for informational purposes only and does not constitute financial advice or policy guidance from the State Bank of Pakistan.*

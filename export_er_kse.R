@@ -143,6 +143,7 @@ df_merged_filtered %>%
 # Bootstrap confidence intervals using the `boot` package
 set.seed(12345)
 
+
 # Define the regression function
 regression_function <- function(data, indices) {
   d <- data[indices, ]  # allows boot to select sample
