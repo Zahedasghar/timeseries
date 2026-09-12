@@ -1,0 +1,301 @@
+---
+title: "EC614: Macroeconomic Forecasting"
+subtitle: "School of Economics, QAU, Islamabad"
+# author: "Zahid Asghar"
+# date: last-modified
+format:
+  typst:
+    papersize: a4
+    margin: 
+      x: 1cm
+      y: 1cm
+---
+
+
+::: {.content-visible when-format="typst"}
+```{=typst}
+#line(length: 100%, stroke: 1pt)
+```
+:::
+
+---
+
+::: {.content-visible when-format="typst"}
+```{=typst}
+#show: columns.with(2, gutter: 1em)
+```
+:::
+
+# Section A: Multiple Choice Questions (25 marks)
+
+*Select the best answer for each question.*
+
+### Question 1
+
+In a reduced-form VAR, the error terms across equations are:
+
+a) Always uncorrelated by construction
+b) May be correlated if variables are related
+c) Always normally distributed
+d) Independent of past values
+
+### Question 2
+
+The primary advantage of ARDL over traditional cointegration methods is:
+
+a) It requires all variables to be I(1)
+b) It works with variables of mixed integration orders I(0) and I(1)
+c) It is computationally simpler
+d) It doesn't require lag selection
+
+### Question 3
+
+In Granger causality testing, if X Granger-causes Y, it means:
+
+a) X definitely causes Y in a causal sense
+b) Past values of X help predict Y beyond Y's own past
+c) Y cannot Granger-cause X simultaneously
+d) X and Y must be cointegrated
+
+### Question 4
+
+The Pesaran-Shin-Smith (2001) bounds test in ARDL tests the null hypothesis:
+
+a) All variables are I(1)
+b) Variables are cointegrated
+c) No long-run relationship exists
+d) Variables are stationary
+
+### Question 5
+
+In a structural VAR (SVAR), identification restrictions are imposed on:
+
+a) The lag length only
+b) The contemporaneous relationships among variables
+c) The forecast horizon
+d) The variance of residuals
+
+### Question 6
+
+Which statement about impulse response functions (IRFs) is FALSE?
+
+a) They trace dynamic effects of shocks over time
+b) They require the VAR to have uncorrelated errors
+c) Confidence bands indicate statistical uncertainty
+d) They are always symmetric between variables
+
+### Question 7
+
+In a recursive VAR, the ordering of variables matters because:
+
+a) It determines computational efficiency
+b) It imposes assumptions about contemporaneous effects
+c) It affects lag length selection
+d) It changes the sample size
+
+### Question 8
+
+The forecast error variance decomposition (FEVD) answers:
+
+a) How accurate the forecast is
+b) What fraction of forecast error variance is due to each shock
+c) Whether the model is correctly specified
+d) If variables are cointegrated
+
+### Question 9
+
+If two I(1) variables are cointegrated, their linear combination is:
+
+a) I(1)
+b) I(2)
+c) I(0)
+d) Non-stationary with no defined order
+
+### Question 10
+
+The error correction term in a VECM represents:
+
+a) The forecasting error
+b) Deviation from long-run equilibrium
+c) Short-run dynamics
+d) Measurement error
+
+### Question 11
+
+In the Johansen cointegration test, the trace statistic tests:
+
+a) Whether rank(Π) = 0
+b) Whether rank(Π) ≤ r against rank(Π) > r
+c) Stationarity of individual series
+d) Granger causality
+
+### Question 12
+
+Weak exogeneity in a VECM context means:
+
+a) The variable doesn't respond to disequilibrium
+b) The variable is determined outside the model
+c) The variable is stationary
+d) The variable has weak predictive power
+
+### Question 13
+
+The primary problem with estimating a VAR with non-stationary I(1) variables that are NOT cointegrated is:
+
+a) Computational complexity
+b) Spurious regression
+c) Loss of degrees of freedom
+d) Heteroskedasticity
+
+### Question 14
+
+In ARDL modeling, if the F-statistic falls between the lower and upper bounds:
+
+a) We reject cointegration
+b) We accept cointegration
+c) The result is inconclusive
+d) We need to increase lag length
+
+### Question 15
+
+The Cholesky decomposition in recursive VAR estimation:
+
+a) Tests for cointegration
+b) Orthogonalizes the VAR residuals
+c) Selects optimal lag length
+d) Estimates structural parameters
+
+### Question 16
+
+Compared to univariate ARIMA models, VARs:
+
+a) Are always superior for forecasting
+b) Capture cross-variable dynamics
+c) Require less data
+d) Have clearer structural interpretation
+
+### Question 17
+
+In panel data with fixed effects, the "within" transformation:
+
+a) Adds time-specific effects
+b) Removes individual-specific means
+c) Differences all variables
+d) Standardizes variables
+
+### Question 18
+
+The Hausman test in panel data compares:
+
+a) Fixed effects vs pooled OLS
+b) Random effects vs pooled OLS
+c) Fixed effects vs random effects
+d) Static vs dynamic models
+
+### Question 19
+
+In SVAR identification using the Blanchard-Perotti approach:
+
+a) Only short-run restrictions are used
+b) Institutional knowledge provides parameter values
+c) All variables must be ordered recursively
+d) Long-run restrictions are necessary
+
+### Question 20
+
+When VAR residuals show autocorrelation, the most likely issue is:
+
+a) Too many lags included
+b) Insufficient lag length
+c) Non-stationarity
+d) Heteroskedasticity
+
+--- 
+
+::: {.content-visible when-format="typst"}
+```{=typst}
+] // End columns for Section A
+#pagebreak()
+
+// Start columns for Section B
+#columns(2, gutter: 1em)[
+```
+:::
+
+# Part B: Short Answer Questions (30 marks)
+[... all your content ...]
+
+::: {.content-visible when-format="typst"}
+```{=typst}
+] // End columns for Section B
+```
+:::
+
+# Part B: Short Answer Questions (30 marks)
+
+*Answer all questions. Write concisely but completely.*
+
+## Question 1 (5 marks)
+
+Explain the difference between reduced-form VAR, recursive VAR, and structural VAR. Under what circumstances would you prefer using each type? Provide a concrete example from macroeconomic policy analysis.
+
+## Question 2 (5 marks)
+
+You estimate an ARDL(2,4,0,0,0,4,4,1) model for a relationship between multiple variables.
+
+**(a)** What do the numbers in parentheses represent?
+
+**(b)** The bounds test F-statistic = 6.45 (critical values: I(0) = 2.45, I(1) = 3.61 at 5% level). What do you conclude about cointegration?
+
+**(c)** If cointegration exists, what is your next step in the analysis?
+
+## Question 3 (5 marks)
+
+Consider a three-variable VECM for money (M), prices (P), and GDP (Y) for Pakistan.
+
+The Johansen test indicates r = 1 cointegrating relationship. The estimated cointegrating vector is:
+
+$$\boldsymbol{\beta}' = [1, -0.85, -0.35] \text{ for } [M, P, Y]$$
+
+**(a)** Interpret this long-run relationship economically.
+
+**(b)** What does r = 1 tell you about the system?
+
+**(c)** How would you test if money (M) is weakly exogenous?
+
+## Question 4 (15 marks)
+
+You are analyzing monetary policy transmission in Pakistan using quarterly data from 2000Q1 to 2023Q4 for the following variables:
+
+- GDP growth rate (Y)
+- CPI inflation (π)
+- Policy interest rate (R)
+- Real effective exchange rate (REER)
+
+### Part (a): Preliminary Analysis (5 marks)
+
+**(i)** Explain the steps you would take to prepare the data before estimating a VAR model.
+
+**(ii)** What unit root tests would you apply and why?
+
+**(iii)** How would you handle the different orders of integration if some variables are I(0) and others are I(1)?
+
+
+### Part (b): VAR Specification (5 marks)
+
+**(i)** Explain how you would select the optimal lag length for the VAR.
+
+**(ii)** Would you include deterministic terms (constant, trend)? Justify your answer.
+
+**(iii)** Write out the VAR equations in matrix form for lag order p=2.
+
+
+### Part (c): Structural Identification (5 marks)
+
+**(i)** Propose a recursive ordering for these variables based on institutional knowledge of Pakistan's economy. Justify your ordering.
+
+**(ii)** Alternatively, propose one short-run restriction and one long-run restriction for SVAR identification.
+
+**(iii)** What economic shock are you trying to identify, and why does it matter for policy?
+
+

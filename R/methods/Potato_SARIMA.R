@@ -1,0 +1,56 @@
+library(readxl)
+setwd("C:/Users/Dr.Zahid/OneDrive - Higher Education Commission")
+Potato <- read_excel("Potato-Onion.xlsx")
+str(Potato)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+plot(Potato$POTATOES)
+Pot_isb<-filter(Potato, City=='Islamabad')
+myts <- ts(Pot_isb$POTATOES, start=c(2008, 7), end=c(2015, 7), frequency=12) 
+str(myts)
+##str(Potato)
+#as.numeric(Potato$POTATOES)
+plot(myts)
+# subset the time series (Aug 2014 to July 2015)
+myts2 <- window(myts, start=c(2014, 8), end=c(2015, 7)) 
+
+# plot series
+plot(myts)
+# Seasonal decomposition
+fit <- stl(myts, s.window="period")
+plot(fit)
+par(mfrow=c(1,2))
+acf(myts)
+pacf(myts)
+dts<-diff(myts,12)
+head(dts)
+plot(dts)
+acf(dts)
+pacf(dts)
+ddts<-diff(dts,1)
+plot(ddts)
+acf(ddts)
+pacf(ddts)
+
+
+
+
+# additional plots
+monthplot(myts)
+##install.packages("forecast")
+library(forecast)
+seasonplot(myts)
+fit <- arima(myts, order=c(1, 0, 0))
+summary(fit)
+forecast.Arima(x=myts, h=5)
+head(myts)
+tail(myts)
+auto.arima(myts)
+
+auto.arima(x=myts,seasonal = FALSE)
+library(seasonal)
+##install.packages("seasonalview")
+library(seasonalview)
+view(seas(myts))
+

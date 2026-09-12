@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="author" content="Zahid Asghar">
+<meta name="dcterms.date" content="2026-09-12">
+<title>VECM Models – Time Series Econometrics &amp; Macroeconomic Forecasting</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../lectures/10-ardl-and-bounds-testing.html" rel="next">
+<link href="../lectures/08-volatility-arch-garch.html" rel="prev">
+<link href="../assets/images/fpp3.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-27766ece6bd3eeb285874ddb9e7fbaa0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-d2fa471584cbcee62d73db67d8c7ce76.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><style>html{ scroll-behavior: smooth; }</style>
+<link href="../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../site_libs/pagedtable-1.1/js/pagedtable.js"></script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+</head>
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Time Series Econometrics &amp; Macroeconomic Forecasting</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../outline.html"> 
+<span class="menu-text">Course outline</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../lectures/index.html" aria-current="page"> 
+<span class="menu-text">Lectures</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../labs/index.html"> 
+<span class="menu-text">Labs</span></a>
+  </li>  
+</ul>
+<ul class="navbar-nav navbar-nav-scroll ms-auto">
+<li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/Zahedasghar/timeseries"> <i class="bi bi-github" role="img" aria-label="GitHub repository">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://zahidasghar.com"> <i class="bi bi-globe" role="img" aria-label="zahidasghar.com">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lectures/09-cointegration-and-vecm.html">Multivariate and long-run relationships</a></li><li class="breadcrumb-item"><a href="../lectures/09-cointegration-and-vecm.html">VECM Models</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav></header><!-- content --><header id="title-block-header" class="quarto-title-block default page-columns page-full"><div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lectures/09-cointegration-and-vecm.html">Multivariate and long-run relationships</a></li><li class="breadcrumb-item"><a href="../lectures/09-cointegration-and-vecm.html">VECM Models</a></li></ol></nav>
+      <h1 class="title">VECM Models</h1>
+                      </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Zahid Asghar </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">September 12, 2026</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lectures</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Foundations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/01-course-overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EC614: Macroeconomic Forecasting</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/02-stationarity-and-nonstationarity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="flow">Sationary and Nonstationary Series</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/03-nonstationary-series.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="flow">Nonstationary Series</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/04-unit-root-tests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Unit Roots Tests: Methods and Problems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/05-spurious-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Spurious Regression</span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Univariate modelling and forecasting</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/06-arima-modelling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ARIMA modeling using bonds and petrol prices data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/07-forecast-uncertainty-and-evaluation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="flow">Forecast Uncertainty and Evaluation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/08-volatility-arch-garch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Modelling Volatility</span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Multivariate and long-run relationships</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/09-cointegration-and-vecm.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">VECM Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/10-ardl-and-bounds-testing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ARDL and ARDL Cointegration</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/11-vector-autoregressions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="yellow">Vector Autoregressions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/12-structural-var.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="flow">Structural VAR Part 1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/13-svar-macro-forecasting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="flow">Macroeconomic Forecasting: Structural VAR</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Panel data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/14-panel-data-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Panel Data Modeling in R</span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul>
+<li><a href="#main-objectives" id="toc-main-objectives" class="nav-link active" data-scroll-target="#main-objectives">Main Objectives</a></li>
+  <li><a href="#money-prices-and-gdp" id="toc-money-prices-and-gdp" class="nav-link" data-scroll-target="#money-prices-and-gdp">Money, Prices and GDP</a></li>
+  <li><a href="#graphs-of-data" id="toc-graphs-of-data" class="nav-link" data-scroll-target="#graphs-of-data">Graphs of data</a></li>
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a></li>
+  <li><a href="#scatter-plot-of-the-variables" id="toc-scatter-plot-of-the-variables" class="nav-link" data-scroll-target="#scatter-plot-of-the-variables">Scatter plot of the variables</a></li>
+  <li><a href="#linear-combinations-of-i1-series" id="toc-linear-combinations-of-i1-series" class="nav-link" data-scroll-target="#linear-combinations-of-i1-series">Linear Combinations of I(1) series</a></li>
+  <li><a href="#what-is-cointegration" id="toc-what-is-cointegration" class="nav-link" data-scroll-target="#what-is-cointegration">What is Cointegration</a></li>
+  <li><a href="#cointegretion-and-vector-error-correction-model-vecm" id="toc-cointegretion-and-vector-error-correction-model-vecm" class="nav-link" data-scroll-target="#cointegretion-and-vector-error-correction-model-vecm">Cointegretion and Vector Error Correction Model (VECM)</a></li>
+  <li><a href="#money-and-price" id="toc-money-and-price" class="nav-link" data-scroll-target="#money-and-price">Money and Price</a></li>
+  <li><a href="#deviation-and-now-what" id="toc-deviation-and-now-what" class="nav-link" data-scroll-target="#deviation-and-now-what">Deviation and now what</a></li>
+  <li><a href="#m_t-is-doing-all-the-adjument" id="toc-m_t-is-doing-all-the-adjument" class="nav-link" data-scroll-target="#m_t-is-doing-all-the-adjument"><span class="math inline">\(m_t\)</span> is doing all the adjument</a></li>
+  <li><a href="#m_t-is-unchanged-and-m_t-downarrow" id="toc-m_t-is-unchanged-and-m_t-downarrow" class="nav-link" data-scroll-target="#m_t-is-unchanged-and-m_t-downarrow"><span class="math inline">\(m^*_t\)</span> is unchanged and <span class="math inline">\(m_t\)</span> <span class="math inline">\(\downarrow\)</span></a></li>
+  <li><a href="#m_t-is-doing-all-the-adjument-1" id="toc-m_t-is-doing-all-the-adjument-1" class="nav-link" data-scroll-target="#m_t-is-doing-all-the-adjument-1"><span class="math inline">\(m^*_t\)</span> is doing all the adjument</a></li>
+  <li><a href="#both-m_t-and-p_t-adjust" id="toc-both-m_t-and-p_t-adjust" class="nav-link" data-scroll-target="#both-m_t-and-p_t-adjust">Both <span class="math inline">\(m_t\)</span> and <span class="math inline">\(p_t\)</span> adjust</a></li>
+  <li><a href="#both-m_t-and-p_t-adjust-simulataneously" id="toc-both-m_t-and-p_t-adjust-simulataneously" class="nav-link" data-scroll-target="#both-m_t-and-p_t-adjust-simulataneously">Both <span class="math inline">\(m_t\)</span> and <span class="math inline">\(p_t\)</span> adjust simulataneously</a></li>
+  <li><a href="#cointegration-and-vecm-continued" id="toc-cointegration-and-vecm-continued" class="nav-link" data-scroll-target="#cointegration-and-vecm-continued">Cointegration and VECM (Continued)</a></li>
+  <li><a href="#back-to-money-prices-and-gdp-issue" id="toc-back-to-money-prices-and-gdp-issue" class="nav-link" data-scroll-target="#back-to-money-prices-and-gdp-issue">Back to money, prices and gdp issue</a></li>
+  <li><a href="#vecm-of-order-1" id="toc-vecm-of-order-1" class="nav-link" data-scroll-target="#vecm-of-order-1">VECM of order 1</a></li>
+  <li><a href="#deterministic-component" id="toc-deterministic-component" class="nav-link" data-scroll-target="#deterministic-component">Deterministic component</a></li>
+  <li><a href="#case-3-vecm-order-1-with-constant" id="toc-case-3-vecm-order-1-with-constant" class="nav-link" data-scroll-target="#case-3-vecm-order-1-with-constant">Case 3 VECM order 1 with constant</a></li>
+  <li><a href="#methods-of-cointegration-testing" id="toc-methods-of-cointegration-testing" class="nav-link" data-scroll-target="#methods-of-cointegration-testing">Methods of Cointegration testing</a></li>
+  <li><a href="#weak-exogeniety" id="toc-weak-exogeniety" class="nav-link" data-scroll-target="#weak-exogeniety">Weak Exogeniety</a></li>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/Zahedasghar/timeseries/blob/main/lectures/09-cointegration-and-vecm.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/Zahedasghar/timeseries/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="09-cointegration-and-vecm.html"><i class="bi bi-file-slides"></i>RevealJS</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content"><section id="main-objectives" class="level2"><h2 class="anchored" data-anchor-id="main-objectives">Main Objectives</h2>
+<ul>
+<li><p>Concept of cointegration</p></li>
+<li><p>Studying the dynamics of cointegrated variables</p></li>
+<li><p>Methods for testing cointegration</p></li>
+<li><p>How to estimate a system of cointegrated variables</p></li>
+<li><p>VAR and VECM difference</p></li>
+</ul></section><section id="money-prices-and-gdp" class="level2"><h2 class="anchored" data-anchor-id="money-prices-and-gdp">Money, Prices and GDP</h2>
+<ul>
+<li><p>Data for money, prices and gdp</p></li>
+<li><p>Purpose is forecasting for next 4 to 8 quarters</p></li>
+</ul></section><section id="graphs-of-data" class="level2"><h2 class="anchored" data-anchor-id="graphs-of-data">Graphs of data</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["date...1"],"name":[1],"type":["dttm"],"align":["right"]},{"label":["quarter"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Quarter"],"name":[3],"type":["chr"],"align":["left"]},{"label":["Year"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["date...5"],"name":[5],"type":["chr"],"align":["left"]},{"label":["QRGDP"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["M2_mill_rs"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["LNRGDP"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["LNM2"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["CPI"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["inf"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["inf cpi"],"name":[12],"type":["dbl"],"align":["right"]}],"data":[{"1":"1970-01-01","2":"1","3":"Q1","4":"1970","5":"1970Q1","6":"223168","7":"20800","8":"12.3","9":"9.94","10":"2.89","11":"NA","12":"1.06"},{"1":"1970-04-01","2":"2","3":"Q2","4":"1970","5":"1970Q2","6":"225140","7":"21500","8":"12.3","9":"9.98","10":"2.93","11":"NA","12":"1.08"},{"1":"1970-07-01","2":"3","3":"Q3","4":"1970","5":"1970Q3","6":"225980","7":"22213","8":"12.3","9":"10.01","10":"2.99","11":"NA","12":"1.10"},{"1":"1970-10-01","2":"4","3":"Q4","4":"1970","5":"1970Q4","6":"245436","7":"22965","8":"12.4","9":"10.04","10":"3.03","11":"NA","12":"1.11"},{"1":"1971-01-01","2":"1","3":"Q1","4":"1971","5":"1971Q1","6":"251348","7":"23632","8":"12.4","9":"10.07","10":"3.07","11":"6.23","12":"1.12"},{"1":"1971-04-01","2":"2","3":"Q2","4":"1971","5":"1971Q2","6":"259999","7":"24643","8":"12.5","9":"10.11","10":"3.06","11":"4.44","12":"1.12"},{"1":"1971-07-01","2":"3","3":"Q3","4":"1971","5":"1971Q3","6":"261355","7":"24718","8":"12.5","9":"10.12","10":"3.12","11":"4.35","12":"1.14"},{"1":"1971-10-01","2":"4","3":"Q4","4":"1971","5":"1971Q4","6":"271232","7":"24300","8":"12.5","9":"10.10","10":"3.15","11":"3.96","12":"1.15"},{"1":"1972-01-01","2":"1","3":"Q1","4":"1972","5":"1972Q1","6":"279965","7":"24324","8":"12.5","9":"10.10","10":"3.18","11":"3.58","12":"1.16"},{"1":"1972-04-01","2":"2","3":"Q2","4":"1972","5":"1972Q2","6":"285432","7":"25134","8":"12.6","9":"10.13","10":"3.21","11":"4.90","12":"1.17"},{"1":"1972-07-01","2":"3","3":"Q3","4":"1972","5":"1972Q3","6":"305577","7":"25212","8":"12.6","9":"10.14","10":"3.29","11":"5.45","12":"1.19"},{"1":"1972-10-01","2":"4","3":"Q4","4":"1972","5":"1972Q4","6":"310256","7":"25476","8":"12.6","9":"10.15","10":"3.35","11":"6.35","12":"1.21"},{"1":"1973-01-01","2":"1","3":"Q1","4":"1973","5":"1973Q1","6":"316368","7":"25569","8":"12.7","9":"10.15","10":"3.52","11":"10.69","12":"1.26"},{"1":"1973-04-01","2":"2","3":"Q2","4":"1973","5":"1973Q2","6":"380033","7":"28411","8":"12.8","9":"10.25","10":"3.68","11":"14.64","12":"1.30"},{"1":"1973-07-01","2":"3","3":"Q3","4":"1973","5":"1973Q3","6":"347615","7":"29155","8":"12.8","9":"10.28","10":"4.24","11":"28.88","12":"1.44"},{"1":"1973-10-01","2":"4","3":"Q4","4":"1973","5":"1973Q4","6":"371014","7":"27068","8":"12.8","9":"10.21","10":"4.60","11":"37.31","12":"1.53"},{"1":"1974-01-01","2":"1","3":"Q1","4":"1974","5":"1974Q1","6":"330428","7":"31268","8":"12.7","9":"10.35","10":"4.62","11":"31.25","12":"1.53"},{"1":"1974-04-01","2":"2","3":"Q2","4":"1974","5":"1974Q2","6":"412503","7":"33528","8":"12.9","9":"10.42","10":"4.85","11":"31.79","12":"1.58"},{"1":"1974-07-01","2":"3","3":"Q3","4":"1974","5":"1974Q3","6":"363791","7":"31730","8":"12.8","9":"10.37","10":"5.29","11":"24.76","12":"1.67"},{"1":"1974-10-01","2":"4","3":"Q4","4":"1974","5":"1974Q4","6":"407549","7":"30679","8":"12.9","9":"10.33","10":"5.56","11":"20.87","12":"1.72"},{"1":"1975-01-01","2":"1","3":"Q1","4":"1975","5":"1975Q1","6":"326684","7":"30137","8":"12.7","9":"10.31","10":"5.81","11":"25.76","12":"1.76"},{"1":"1975-04-01","2":"2","3":"Q2","4":"1975","5":"1975Q2","6":"428683","7":"33304","8":"13.0","9":"10.41","10":"6.13","11":"26.39","12":"1.81"},{"1":"1975-07-01","2":"3","3":"Q3","4":"1975","5":"1975Q3","6":"391028","7":"34353","8":"12.9","9":"10.44","10":"6.26","11":"18.34","12":"1.83"},{"1":"1975-10-01","2":"4","3":"Q4","4":"1975","5":"1975Q4","6":"417209","7":"33074","8":"12.9","9":"10.41","10":"6.37","11":"14.57","12":"1.85"},{"1":"1976-01-01","2":"1","3":"Q1","4":"1976","5":"1976Q1","6":"352807","7":"36803","8":"12.8","9":"10.51","10":"6.36","11":"9.47","12":"1.85"},{"1":"1976-04-01","2":"2","3":"Q2","4":"1976","5":"1976Q2","6":"433197","7":"40102","8":"13.0","9":"10.60","10":"6.46","11":"5.38","12":"1.87"},{"1":"1976-07-01","2":"3","3":"Q3","4":"1976","5":"1976Q3","6":"406189","7":"42071","8":"12.9","9":"10.65","10":"6.62","11":"5.75","12":"1.89"},{"1":"1976-10-01","2":"4","3":"Q4","4":"1976","5":"1976Q4","6":"424065","7":"41651","8":"13.0","9":"10.64","10":"6.89","11":"8.16","12":"1.93"},{"1":"1977-01-01","2":"1","3":"Q1","4":"1977","5":"1977Q1","6":"364272","7":"46350","8":"12.8","9":"10.74","10":"7.07","11":"11.16","12":"1.96"},{"1":"1977-04-01","2":"2","3":"Q2","4":"1977","5":"1977Q2","6":"441282","7":"53734","8":"13.0","9":"10.89","10":"7.11","11":"10.06","12":"1.96"},{"1":"1977-07-01","2":"3","3":"Q3","4":"1977","5":"1977Q3","6":"416759","7":"53218","8":"12.9","9":"10.88","10":"7.37","11":"11.33","12":"2.00"},{"1":"1977-10-01","2":"4","3":"Q4","4":"1977","5":"1977Q4","6":"439344","7":"51773","8":"13.0","9":"10.85","10":"7.44","11":"7.98","12":"2.01"},{"1":"1978-01-01","2":"1","3":"Q1","4":"1978","5":"1978Q1","6":"386543","7":"52264","8":"12.9","9":"10.86","10":"7.45","11":"5.37","12":"2.01"},{"1":"1978-04-01","2":"2","3":"Q2","4":"1978","5":"1978Q2","6":"485044","7":"58854","8":"13.1","9":"10.98","10":"7.53","11":"5.91","12":"2.02"},{"1":"1978-07-01","2":"3","3":"Q3","4":"1978","5":"1978Q3","6":"446557","7":"59403","8":"13.0","9":"10.99","10":"7.89","11":"7.06","12":"2.07"},{"1":"1978-10-01","2":"4","3":"Q4","4":"1978","5":"1978Q4","6":"473773","7":"63659","8":"13.1","9":"11.06","10":"7.90","11":"6.18","12":"2.07"},{"1":"1979-01-01","2":"1","3":"Q1","4":"1979","5":"1979Q1","6":"406193","7":"64443","8":"12.9","9":"11.07","10":"7.93","11":"6.44","12":"2.07"},{"1":"1979-04-01","2":"2","3":"Q2","4":"1979","5":"1979Q2","6":"500092","7":"70549","8":"13.1","9":"11.16","10":"8.04","11":"6.77","12":"2.08"},{"1":"1979-07-01","2":"3","3":"Q3","4":"1979","5":"1979Q3","6":"477230","7":"73860","8":"13.1","9":"11.21","10":"8.73","11":"10.65","12":"2.17"},{"1":"1979-10-01","2":"4","3":"Q4","4":"1979","5":"1979Q4","6":"508178","7":"78612","8":"13.1","9":"11.27","10":"8.62","11":"9.11","12":"2.15"},{"1":"1980-01-01","2":"1","3":"Q1","4":"1980","5":"1980Q1","6":"424006","7":"77170","8":"13.0","9":"11.25","10":"8.77","11":"10.59","12":"2.17"},{"1":"1980-04-01","2":"2","3":"Q2","4":"1980","5":"1980Q2","6":"548867","7":"84037","8":"13.2","9":"11.34","10":"9.05","11":"12.56","12":"2.20"},{"1":"1980-07-01","2":"3","3":"Q3","4":"1980","5":"1980Q3","6":"507990","7":"87768","8":"13.1","9":"11.38","10":"9.64","11":"10.42","12":"2.27"},{"1":"1980-10-01","2":"4","3":"Q4","4":"1980","5":"1980Q4","6":"541593","7":"92424","8":"13.2","9":"11.43","10":"9.84","11":"14.15","12":"2.29"},{"1":"1981-01-01","2":"1","3":"Q1","4":"1981","5":"1981Q1","6":"461647","7":"90968","8":"13.0","9":"11.42","10":"9.91","11":"13.00","12":"2.29"},{"1":"1981-04-01","2":"2","3":"Q2","4":"1981","5":"1981Q2","6":"575960","7":"97321","8":"13.3","9":"11.49","10":"10.13","11":"11.93","12":"2.32"},{"1":"1981-07-01","2":"3","3":"Q3","4":"1981","5":"1981Q3","6":"539628","7":"99762","8":"13.2","9":"11.51","10":"10.77","11":"11.72","12":"2.38"},{"1":"1981-10-01","2":"4","3":"Q4","4":"1981","5":"1981Q4","6":"570775","7":"104621","8":"13.3","9":"11.56","10":"10.92","11":"10.98","12":"2.39"},{"1":"1982-01-01","2":"1","3":"Q1","4":"1982","5":"1982Q1","6":"489144","7":"101889","8":"13.1","9":"11.53","10":"10.86","11":"9.59","12":"2.39"},{"1":"1982-04-01","2":"2","3":"Q2","4":"1982","5":"1982Q2","6":"631638","7":"108538","8":"13.4","9":"11.59","10":"10.90","11":"7.60","12":"2.39"},{"1":"1982-07-01","2":"3","3":"Q3","4":"1982","5":"1982Q3","6":"587897","7":"111383","8":"13.3","9":"11.62","10":"11.14","11":"3.44","12":"2.41"},{"1":"1982-10-01","2":"4","3":"Q4","4":"1982","5":"1982Q4","6":"601763","7":"116510","8":"13.3","9":"11.67","10":"11.29","11":"3.39","12":"2.42"},{"1":"1983-01-01","2":"1","3":"Q1","4":"1983","5":"1983Q1","6":"536217","7":"121788","8":"13.2","9":"11.71","10":"11.33","11":"4.33","12":"2.43"},{"1":"1983-04-01","2":"2","3":"Q2","4":"1983","5":"1983Q2","6":"656870","7":"132233","8":"13.4","9":"11.79","10":"11.55","11":"5.96","12":"2.45"},{"1":"1983-07-01","2":"3","3":"Q3","4":"1983","5":"1983Q3","6":"624892","7":"138011","8":"13.3","9":"11.84","10":"11.86","11":"6.46","12":"2.47"},{"1":"1983-10-01","2":"4","3":"Q4","4":"1983","5":"1983Q4","6":"649297","7":"146025","8":"13.4","9":"11.89","10":"12.27","11":"8.68","12":"2.51"},{"1":"1984-01-01","2":"1","3":"Q1","4":"1984","5":"1984Q1","6":"563177","7":"146345","8":"13.2","9":"11.89","10":"12.20","11":"7.68","12":"2.50"},{"1":"1984-04-01","2":"2","3":"Q2","4":"1984","5":"1984Q2","6":"677238","7":"159882","8":"13.4","9":"11.98","10":"12.28","11":"6.32","12":"2.51"},{"1":"1984-07-01","2":"3","3":"Q3","4":"1984","5":"1984Q3","6":"665025","7":"156895","8":"13.4","9":"11.96","10":"12.61","11":"6.32","12":"2.53"},{"1":"1984-10-01","2":"4","3":"Q4","4":"1984","5":"1984Q4","6":"659862","7":"163267","8":"13.4","9":"12.00","10":"12.78","11":"4.16","12":"2.55"},{"1":"1985-01-01","2":"1","3":"Q1","4":"1985","5":"1985Q1","6":"598200","7":"157487","8":"13.3","9":"11.97","10":"12.91","11":"5.82","12":"2.56"},{"1":"1985-04-01","2":"2","3":"Q2","4":"1985","5":"1985Q2","6":"749334","7":"167312","8":"13.5","9":"12.03","10":"13.06","11":"6.35","12":"2.57"},{"1":"1985-07-01","2":"3","3":"Q3","4":"1985","5":"1985Q3","6":"719835","7":"175448","8":"13.5","9":"12.08","10":"13.30","11":"5.47","12":"2.59"},{"1":"1985-10-01","2":"4","3":"Q4","4":"1985","5":"1985Q4","6":"721324","7":"183905","8":"13.5","9":"12.12","10":"13.39","11":"4.77","12":"2.59"},{"1":"1986-01-01","2":"1","3":"Q1","4":"1986","5":"1986Q1","6":"657850","7":"179430","8":"13.4","9":"12.10","10":"13.43","11":"4.03","12":"2.60"},{"1":"1986-04-01","2":"2","3":"Q2","4":"1986","5":"1986Q2","6":"791339","7":"194507","8":"13.6","9":"12.18","10":"13.48","11":"3.22","12":"2.60"},{"1":"1986-07-01","2":"3","3":"Q3","4":"1986","5":"1986Q3","6":"741500","7":"199674","8":"13.5","9":"12.20","10":"13.68","11":"2.86","12":"2.62"},{"1":"1986-10-01","2":"4","3":"Q4","4":"1986","5":"1986Q4","6":"775447","7":"211111","8":"13.6","9":"12.26","10":"13.93","11":"4.03","12":"2.63"},{"1":"1987-01-01","2":"1","3":"Q1","4":"1987","5":"1987Q1","6":"702289","7":"207878","8":"13.5","9":"12.24","10":"13.83","11":"2.98","12":"2.63"},{"1":"1987-04-01","2":"2","3":"Q2","4":"1987","5":"1987Q2","6":"842482","7":"226927","8":"13.6","9":"12.33","10":"14.08","11":"4.45","12":"2.64"},{"1":"1987-07-01","2":"3","3":"Q3","4":"1987","5":"1987Q3","6":"792843","7":"229833","8":"13.6","9":"12.35","10":"14.48","11":"5.85","12":"2.67"},{"1":"1987-10-01","2":"4","3":"Q4","4":"1987","5":"1987Q4","6":"800879","7":"240023","8":"13.6","9":"12.39","10":"14.66","11":"5.24","12":"2.69"},{"1":"1988-01-01","2":"1","3":"Q1","4":"1988","5":"1988Q1","6":"734085","7":"240063","8":"13.5","9":"12.39","10":"14.70","11":"6.29","12":"2.69"},{"1":"1988-04-01","2":"2","3":"Q2","4":"1988","5":"1988Q2","6":"896021","7":"259296","8":"13.7","9":"12.47","10":"15.17","11":"7.74","12":"2.72"},{"1":"1988-07-01","2":"3","3":"Q3","4":"1988","5":"1988Q3","6":"861810","7":"262507","8":"13.7","9":"12.48","10":"15.99","11":"10.43","12":"2.77"},{"1":"1988-10-01","2":"4","3":"Q4","4":"1988","5":"1988Q4","6":"848576","7":"269514","8":"13.7","9":"12.50","10":"16.25","11":"10.85","12":"2.79"},{"1":"1989-01-01","2":"1","3":"Q1","4":"1989","5":"1989Q1","6":"769713","7":"266255","8":"13.6","9":"12.49","10":"16.30","11":"10.88","12":"2.79"},{"1":"1989-04-01","2":"2","3":"Q2","4":"1989","5":"1989Q2","6":"928357","7":"281531","8":"13.7","9":"12.55","10":"16.62","11":"9.56","12":"2.81"},{"1":"1989-07-01","2":"3","3":"Q3","4":"1989","5":"1989Q3","6":"899296","7":"282425","8":"13.7","9":"12.55","10":"16.90","11":"5.69","12":"2.83"},{"1":"1989-10-01","2":"4","3":"Q4","4":"1989","5":"1989Q4","6":"903746","7":"290456","8":"13.7","9":"12.58","10":"17.15","11":"5.54","12":"2.84"},{"1":"1990-01-01","2":"1","3":"Q1","4":"1990","5":"1990Q1","6":"810476","7":"293896","8":"13.6","9":"12.59","10":"17.25","11":"5.83","12":"2.85"},{"1":"1990-04-01","2":"2","3":"Q2","4":"1990","5":"1990Q2","6":"994249","7":"314996","8":"13.8","9":"12.66","10":"17.78","11":"6.98","12":"2.88"},{"1":"1990-07-01","2":"3","3":"Q3","4":"1990","5":"1990Q3","6":"921048","7":"323644","8":"13.7","9":"12.69","10":"18.74","11":"10.89","12":"2.93"},{"1":"1990-10-01","2":"4","3":"Q4","4":"1990","5":"1990Q4","6":"935996","7":"341252","8":"13.7","9":"12.74","10":"19.27","11":"12.36","12":"2.96"},{"1":"1991-01-01","2":"1","3":"Q1","4":"1991","5":"1991Q1","6":"851889","7":"347363","8":"13.7","9":"12.76","10":"19.60","11":"13.62","12":"2.98"},{"1":"1991-04-01","2":"2","3":"Q2","4":"1991","5":"1991Q2","6":"1038614","7":"374575","8":"13.9","9":"12.83","10":"20.22","11":"13.72","12":"3.01"},{"1":"1991-07-01","2":"3","3":"Q3","4":"1991","5":"1991Q3","6":"972337","7":"383531","8":"13.8","9":"12.86","10":"20.62","11":"10.03","12":"3.03"},{"1":"1991-10-01","2":"4","3":"Q4","4":"1991","5":"1991Q4","6":"986662","7":"400644","8":"13.8","9":"12.90","10":"21.02","11":"9.08","12":"3.05"},{"1":"1992-01-01","2":"1","3":"Q1","4":"1992","5":"1992Q1","6":"911792","7":"407462","8":"13.7","9":"12.92","10":"21.40","11":"9.18","12":"3.06"},{"1":"1992-04-01","2":"2","3":"Q2","4":"1992","5":"1992Q2","6":"1124807","7":"435882","8":"13.9","9":"12.99","10":"22.10","11":"9.30","12":"3.10"},{"1":"1992-07-01","2":"3","3":"Q3","4":"1992","5":"1992Q3","6":"1041357","7":"469332","8":"13.9","9":"13.06","10":"22.78","11":"10.48","12":"3.13"},{"1":"1992-10-01","2":"4","3":"Q4","4":"1992","5":"1992Q4","6":"1062912","7":"505569","8":"13.9","9":"13.13","10":"23.14","11":"10.09","12":"3.14"},{"1":"1993-01-01","2":"1","3":"Q1","4":"1993","5":"1993Q1","6":"948365","7":"534595","8":"13.8","9":"13.19","10":"23.44","11":"9.53","12":"3.15"},{"1":"1993-04-01","2":"2","3":"Q2","4":"1993","5":"1993Q2","6":"1113563","7":"583894","8":"13.9","9":"13.28","10":"24.15","11":"9.28","12":"3.18"},{"1":"1993-07-01","2":"3","3":"Q3","4":"1993","5":"1993Q3","6":"1074953","7":"585605","8":"13.9","9":"13.28","10":"25.02","11":"9.83","12":"3.22"},{"1":"1993-10-01","2":"4","3":"Q4","4":"1993","5":"1993Q4","6":"1090841","7":"595390","8":"13.9","9":"13.30","10":"25.72","11":"11.15","12":"3.25"},{"1":"1994-01-01","2":"1","3":"Q1","4":"1994","5":"1994Q1","6":"974199","7":"601124","8":"13.8","9":"13.31","10":"26.21","11":"11.82","12":"3.27"},{"1":"1994-04-01","2":"2","3":"Q2","4":"1994","5":"1994Q2","6":"1170801","7":"649249","8":"14.0","9":"13.38","10":"27.10","11":"12.22","12":"3.30"},{"1":"1994-07-01","2":"3","3":"Q3","4":"1994","5":"1994Q3","6":"1132184","7":"673333","8":"13.9","9":"13.42","10":"28.02","11":"11.99","12":"3.33"},{"1":"1994-10-01","2":"4","3":"Q4","4":"1994","5":"1994Q4","6":"1135227","7":"703398","8":"13.9","9":"13.46","10":"29.18","11":"13.45","12":"3.37"},{"1":"1995-01-01","2":"1","3":"Q1","4":"1995","5":"1995Q1","6":"1010174","7":"706145","8":"13.8","9":"13.47","10":"30.01","11":"14.50","12":"3.40"},{"1":"1995-04-01","2":"2","3":"Q2","4":"1995","5":"1995Q2","6":"1219932","7":"771871","8":"14.0","9":"13.56","10":"30.39","11":"12.14","12":"3.41"},{"1":"1995-07-01","2":"3","3":"Q3","4":"1995","5":"1995Q3","6":"1201415","7":"780166","8":"14.0","9":"13.57","10":"31.50","11":"12.42","12":"3.45"},{"1":"1995-10-01","2":"4","3":"Q4","4":"1995","5":"1995Q4","6":"1204245","7":"824732","8":"14.0","9":"13.62","10":"32.23","11":"10.45","12":"3.47"},{"1":"1996-01-01","2":"1","3":"Q1","4":"1996","5":"1996Q1","6":"1083955","7":"820025","8":"13.9","9":"13.62","10":"32.91","11":"9.66","12":"3.49"},{"1":"1996-04-01","2":"2","3":"Q2","4":"1996","5":"1996Q2","6":"1323975","7":"865797","8":"14.1","9":"13.67","10":"33.65","11":"10.73","12":"3.52"},{"1":"1996-07-01","2":"3","3":"Q3","4":"1996","5":"1996Q3","6":"1257689","7":"897202","8":"14.0","9":"13.71","10":"34.62","11":"9.90","12":"3.54"},{"1":"1996-10-01","2":"4","3":"Q4","4":"1996","5":"1996Q4","6":"1276066","7":"938680","8":"14.1","9":"13.75","10":"35.84","11":"11.20","12":"3.58"},{"1":"1997-01-01","2":"1","3":"Q1","4":"1997","5":"1997Q1","6":"1116002","7":"926590","8":"13.9","9":"13.74","10":"37.19","11":"13.01","12":"3.62"},{"1":"1997-04-01","2":"2","3":"Q2","4":"1997","5":"1997Q2","6":"1358452","7":"976157","8":"14.1","9":"13.79","10":"38.02","11":"12.99","12":"3.64"},{"1":"1997-07-01","2":"3","3":"Q3","4":"1997","5":"1997Q3","6":"1266176","7":"1014782","8":"14.1","9":"13.83","10":"38.39","11":"10.89","12":"3.65"},{"1":"1997-10-01","2":"4","3":"Q4","4":"1997","5":"1997Q4","6":"1285196","7":"1053233","8":"14.1","9":"13.87","10":"39.00","11":"8.82","12":"3.66"},{"1":"1998-01-01","2":"1","3":"Q1","4":"1998","5":"1998Q1","6":"1134446","7":"1061787","8":"13.9","9":"13.88","10":"39.43","11":"6.02","12":"3.67"},{"1":"1998-04-01","2":"2","3":"Q2","4":"1998","5":"1998Q2","6":"1387513","7":"1170525","8":"14.1","9":"13.97","10":"40.22","11":"5.79","12":"3.69"},{"1":"1998-07-01","2":"3","3":"Q3","4":"1998","5":"1998Q3","6":"1333188","7":"1200257","8":"14.1","9":"14.00","10":"40.97","11":"6.72","12":"3.71"},{"1":"1998-10-01","2":"4","3":"Q4","4":"1998","5":"1998Q4","6":"1346278","7":"1206320","8":"14.1","9":"14.00","10":"41.48","11":"6.36","12":"3.73"},{"1":"1999-01-01","2":"1","3":"Q1","4":"1999","5":"1999Q1","6":"1187329","7":"1208384","8":"14.0","9":"14.00","10":"41.69","11":"5.73","12":"3.73"},{"1":"1999-04-01","2":"2","3":"Q2","4":"1999","5":"1999Q2","6":"1467650","7":"1262521","8":"14.2","9":"14.05","10":"41.91","11":"4.20","12":"3.74"},{"1":"1999-07-01","2":"3","3":"Q3","4":"1999","5":"1999Q3","6":"1351954","7":"1248394","8":"14.1","9":"14.04","10":"42.32","11":"3.30","12":"3.75"},{"1":"1999-10-01","2":"4","3":"Q4","4":"1999","5":"1999Q4","6":"1412022","7":"1280546","8":"14.2","9":"14.06","10":"42.90","11":"3.42","12":"3.76"},{"1":"2000-01-01","2":"1","3":"Q1","4":"2000","5":"2000Q1","6":"1261897","7":"1265660","8":"14.0","9":"14.05","10":"43.09","11":"3.36","12":"3.76"},{"1":"2000-04-01","2":"2","3":"Q2","4":"2000","5":"2000Q2","6":"1568102","7":"1316989","8":"14.3","9":"14.09","10":"43.70","11":"4.27","12":"3.78"},{"1":"2000-07-01","2":"3","3":"Q3","4":"2000","5":"2000Q3","6":"1370523","7":"1321033","8":"14.1","9":"14.09","10":"44.36","11":"4.82","12":"3.79"},{"1":"2000-10-01","2":"4","3":"Q4","4":"2000","5":"2000Q4","6":"1430201","7":"1400632","8":"14.2","9":"14.15","10":"45.04","11":"4.99","12":"3.81"},{"1":"2001-01-01","2":"1","3":"Q1","4":"2001","5":"2001Q1","6":"1334957","7":"1397199","8":"14.1","9":"14.15","10":"45.02","11":"4.48","12":"3.81"},{"1":"2001-04-01","2":"2","3":"Q2","4":"2001","5":"2001Q2","6":"1586825","7":"1476676","8":"14.3","9":"14.21","10":"45.16","11":"3.34","12":"3.81"},{"1":"2001-07-01","2":"3","3":"Q3","4":"2001","5":"2001Q3","6":"1424795","7":"1466760","8":"14.2","9":"14.20","10":"45.58","11":"2.75","12":"3.82"},{"1":"2001-10-01","2":"4","3":"Q4","4":"2001","5":"2001Q4","6":"1489948","7":"1526044","8":"14.2","9":"14.24","10":"45.98","11":"2.09","12":"3.83"},{"1":"2002-01-01","2":"1","3":"Q1","4":"2002","5":"2002Q1","6":"1346169","7":"1518430","8":"14.1","9":"14.23","10":"46.18","11":"2.58","12":"3.83"},{"1":"2002-04-01","2":"2","3":"Q2","4":"2002","5":"2002Q2","6":"1636414","7":"1650125","8":"14.3","9":"14.32","10":"46.65","11":"3.30","12":"3.84"},{"1":"2002-07-01","2":"3","3":"Q3","4":"2002","5":"2002Q3","6":"1462681","7":"1668589","8":"14.2","9":"14.33","10":"47.38","11":"3.95","12":"3.86"},{"1":"2002-10-01","2":"4","3":"Q4","4":"2002","5":"2002Q4","6":"1529674","7":"1761369","8":"14.2","9":"14.38","10":"47.50","11":"3.31","12":"3.86"},{"1":"2003-01-01","2":"1","3":"Q1","4":"2003","5":"2003Q1","6":"1413626","7":"1798994","8":"14.2","9":"14.40","10":"47.64","11":"3.16","12":"3.86"},{"1":"2003-04-01","2":"2","3":"Q2","4":"2003","5":"2003Q2","6":"1718134","7":"1913415","8":"14.4","9":"14.46","10":"47.75","11":"2.36","12":"3.87"},{"1":"2003-07-01","2":"3","3":"Q3","4":"2003","5":"2003Q3","6":"1558117","7":"1972574","8":"14.3","9":"14.49","10":"48.22","11":"1.77","12":"3.88"},{"1":"2003-10-01","2":"4","3":"Q4","4":"2003","5":"2003Q4","6":"1622185","7":"2078704","8":"14.3","9":"14.55","10":"49.58","11":"4.38","12":"3.90"},{"1":"2004-01-01","2":"1","3":"Q1","4":"2004","5":"2004Q1","6":"1504361","7":"2121903","8":"14.2","9":"14.57","10":"49.99","11":"4.93","12":"3.91"},{"1":"2004-04-01","2":"2","3":"Q2","4":"2004","5":"2004Q2","6":"1849461","7":"2266163","8":"14.4","9":"14.63","10":"51.17","11":"7.16","12":"3.94"},{"1":"2004-07-01","2":"3","3":"Q3","4":"2004","5":"2004Q3","6":"1688792","7":"2333535","8":"14.3","9":"14.66","10":"52.65","11":"9.19","12":"3.96"},{"1":"2004-10-01","2":"4","3":"Q4","4":"2004","5":"2004Q4","6":"1755336","7":"2486556","8":"14.4","9":"14.73","10":"53.76","11":"8.43","12":"3.98"},{"1":"2005-01-01","2":"1","3":"Q1","4":"2005","5":"2005Q1","6":"1613496","7":"2515789","8":"14.3","9":"14.74","10":"54.77","11":"9.56","12":"4.00"},{"1":"2005-04-01","2":"2","3":"Q2","4":"2005","5":"2005Q2","6":"2025129","7":"2731049","8":"14.5","9":"14.82","10":"56.23","11":"9.89","12":"4.03"},{"1":"2005-07-01","2":"3","3":"Q3","4":"2005","5":"2005Q3","6":"1787110","7":"2812176","8":"14.4","9":"14.85","10":"57.20","11":"8.64","12":"4.05"},{"1":"2005-10-01","2":"4","3":"Q4","4":"2005","5":"2005Q4","6":"1883319","7":"2960645","8":"14.4","9":"14.90","10":"58.18","11":"8.22","12":"4.06"},{"1":"2006-01-01","2":"1","3":"Q1","4":"2006","5":"2006Q1","6":"1730869","7":"2955983","8":"14.4","9":"14.90","10":"59.09","11":"7.89","12":"4.08"},{"1":"2006-04-01","2":"2","3":"Q2","4":"2006","5":"2006Q2","6":"2116379","7":"3201870","8":"14.6","9":"14.98","10":"60.16","11":"6.99","12":"4.10"},{"1":"2006-07-01","2":"3","3":"Q3","4":"2006","5":"2006Q3","6":"1881787","7":"3244501","8":"14.4","9":"14.99","10":"62.03","11":"8.44","12":"4.13"},{"1":"2006-10-01","2":"4","3":"Q4","4":"2006","5":"2006Q4","6":"1986746","7":"3406905","8":"14.5","9":"15.04","10":"63.04","11":"8.35","12":"4.14"},{"1":"2007-01-01","2":"1","3":"Q1","4":"2007","5":"2007Q1","6":"1832116","7":"3436527","8":"14.4","9":"15.05","10":"63.37","11":"7.24","12":"4.15"},{"1":"2007-04-01","2":"2","3":"Q2","4":"2007","5":"2007Q2","6":"2217492","7":"3679033","8":"14.6","9":"15.12","10":"64.43","11":"7.10","12":"4.17"},{"1":"2007-07-01","2":"3","3":"Q3","4":"2007","5":"2007Q3","6":"1987843","7":"3793030","8":"14.5","9":"15.15","10":"66.41","11":"7.06","12":"4.20"},{"1":"2007-10-01","2":"4","3":"Q4","4":"2007","5":"2007Q4","6":"2105520","7":"4065155","8":"14.6","9":"15.22","10":"68.67","11":"8.93","12":"4.23"},{"1":"2008-01-01","2":"1","3":"Q1","4":"2008","5":"2008Q1","6":"1950204","7":"4119296","8":"14.5","9":"15.23","10":"71.24","11":"12.42","12":"4.27"},{"1":"2008-04-01","2":"2","3":"Q2","4":"2008","5":"2008Q2","6":"2303802","7":"4406846","8":"14.7","9":"15.30","10":"76.90","11":"19.35","12":"4.34"},{"1":"2008-07-01","2":"3","3":"Q3","4":"2008","5":"2008Q3","6":"2111606","7":"4408088","8":"14.6","9":"15.30","10":"82.70","11":"24.53","12":"4.42"},{"1":"2008-10-01","2":"4","3":"Q4","4":"2008","5":"2008Q4","6":"2183540","7":"4689143","8":"14.6","9":"15.36","10":"84.53","11":"23.10","12":"4.44"},{"1":"2009-01-01","2":"1","3":"Q1","4":"2009","5":"2009Q1","6":"1971035","7":"4673790","8":"14.5","9":"15.36","10":"85.39","11":"19.86","12":"4.45"},{"1":"2009-04-01","2":"2","3":"Q2","4":"2009","5":"2009Q2","6":"2334787","7":"4791899","8":"14.7","9":"15.38","10":"87.06","11":"13.21","12":"4.47"},{"1":"2009-07-01","2":"3","3":"Q3","4":"2009","5":"2009Q3","6":"2064804","7":"4805287","8":"14.5","9":"15.39","10":"89.99","11":"8.81","12":"4.50"},{"1":"2009-10-01","2":"4","3":"Q4","4":"2009","5":"2009Q4","6":"2209362","7":"5137219","8":"14.6","9":"15.45","10":"91.75","11":"8.54","12":"4.52"},{"1":"2010-01-01","2":"1","3":"Q1","4":"2010","5":"2010Q1","6":"1988779","7":"5175801","8":"14.5","9":"15.46","10":"94.70","11":"10.90","12":"4.55"},{"1":"2010-04-01","2":"2","3":"Q2","4":"2010","5":"2010Q2","6":"2402346","7":"5476873","8":"14.7","9":"15.52","10":"97.56","11":"12.06","12":"4.58"},{"1":"2010-07-01","2":"3","3":"Q3","4":"2010","5":"2010Q3","6":"2161861","7":"5446870","8":"14.6","9":"15.51","10":"102.01","11":"13.36","12":"4.63"},{"1":"2010-10-01","2":"4","3":"Q4","4":"2010","5":"2010Q4","6":"2248412","7":"5777234","8":"14.6","9":"15.57","10":"105.73","11":"15.24","12":"4.66"},{"1":"2011-01-01","2":"1","3":"Q1","4":"2011","5":"2011Q1","6":"2078923","7":"5812763","8":"14.5","9":"15.58","10":"107.26","11":"13.26","12":"4.68"},{"1":"2011-04-01","2":"2","3":"Q2","4":"2011","5":"2011Q2","6":"2446958","7":"6295663","8":"14.7","9":"15.66","10":"110.08","11":"12.83","12":"4.70"},{"1":"2011-07-01","2":"3","3":"Q3","4":"2011","5":"2011Q3","6":"2249386","7":"6320051","8":"14.6","9":"15.66","10":"113.71","11":"11.47","12":"4.73"},{"1":"2011-10-01","2":"4","3":"Q4","4":"2011","5":"2011Q4","6":"2345069","7":"6695194","8":"14.7","9":"15.72","10":"116.62","11":"10.30","12":"4.76"},{"1":"2012-01-01","2":"1","3":"Q1","4":"2012","5":"2012Q1","6":"2146816","7":"6674205","8":"14.6","9":"15.71","10":"118.67","11":"10.64","12":"4.78"},{"1":"2012-04-01","2":"2","3":"Q2","4":"2012","5":"2012Q2","6":"2565988","7":"7074570","8":"14.8","9":"15.77","10":"122.85","11":"11.60","12":"4.81"},{"1":"2012-07-01","2":"3","3":"Q3","4":"2012","5":"2012Q3","6":"2353499","7":"7240584","8":"14.7","9":"15.80","10":"124.11","11":"9.15","12":"4.82"},{"1":"2012-10-01","2":"4","3":"Q4","4":"2012","5":"2012Q4","6":"2403950","7":"7641795","8":"14.7","9":"15.85","10":"125.37","11":"7.50","12":"4.83"},{"1":"2013-01-01","2":"1","3":"Q1","4":"2013","5":"2013Q1","6":"2218971","7":"7695773","8":"14.6","9":"15.86","10":"127.38","11":"7.34","12":"4.85"},{"1":"2013-04-01","2":"2","3":"Q2","4":"2013","5":"2013Q2","6":"2640937","7":"8254210","8":"14.8","9":"15.93","10":"129.73","11":"5.60","12":"4.87"},{"1":"2013-07-01","2":"3","3":"Q3","4":"2013","5":"2013Q3","6":"2459059","7":"8328236","8":"14.7","9":"15.94","10":"134.11","11":"8.06","12":"4.90"},{"1":"2013-10-01","2":"4","3":"Q4","4":"2013","5":"2013Q4","6":"2500086","7":"8856364","8":"14.7","9":"16.00","10":"137.56","11":"9.72","12":"4.92"},{"1":"2014-01-01","2":"1","3":"Q1","4":"2014","5":"2014Q1","6":"2311346","7":"8877804","8":"14.7","9":"16.00","10":"137.73","11":"8.13","12":"4.93"},{"1":"2014-04-01","2":"2","3":"Q2","4":"2014","5":"2014Q2","6":"2785163","7":"9384152","8":"14.8","9":"16.05","10":"140.86","11":"8.58","12":"4.95"},{"1":"2014-07-01","2":"3","3":"Q3","4":"2014","5":"2014Q3","6":"2535263","7":"9382801","8":"14.7","9":"16.05","10":"144.20","11":"7.52","12":"4.97"},{"1":"2014-10-01","2":"4","3":"Q4","4":"2014","5":"2014Q4","6":"2585283","7":"9966583","8":"14.8","9":"16.11","10":"144.01","11":"4.69","12":"4.97"},{"1":"2015-01-01","2":"1","3":"Q1","4":"2015","5":"2015Q1","6":"2429174","7":"9960540","8":"14.7","9":"16.11","10":"142.14","11":"3.20","12":"4.96"},{"1":"2015-04-01","2":"2","3":"Q2","4":"2015","5":"2015Q2","6":"2878409","7":"10409436","8":"14.9","9":"16.16","10":"144.81","11":"2.80","12":"4.98"},{"1":"2015-07-01","2":"3","3":"Q3","4":"2015","5":"2015Q3","6":"2626981","7":"10534681","8":"14.8","9":"16.17","10":"146.56","11":"1.64","12":"4.99"},{"1":"2015-10-01","2":"4","3":"Q4","4":"2015","5":"2015Q4","6":"2697089","7":"11282144","8":"14.8","9":"16.24","10":"147.62","11":"2.51","12":"4.99"},{"1":"2016-01-01","2":"1","3":"Q1","4":"2016","5":"2016Q1","6":"2535563","7":"11401923","8":"14.7","9":"16.25","10":"147.48","11":"3.76","12":"4.99"},{"1":"2016-04-01","2":"2","3":"Q2","4":"2016","5":"2016Q2","6":"2969176","7":"11761876","8":"14.9","9":"16.28","10":"149.90","11":"3.51","12":"5.01"},{"1":"2016-07-01","2":"3","3":"Q3","4":"2016","5":"2016Q3","6":"2791223","7":"11959738","8":"14.8","9":"16.30","10":"152.24","11":"3.88","12":"5.03"},{"1":"2016-10-01","2":"4","3":"Q4","4":"2016","5":"2016Q4","6":"2820841","7":"12824853","8":"14.9","9":"16.37","10":"153.39","11":"3.91","12":"5.03"},{"1":"2017-01-01","2":"1","3":"Q1","4":"2017","5":"2017Q1","6":"2625409","7":"12854480","8":"14.8","9":"16.37","10":"153.79","11":"4.28","12":"5.04"},{"1":"2017-04-01","2":"2","3":"Q2","4":"2017","5":"2017Q2","6":"3131300","7":"13470710","8":"15.0","9":"16.42","10":"156.76","11":"4.58","12":"5.05"},{"1":"2017-07-01","2":"3","3":"Q3","4":"2017","5":"2017Q3","6":"2963856","7":"13580915","8":"14.9","9":"16.42","10":"157.41","11":"3.40","12":"5.06"},{"1":"2017-10-01","2":"4","3":"Q4","4":"2017","5":"2017Q4","6":"2976369","7":"14580882","8":"14.9","9":"16.50","10":"159.69","11":"4.11","12":"5.07"},{"1":"2018-01-01","2":"1","3":"Q1","4":"2018","5":"2018Q1","6":"2822508","7":"14492474","8":"14.9","9":"16.49","10":"159.66","11":"3.82","12":"5.07"},{"1":"2018-04-01","2":"2","3":"Q2","4":"2018","5":"2018Q2","6":"3272798","7":"14917263","8":"15.0","9":"16.52","10":"163.59","11":"4.36","12":"5.10"},{"1":"2018-07-01","2":"3","3":"Q3","4":"2018","5":"2018Q3","6":"3119500","7":"15283302","8":"15.0","9":"16.54","10":"166.22","11":"5.60","12":"5.11"},{"1":"2018-10-01","2":"4","3":"Q4","4":"2018","5":"2018Q4","6":"3129460","7":"15997162","8":"15.0","9":"16.59","10":"170.04","11":"6.48","12":"5.14"},{"1":"2019-01-01","2":"1","3":"Q1","4":"2019","5":"2019Q1","6":"2952363","7":"16019591","8":"14.9","9":"16.59","10":"172.87","11":"8.27","12":"5.15"},{"1":"2019-04-01","2":"2","3":"Q2","4":"2019","5":"2019Q2","6":"3342869","7":"16574426","8":"15.0","9":"16.62","10":"NA","11":"NA","12":"NA"},{"1":"2019-07-01","2":"3","3":"Q3","4":"2019","5":"2019Q3","6":"3148597","7":"16810064","8":"15.0","9":"16.64","10":"NA","11":"NA","12":"NA"},{"1":"2019-10-01","2":"4","3":"Q4","4":"2019","5":"2019Q4","6":"3136345","7":"17798494","8":"15.0","9":"16.69","10":"NA","11":"NA","12":"NA"},{"1":"2020-01-01","2":"1","3":"Q1","4":"2020","5":"2020Q1","6":"3040934","7":"17903667","8":"14.9","9":"16.70","10":"NA","11":"NA","12":"NA"},{"1":"2020-04-01","2":"2","3":"Q2","4":"2020","5":"2020Q2","6":"3443155","7":"18715781","8":"15.1","9":"16.74","10":"NA","11":"NA","12":"NA"},{"1":"2020-07-01","2":"3","3":"Q3","4":"2020","5":"2020Q3","6":"3181357","7":"19318460","8":"15.0","9":"16.78","10":"NA","11":"NA","12":"NA"},{"1":"2020-10-01","2":"4","3":"Q4","4":"2020","5":"2020Q4","6":"2866344","7":"20908004","8":"14.9","9":"16.86","10":"NA","11":"NA","12":"NA"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+</section><section id="section" class="level2"><h2 class="anchored" data-anchor-id="section"></h2>
+<div class="cell" data-columns="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span> <span class="co">#df11&lt;-df11 %&gt;% filter(quarter&gt;"1970 Q4" &amp; quarter&lt;="2019 Q1")</span></span>
+<span><span class="va">g1</span><span class="op">&lt;-</span><span class="fu">ggplot</span><span class="op">(</span><span class="va">df11</span><span class="op">)</span><span class="op">+</span><span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">date</span>,y<span class="op">=</span><span class="va">qrgdp</span><span class="op">)</span><span class="op">+</span><span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">g2</span><span class="op">&lt;-</span><span class="fu">ggplot</span><span class="op">(</span><span class="va">df11</span><span class="op">)</span><span class="op">+</span><span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">date</span>,y<span class="op">=</span><span class="va">lnM2</span><span class="op">)</span><span class="op">+</span><span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">g3</span><span class="op">&lt;-</span><span class="fu">ggplot</span><span class="op">(</span><span class="va">df11</span><span class="op">)</span><span class="op">+</span><span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">date</span>,y<span class="op">=</span><span class="va">CPI</span><span class="op">)</span><span class="op">+</span><span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">g1</span><span class="op">+</span><span class="va">g2</span><span class="op">+</span><span class="va">g3</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="09-cointegration-and-vecm_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>These graphs indicate all three variables are non-stationary.</p>
+</section><section id="scatter-plot-of-the-variables" class="level2"><h2 class="anchored" data-anchor-id="scatter-plot-of-the-variables">Scatter plot of the variables</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="09-cointegration-and-vecm_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="linear-combinations-of-i1-series" class="level2 scrollable"><h2 class="scrollable anchored" data-anchor-id="linear-combinations-of-i1-series">Linear Combinations of I(1) series</h2>
+<ul>
+<li>In general a linear combination of I(1) series ) series is also I( 1).</li>
+<li>However, in some special cases there could be a linear combination which is I(0).</li>
+<li>So something very special has to happen for a linear combination to become stationary.</li>
+</ul>
+<p><strong>Intuition based on theory</strong></p>
+<ul>
+<li>Usually economic theory helps to find reason why linear combination of I(1) series is stationary I(0).</li>
+<li>For example <em>Permanent Income Hypothesis</em>, <em>Commodity Market Arbitrage</em>, <em>Purchasing Power Parity</em>
+</li>
+<li>Theory guides but one has to test it</li>
+</ul></section><section id="what-is-cointegration" class="level2 scrollable"><h2 class="scrollable anchored" data-anchor-id="what-is-cointegration">What is Cointegration</h2>
+<ul>
+<li><p>I(1) series are cointegrated if there exists at least one linear combination of these variables which is I(0).</p></li>
+<li><p>In our example <code>*mpy*</code> if<br><span class="math inline">\(b_1m+b_2p+b_3y\)</span> is stationary, there is cointegration.</p></li>
+<li><p>In case variables are nonstationary, usual VAR not a good idea.</p></li>
+<li><p>In case variables are nonstationary but cointegrated, VAR in difference form miss long run dynamics</p></li>
+<li>
+<p>In case variables are nonstationary, not cointegrated, then VAR in difference.</p>
+<p>So lets elaborate more on cointegration and Vector Error Correction models.</p>
+</li>
+</ul></section><section id="cointegretion-and-vector-error-correction-model-vecm" class="level2 scrollable"><h2 class="scrollable anchored" data-anchor-id="cointegretion-and-vector-error-correction-model-vecm">Cointegretion and Vector Error Correction Model (VECM)</h2>
+<p>Money Market equiblibrium <span class="math inline">\(M^s=M^d=\beta_0+\beta_1p_t+\beta_2y_t+\beta_3r_t+e_t\)</span></p>
+<p><span class="math inline">\(e_t\)</span> is not persistent and its variance should not rise over time. If <span class="math inline">\(b_1m+b_2p+b_3y\)</span> is stationary, it means despite each series being non-stationary, their linear combination is stationary and hence these variables are cointegrated.</p>
+<p><strong>Long run relationship</strong> If <span class="math inline">\(b_1m+b_2p+b_3y\)</span> is stationary, it means there must be some adjustment made by m,p and y that move together such that deviation from <span class="math inline">\(b_1m+b_2p+b_3y\)</span>=0 remains bounded.</p>
+</section><section id="money-and-price" class="level2"><h2 class="anchored" data-anchor-id="money-and-price">Money and Price</h2>
+<p>Suppose that in the long run <span class="math inline">\(m_t=\beta p_t+e_t\)</span> where <span class="math inline">\(\beta&gt;0\)</span> That is <span class="math inline">\(m_t\)</span> and <span class="math inline">\(p_t\)</span> are cointegrated and money nuetrality hypothesis would imply <span class="math inline">\(\beta=1\)</span>. If <span class="math inline">\(m \uparrow\)</span> s.t <span class="math inline">\(m_t-\beta p_t&gt;0\)</span>, what would be the dynamics?</p>
+</section><section id="deviation-and-now-what" class="level2"><h2 class="anchored" data-anchor-id="deviation-and-now-what">Deviation and now what</h2>
+<p><img src="../assets/images/mp1.png" class="img-fluid"></p>
+</section><section id="m_t-is-doing-all-the-adjument" class="level2"><h2 class="anchored" data-anchor-id="m_t-is-doing-all-the-adjument">
+<span class="math inline">\(m_t\)</span> is doing all the adjument</h2>
+<p><img src="../assets/images/mp2.png" class="img-fluid"></p>
+</section><section id="m_t-is-unchanged-and-m_t-downarrow" class="level2"><h2 class="anchored" data-anchor-id="m_t-is-unchanged-and-m_t-downarrow">
+<span class="math inline">\(m^*_t\)</span> is unchanged and <span class="math inline">\(m_t\)</span> <span class="math inline">\(\downarrow\)</span>
+</h2>
+<p><span class="math inline">\(\Delta m_t=\alpha_m(m_{t-1}-m^*_{t-1})\)</span> where <span class="math inline">\(\alpha_m&lt;0\)</span> Short run change in <span class="math inline">\(m_t\)</span> is a linear function of the deviation from the long run from the long run equilibrium</p>
+</section><section id="m_t-is-doing-all-the-adjument-1" class="level2"><h2 class="anchored" data-anchor-id="m_t-is-doing-all-the-adjument-1">
+<span class="math inline">\(m^*_t\)</span> is doing all the adjument</h2>
+<p><img src="../assets/images/mp3.png" class="img-fluid"><span class="math inline">\(m_t\)</span> is unchanged and <span class="math inline">\(p_t\)</span> and <span class="math inline">\(m^*_t\)</span> <span class="math inline">\(\uparrow\)</span> <span class="math inline">\(\Delta p_t=\alpha_p(m_{t-1}-m^*_{t-1})\)</span> where <span class="math inline">\(\alpha_p&gt;0\)</span> Short run change in <span class="math inline">\(p_t\)</span> is a linear function of the deviation from the long run from the long run equilibrium</p>
+</section><section id="both-m_t-and-p_t-adjust" class="level2"><h2 class="anchored" data-anchor-id="both-m_t-and-p_t-adjust">Both <span class="math inline">\(m_t\)</span> and <span class="math inline">\(p_t\)</span> adjust</h2>
+<p><img src="..\Users/hp/Documents/money_price4.png" class="img-fluid"><span class="math inline">\(m_t\)</span> and <span class="math inline">\(p_t\)</span> are adjusting simultaneously <span class="math inline">\(\Delta m_t=\alpha_m(m_{t-1}-m^*_{t-1})\)</span> <span class="math inline">\(\Delta p_t=\alpha_p(m_{t-1}-m^*_{t-1})\)</span> which is basically error/equilibrium correction model. !…</p>
+</section><section id="both-m_t-and-p_t-adjust-simulataneously" class="level2"><h2 class="anchored" data-anchor-id="both-m_t-and-p_t-adjust-simulataneously">Both <span class="math inline">\(m_t\)</span> and <span class="math inline">\(p_t\)</span> adjust simulataneously</h2>
+<p><img src="../assets/images/mp4.png" class="center img-fluid"></p>
+<p><span class="math inline">\(m_t\)</span> and <span class="math inline">\(p_t\)</span> are adjusting simultaneously <span class="math inline">\(\Delta m_t=\alpha_m(m_{t-1}-m^*_{t-1})\)</span> <span class="math inline">\(\Delta p_t=\alpha_p(m_{t-1}-m^*_{t-1})\)</span></p>
+</section><section id="cointegration-and-vecm-continued" class="level2"><h2 class="anchored" data-anchor-id="cointegration-and-vecm-continued">Cointegration and VECM (Continued)</h2>
+<p><strong>Simple ECM</strong> <span class="math inline">\(m_t\)</span> and <span class="math inline">\(p_t\)</span> are cointegrated with adjustment in <span class="math inline">\(e_t\)</span> <span class="math inline">\(\Delta m_t=\alpha_m(m_{t-1}-\beta p_{t-1})+\nu_t\)</span> <span class="math inline">\(\Delta p_t=\alpha_p(m_{t-1}-\beta p_{t-1})+\mu_t\)</span> A <em>VAR</em> in difference would be misspecified.</p>
+<p><span class="math inline">\(m_t=(1+\alpha_m)m_{t-1}-\alpha_m \beta p_{t-1}+\nu_t\)</span></p>
+<p><span class="math inline">\(p_t=\alpha_p m_{t-1}-(1-\alpha_p \beta) p_{t-1}+\mu_t\)</span></p>
+<p>These two equations represent VAR but with nonlinear constraints on its coefficients.</p>
+</section><section id="back-to-money-prices-and-gdp-issue" class="level2"><h2 class="anchored" data-anchor-id="back-to-money-prices-and-gdp-issue">Back to money, prices and gdp issue</h2>
+<p>Economic theory indicate that <span class="math inline">\(m_t\)</span>, <span class="math inline">\(p_t\)</span> and <span class="math inline">\(y_t\)</span> are cointegrated. Lets write simple <strong>VECM of order zero</strong></p>
+<p>No lags of <span class="math inline">\(\Delta m_t\)</span>,<span class="math inline">\(\Delta p_t\)</span> and <span class="math inline">\(\Delta y_t\)</span> <span class="math inline">\(\Delta m_t=\alpha_m(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\nu_t\)</span></p>
+<p><span class="math inline">\(\Delta p_t=\alpha_p(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\mu_t\)</span></p>
+<p><span class="math inline">\(\Delta y_t=\alpha_y(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\eta_t\)</span></p>
+</section><section id="vecm-of-order-1" class="level2"><h2 class="anchored" data-anchor-id="vecm-of-order-1">VECM of order 1</h2>
+<p><span class="math inline">\(\Delta m_t=\alpha_m(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\ \lambda_{mm} \Delta m_{t-1}+\lambda_{mp} \Delta p_{t-1}+\lambda_{my} \Delta y_{t-1}+\nu_t\)</span></p>
+<p><span class="math inline">\(\Delta p_t=\alpha_p(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\ \lambda_{pm} \Delta m_{t-1}+\lambda_{pp} \Delta p_{t-1}+\lambda_{py} \Delta y_{t-1}\mu_t\)</span></p>
+<p><span class="math inline">\(\Delta y_t=\alpha_y(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\ \lambda_{ym} \Delta m_{t-1}+\lambda_{yp} \Delta p_{t-1}+\lambda_{yy} \Delta y_{t-1}+\eta_t\)</span></p>
+</section><section id="deterministic-component" class="level2"><h2 class="anchored" data-anchor-id="deterministic-component">Deterministic component</h2>
+<p><strong>Case 1</strong> <span class="math inline">\(\Delta m_t=\alpha_m(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\\lambda_{mm} \Delta m_{t-1}+\lambda_{mp} \Delta p_{t-1}+\lambda_{my} \Delta y_{t-1}+\nu_t\)</span></p>
+<p><strong>Case 2</strong></p>
+<p><span class="math inline">\(\Delta m_t=\alpha_m(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\\lambda_{mm} \Delta m_{t-1}+\lambda_{mp} \Delta p_{t-1}+\lambda_{my} \Delta y_{t-1}+\nu_t\)</span></p>
+<p><strong>Case 3</strong></p>
+<p><span class="math inline">\(\Delta m_t=\mu_m+\alpha_m(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\\lambda_{mm} \Delta m_{t-1}+\lambda_{mp} \Delta p_{t-1}+\lambda_{my} \Delta y_{t-1}+\nu_t\)</span></p>
+</section><section id="case-3-vecm-order-1-with-constant" class="level2"><h2 class="anchored" data-anchor-id="case-3-vecm-order-1-with-constant">Case 3 VECM order 1 with constant</h2>
+<p><span class="math inline">\(\Delta m_t=\mu_m+\alpha_m(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\\lambda_{mm} \Delta m_{t-1}+\lambda_{mp} \Delta p_{t-1}+\lambda_{my} \Delta y_{t-1}+\nu_t\)</span></p>
+<p><span class="math inline">\(\Delta p_t=\mu_p+\alpha_p(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\\lambda_{pm} \Delta m_{t-1}+\lambda_{pp} \Delta p_{t-1}+\lambda_{py} \Delta y_{t-1}\mu_t\)</span></p>
+<p><span class="math inline">\(\Delta y_t=\mu_y+\alpha_y(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\\lambda_{ym} \Delta m_{t-1}+\lambda_{yp} \Delta p_{t-1}+\lambda_{yy} \Delta y_{t-1}+\eta_t\)</span> <strong>VECM in Matric Form</strong></p>
+<p><span class="math inline">\(\Delta X_t=C+\Pi X_{t-1}+\Lambda \Delta X_{t-1}+e_t\)</span></p>
+<p><span class="math inline">\(\Pi X_{t-1}\)</span> represents error correction term</p>
+</section><section id="methods-of-cointegration-testing" class="level2 scrollable"><h2 class="scrollable anchored" data-anchor-id="methods-of-cointegration-testing">Methods of Cointegration testing</h2>
+<ul>
+<li>Engle Granger two step method</li>
+<li>Johansen Cointegration procedure Jo.CI rests on estimating rank(<span class="math inline">\(\Pi\)</span>) which is maximum number of independent vectors it contains.</li>
+</ul>
+<p>If rank(<span class="math inline">\(\Pi\)</span>)=0 , no cointegration. If rank(<span class="math inline">\(\Pi\)</span>) is full, all variables are I(0)</p>
+<p><span class="math inline">\(0&lt;rank(\Pi)=r&lt;n\)</span> there are <span class="math inline">\(r\)</span> independent cointegration relationships</p>
+<p><strong>Trace Statistics for r</strong>:the null hypothesis is that the null hypothesis is that the rank is at most <span class="math inline">\(r\)</span> vs the rank is strictly greater</p>
+<p><strong>Eigen Value Statistics for r</strong>:the null hypothesis is that the rank is <span class="math inline">\(r\)</span> vs.&nbsp;the rank is <span class="math inline">\(r+1\)</span></p>
+</section><section id="weak-exogeniety" class="level2"><h2 class="anchored" data-anchor-id="weak-exogeniety">Weak Exogeniety</h2>
+<p><span class="math inline">\(\Delta m_t=\mu_m+\alpha_m(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\\lambda_{mm} \Delta m_{t-1}+\lambda_{mp} \Delta p_{t-1}+\lambda_{my} \Delta y_{t-1}+\nu_t\)</span></p>
+<p><span class="math inline">\(\Delta p_t=\mu_p+\alpha_p(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\\lambda_{pm} \Delta m_{t-1}+\lambda_{pp} \Delta p_{t-1}+\lambda_{py} \Delta y_{t-1}\mu_t\)</span></p>
+<p><span class="math inline">\(\Delta y_t=\mu_y+\alpha_y(\beta_1 m_{t-1}+\beta_2 p_{t-1}+\beta_3 y_{t-1}+\beta_4)+\\\lambda_{ym} \Delta m_{t-1}+\lambda_{yp} \Delta p_{t-1}+\lambda_{yy} \Delta y_{t-1}+\eta_t\)</span></p>
+<p>Testing <span class="math inline">\(\alpha_y=0\)</span> implies <span class="math inline">\(y_t\)</span> is weakly exogenous.</p>
+
+
+</section><a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/zahedasghar\.github\.io\/timeseries\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../lectures/08-volatility-arch-garch.html" class="pagination-link" aria-label="Modelling Volatility">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Modelling Volatility</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../lectures/10-ardl-and-bounds-testing.html" class="pagination-link" aria-label="ARDL and ARDL Cointegration">
+        <span class="nav-page-text">ARDL and ARDL Cointegration</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© Prof.&nbsp;Dr.&nbsp;Zahid Asghar · School of Economics, Quaid-i-Azam University</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/Zahedasghar/timeseries/blob/main/lectures/09-cointegration-and-vecm.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/Zahedasghar/timeseries/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+<li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/Zahedasghar/timeseries">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://zahidasghar.com">
+      <i class="bi bi-globe" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+</div>
+  </div>
+</footer>
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

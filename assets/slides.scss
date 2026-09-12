@@ -1,0 +1,145 @@
+/*-----------------------------------------------------------------------------
+  slides.scss — the single revealjs theme for every deck in this repository.
+  Brand: School of Economics, QAU (dark green #2C5F2D / muted brown #8B7355).
+  Use it as:  theme: [default, ../assets/slides.scss]
+  Pair it with assets/theme.scss, which styles the HTML pages.
+-----------------------------------------------------------------------------*/
+
+/*-- scss:defaults --*/
+
+// ---- brand palette ---------------------------------------------------------
+$qau-green:   #2C5F2D;
+$qau-green-d: #1E4220;
+$qau-green-l: #4E8C50;
+$qau-brown:   #8B7355;
+$qau-sand:    #F7F5F1;
+$qau-ink:     #1F2321;
+$accent-amber:#9A6B00;   // readable stand-in for the old bright yellow
+$accent-teal: #14636B;   // readable stand-in for the old pale blue
+$accent-rose: #A6235F;   // readable stand-in for the old hot pink
+
+// ---- typography ------------------------------------------------------------
+$font-family-sans-serif: Georgia, "Gill Sans MT", Calibri, "Segoe UI", sans-serif;
+$font-family-monospace:  "Cascadia Mono", Consolas, "DejaVu Sans Mono", monospace;
+$presentation-font-size-root: 32px;
+
+// ---- surfaces and text -----------------------------------------------------
+$body-bg:    #FFFFFF;
+$body-color: $qau-ink;
+$link-color: $qau-green-d;
+
+$presentation-heading-font:  Georgia, "Gill Sans MT", serif;
+$presentation-heading-color: $qau-green-d;
+$presentation-heading-font-weight: 600;
+$presentation-h1-font-size: 1.9em;
+$presentation-h2-font-size: 1.35em;
+$presentation-h3-font-size: 1.1em;
+$presentation-title-slide-text-align: left;
+
+// ---- code ------------------------------------------------------------------
+$code-block-font-size: 0.58em;
+$code-block-bg:  $qau-sand;
+$code-bg:        rgba($qau-green, .07);
+
+/*-- scss:rules --*/
+
+.reveal code:not(.sourceCode) { color: $qau-green-d; }
+
+// ---- headings and rules ----------------------------------------------------
+.reveal h2 {
+  border-bottom: 3px solid rgba($qau-brown, .45);
+  padding-bottom: .18em;
+}
+.reveal .slide a { text-decoration: underline; text-decoration-thickness: 1px; }
+.reveal blockquote {
+  border-left: 4px solid $qau-brown;
+  background: rgba($qau-brown, .06);
+  padding: .6em .9em;
+  box-shadow: none;
+  font-style: normal;
+}
+
+// ---- code blocks -----------------------------------------------------------
+.reveal div.sourceCode {
+  border: 1px solid rgba($qau-ink, .12);
+  border-radius: 6px;
+  margin-bottom: .6em;
+}
+.reveal pre code { border-radius: 6px; padding: .7em .9em; }
+.reveal code span.er { color: #B34700; text-decoration: none; }
+
+// ---- tables ----------------------------------------------------------------
+.reveal table { font-size: .82em; }
+.reveal table th {
+  background: rgba($qau-green, .10);
+  color: $qau-green-d;
+  border-bottom: 2px solid rgba($qau-green, .35);
+}
+.reveal table tbody tr:nth-child(odd) { background: rgba($qau-green, .035); }
+
+// ---- emphasis utilities used across the decks ------------------------------
+// .flow — the animated gradient wordmark used on title slides
+.reveal .flow,
+.flow {
+  background: linear-gradient(100deg, $qau-green 0%, $qau-green-l 35%, $qau-brown 70%, $qau-green-d 100%);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  font-weight: 800;
+  animation: flowshift 18s linear infinite;
+}
+@keyframes flowshift {
+  0%   { background-position:   0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position:   0% 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal .flow, .flow { animation: none; }
+}
+
+.reveal .blue,   .blue   { color: $accent-teal;  font-weight: 700; }
+.reveal .yellow, .yellow { color: $accent-amber; font-weight: 700; }
+.reveal .pink,   .pink    { color: $accent-rose;  font-weight: 700; }
+.reveal .green,  .green   { color: $qau-green;    font-weight: 700; }
+.reveal .brown,  .brown   { color: $qau-brown;    font-weight: 700; }
+
+.reveal .hi            { font-weight: 700; color: $accent-rose; }
+.reveal .hi-purple     { font-weight: 700; color: #5B4B9E; }
+.reveal .hi-turquoise  { font-weight: 700; color: $accent-teal; }
+
+// ---- layout / size utilities ----------------------------------------------
+.reveal .centered, .centered { text-align: center; }
+.reveal .large  { font-size: 1.25em; }
+.reveal .medium { font-size: .85em; }
+.reveal .small  { font-size: .75em; }
+.reveal .xsmall { font-size: .65em; }
+.reveal .source { font-size: .5em; color: rgba($qau-ink,.55); line-height: 1.1; }
+.reveal details > summary { font-size: .75em; }
+
+// ---- boxed callouts -------------------------------------------------------
+.reveal .slide .in-out {
+  margin: .5em 0; padding: .15em 1em;
+  background: $qau-sand;
+  font-family: $font-family-monospace;
+  font-size: .6em;
+  border-left: 3px solid $qau-brown;
+}
+.reveal .slide .goal {
+  margin: .5em 0; padding: .3em 1em;
+  background: rgba($qau-green, .09);
+  border-left: 3px solid $qau-green;
+}
+
+// ---- title-slide helpers (kept for older decks that use them) -------------
+.reveal .custom-title      { font-size: 1.9em; font-weight: 700; color: $qau-green-d; }
+.reveal .custom-subtitle   { font-size: 1.3em; font-weight: 600; color: $qau-brown; }
+.reveal .custom-author     { font-size: 1em;   color: $qau-ink; }
+.reveal .custom-institution{ font-size: .78em; color: rgba($qau-ink,.7); }
+
+// ---- logo ------------------------------------------------------------------
+.reveal .slide-logo {
+  height: 78px !important; width: auto !important;
+  max-width: unset !important; max-height: unset !important;
+}

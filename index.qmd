@@ -1,0 +1,94 @@
+---
+title: "Time Series Econometrics & Macroeconomic Forecasting"
+subtitle: "EC614 · School of Economics, Quaid-i-Azam University, Islamabad"
+toc: false
+---
+
+::: {.hero}
+# Time series, cointegration and macroeconomic forecasting
+
+Course materials, hands-on R labs and applied Pakistani case studies from
+**Prof. Dr. Zahid Asghar**, School of Economics, Quaid-i-Azam University.
+
+Everything here is reproducible: each lecture and lab is a Quarto document that
+pulls real data — SBP, PBS, World Bank, Yahoo Finance, UN Comtrade — and runs the
+estimation in front of you.
+
+::: {.meta}
+14 lecture decks · 10 hands-on labs · 90+ datasets · all code in R
+:::
+:::
+
+## Start here
+
+::: {.card-grid}
+<a class="tcard" href="outline.html">
+  <span class="num">Step 1</span>
+  <span class="ttl">Course outline</span>
+  <span class="dsc">Learning outcomes, assessment, textbooks and the week-by-week plan.</span>
+</a>
+<a class="tcard" href="lectures/index.html">
+  <span class="num">Step 2</span>
+  <span class="ttl">Lectures</span>
+  <span class="dsc">From stationarity and unit roots through ARIMA, ARCH, cointegration, ARDL and structural VARs.</span>
+</a>
+<a class="tcard" href="labs/index.html">
+  <span class="num">Step 3</span>
+  <span class="ttl">Labs</span>
+  <span class="dsc">Work the same methods yourself in R, on Pakistani and international data.</span>
+</a>
+:::
+
+## What the course covers
+
+The sequence is deliberate. We begin with the single question that decides
+everything else — *is this series stationary?* — because getting it wrong produces
+regressions that look magnificent and mean nothing. From there the course builds
+outward: modelling a single series, quantifying how wrong the forecast is likely
+to be, then moving to systems of series where the interesting economics lives.
+
+| Block | Topics | Lectures |
+|---|---|---|
+| **Foundations** | Stationarity, unit root testing, spurious regression | 1–5 |
+| **Univariate modelling** | ARIMA, forecast uncertainty and evaluation, ARCH/GARCH volatility | 6–8 |
+| **Multivariate systems** | Cointegration and VECM, ARDL bounds testing, VAR, structural VAR | 9–13 |
+| **Panel data** | Fixed and random effects, panel unit roots | 14 |
+
+## Software
+
+All work is done in **R** with Quarto. The core stack is the tidyverse plus
+`fable`/`feasts` for forecasting, `urca` and `tseries` for unit root and
+cointegration testing, `vars` and `svars` for VAR work, `ARDL` for bounds
+testing, and `plm` for panels. Selected Python equivalents live in `R/methods/`
+for students who prefer them.
+
+``` r
+install.packages(c("tidyverse", "fpp3", "fable", "feasts", "tsibble",
+                   "urca", "tseries", "vars", "svars", "ARDL", "plm",
+                   "readxl", "quantmod", "WDI"))
+```
+
+## How this repository is organised
+
+| Folder | What lives there |
+|---|---|
+| `lectures/` | The 14 lecture documents that make up the site |
+| `labs/` | Hands-on R walkthroughs, including `labs/r-foundations/` for students new to R |
+| `applications/` | Applied Pakistan studies — remittances, exchange rate, exports, tax, solar prices, KSE |
+| `assessments/` | Exams, assignment briefs and the term paper specification |
+| `slides/` | Standalone decks (PPTX and revealjs) |
+| `R/` | Standalone scripts: `setup/`, `textbook/` (Enders, Stock–Watson), `methods/`, `applications/` |
+| `data/` | Datasets used across the course; `data/large/` holds files too big for git |
+| `references/` | Reading material, IMF forecasting module, xts/zoo chapters |
+| `shiny/` | Small interactive apps |
+| `docs/` | **Generated site output — never edit by hand** |
+
+## Rebuilding the site
+
+``` bash
+quarto render          # writes the full site into docs/
+```
+
+GitHub Pages serves `docs/` on the `main` branch. Rendered chunk output is
+frozen under `_freeze/`, so a rebuild only re-executes documents you have
+actually changed.

@@ -1,0 +1,93 @@
+---
+title: Data Analytics using Export Data of Pakistan with its partners
+  Schools
+author: "Zahid Asghar"
+date: "Last updated on `r Sys.Date()`"
+format: html
+---
+
+```{r, include=FALSE}
+# Do not edit this code block/chunk
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning = FALSE, fig.width = 16/2.5, fig.height = 9/2.5)
+```
+
+
+# Why R
+Reproducibility, RMarkdown, Presentation, Webpages...., pdf, html, word, Latex...
+
+
+# Uploaded data and required R packages
+
+Understanding data sets requires many hours/days or in some cases weeks.There are many commercially available software but open source community based software have now dominated and R is one of these. R makes data understanding process as easy as possible through the dplyr package. It is one of the easiest solution for code-based data analysis. We will learn in this training how to do it. I have already uploaded videos for downloading packages and relevant information. video links....
+
+I will explore the [Export Data](https://wits.worldbank.org/countrystats.aspx?lang=en) and will explain how one can use basic __dplyr__ verbs for data wrangling. Here’s how to load in all required packages:
+
+
+
+
+```{r, echo=FALSE,message=FALSE,warning=FALSE}
+# Load all necessary packages here:
+library(tidyverse)
+library(janitor)
+library(moderndive)
+library(readr)
+library(knitr)
+```
+
+
+
+
+## Exort Data Analysis
+
+```{r}
+### Load data in csv format
+export_pak <- read.csv("data/export_pak.csv")
+## Reading data in tibble
+X_pk<- as_tibble(export_pak)
+
+```
+
+Once data are uploaded, now to get an overview of this data, we display first few rows of data by recalling __X_pk__ data. __glimpse__ command helps to get an overall view of this data. __str__ command will also describe data.
+
+```{r}
+X_pk
+
+```
+
+```{r}
+glimpse(X_pk)
+str(X_pk)
+
+```
+
+This indicate that there are 10 variables and 92951 observations. From having an overview of above mentioned variables, we are interested to select few of these variables. For this we use one of the verb __select__ as follows:
+
+```{r}
+X_pk %>% select(ReporterName, PartnerName, Value_1000s_USD, ProductCode)
+
+
+```
+
+Or we can drop variables which are not required by using the same __select__ verb but with -ve signs for the variables which we want to drop.
+
+```{r}
+
+## How to drop variables not required
+X_pk %>% select(-ReporterISO3,-PartnerISO3, -Trade, -Nomenclature)
+
+
+```
+
+Wait a minute, despite selection of desired variables or droping undesired variables, we have not lost orginal data. This is a very unique feature unlike some softwares where if we drop some variables, we cant re-use those unless we go back and open original file. 
+If we type __X_pk__ we will get same data having 10 variables with 92,951 rows.
+
+## Filter and select verb
+One may use __filter__ command to keep observations meeting certain criteria and then use __select__ for keeping desired variables.
+
+```{r}
+## Data Filtering
+X_pk %>% filter(Year==2018) %>% select(ReporterName,PartnerName, Value_1000s_USD,ProductCode)
+```
+
+
+This table shows data only for 2018 year and have four variables selected.

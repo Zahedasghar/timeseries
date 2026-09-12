@@ -1,0 +1,2154 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="author" content="Zahid Asghar">
+<meta name="dcterms.date" content="2026-09-12">
+<title>ARDL and ARDL Cointegration – Time Series Econometrics &amp; Macroeconomic Forecasting</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../lectures/11-vector-autoregressions.html" rel="next">
+<link href="../lectures/09-cointegration-and-vecm.html" rel="prev">
+<link href="../assets/images/fpp3.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-27766ece6bd3eeb285874ddb9e7fbaa0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-d2fa471584cbcee62d73db67d8c7ce76.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><style>html{ scroll-behavior: smooth; }</style>
+<script src="../site_libs/quarto-diagram/mermaid.min.js"></script><script src="../site_libs/quarto-diagram/mermaid-init.js"></script><link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+<link href="../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../site_libs/pagedtable-1.1/js/pagedtable.js"></script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+</head>
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Time Series Econometrics &amp; Macroeconomic Forecasting</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../outline.html"> 
+<span class="menu-text">Course outline</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../lectures/index.html" aria-current="page"> 
+<span class="menu-text">Lectures</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../labs/index.html"> 
+<span class="menu-text">Labs</span></a>
+  </li>  
+</ul>
+<ul class="navbar-nav navbar-nav-scroll ms-auto">
+<li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/Zahedasghar/timeseries"> <i class="bi bi-github" role="img" aria-label="GitHub repository">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://zahidasghar.com"> <i class="bi bi-globe" role="img" aria-label="zahidasghar.com">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lectures/09-cointegration-and-vecm.html">Multivariate and long-run relationships</a></li><li class="breadcrumb-item"><a href="../lectures/10-ardl-and-bounds-testing.html">ARDL and ARDL Cointegration</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lectures</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Foundations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/01-course-overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EC614: Macroeconomic Forecasting</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/02-stationarity-and-nonstationarity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="flow">Sationary and Nonstationary Series</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/03-nonstationary-series.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="flow">Nonstationary Series</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/04-unit-root-tests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Unit Roots Tests: Methods and Problems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/05-spurious-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Spurious Regression</span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Univariate modelling and forecasting</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/06-arima-modelling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ARIMA modeling using bonds and petrol prices data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/07-forecast-uncertainty-and-evaluation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="flow">Forecast Uncertainty and Evaluation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/08-volatility-arch-garch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Modelling Volatility</span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Multivariate and long-run relationships</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/09-cointegration-and-vecm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">VECM Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/10-ardl-and-bounds-testing.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">ARDL and ARDL Cointegration</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/11-vector-autoregressions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="yellow">Vector Autoregressions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/12-structural-var.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="flow">Structural VAR Part 1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/13-svar-macro-forecasting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="flow">Macroeconomic Forecasting: Structural VAR</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Panel data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/14-panel-data-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Panel Data Modeling in R</span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul>
+<li><a href="#outline" id="toc-outline" class="nav-link active" data-scroll-target="#outline">Outline</a></li>
+  <li>
+<a href="#review-cointegration-basics" id="toc-review-cointegration-basics" class="nav-link" data-scroll-target="#review-cointegration-basics">Review: Cointegration Basics</a>
+  <ul class="collapse">
+<li><a href="#what-is-cointegration" id="toc-what-is-cointegration" class="nav-link" data-scroll-target="#what-is-cointegration">What is Cointegration?</a></li>
+  <li><a href="#johansen-method-key-requirements" id="toc-johansen-method-key-requirements" class="nav-link" data-scroll-target="#johansen-method-key-requirements">Johansen Method: Key Requirements</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#ardl-models" id="toc-ardl-models" class="nav-link" data-scroll-target="#ardl-models">ARDL Models</a>
+  <ul class="collapse">
+<li><a href="#what-is-ardl" id="toc-what-is-ardl" class="nav-link" data-scroll-target="#what-is-ardl">What is ARDL?</a></li>
+  <li><a href="#why-use-ardl" id="toc-why-use-ardl" class="nav-link" data-scroll-target="#why-use-ardl">Why Use ARDL?</a></li>
+  <li><a href="#ardl-with-multiple-variables" id="toc-ardl-with-multiple-variables" class="nav-link" data-scroll-target="#ardl-with-multiple-variables">ARDL with Multiple Variables</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#ardl-bounds-testing-approach" id="toc-ardl-bounds-testing-approach" class="nav-link" data-scroll-target="#ardl-bounds-testing-approach">ARDL Bounds Testing Approach</a>
+  <ul class="collapse">
+<li><a href="#the-innovation-pesaran-shin-smith-2001" id="toc-the-innovation-pesaran-shin-smith-2001" class="nav-link" data-scroll-target="#the-innovation-pesaran-shin-smith-2001">The Innovation: Pesaran, Shin &amp; Smith (2001)</a></li>
+  <li><a href="#how-does-it-work" id="toc-how-does-it-work" class="nav-link" data-scroll-target="#how-does-it-work">How Does It Work?</a></li>
+  <li><a href="#the-bounds-test" id="toc-the-bounds-test" class="nav-link" data-scroll-target="#the-bounds-test">The Bounds Test</a></li>
+  <li><a href="#decision-rules" id="toc-decision-rules" class="nav-link" data-scroll-target="#decision-rules">Decision Rules</a></li>
+  <li><a href="#critical-values" id="toc-critical-values" class="nav-link" data-scroll-target="#critical-values">Critical Values</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#step-by-step-ardl-process" id="toc-step-by-step-ardl-process" class="nav-link" data-scroll-target="#step-by-step-ardl-process">Step-by-Step ARDL Process</a>
+  <ul class="collapse">
+<li><a href="#the-complete-workflow" id="toc-the-complete-workflow" class="nav-link" data-scroll-target="#the-complete-workflow">The Complete Workflow</a></li>
+  <li><a href="#workflow-continued" id="toc-workflow-continued" class="nav-link" data-scroll-target="#workflow-continued">Workflow Continued</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#implementing-ardl-in-r" id="toc-implementing-ardl-in-r" class="nav-link" data-scroll-target="#implementing-ardl-in-r">Implementing ARDL in R</a>
+  <ul class="collapse">
+<li><a href="#required-packages" id="toc-required-packages" class="nav-link" data-scroll-target="#required-packages">Required Packages</a></li>
+  <li><a href="#load-and-prepare-data" id="toc-load-and-prepare-data" class="nav-link" data-scroll-target="#load-and-prepare-data">Load and Prepare Data</a></li>
+  <li><a href="#step-1-unit-root-tests" id="toc-step-1-unit-root-tests" class="nav-link" data-scroll-target="#step-1-unit-root-tests">Step 1: Unit Root Tests</a></li>
+  <li><a href="#step-2-select-optimal-lags" id="toc-step-2-select-optimal-lags" class="nav-link" data-scroll-target="#step-2-select-optimal-lags">Step 2: Select Optimal Lags</a></li>
+  <li><a href="#step-3-bounds-test" id="toc-step-3-bounds-test" class="nav-link" data-scroll-target="#step-3-bounds-test">Step 3: Bounds Test</a></li>
+  <li><a href="#step-4-long-run-relationship" id="toc-step-4-long-run-relationship" class="nav-link" data-scroll-target="#step-4-long-run-relationship">Step 4: Long-Run Relationship</a></li>
+  <li><a href="#step-5-error-correction-model" id="toc-step-5-error-correction-model" class="nav-link" data-scroll-target="#step-5-error-correction-model">Step 5: Error Correction Model</a></li>
+  <li><a href="#diagnostic-tests" id="toc-diagnostic-tests" class="nav-link" data-scroll-target="#diagnostic-tests">Diagnostic Tests</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#interpreting-results" id="toc-interpreting-results" class="nav-link" data-scroll-target="#interpreting-results">Interpreting Results</a>
+  <ul class="collapse">
+<li><a href="#understanding-coefficients" id="toc-understanding-coefficients" class="nav-link" data-scroll-target="#understanding-coefficients">Understanding Coefficients</a></li>
+  <li><a href="#error-correction-term" id="toc-error-correction-term" class="nav-link" data-scroll-target="#error-correction-term">Error Correction Term</a></li>
+  <li><a href="#visualizing-results" id="toc-visualizing-results" class="nav-link" data-scroll-target="#visualizing-results">Visualizing Results</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#ardl-vs-johansen-method" id="toc-ardl-vs-johansen-method" class="nav-link" data-scroll-target="#ardl-vs-johansen-method">ARDL vs Johansen Method</a>
+  <ul class="collapse">
+<li><a href="#comparison-table" id="toc-comparison-table" class="nav-link" data-scroll-target="#comparison-table">Comparison Table</a></li>
+  <li><a href="#when-to-use-ardl" id="toc-when-to-use-ardl" class="nav-link" data-scroll-target="#when-to-use-ardl">When to Use ARDL</a></li>
+  <li><a href="#when-to-use-johansen" id="toc-when-to-use-johansen" class="nav-link" data-scroll-target="#when-to-use-johansen">When to Use Johansen</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#practical-example" id="toc-practical-example" class="nav-link" data-scroll-target="#practical-example">Practical Example</a>
+  <ul class="collapse">
+<li><a href="#real-data-example" id="toc-real-data-example" class="nav-link" data-scroll-target="#real-data-example">Real Data Example</a></li>
+  <li><a href="#unit-root-tests" id="toc-unit-root-tests" class="nav-link" data-scroll-target="#unit-root-tests">Unit Root Tests</a></li>
+  <li><a href="#estimate-ardl-model" id="toc-estimate-ardl-model" class="nav-link" data-scroll-target="#estimate-ardl-model">Estimate ARDL Model</a></li>
+  <li><a href="#bounds-test-results" id="toc-bounds-test-results" class="nav-link" data-scroll-target="#bounds-test-results">Bounds Test Results</a></li>
+  <li><a href="#long-run-results" id="toc-long-run-results" class="nav-link" data-scroll-target="#long-run-results">Long-Run Results</a></li>
+  <li><a href="#ecm-results" id="toc-ecm-results" class="nav-link" data-scroll-target="#ecm-results">ECM Results</a></li>
+  <li><a href="#diagnostic-checks" id="toc-diagnostic-checks" class="nav-link" data-scroll-target="#diagnostic-checks">Diagnostic Checks</a></li>
+  <li><a href="#visualizing-the-relationship" id="toc-visualizing-the-relationship" class="nav-link" data-scroll-target="#visualizing-the-relationship">Visualizing the Relationship</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#advanced-topics" id="toc-advanced-topics" class="nav-link" data-scroll-target="#advanced-topics">Advanced Topics</a>
+  <ul class="collapse">
+<li><a href="#ardl-with-structural-breaks" id="toc-ardl-with-structural-breaks" class="nav-link" data-scroll-target="#ardl-with-structural-breaks">ARDL with Structural Breaks</a></li>
+  <li><a href="#ardl-with-non-linear-effects" id="toc-ardl-with-non-linear-effects" class="nav-link" data-scroll-target="#ardl-with-non-linear-effects">ARDL with Non-linear Effects</a></li>
+  <li><a href="#nardl-non-linear-ardl" id="toc-nardl-non-linear-ardl" class="nav-link" data-scroll-target="#nardl-non-linear-ardl">NARDL: Non-linear ARDL</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#common-mistakes-tips" id="toc-common-mistakes-tips" class="nav-link" data-scroll-target="#common-mistakes-tips">Common Mistakes &amp; Tips</a>
+  <ul class="collapse">
+<li><a href="#common-mistakes" id="toc-common-mistakes" class="nav-link" data-scroll-target="#common-mistakes">Common Mistakes</a></li>
+  <li><a href="#common-mistakes-continued" id="toc-common-mistakes-continued" class="nav-link" data-scroll-target="#common-mistakes-continued">Common Mistakes (continued)</a></li>
+  <li><a href="#best-practices" id="toc-best-practices" class="nav-link" data-scroll-target="#best-practices">Best Practices</a></li>
+  <li><a href="#reporting-ardl-results" id="toc-reporting-ardl-results" class="nav-link" data-scroll-target="#reporting-ardl-results">Reporting ARDL Results</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#conclusion-resources" id="toc-conclusion-resources" class="nav-link" data-scroll-target="#conclusion-resources">Conclusion &amp; Resources</a>
+  <ul class="collapse">
+<li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  <li><a href="#when-to-use-what" id="toc-when-to-use-what" class="nav-link" data-scroll-target="#when-to-use-what">When to Use What?</a></li>
+  <li><a href="#r-packages-summary" id="toc-r-packages-summary" class="nav-link" data-scroll-target="#r-packages-summary">R Packages Summary</a></li>
+  <li><a href="#additional-resources" id="toc-additional-resources" class="nav-link" data-scroll-target="#additional-resources">Additional Resources</a></li>
+  <li><a href="#practice-exercise" id="toc-practice-exercise" class="nav-link" data-scroll-target="#practice-exercise">Practice Exercise</a></li>
+  <li>
+<a href="#questions" id="toc-questions" class="nav-link" data-scroll-target="#questions">Questions?</a>
+  <ul class="collapse">
+<li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</li>
+  </ul>
+</li>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/Zahedasghar/timeseries/blob/main/lectures/10-ardl-and-bounds-testing.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/Zahedasghar/timeseries/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="10-ardl-and-bounds-testing.html"><i class="bi bi-file-slides"></i>RevealJS</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lectures/09-cointegration-and-vecm.html">Multivariate and long-run relationships</a></li><li class="breadcrumb-item"><a href="../lectures/10-ardl-and-bounds-testing.html">ARDL and ARDL Cointegration</a></li></ol></nav><div class="quarto-title">
+<h1 class="title">ARDL and ARDL Cointegration</h1>
+<p class="subtitle lead">A Practical Guide with R</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Zahid Asghar </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 12, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header><section id="outline" class="level2"><h2 class="anchored" data-anchor-id="outline">Outline</h2>
+<div class="incremental">
+<ol class="incremental" type="1">
+<li>Review: Why Cointegration Matters</li>
+<li>ARDL Models: The Basics</li>
+<li>ARDL Bounds Testing Approach</li>
+<li>Step-by-Step Implementation in R</li>
+<li>Interpreting Results</li>
+<li>Advantages over Johansen Method</li>
+<li>Practical Example with Real Data</li>
+</ol>
+</div>
+</section><section id="review-cointegration-basics" class="level1"><h1>Review: Cointegration Basics</h1>
+<section id="what-is-cointegration" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="what-is-cointegration">What is Cointegration?</h2>
+<p><strong>Recall from Johansen Method:</strong></p>
+<ul>
+<li>Two or more non-stationary series (I(1)) can have a <strong>stationary linear combination</strong>
+</li>
+<li>This implies a long-run equilibrium relationship</li>
+<li>Short-run deviations are temporary</li>
+</ul>
+<p><strong>Example:</strong> <span class="math display">\[Y_t = \beta_0 + \beta_1 X_t + u_t\]</span></p>
+<p>If <span class="math inline">\(Y_t \sim I(1)\)</span> and <span class="math inline">\(X_t \sim I(1)\)</span>, but <span class="math inline">\(u_t \sim I(0)\)</span>, then <span class="math inline">\(Y\)</span> and <span class="math inline">\(X\)</span> are cointegrated.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Cointegration prevents <strong>spurious regression</strong> problems!</p>
+</div>
+</div>
+</section><section id="johansen-method-key-requirements" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="johansen-method-key-requirements">Johansen Method: Key Requirements</h2>
+<p>You already know Johansen cointegration requires:</p>
+<div class="incremental">
+<ol class="incremental" type="1">
+<li>
+<strong>All variables must be I(1)</strong> - same order of integration</li>
+<li>
+<strong>System of equations</strong> - VAR framework</li>
+<li>
+<strong>Pre-testing for unit roots</strong> is essential</li>
+<li>
+<strong>Trace test</strong> or <strong>Maximum eigenvalue test</strong>
+</li>
+<li>Assumes symmetric adjustment to equilibrium</li>
+</ol>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Question:</strong> What if some variables are I(0) and others are I(1)?<br><strong>Answer:</strong> This is where ARDL comes in!</p>
+</div>
+</div>
+</section></section><section id="ardl-models" class="level1"><h1>ARDL Models</h1>
+<section id="what-is-ardl" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="what-is-ardl">What is ARDL?</h2>
+<p><strong>AutoRegressive Distributed Lag Model</strong></p>
+<p>General form with one dependent and one independent variable:</p>
+<p><span class="math display">\[Y_t = \alpha_0 + \sum_{i=1}^{p}\beta_i Y_{t-i} + \sum_{j=0}^{q}\gamma_j X_{t-j} + \varepsilon_t\]</span></p>
+<div class="incremental">
+<ul class="incremental">
+<li>
+<strong>AutoRegressive (AR):</strong> lags of dependent variable <span class="math inline">\(Y_{t-1}, Y_{t-2}, ...\)</span>
+</li>
+<li>
+<strong>Distributed Lag (DL):</strong> current and lagged values of <span class="math inline">\(X_t, X_{t-1}, X_{t-2}, ...\)</span>
+</li>
+<li>
+<strong>p:</strong> lag order for Y (AR part)</li>
+<li>
+<strong>q:</strong> lag order for X (DL part)</li>
+<li>Denoted as <strong>ARDL(p, q)</strong>
+</li>
+</ul>
+</div>
+</section><section id="why-use-ardl" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="why-use-ardl">Why Use ARDL?</h2>
+<p><strong>Flexibility in modeling dynamic relationships:</strong></p>
+<div class="incremental">
+<ol class="incremental" type="1">
+<li>Captures <strong>short-run dynamics</strong> (through differenced terms)</li>
+<li>Estimates <strong>long-run relationships</strong> (through level terms)</li>
+<li>Allows <strong>different lag lengths</strong> for different variables</li>
+<li>Can include <strong>exogenous variables</strong> easily</li>
+<li>Works with <strong>small sample sizes</strong> (minimum ~30 observations)</li>
+</ol>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>ARDL is particularly useful for macroeconomic data where relationships have both immediate and lagged effects.</p>
+</div>
+</div>
+</section><section id="ardl-with-multiple-variables" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="ardl-with-multiple-variables">ARDL with Multiple Variables</h2>
+<p>With multiple independent variables:</p>
+<p><span class="math display">\[Y_t = \alpha_0 + \sum_{i=1}^{p}\beta_i Y_{t-i} + \sum_{j=0}^{q_1}\gamma_{1j} X_{1,t-j} + \sum_{j=0}^{q_2}\gamma_{2j} X_{2,t-j} + \sum_{j=0}^{q_3}\gamma_{3j} X_{3,t-j} + \varepsilon_t\]</span></p>
+<div class="incremental">
+<ul class="incremental">
+<li>Denoted as <strong>ARDL(p, q₁, q₂, q₃)</strong>
+</li>
+<li>Each variable can have <strong>different optimal lag length</strong>
+</li>
+<li>Example: ARDL(2, 1, 3, 0) means:
+<ul class="incremental">
+<li>2 lags of Y</li>
+<li>1 lag of X₁</li>
+<li>3 lags of X₂</li>
+<li>0 lags (contemporaneous only) of X₃</li>
+</ul>
+</li>
+</ul>
+</div>
+</section></section><section id="ardl-bounds-testing-approach" class="level1"><h1>ARDL Bounds Testing Approach</h1>
+<section id="the-innovation-pesaran-shin-smith-2001" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="the-innovation-pesaran-shin-smith-2001">The Innovation: Pesaran, Shin &amp; Smith (2001)</h2>
+<p><strong>The PSS (2001) Bounds Testing Approach</strong></p>
+<div class="incremental">
+<ul class="incremental">
+<li>Revolutionary paper: “Bounds testing approaches to the analysis of level relationships”</li>
+<li>Key innovation: Test for cointegration <strong>without pre-testing</strong> for unit roots</li>
+<li>Works with variables that are:
+<ul class="incremental">
+<li>I(0) - stationary</li>
+<li>I(1) - first difference stationary</li>
+<li><strong>Mix of I(0) and I(1)</strong></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Important restriction:</strong> Variables cannot be I(2) or higher!<br>
+You still need to check this.</p>
+</div>
+</div>
+</section><section id="how-does-it-work" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="how-does-it-work">How Does It Work?</h2>
+<p><strong>Two-step transformation:</strong></p>
+<p><strong>Step 1:</strong> Original ARDL model in levels</p>
+<p><strong>Step 2:</strong> Transform to <strong>Error Correction Model (ECM)</strong> representation</p>
+<p><span class="math display">\[\Delta Y_t = \beta_0 + \sum_{i=1}^{p-1}\beta_i \Delta Y_{t-i} + \sum_{j=0}^{q-1}\gamma_j \Delta X_{t-j} + \underbrace{\theta_0 Y_{t-1} + \theta_1 X_{t-1}}_{\text{Long-run relationship}} + \varepsilon_t\]</span></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <strong>lagged level terms</strong> (<span class="math inline">\(Y_{t-1}, X_{t-1}\)</span>) capture the long-run relationship!</p>
+</div>
+</div>
+</section><section id="the-bounds-test" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="the-bounds-test">The Bounds Test</h2>
+<p><strong>Hypothesis Testing:</strong></p>
+<p><span class="math display">\[H_0: \theta_0 = \theta_1 = 0 \quad \text{(No cointegration)}\]</span> <span class="math display">\[H_1: \theta_0 \neq 0 \text{ or } \theta_1 \neq 0 \quad \text{(Cointegration exists)}\]</span></p>
+<p>Test using <strong>F-statistic</strong> (or Wald test)</p>
+<div class="incremental">
+<ul class="incremental">
+<li>
+<strong>But:</strong> F-statistic has non-standard distribution</li>
+<li>
+<strong>Solution:</strong> PSS provide <strong>critical value bounds</strong>
+<ul class="incremental">
+<li>
+<strong>Lower bound I(0):</strong> assumes all variables are I(0)</li>
+<li>
+<strong>Upper bound I(1):</strong> assumes all variables are I(1)</li>
+</ul>
+</li>
+</ul>
+</div>
+</section><section id="decision-rules" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="decision-rules">Decision Rules</h2>
+<p>Compare your <strong>F-statistic</strong> with critical value bounds:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="10-ardl-and-bounds-testing_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="incremental">
+<ol class="incremental" type="1">
+<li>
+<strong>F &lt; Lower bound</strong> → No cointegration (reject relationship)</li>
+<li>
+<strong>Lower &lt; F &lt; Upper</strong> → Inconclusive (need unit root tests)</li>
+<li>
+<strong>F &gt; Upper bound</strong> → Cointegration exists! (proceed to estimate)</li>
+</ol>
+</div>
+</section><section id="critical-values" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="critical-values">Critical Values</h2>
+<p>PSS (2001) provide tables based on:</p>
+<ul>
+<li><strong>Number of variables (k)</strong></li>
+<li><strong>Sample size</strong></li>
+<li>
+<strong>Significance level</strong> (1%, 5%, 10%)</li>
+<li>
+<strong>Model specification</strong> (with/without trend)</li>
+</ul>
+<p>Example critical values at 5% level (k=3, n=large):</p>
+<table class="caption-top table">
+<thead><tr class="header">
+<th>Bound Type</th>
+<th>Critical Value</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>I(0)</td>
+<td>3.23</td>
+</tr>
+<tr class="even">
+<td>I(1)</td>
+<td>4.35</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Modern R packages calculate these automatically!</p>
+</div>
+</div>
+</section></section><section id="step-by-step-ardl-process" class="level1"><h1>Step-by-Step ARDL Process</h1>
+<section id="the-complete-workflow" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="the-complete-workflow">The Complete Workflow</h2>
+<p><strong>Step 1: Check Order of Integration</strong></p>
+<ul>
+<li>Ensure no I(2) variables using ADF/PP tests</li>
+<li>Variables can be I(0), I(1), or mixed</li>
+</ul>
+<p><strong>Step 2: Estimate ARDL Model</strong></p>
+<ul>
+<li>Select optimal lag lengths using AIC/BIC</li>
+<li>Estimate the unrestricted ARDL model</li>
+</ul>
+<p><strong>Step 3: Bounds Test</strong></p>
+<ul>
+<li>Test for cointegration using F-statistic</li>
+<li>Compare with critical bounds</li>
+</ul></section><section id="workflow-continued" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="workflow-continued">Workflow Continued</h2>
+<p><strong>Step 4: If Cointegration Exists</strong></p>
+<p>Estimate the <strong>long-run relationship:</strong></p>
+<p><span class="math display">\[Y_t = \beta_0 + \beta_1 X_{1,t} + \beta_2 X_{2,t} + \beta_3 X_{3,t} + u_t\]</span></p>
+<p><strong>Step 5: Error Correction Model (ECM)</strong></p>
+<p><span class="math display">\[\Delta Y_t = \text{short-run dynamics} + \delta \cdot ECT_{t-1} + \varepsilon_t\]</span></p>
+<p>Where <span class="math inline">\(ECT_{t-1} = Y_{t-1} - \hat{\beta}_0 - \hat{\beta}_1 X_{1,t-1} - \hat{\beta}_2 X_{2,t-1} - \hat{\beta}_3 X_{3,t-1}\)</span></p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><span class="math inline">\(\delta\)</span> should be <strong>negative and significant</strong> for valid cointegration!</p>
+</div>
+</div>
+</section></section><section id="implementing-ardl-in-r" class="level1"><h1>Implementing ARDL in R</h1>
+<section id="required-packages" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="required-packages">Required Packages</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Install if needed</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"ARDL"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"dynamac"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"dplyr"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"tseries"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"urca"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"ggplot2"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Load packages</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Natsiopoulos/ARDL">ARDL</a></span><span class="op">)</span>      <span class="co"># Main ARDL package</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/andyphilips/dynamac/">dynamac</a></span><span class="op">)</span>   <span class="co"># Alternative ARDL package</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>     <span class="co"># Data manipulation</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">tseries</span><span class="op">)</span>   <span class="co"># Time series tests</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">urca</span><span class="op">)</span>      <span class="co"># Unit root tests</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>   <span class="co"># Visualization</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section><section id="load-and-prepare-data" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="load-and-prepare-data">Load and Prepare Data</h2>
+<p>Let’s use a practical example: <strong>Relationship between Consumption, Income, and Interest Rate</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Example with simulated data (replace with your real data)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">100</span></span>
+<span></span>
+<span><span class="co"># Create time series</span></span>
+<span><span class="va">time</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="va">n</span></span>
+<span><span class="va">income</span> <span class="op">&lt;-</span> <span class="fl">100</span> <span class="op">+</span> <span class="fl">0.5</span><span class="op">*</span><span class="va">time</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html">cumsum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">interest</span> <span class="op">&lt;-</span> <span class="fl">5</span> <span class="op">+</span> <span class="fl">0.01</span><span class="op">*</span><span class="va">time</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">0.5</span><span class="op">)</span></span>
+<span><span class="va">consumption</span> <span class="op">&lt;-</span> <span class="fl">20</span> <span class="op">+</span> <span class="fl">0.7</span><span class="op">*</span><span class="va">income</span> <span class="op">-</span> <span class="fl">2</span><span class="op">*</span><span class="va">interest</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create data frame</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span></span>
+<span>  time <span class="op">=</span> <span class="va">time</span>,</span>
+<span>  consumption <span class="op">=</span> <span class="va">consumption</span>,</span>
+<span>  income <span class="op">=</span> <span class="va">income</span>,</span>
+<span>  interest <span class="op">=</span> <span class="va">interest</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section><section id="step-1-unit-root-tests" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="step-1-unit-root-tests">Step 1: Unit Root Tests</h2>
+<p>Check that no variables are I(2):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># ADF test function</span></span>
+<span><span class="va">adf_test</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/urca/man/ur.df.html">ur.df</a></span><span class="op">(</span><span class="va">x</span>, type <span class="op">=</span> <span class="st">"trend"</span>, lags <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">test</span><span class="op">@</span><span class="va">teststat</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Test levels</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"ADF Test - Levels:\n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"Consumption:"</span>, <span class="fu">adf_test</span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">consumption</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"Income:"</span>, <span class="fu">adf_test</span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">income</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"Interest:"</span>, <span class="fu">adf_test</span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">interest</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Test first differences</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"\nADF Test - First Differences:\n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"D.Consumption:"</span>, <span class="fu">adf_test</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html">diff</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">consumption</span><span class="op">)</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"D.Income:"</span>, <span class="fu">adf_test</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html">diff</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">income</span><span class="op">)</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"D.Interest:"</span>, <span class="fu">adf_test</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html">diff</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">interest</span><span class="op">)</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Critical value at 5%: approximately -3.45 (with trend)</p>
+</div>
+</div>
+</section><section id="step-2-select-optimal-lags" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="step-2-select-optimal-lags">Step 2: Select Optimal Lags</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Auto-select lags using AIC</span></span>
+<span><span class="va">ardl_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ARDL/man/auto_ardl.html">auto_ardl</a></span><span class="op">(</span></span>
+<span>  <span class="va">consumption</span> <span class="op">~</span> <span class="va">income</span> <span class="op">+</span> <span class="va">interest</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">data</span>,</span>
+<span>  max_order <span class="op">=</span> <span class="fl">5</span>,    <span class="co"># Maximum lag to consider</span></span>
+<span>  selection <span class="op">=</span> <span class="st">"AIC"</span> <span class="co"># Can also use "BIC"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># View selected model</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/urca/man/summary-methods.html">summary</a></span><span class="op">(</span><span class="va">ardl_model</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Get the selected lag order</span></span>
+<span><span class="va">ardl_model</span><span class="op">$</span><span class="va">order</span></span>
+<span><span class="co"># Output example: (2, 1, 3) means ARDL(2,1,3)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>AIC</strong> (Akaike) - better for prediction<br><strong>BIC</strong> (Schwarz) - more parsimonious, better for small samples</p>
+</div>
+</div>
+</section><section id="step-3-bounds-test" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="step-3-bounds-test">Step 3: Bounds Test</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Perform bounds test for cointegration</span></span>
+<span><span class="va">bounds_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ARDL/man/bounds_f_test.html">bounds_f_test</a></span><span class="op">(</span></span>
+<span>  <span class="va">ardl_model</span>,</span>
+<span>  case <span class="op">=</span> <span class="fl">3</span>  <span class="co"># Case 3: unrestricted intercept, no trend</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># View results</span></span>
+<span><span class="va">bounds_test</span></span>
+<span></span>
+<span><span class="co"># The output shows:</span></span>
+<span><span class="co"># - F-statistic</span></span>
+<span><span class="co"># - Lower bound I(0)</span></span>
+<span><span class="co"># - Upper bound I(1)</span></span>
+<span><span class="co"># - Decision</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Interpretation:</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="va">bounds_test</span><span class="op">$</span><span class="va">tab</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">&gt;</span> <span class="va">bounds_test</span><span class="op">$</span><span class="va">tab</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">]</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"F-statistic &gt; Upper bound → Cointegration exists!"</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">bounds_test</span><span class="op">$</span><span class="va">tab</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">&lt;</span> <span class="va">bounds_test</span><span class="op">$</span><span class="va">tab</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"F-statistic &lt; Lower bound → No cointegration"</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"Inconclusive → Need to check unit roots"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section><section id="step-4-long-run-relationship" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="step-4-long-run-relationship">Step 4: Long-Run Relationship</h2>
+<p>If cointegration is confirmed:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Extract long-run coefficients</span></span>
+<span><span class="va">lr_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ARDL/man/multipliers.html">multipliers</a></span><span class="op">(</span><span class="va">ardl_model</span>, type <span class="op">=</span> <span class="st">"lr"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># View long-run relationship</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/urca/man/summary-methods.html">summary</a></span><span class="op">(</span><span class="va">lr_model</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Long-run elasticities</span></span>
+<span><span class="va">lr_model</span><span class="op">$</span><span class="va">coefficients</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Output interpretation:</strong></p>
+<ul>
+<li>
+<strong>Coefficient for income:</strong> long-run marginal propensity to consume</li>
+<li>
+<strong>Coefficient for interest:</strong> long-run effect of interest rate on consumption</li>
+<li>
+<strong>Standard errors and t-statistics:</strong> test significance of long-run effects</li>
+</ul></section><section id="step-5-error-correction-model" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="step-5-error-correction-model">Step 5: Error Correction Model</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Estimate ECM representation</span></span>
+<span><span class="va">ecm_model</span> <span class="op">&lt;-</span> <span class="fu">ecm</span><span class="op">(</span><span class="va">ardl_model</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># View ECM results</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/urca/man/summary-methods.html">summary</a></span><span class="op">(</span><span class="va">ecm_model</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Extract error correction term coefficient</span></span>
+<span><span class="va">ect_coef</span> <span class="op">&lt;-</span> <span class="va">ecm_model</span><span class="op">$</span><span class="va">coefficients</span><span class="op">[</span><span class="st">"ect"</span><span class="op">]</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"Error Correction Term coefficient:"</span>, <span class="va">ect_coef</span>, <span class="st">"\n"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Key checks:</strong></p>
+<div class="incremental">
+<ol class="incremental" type="1">
+<li>ECT coefficient should be <strong>negative</strong> (adjustment toward equilibrium)</li>
+<li>ECT coefficient should be <strong>significant</strong> (p &lt; 0.05)</li>
+<li>Magnitude indicates <strong>speed of adjustment</strong>
+<ul class="incremental">
+<li>Example: -0.3 means 30% of disequilibrium corrected each period</li>
+</ul>
+</li>
+</ol>
+</div>
+</section><section id="diagnostic-tests" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="diagnostic-tests">Diagnostic Tests</h2>
+<p>Always check model validity:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># 1. Serial Correlation Test</span></span>
+<span><span class="va">bg_test</span> <span class="op">&lt;-</span> <span class="fu">bgtest</span><span class="op">(</span><span class="va">ardl_model</span>, order <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">bg_test</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 2. Heteroskedasticity Test</span></span>
+<span><span class="va">bp_test</span> <span class="op">&lt;-</span> <span class="fu">bptest</span><span class="op">(</span><span class="va">ardl_model</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">bp_test</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 3. Normality Test</span></span>
+<span><span class="va">jb_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tseries/man/jarque.bera.test.html">jarque.bera.test</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">residuals</a></span><span class="op">(</span><span class="va">ardl_model</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">jb_test</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 4. Stability Test (CUSUM)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span><span class="op">(</span><span class="fu">stability</span><span class="op">(</span><span class="va">ardl_model</span>, type <span class="op">=</span> <span class="st">"cusum"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If diagnostics fail, consider:<br>
+- Adding more lags<br>
+- Including dummy variables<br>
+- Transforming variables (log)</p>
+</div>
+</div>
+</section></section><section id="interpreting-results" class="level1"><h1>Interpreting Results</h1>
+<section id="understanding-coefficients" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="understanding-coefficients">Understanding Coefficients</h2>
+<p><strong>Short-Run Coefficients</strong> (from ARDL/ECM):</p>
+<ul>
+<li>
+<span class="math inline">\(\Delta income\)</span>: immediate (impact) effect on consumption</li>
+<li>
+<span class="math inline">\(\Delta interest\)</span>: immediate effect of interest rate change</li>
+</ul>
+<p><strong>Long-Run Coefficients:</strong></p>
+<ul>
+<li>Show equilibrium relationships</li>
+<li>More policy-relevant for structural analysis</li>
+</ul></section><section id="error-correction-term" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="error-correction-term">Error Correction Term</h2>
+<p>Example: <span class="math inline">\(ECT_{t-1} = -0.35\)</span> (p-value &lt; 0.01)</p>
+<p><strong>Interpretation:</strong></p>
+<div class="incremental">
+<ul class="incremental">
+<li>
+<strong>Negative sign</strong>: Confirms cointegration (adjustment toward equilibrium)</li>
+<li>
+<strong>Magnitude 0.35</strong>: 35% of disequilibrium is corrected each period</li>
+<li>
+<strong>Time to equilibrium</strong>: Roughly <span class="math inline">\(1/0.35 \approx 2.86\)</span> periods</li>
+<li>
+<strong>Significance</strong>: The long-run relationship is statistically valid</li>
+</ul>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If ECT &gt; 0 or insignificant, the cointegration relationship is questionable!</p>
+</div>
+</div>
+</section><section id="visualizing-results" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="visualizing-results">Visualizing Results</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Plot actual vs fitted values</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span><span class="op">(</span><span class="va">ardl_model</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Plot residuals</span></span>
+<span><span class="va">residuals_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span></span>
+<span>  time <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">residuals</a></span><span class="op">(</span><span class="va">ardl_model</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  residuals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">residuals</a></span><span class="op">(</span><span class="va">ardl_model</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">residuals_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">residuals</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, color <span class="op">=</span> <span class="st">"red"</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"ARDL Model Residuals"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Time"</span>, y <span class="op">=</span> <span class="st">"Residuals"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Plot dynamic forecasts</span></span>
+<span><span class="va">forecast_plot</span> <span class="op">&lt;-</span> <span class="fu">forecast</span><span class="op">(</span><span class="va">ardl_model</span>, h <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span><span class="op">(</span><span class="va">forecast_plot</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section></section><section id="ardl-vs-johansen-method" class="level1"><h1>ARDL vs Johansen Method</h1>
+<section id="comparison-table" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="comparison-table">Comparison Table</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 40%">
+<col style="width: 38%">
+</colgroup>
+<thead><tr class="header">
+<th>Feature</th>
+<th>ARDL Bounds Test</th>
+<th>Johansen Method</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><strong>Order of integration</strong></td>
+<td>I(0), I(1), or mixed</td>
+<td>All must be I(1)</td>
+</tr>
+<tr class="even">
+<td><strong>Pre-testing required</strong></td>
+<td>No (only check not I(2))</td>
+<td>Yes (must confirm I(1))</td>
+</tr>
+<tr class="odd">
+<td><strong>Estimation</strong></td>
+<td>Single equation</td>
+<td>System (VAR)</td>
+</tr>
+<tr class="even">
+<td><strong>Complexity</strong></td>
+<td>Simpler</td>
+<td>More complex</td>
+</tr>
+<tr class="odd">
+<td><strong>Small samples</strong></td>
+<td>Works well (n≥30)</td>
+<td>Needs larger samples</td>
+</tr>
+<tr class="even">
+<td><strong>Different lags</strong></td>
+<td>Yes, per variable</td>
+<td>No, same for all</td>
+</tr>
+<tr class="odd">
+<td><strong>Endogeneity</strong></td>
+<td>Can handle with lags</td>
+<td>Better for simultaneous equations</td>
+</tr>
+</tbody>
+</table></section><section id="when-to-use-ardl" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="when-to-use-ardl">When to Use ARDL</h2>
+<p><strong>ARDL is preferred when:</strong></p>
+<div class="incremental">
+<ol class="incremental" type="1">
+<li>
+<strong>Mixed integration orders</strong> (some I(0), some I(1))</li>
+<li>
+<strong>Small sample size</strong> (&lt; 100 observations)</li>
+<li>
+<strong>Single equation focus</strong> (one dependent variable of interest)</li>
+<li>
+<strong>Different dynamics</strong> across variables</li>
+<li>
+<strong>Simpler interpretation</strong> is desired</li>
+<li>
+<strong>Preliminary analysis</strong> before full system estimation</li>
+</ol>
+</div>
+</section><section id="when-to-use-johansen" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="when-to-use-johansen">When to Use Johansen</h2>
+<p><strong>Johansen is preferred when:</strong></p>
+<div class="incremental">
+<ol class="incremental" type="1">
+<li>
+<strong>Multiple cointegrating relationships</strong> suspected</li>
+<li>
+<strong>All variables are I(1)</strong> (confirmed)</li>
+<li>
+<strong>System-wide analysis</strong> needed</li>
+<li>
+<strong>Simultaneous determination</strong> (multiple endogenous variables)</li>
+<li>
+<strong>Large sample</strong> available</li>
+<li>
+<strong>Bidirectional causality</strong> important</li>
+</ol>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Many researchers use <strong>both methods</strong> as robustness checks!</p>
+</div>
+</div>
+</section></section><section id="practical-example" class="level1"><h1>Practical Example</h1>
+<section id="real-data-example" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="real-data-example">Real Data Example</h2>
+<p>Let’s analyze the relationship between GDP, Investment, and Government Spending using Pakistani data:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Load data (example - use your own data)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://readr.tidyverse.org">readr</a></span><span class="op">)</span></span>
+<span><span class="va">pak_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span><span class="st">"pakistan_macro.csv"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Variables:</span></span>
+<span><span class="co"># - gdp: Real GDP (in billions)</span></span>
+<span><span class="co"># - investment: Gross Fixed Capital Formation</span></span>
+<span><span class="co"># - govt_spending: Government Expenditure</span></span>
+<span></span>
+<span><span class="co"># Take logs for elasticity interpretation</span></span>
+<span><span class="va">pak_data</span> <span class="op">&lt;-</span> <span class="va">pak_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    log_gdp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">gdp</span><span class="op">)</span>,</span>
+<span>    log_inv <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">investment</span><span class="op">)</span>,</span>
+<span>    log_govt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">govt_spending</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section><section id="unit-root-tests" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="unit-root-tests">Unit Root Tests</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">urca</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># ADF tests on levels</span></span>
+<span><span class="va">adf_gdp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/urca/man/ur.df.html">ur.df</a></span><span class="op">(</span><span class="va">pak_data</span><span class="op">$</span><span class="va">log_gdp</span>, type <span class="op">=</span> <span class="st">"trend"</span>, lags <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="va">adf_inv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/urca/man/ur.df.html">ur.df</a></span><span class="op">(</span><span class="va">pak_data</span><span class="op">$</span><span class="va">log_inv</span>, type <span class="op">=</span> <span class="st">"trend"</span>, lags <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="va">adf_govt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/urca/man/ur.df.html">ur.df</a></span><span class="op">(</span><span class="va">pak_data</span><span class="op">$</span><span class="va">log_govt</span>, type <span class="op">=</span> <span class="st">"trend"</span>, lags <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Summary</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/urca/man/summary-methods.html">summary</a></span><span class="op">(</span><span class="va">adf_gdp</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/urca/man/summary-methods.html">summary</a></span><span class="op">(</span><span class="va">adf_inv</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/urca/man/summary-methods.html">summary</a></span><span class="op">(</span><span class="va">adf_govt</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Check first differences if needed</span></span>
+<span><span class="va">adf_d_gdp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/urca/man/ur.df.html">ur.df</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html">diff</a></span><span class="op">(</span><span class="va">pak_data</span><span class="op">$</span><span class="va">log_gdp</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"trend"</span>, lags <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/urca/man/summary-methods.html">summary</a></span><span class="op">(</span><span class="va">adf_d_gdp</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Expected result:</strong> Variables are I(1), good for ARDL!</p>
+</section><section id="estimate-ardl-model" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="estimate-ardl-model">Estimate ARDL Model</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Auto-select optimal ARDL model</span></span>
+<span><span class="va">ardl_pak</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ARDL/man/auto_ardl.html">auto_ardl</a></span><span class="op">(</span></span>
+<span>  <span class="va">log_gdp</span> <span class="op">~</span> <span class="va">log_inv</span> <span class="op">+</span> <span class="va">log_govt</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">pak_data</span>,</span>
+<span>  max_order <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  selection <span class="op">=</span> <span class="st">"BIC"</span>  <span class="co"># Use BIC for parsimony</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># View selected order</span></span>
+<span><span class="va">ardl_pak</span><span class="op">$</span><span class="va">order</span></span>
+<span><span class="co"># Example output: (2, 1, 1) = ARDL(2,1,1)</span></span>
+<span></span>
+<span><span class="co"># Full model summary</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/urca/man/summary-methods.html">summary</a></span><span class="op">(</span><span class="va">ardl_pak</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section><section id="bounds-test-results" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="bounds-test-results">Bounds Test Results</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Perform bounds test</span></span>
+<span><span class="va">bounds_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ARDL/man/bounds_f_test.html">bounds_f_test</a></span><span class="op">(</span><span class="va">ardl_pak</span>, case <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># View results</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">bounds_result</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Example output:</span></span>
+<span><span class="co">#           F-statistic  Lower.bound  Upper.bound</span></span>
+<span><span class="co"># 10%           5.234        2.72         3.77</span></span>
+<span><span class="co"># 5%            5.234        3.23         4.35</span></span>
+<span><span class="co"># 1%            5.234        4.29         5.61</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Interpretation:</strong> F = 5.234 &gt; Upper bound at 5% (4.35)<br>
+→ <strong>Strong evidence of cointegration!</strong></p>
+</section><section id="long-run-results" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="long-run-results">Long-Run Results</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Extract long-run coefficients</span></span>
+<span><span class="va">lr_pak</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ARDL/man/multipliers.html">multipliers</a></span><span class="op">(</span><span class="va">ardl_pak</span>, type <span class="op">=</span> <span class="st">"lr"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># View results</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/urca/man/summary-methods.html">summary</a></span><span class="op">(</span><span class="va">lr_pak</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Example output:</span></span>
+<span><span class="co">#              Estimate  Std.Error  t-value  Pr(&gt;|t|)</span></span>
+<span><span class="co"># log_inv        0.456      0.089    5.123    0.000 ***</span></span>
+<span><span class="co"># log_govt       0.234      0.067    3.493    0.001 **</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Economic Interpretation:</strong></p>
+<ul>
+<li>1% increase in investment → 0.456% increase in GDP (long-run)</li>
+<li>1% increase in govt spending → 0.234% increase in GDP (long-run)</li>
+</ul></section><section id="ecm-results" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="ecm-results">ECM Results</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Estimate ECM</span></span>
+<span><span class="va">ecm_pak</span> <span class="op">&lt;-</span> <span class="fu">ecm</span><span class="op">(</span><span class="va">ardl_pak</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># View results</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/urca/man/summary-methods.html">summary</a></span><span class="op">(</span><span class="va">ecm_pak</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Example output:</span></span>
+<span><span class="co">#              Estimate  Std.Error  t-value  Pr(&gt;|t|)</span></span>
+<span><span class="co"># ect           -0.428      0.098   -4.367    0.000 ***</span></span>
+<span><span class="co"># d(log_inv)     0.312      0.076    4.105    0.000 ***</span></span>
+<span><span class="co"># d(log_govt)    0.189      0.054    3.500    0.001 **</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li>ECT = -0.428: About 43% of disequilibrium corrected per period</li>
+<li>Speed of adjustment: <span class="math inline">\(1/0.428 \approx 2.3\)</span> periods to equilibrium</li>
+<li>Short-run effects also significant</li>
+</ul></section><section id="diagnostic-checks" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="diagnostic-checks">Diagnostic Checks</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Load required package</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">lmtest</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 1. Breusch-Godfrey Test (Serial Correlation)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/bgtest.html">bgtest</a></span><span class="op">(</span><span class="va">ardl_pak</span>, order <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="co"># H0: No serial correlation</span></span>
+<span></span>
+<span><span class="co"># 2. Breusch-Pagan Test (Heteroskedasticity)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/bptest.html">bptest</a></span><span class="op">(</span><span class="va">ardl_pak</span><span class="op">)</span></span>
+<span><span class="co"># H0: Homoskedastic errors</span></span>
+<span></span>
+<span><span class="co"># 3. Jarque-Bera Test (Normality)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tseries/man/jarque.bera.test.html">jarque.bera.test</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">residuals</a></span><span class="op">(</span><span class="va">ardl_pak</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># H0: Errors are normally distributed</span></span>
+<span></span>
+<span><span class="co"># 4. CUSUM Test (Stability)</span></span>
+<span><span class="va">cusum_test</span> <span class="op">&lt;-</span> <span class="fu">stability</span><span class="op">(</span><span class="va">ardl_pak</span>, type <span class="op">=</span> <span class="st">"cusum"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span><span class="op">(</span><span class="va">cusum_test</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section><section id="visualizing-the-relationship" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="visualizing-the-relationship">Visualizing the Relationship</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Plot actual vs fitted</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">fitted_vals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html">fitted</a></span><span class="op">(</span><span class="va">ardl_pak</span><span class="op">)</span></span>
+<span><span class="va">actual_vals</span> <span class="op">&lt;-</span> <span class="va">pak_data</span><span class="op">$</span><span class="va">log_gdp</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">fitted_vals</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">plot_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span></span>
+<span>  time <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">actual_vals</span><span class="op">)</span>,</span>
+<span>  actual <span class="op">=</span> <span class="va">actual_vals</span>,</span>
+<span>  fitted <span class="op">=</span> <span class="va">fitted_vals</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">plot_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">actual</span>, color <span class="op">=</span> <span class="st">"Actual"</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">fitted</span>, color <span class="op">=</span> <span class="st">"Fitted"</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">1</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"ARDL Model: Actual vs Fitted Values"</span>,</span>
+<span>       subtitle <span class="op">=</span> <span class="st">"Log GDP in Pakistan"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Time Period"</span>, y <span class="op">=</span> <span class="st">"Log GDP"</span>,</span>
+<span>       color <span class="op">=</span> <span class="st">"Series"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section></section><section id="advanced-topics" class="level1"><h1>Advanced Topics</h1>
+<section id="ardl-with-structural-breaks" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="ardl-with-structural-breaks">ARDL with Structural Breaks</h2>
+<p>If you suspect structural breaks (e.g., policy changes, crises):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Add dummy variables</span></span>
+<span><span class="va">pak_data</span><span class="op">$</span><span class="va">crisis_dummy</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">pak_data</span><span class="op">$</span><span class="va">year</span> <span class="op">&gt;=</span> <span class="fl">2008</span> <span class="op">&amp;</span> </span>
+<span>                                <span class="va">pak_data</span><span class="op">$</span><span class="va">year</span> <span class="op">&lt;=</span> <span class="fl">2010</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Estimate ARDL with dummy</span></span>
+<span><span class="va">ardl_break</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ARDL/man/auto_ardl.html">auto_ardl</a></span><span class="op">(</span></span>
+<span>  <span class="va">log_gdp</span> <span class="op">~</span> <span class="va">log_inv</span> <span class="op">+</span> <span class="va">log_govt</span> <span class="op">+</span> <span class="va">crisis_dummy</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">pak_data</span>,</span>
+<span>  max_order <span class="op">=</span> <span class="fl">4</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Check if dummy is significant</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/urca/man/summary-methods.html">summary</a></span><span class="op">(</span><span class="va">ardl_break</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section><section id="ardl-with-non-linear-effects" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="ardl-with-non-linear-effects">ARDL with Non-linear Effects</h2>
+<p>Include squared terms for non-linear relationships:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Create squared term</span></span>
+<span><span class="va">pak_data</span><span class="op">$</span><span class="va">log_inv_sq</span> <span class="op">&lt;-</span> <span class="va">pak_data</span><span class="op">$</span><span class="va">log_inv</span><span class="op">^</span><span class="fl">2</span></span>
+<span></span>
+<span><span class="co"># Estimate model</span></span>
+<span><span class="va">ardl_nonlin</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ARDL/man/auto_ardl.html">auto_ardl</a></span><span class="op">(</span></span>
+<span>  <span class="va">log_gdp</span> <span class="op">~</span> <span class="va">log_inv</span> <span class="op">+</span> <span class="va">log_inv_sq</span> <span class="op">+</span> <span class="va">log_govt</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">pak_data</span>,</span>
+<span>  max_order <span class="op">=</span> <span class="fl">4</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/urca/man/summary-methods.html">summary</a></span><span class="op">(</span><span class="va">ardl_nonlin</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Test for non-linearity:</strong> If <span class="math inline">\(\beta_{inv^2}\)</span> is significant, relationship is non-linear</p>
+</section><section id="nardl-non-linear-ardl" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="nardl-non-linear-ardl">NARDL: Non-linear ARDL</h2>
+<p>Account for <strong>asymmetric effects</strong> (positive vs negative changes):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/zedtaha/nardl">nardl</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Separate positive and negative changes</span></span>
+<span><span class="va">nardl_model</span> <span class="op">&lt;-</span> <span class="fu">nardl</span><span class="op">(</span></span>
+<span>  <span class="va">log_gdp</span> <span class="op">~</span> <span class="va">log_inv</span> <span class="op">+</span> <span class="va">log_govt</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">pak_data</span>,</span>
+<span>  p <span class="op">=</span> <span class="fl">2</span>, q <span class="op">=</span> <span class="fl">1</span>  <span class="co"># ARDL(2,1) structure</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Test for asymmetry</span></span>
+<span><span class="va">asymmetry_test</span> <span class="op">&lt;-</span> <span class="va">nardl_model</span><span class="op">$</span><span class="va">pss</span></span>
+<span></span>
+<span><span class="co"># View results</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/urca/man/summary-methods.html">summary</a></span><span class="op">(</span><span class="va">nardl_model</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>NARDL is useful when effects differ in expansions vs recessions</p>
+</div>
+</div>
+</section></section><section id="common-mistakes-tips" class="level1"><h1>Common Mistakes &amp; Tips</h1>
+<section id="common-mistakes" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="common-mistakes">Common Mistakes</h2>
+<div class="incremental">
+<ol class="incremental" type="1">
+<li>
+<strong>Not checking for I(2) variables</strong>
+<ul class="incremental">
+<li>Always test! I(2) invalidates bounds test</li>
+</ul>
+</li>
+<li>
+<strong>Ignoring diagnostic tests</strong>
+<ul class="incremental">
+<li>Serial correlation biases standard errors</li>
+<li>Check residuals carefully</li>
+</ul>
+</li>
+<li>
+<strong>Over-fitting with too many lags</strong>
+<ul class="incremental">
+<li>Use information criteria (AIC/BIC)</li>
+<li>Keep model parsimonious</li>
+</ul>
+</li>
+<li>
+<strong>Misinterpreting ECT sign</strong>
+<ul class="incremental">
+<li>Must be negative for valid cointegration</li>
+<li>Positive ECT = explosive process</li>
+</ul>
+</li>
+</ol>
+</div>
+</section><section id="common-mistakes-continued" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="common-mistakes-continued">Common Mistakes (continued)</h2>
+<div class="incremental">
+<ol class="incremental" start="5" type="1">
+<li>
+<strong>Not testing coefficient restrictions</strong>
+<ul class="incremental">
+<li>Test long-run coefficients significance</li>
+<li>Use Wald tests when needed</li>
+</ul>
+</li>
+<li>
+<strong>Ignoring structural breaks</strong>
+<ul class="incremental">
+<li>Check data for known shocks/policy changes</li>
+<li>Use CUSUM/CUSUMSQ tests</li>
+</ul>
+</li>
+<li>
+<strong>Wrong case selection in bounds test</strong>
+<ul class="incremental">
+<li>Case 1: No intercept, no trend</li>
+<li>Case 2: Restricted intercept, no trend</li>
+<li>Case 3: Unrestricted intercept, no trend ← Most common</li>
+<li>Case 4: Unrestricted intercept, restricted trend</li>
+<li>Case 5: Unrestricted intercept, unrestricted trend</li>
+</ul>
+</li>
+</ol>
+</div>
+</section><section id="best-practices" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="best-practices">Best Practices</h2>
+<div class="incremental">
+<ol class="incremental" type="1">
+<li>
+<strong>Always plot your data first</strong>
+<ul class="incremental">
+<li>Check for trends, breaks, outliers</li>
+</ul>
+</li>
+<li>
+<strong>Use log transformations when appropriate</strong>
+<ul class="incremental">
+<li>For multiplicative relationships</li>
+<li>To interpret coefficients as elasticities</li>
+</ul>
+</li>
+<li>
+<strong>Report multiple model specifications</strong>
+<ul class="incremental">
+<li>Different lag lengths</li>
+<li>With/without additional controls</li>
+</ul>
+</li>
+<li>
+<strong>Conduct robustness checks</strong>
+<ul class="incremental">
+<li>Compare ARDL with Johansen</li>
+<li>Try different lag selection criteria</li>
+</ul>
+</li>
+<li>
+<strong>Interpret economically, not just statistically</strong>
+<ul class="incremental">
+<li>Do magnitudes make sense?</li>
+<li>Are signs consistent with theory?</li>
+</ul>
+</li>
+</ol>
+</div>
+</section><section id="reporting-ardl-results" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="reporting-ardl-results">Reporting ARDL Results</h2>
+<p><strong>In your paper/thesis, report:</strong></p>
+<div class="incremental">
+<ol class="incremental" type="1">
+<li>
+<strong>Unit root test results</strong> (confirm not I(2))</li>
+<li>
+<strong>Selected ARDL specification</strong> and lag selection criteria</li>
+<li>
+<strong>Bounds test results</strong> with F-statistic and decision</li>
+<li>
+<strong>Long-run coefficients</strong> with standard errors</li>
+<li>
+<strong>Short-run coefficients</strong> and ECT from ECM</li>
+<li>
+<strong>Diagnostic test results</strong> (serial correlation, heteroskedasticity, normality, stability)</li>
+<li>
+<strong>Economic interpretation</strong> of all key coefficients</li>
+</ol>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Create a comprehensive table with all results for easy reference!</p>
+</div>
+</div>
+</section></section><section id="conclusion-resources" class="level1"><h1>Conclusion &amp; Resources</h1>
+<section id="summary" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="summary">Summary</h2>
+<p><strong>Key Takeaways:</strong></p>
+<div class="incremental">
+<ol class="incremental" type="1">
+<li>ARDL is <strong>flexible</strong> - works with I(0), I(1), or mixed</li>
+<li>
+<strong>Bounds testing</strong> avoids unit root pre-testing debates</li>
+<li>
+<strong>Simpler</strong> than Johansen for single equation models</li>
+<li>Provides both <strong>short-run dynamics</strong> and <strong>long-run equilibrium</strong>
+</li>
+<li>
+<strong>R implementation</strong> is straightforward with ARDL package</li>
+<li>Always check <strong>diagnostics</strong> and <strong>stability</strong>
+</li>
+<li>
+<strong>Economic interpretation</strong> matters most!</li>
+</ol>
+</div>
+</section><section id="when-to-use-what" class="level2 scrollable"><h2 class="scrollable anchored" data-anchor-id="when-to-use-what">When to Use What?</h2>
+<p><strong>Quick Decision Guide:</strong></p>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div class="cell" data-fig-width="8" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>flowchart TD</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    A[Start: Check Your Data] --&gt; B{Variables &lt;br/&gt; mixed I0/I1?}</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    B --&gt;|Yes| C[Use ARDL]</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    B --&gt;|No, All I1| D{Small sample &lt;br/&gt; n &lt; 80?}</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    D --&gt;|Yes| C</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    D --&gt;|No| E{Single equation &lt;br/&gt; focus?}</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    E --&gt;|Yes| F[ARDL preferred &lt;br/&gt; Simpler]</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    E --&gt;|No| G{Multiple &lt;br/&gt; cointegrating &lt;br/&gt; relations?}</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    G --&gt;|Yes| H[Use Johansen]</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    G --&gt;|No| F</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    style C fill:#90EE90</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>    style H fill:#FFB6C1</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>    style F fill:#90EE90</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>    C --&gt; I[ARDL Bounds Test]</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>    H --&gt; J[Johansen Test]</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>    F --&gt; K[Either works &lt;br/&gt; Use both for robustness]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"></figure><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+    A[Start: Check Your Data] --&gt; B{Variables &lt;br/&gt; mixed I0/I1?}
+    B --&gt;|Yes| C[Use ARDL]
+    B --&gt;|No, All I1| D{Small sample &lt;br/&gt; n &lt; 80?}
+    D --&gt;|Yes| C
+    D --&gt;|No| E{Single equation &lt;br/&gt; focus?}
+    E --&gt;|Yes| F[ARDL preferred &lt;br/&gt; Simpler]
+    E --&gt;|No| G{Multiple &lt;br/&gt; cointegrating &lt;br/&gt; relations?}
+    G --&gt;|Yes| H[Use Johansen]
+    G --&gt;|No| F
+    
+    style C fill:#90EE90
+    style H fill:#FFB6C1
+    style F fill:#90EE90
+    
+    C --&gt; I[ARDL Bounds Test]
+    H --&gt; J[Johansen Test]
+    F --&gt; K[Either works &lt;br/&gt; Use both for robustness]
+</pre>
+</div>
+<p></p>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:40%;">
+<p><strong>Key Decision Points:</strong></p>
+<ol type="1">
+<li>
+<strong>Mixed Integration?</strong>
+<ul>
+<li>I(0) and I(1) mixed → ARDL only</li>
+</ul>
+</li>
+<li>
+<strong>Sample Size?</strong>
+<ul>
+<li>Small (n&lt;80) → ARDL better</li>
+<li>Large (n&gt;100) → Both work</li>
+</ul>
+</li>
+<li>
+<strong>Research Focus?</strong>
+<ul>
+<li>Single equation → ARDL simpler</li>
+<li>System dynamics → Johansen</li>
+</ul>
+</li>
+<li>
+<strong>Multiple Cointegration?</strong>
+<ul>
+<li>Multiple relations → Johansen</li>
+<li>Single relation → ARDL</li>
+</ul>
+</li>
+</ol>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Best Practice:</strong> Use both methods as robustness checks when possible!</p>
+</div>
+</div>
+</section><section id="r-packages-summary" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="r-packages-summary">R Packages Summary</h2>
+<p><strong>Essential packages:</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># ARDL analysis</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"ARDL"</span><span class="op">)</span>      <span class="co"># Main package</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"dynamac"</span><span class="op">)</span>   <span class="co"># Alternative</span></span>
+<span></span>
+<span><span class="co"># Unit root tests</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"urca"</span><span class="op">)</span>      <span class="co"># Comprehensive tests</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"tseries"</span><span class="op">)</span>   <span class="co"># ADF, PP, KPSS</span></span>
+<span></span>
+<span><span class="co"># Diagnostics</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"lmtest"</span><span class="op">)</span>    <span class="co"># LM tests</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"car"</span><span class="op">)</span>       <span class="co"># VIF, other tests</span></span>
+<span></span>
+<span><span class="co"># Visualization</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"ggplot2"</span><span class="op">)</span>   <span class="co"># Publication-quality plots</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section><section id="additional-resources" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="additional-resources">Additional Resources</h2>
+<p><strong>Key Papers:</strong></p>
+<ol type="1">
+<li><p>Pesaran, M. H., Shin, Y., &amp; Smith, R. J. (2001). Bounds testing approaches to the analysis of level relationships. <em>Journal of Applied Econometrics</em>, 16(3), 289-326.</p></li>
+<li><p>Pesaran, M. H., &amp; Shin, Y. (1999). An autoregressive distributed lag modelling approach to cointegration analysis.</p></li>
+</ol>
+<p><strong>Online Resources:</strong></p>
+<ul>
+<li>ARDL R package documentation: <code><a href="https://rdrr.io/pkg/ARDL/man">help(package = "ARDL")</a></code>
+</li>
+<li>Econometrics tutorials: <a href="https://www.econometrics-with-r.org/">https://www.econometrics-with-r.org/</a>
+</li>
+<li>Time series in R: <a href="https://otexts.com/fpp3/">https://otexts.com/fpp3/</a>
+</li>
+</ul></section><section id="practice-exercise" class="level2 smaller"><h2 class="smaller anchored" data-anchor-id="practice-exercise">Practice Exercise</h2>
+<p><strong>Try this on your own:</strong></p>
+<ol type="1">
+<li>Load any macroeconomic dataset with 3-4 variables</li>
+<li>Test for unit roots (ensure not I(2))</li>
+<li>Estimate an ARDL model using <code><a href="https://rdrr.io/pkg/ARDL/man/auto_ardl.html">auto_ardl()</a></code>
+</li>
+<li>Conduct bounds test for cointegration</li>
+<li>If cointegrated:
+<ul>
+<li>Estimate long-run relationship</li>
+<li>Estimate ECM</li>
+<li>Interpret the speed of adjustment</li>
+</ul>
+</li>
+<li>Run diagnostic tests</li>
+<li>Visualize actual vs fitted values</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Start with Pakistani data from World Bank or State Bank of Pakistan!</p>
+</div>
+</div>
+</section><section id="questions" class="level2 center"><h2 class="center anchored" data-anchor-id="questions">Questions?</h2>
+<div class="r-fit-text">
+<p>Thank you!</p>
+</div>
+<p><strong>Contact:</strong></p>
+<ul>
+<li>Email: <a href="mailto:your.email@university.edu">your.email@university.edu</a>
+</li>
+<li>Office Hours: [Your hours]</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Remember:
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Practice makes perfect. Start with simple examples and gradually increase complexity!</p>
+</div>
+</div>
+<hr>
+<section id="references" class="level3 smaller"><h3 class="smaller anchored" data-anchor-id="references">References</h3>
+<ol type="1">
+<li><p>Pesaran, M. H., Shin, Y., &amp; Smith, R. J. (2001). Bounds testing approaches to the analysis of level relationships. <em>Journal of Applied Econometrics</em>, 16(3), 289-326.</p></li>
+<li><p>Pesaran, M. H., &amp; Shin, Y. (1999). An autoregressive distributed lag modelling approach to cointegration analysis. <em>Econometrics and Economic Theory in the 20th Century: The Ragnar Frisch Centennial Symposium</em>, 371-413.</p></li>
+<li><p>Nkoro, E., &amp; Uko, A. K. (2016). Autoregressive Distributed Lag (ARDL) cointegration technique: application and interpretation. <em>Journal of Statistical and Econometric Methods</em>, 5(4), 63-91.</p></li>
+<li><p>Jordan, S., &amp; Philips, A. Q. (2018). Cointegration testing and dynamic simulations of autoregressive distributed lag models. <em>The Stata Journal</em>, 18(4), 902-923.</p></li>
+</ol>
+
+
+</section></section></section><a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/zahedasghar\.github\.io\/timeseries\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../lectures/09-cointegration-and-vecm.html" class="pagination-link" aria-label="VECM Models">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">VECM Models</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../lectures/11-vector-autoregressions.html" class="pagination-link" aria-label="[Vector Autoregressions]{.yellow}">
+        <span class="nav-page-text"><span class="yellow">Vector Autoregressions</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© Prof.&nbsp;Dr.&nbsp;Zahid Asghar · School of Economics, Quaid-i-Azam University</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/Zahedasghar/timeseries/blob/main/lectures/10-ardl-and-bounds-testing.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/Zahedasghar/timeseries/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+<li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/Zahedasghar/timeseries">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://zahidasghar.com">
+      <i class="bi bi-globe" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+</div>
+  </div>
+</footer>
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

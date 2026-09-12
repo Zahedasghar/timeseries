@@ -1,0 +1,94 @@
+/*-- scss:defaults --*/
+// Brand palette — School of Economics, QAU (Zahid Asghar)
+$qau-green:  #2C5F2D;
+$qau-green-d:#1E4220;
+$qau-brown:  #8B7355;
+$qau-sand:   #F7F5F1;
+$qau-ink:    #1F2321;
+$accent-amber: #9A6B00;
+$accent-teal:  #14636B;
+$accent-rose:  #A6235F;
+
+$primary:    $qau-green;
+$secondary:  $qau-brown;
+$link-color: $qau-green-d;
+$body-color: $qau-ink;
+$body-bg:    #FFFFFF;
+
+$font-family-sans-serif: Georgia, "Gill Sans MT", Calibri, -apple-system, "Segoe UI", sans-serif;
+$font-family-monospace:  "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+$font-size-root: 17px;
+$headings-font-weight: 600;
+
+$navbar-bg: $qau-green;
+$navbar-fg: #FFFFFF;
+$code-bg: $qau-sand;
+$table-striped-bg: rgba($qau-green, .035);
+
+/*-- scss:rules --*/
+code:not(.sourceCode) { color: $qau-green-d; }
+h1, h2, h3, h4 { color: $qau-green-d; letter-spacing: -0.01em; }
+h2 { border-bottom: 2px solid rgba($qau-brown, .35); padding-bottom: .25rem; margin-top: 2.2rem; }
+
+.navbar-brand { font-weight: 700; letter-spacing: -0.01em; }
+
+/* Hero on the landing page */
+.hero {
+  background: linear-gradient(135deg, $qau-green 0%, $qau-green-d 55%, darken($qau-brown, 12%) 100%);
+  color: #fff; border-radius: 14px; padding: 2.6rem 2.2rem; margin: 0 0 2rem;
+}
+.hero h1 { color:#fff; margin: 0 0 .4rem; font-size: clamp(1.6rem, 4vw, 2.4rem); }
+.hero p  { color: rgba(255,255,255,.92); margin: .2rem 0; max-width: 62ch; }
+.hero .meta { font-size: .92rem; color: rgba(255,255,255,.78); margin-top: 1rem; }
+
+/* Card grid used by the lecture / lab indexes */
+.card-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; margin: 1.4rem 0; }
+.tcard {
+  display:block; border: 1px solid rgba($qau-ink,.12); border-left: 4px solid $qau-green;
+  border-radius: 10px; padding: 1rem 1.1rem; text-decoration:none; color:inherit;
+  background:#fff; transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+.tcard:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba($qau-ink,.10); border-left-color: $qau-brown; }
+.tcard .num { display:block; font-size: .72rem; letter-spacing: .14em; text-transform:uppercase; color:$qau-brown; font-weight: 700; }
+.tcard .ttl { display:block; font-weight: 600; color:$qau-green-d; margin: .25rem 0 .35rem; line-height: 1.3; }
+.tcard .dsc { display:block; font-size: .88rem; color: rgba($qau-ink,.72); line-height: 1.45; }
+
+.callout { border-radius: 8px; }
+blockquote { border-left: 4px solid $qau-brown; color: rgba($qau-ink,.8); }
+table { font-size: .94rem; }
+
+@media (prefers-color-scheme: dark) {
+  .tcard { background: transparent; }
+}
+
+/* ---- shared emphasis utilities (mirrors assets/slides.scss) ---------------- */
+.flow {
+  background: linear-gradient(100deg, $qau-green 0%, lighten($qau-green,14%) 35%, $qau-brown 70%, $qau-green-d 100%);
+  background-size: 300% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  font-weight: 800; animation: flowshift 18s linear infinite;
+}
+@keyframes flowshift {
+  0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; }
+}
+@media (prefers-reduced-motion: reduce) { .flow { animation: none; } }
+
+.blue   { color: $accent-teal;  font-weight: 700; }
+.yellow { color: $accent-amber; font-weight: 700; }
+.pink   { color: $accent-rose;  font-weight: 700; }
+.green  { color: $qau-green;    font-weight: 700; }
+.brown  { color: $qau-brown;    font-weight: 700; }
+.hi           { font-weight: 700; color: $accent-rose; }
+.hi-purple    { font-weight: 700; color: #5B4B9E; }
+.hi-turquoise { font-weight: 700; color: $accent-teal; }
+.centered { text-align: center; }
+.large  { font-size: 1.2em; }
+.medium { font-size: .9em; }
+.small  { font-size: .8em; }
+.xsmall { font-size: .7em; }
+.source { font-size: .78em; color: rgba($qau-ink,.55); }
+details > summary { font-size: .9em; cursor: pointer; }
+.in-out { margin: .6em 0; padding: .2em 1em; background:$qau-sand; font-family:$font-family-monospace;
+          font-size: .85em; border-left: 3px solid $qau-brown; }
+.goal   { margin: .6em 0; padding: .4em 1em; background: rgba($qau-green,.09); border-left: 3px solid $qau-green; }

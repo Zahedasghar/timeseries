@@ -1,0 +1,375 @@
+---
+title: "Volatility spillover effects"
+author: "Name"
+date: "2023-09-23"
+output: pdf_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, message = F, warning = F, comment = NA, error = T)
+# Load required libraries
+library(vars)
+library(tseries)
+library(psych)
+library(tidyverse)
+
+```
+
+# Introduction
+
+
+
+
+
+
+
+
+# Methodology
+
+
+
+
+
+
+
+# Results
+
+
+
+```{r}
+
+# Import data and convert to log returns
+dyn_df <- read_csv('data/indo_us.csv') 
+
+
+
+dyn_df$date <- dmy(dyn_df$Date)
+dynam <- dyn_df |> mutate(lognifty=log(NIFTY50), logsp500=log(SP500))
+# Split data into sub-periods
+cut_off_date <- as.Date("2022-02-24")
+before_conflict_data <- dynam %>% filter(Date < cut_off_date)
+during_conflict_data <- dynam %>% filter(Date >= cut_off_date)
+
+```
+
+
+
+
+```{r}
+# Define a function to estimate VAR model and calculate FEVD
+estimate_VAR_FEVD <- function(dynam, lag_order) {
+  var_model <- VAR(dynam[, c("NIFTY50", "SP500")] %>% na.omit(), p = lag_order)
+  fevd_result <- fevd(var_model, n.ahead = 1)
+  return(fevd_result)
+}
+
+# Estimate VAR and calculate FEVD for both sub-periods
+lag_order <- 4  # Adjust as needed
+fevd_before_conflict <- estimate_VAR_FEVD(before_conflict_data, lag_order)
+
+fevd_during_conflict <- estimate_VAR_FEVD(during_conflict_data, lag_order)
+
+# Print FEVD results for both sub-periods
+print(fevd_before_conflict)
+print(fevd_during_conflict)
+
+```
+
+
+
+
+```{r}
+# Plot daily returns
+ggplot(dynam, aes(x = Date)) +
+  geom_line(aes(y = NIFTY50_log, color = "NIFTY50")) +
+  geom_line(aes(y = SP500_log, color = "SP500")) +
+  labs(title = "Daily Returns of Stock Market Indices",
+       y = "Log Returns", color = "Index") +
+  scale_color_manual(values = c("NIFTY50" = "blue", "SP500" = "red")) +
+  theme_minimal()
+```
+
+
+
+
+```{r}
+# Summary statistics before the crisis
+summary_before_conflict <-describe(before_conflict_data) %>% na.omit() %>% 
+  select(-vars, -se, -n, -trimmed, -se)
+
+# Create a data frame for the table
+
+
+
+table2_data <- summary_before_conflict %>% 
+  mutate(
+  ADF_Test_Statistic = c(adf_test_before_conflict_NIFTY50$statistic, adf_test_before_conflict_SP500$statistic),
+  ADF_Test_P_Value = c(adf_test_before_conflict_NIFTY50$p.value, adf_test_before_conflict_SP500$p.value)
+)
+
+# Print table
+print(table2_data)
+
+```
+
+
+
+```{r}
+# Calculate ADF test statistics and p-values for NIFTY50 and SP500
+adf_test_before_conflict_NIFTY50 <- adf.test(before_conflict_data$NIFTY50_log)
+adf_test_before_conflict_SP500 <- adf.test(before_conflict_data$SP500_log)
+
+# Summary statistics before the crisis
+summary_before_conflict <- describe(before_conflict_data) %>% na.omit() %>%
+  select(-vars, -se, -n, -trimmed, -mad)  # Exclude unwanted columns
+
+# Create a data frame for Table 2
+table2_data <- data.frame(
+  Variable = c("NIFTY50", "SP500"),
+  Mean = summary_before_conflict$mean,
+  StdDev = summary_before_conflict$sd,
+  Median = summary_before_conflict$median,
+  Min = summary_before_conflict$min,
+  Max = summary_before_conflict$max,
+  Range = summary_before_conflict$range,
+  Skew = summary_before_conflict$skew,
+  Kurtosis = summary_before_conflict$kurtosis,
+  ADF_Test_Statistic = c(adf_test_before_conflict_NIFTY50$statistic, adf_test_before_conflict_SP500$statistic),
+  ADF_Test_P_Value = c(adf_test_before_conflict_NIFTY50$p.value, adf_test_before_conflict_SP500$p.value)
+)
+
+# Print table
+print(table2_data)
+
+```
+
+
+
+```{r}
+# Load required libraries
+library(vars)
+library(tidyverse)
+
+# Import data and convert to log returns
+dynam <- read_csv("Dynamics.Analysis.weekly.csv", 
+                  col_types = cols(Date = col_date(format = "%d/%m/%Y")))
+dynam <- dynam %>%
+  arrange(Date) %>%
+  mutate(
+    NIFTY50_log = log(NIFTY50) - log(lag(NIFTY50)),
+    SP500_log = log(SP500) - log(lag(SP500))
+  )
+
+# Split data into sub-periods
+cut_off_date <- as.Date("2022-02-24")
+before_conflict_data <- dynam %>% filter(Date < cut_off_date)
+during_conflict_data <- dynam %>% filter(Date >= cut_off_date)
+
+```
+
+
+
+```{r}
+# Extract spillover effects for NIFTY50 from FEVD
+spillover_NIFTY50_before <- fevd_before_conflict$NIFTY50_log$SP500_log
+
+# Create a data frame for the table
+table4_data <- data.frame(
+  Index = "NIFTY50",
+  Spillover_Index = spillover_NIFTY50_before
+)
+
+# Print table
+print(table4_data)
+
+```
+
+
+
+```{r}
+# Summary statistics before the crisis
+summary_before_conflict <- summary(before_conflict_data[, c("NIFTY50_log", "SP500_log")])
+adf_test_before_conflict_NIFTY50 <- adf.test(before_conflict_data$NIFTY50_log)
+adf_test_before_conflict_SP500 <- adf.test(before_conflict_data$SP500_log)
+
+# Create a data frame for the table
+table2_data <- data.frame(
+  Variable = c("NIFTY50", "SP500"),
+  Mean = summary_before_conflict[, "mean"],
+  StdDev = summary_before_conflict[, "sd"],
+  ADF_Test_Statistic = c(adf_test_before_conflict_NIFTY50$statistic, adf_test_before_conflict_SP500$statistic),
+  ADF_Test_P_Value = c(adf_test_before_conflict_NIFTY50$p.value, adf_test_before_conflict_SP500$p.value)
+)
+
+# Print table
+print(table2_data)
+
+```
+
+
+```{r}
+# Extract spillover effects for NIFTY50 from FEVD
+spillover_NIFTY50_before <- fevd_before_conflict$NIFTY50_log$SP500_log
+
+# Create a data frame for the table
+table4_data <- data.frame(
+  Index = "NIFTY50",
+  Spillover_Index = spillover_NIFTY50_before
+)
+
+# Print table
+print(table4_data)
+
+```
+
+
+```{r}
+# Extract spillover effects for NIFTY50 from FEVD during the crisis
+spillover_NIFTY50_during <- fevd_during_conflict$NIFTY50_log$SP500_log
+
+# Create a data frame for the table
+table5_data <- data.frame(
+  Index = "NIFTY50",
+  Spillover_Index = spillover_NIFTY50_during
+)
+
+# Print table
+print(table5_data)
+
+```
+
+```{r}
+# Calculate conditional volatility
+conditional_volatility <- sqrt(rollapply(dynam[, c("NIFTY50_log", "SP500_log")], width = 20, FUN = var))
+
+# Plot daily index volatility
+ggplot(dynam, aes(x = Date)) +
+  geom_line(aes(y = conditional_volatility$NIFTY50_log, color = "NIFTY50")) +
+  geom_line(aes(y = conditional_volatility$SP500_log, color = "SP500")) +
+  labs(title = "Daily Index Volatility",
+       y = "Volatility", color = "Index") +
+  scale_color_manual(values = c("NIFTY50" = "blue", "SP500" = "red")) +
+  theme_minimal()
+
+```
+
+
+
+```{r}
+# Calculate the total volatility spillover index percent
+total_spillover_index <- 100 * (spillover_NIFTY50_before + spillover_NIFTY50_during)
+
+# Plot total volatility spillover index
+ggplot(data.frame(Date = dynam$Date, Total_Spillover_Index = total_spillover_index), aes(x = Date, y = Total_Spillover_Index)) +
+  geom_line() +
+  labs(title = "Total Volatility Spillover Index",
+       y = "Percent") +
+  theme_minimal()
+
+```
+
+
+```{r}
+# Calculate directional volatility spillovers from others
+from_others_spillover <- 100 * spillover_NIFTY50_before
+
+# Plot directional volatility spillovers from others
+ggplot(data.frame(Date = dynam$Date, From_Others_Spillover = from_others_spillover), aes(x = Date, y = From_Others_Spillover)) +
+  geom_line() +
+  labs(title = "Directional Volatility Spillovers from Others (NIFTY50)",
+       y = "Percent") +
+  theme_minimal()
+
+```
+
+
+```{r}
+# Calculate directional volatility spillovers to others
+to_others_spillover <- 100 * spillover_NIFTY50_during
+
+# Plot directional volatility spillovers to others
+ggplot(data.frame(Date = dynam$Date, To_Others_Spillover = to_others_spillover), aes(x = Date, y = To_Others_Spillover)) +
+  geom_line() +
+  labs(title = "Directional Volatility Spillovers to Others (NIFTY50)",
+       y = "Percent") +
+  theme_minimal()
+
+```
+
+
+```{r}
+# Calculate net pairwise volatility spillovers
+net_pairwise_spillover <- 100 * (spillover_NIFTY50_before - spillover_NIFTY50_during)
+
+# Plot net pairwise volatility spillovers
+ggplot(data.frame(Date = dynam$Date, Net_Pairwise_Spillover = net_pairwise_spillover), aes(x = Date, y = Net_Pairwise_Spillover)) +
+  geom_line() +
+  labs(title = "Net Pairwise Volatility Spillovers (NIFTY50)",
+       y = "Percent") +
+  theme_minimal()
+
+```
+
+
+```{r}
+# Define a function to estimate VAR model and calculate FEVD with varying lag orders
+estimate_VAR_FEVD_robust <- function(dynam, lag_order) {
+  var_model <- VAR(dynam[, c("lognifty", "logsp500")], p = lag_order)
+  fevd_result <- fevd(var_model, n.ahead = 10)  # Using a 10-day forecast horizon
+  return(fevd_result)
+}
+
+estimate_VAR_FEVD_robust
+# Create a function to calculate the 10th percentile and 90th percentile
+calculate_percentiles <- function(fevd_results, percentile) {
+  spillover_percentiles <- sapply(nifty, sp500, function(x) quantile(x, probs = c(percentile)))
+  return(spillover_percentiles)
+}
+
+# Simulate results for different lag orders (for robustness)
+set.seed(123)  # Set a seed for reproducibility
+num_simulations <- 100  # Number of simulations
+lag_orders <- sample(1:10, num_simulations, replace = TRUE)  # Randomly select lag orders
+
+# Calculate percentiles for each simulation
+percentile_10 <- calculate_percentiles(replicate(num_simulations, {
+  fevd_result <- estimate_VAR_FEVD_robust(before_conflict_data, lag_orders[1])
+  calculate_percentiles(fevd_result, 0.10)
+}), 0.10)
+
+percentile_90 <- calculate_percentiles(replicate(num_simulations, {
+  fevd_result <- estimate_VAR_FEVD_robust(before_conflict_data, lag_orders[1])
+  calculate_percentiles(fevd_result, 0.90)
+}), 0.90)
+
+# Create a plot showing the robustness of results
+robustness_plot <- ggplot(data.frame(Lag_Order = lag_orders, Percentile_10 = percentile_10, Percentile_90 = percentile_90), aes(x = Lag_Order)) +
+  geom_ribbon(aes(ymin = Percentile_10, ymax = Percentile_90), fill = "blue", alpha = 0.2) +
+  geom_line(aes(y = rowMeans(cbind(Percentile_10, Percentile_90))), color = "blue") +
+  labs(title = "Robustness of Results (VAR Lag Order Selection)",
+       x = "Lag Order", y = "Percentile") +
+  theme_minimal()
+
+# Print the robustness plot
+print(robustness_plot)
+
+```
+
+
+
+# Discussion
+
+
+
+
+
+# Conclusion
+
+
+
+
+
+
+

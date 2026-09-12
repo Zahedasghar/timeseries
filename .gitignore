@@ -1,6 +1,31 @@
-.Rproj.user
+# ---- R / RStudio / Positron ----
+.Rproj.user/
 .Rhistory
 .RData
+.Rdata
 .Ruserdata
-.Data
-.data
+*.rdb
+*.rdx
+
+# ---- Quarto / knitr ----
+/.quarto/
+*_cache/
+*.log
+*.aux
+*.toc
+*.tex.bak
+
+# ---- Local-only material (kept on disk, out of git) ----
+_archive/
+data/large/
+
+# ---- OS / editor / Office lock files ----
+.DS_Store
+Thumbs.db
+~$*
+.vscode/
+
+# NOTE: docs/ is the published GitHub Pages site and MUST stay tracked.
+# NOTE: _freeze/ is committed on purpose so rebuilds do not re-execute everything.
+
+**/*.quarto_ipynb

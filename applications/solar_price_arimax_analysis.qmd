@@ -1,0 +1,267 @@
+---
+title: "Pakistan Solar Panel Prices and Global Polysilicon: An ARIMAX Analysis"
+subtitle: "Cointegration, Granger causality, and a 12-month forecast, with policy notes"
+author: "Prof. Dr. Zahid Asghar"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: show
+    code-tools: true
+    theme: cosmo
+    fig-width: 8
+    fig-height: 5
+    embed-resources: true
+    include-in-header:
+      text: |
+        <style>
+        h1, h2, h3 { color: #2C5F2D; }
+        h1 { border-bottom: 2px solid #8B7355; padding-bottom: 6px; }
+        a { color: #8B7355; }
+        .callout-important .callout-title { background-color: #2C5F2D22; }
+        body { font-family: Georgia, 'Gill Sans MT', Calibri, sans-serif; }
+        </style>
+params:
+  data_path: "data/ARIMA-maria.csv"
+execute:
+  warning: false
+  message: false
+---
+
+## Overview
+
+This note models monthly Pakistan solar panel prices (log scale) against global
+polysilicon prices (log scale), January 2017 to May 2026 (n = 113). Because panel
+prices in Pakistan are largely a function of an imported input, the analysis treats
+polysilicon as an exogenous driver rather than modelling panel price in isolation,
+and checks whether the two series are cointegrated before forecasting.
+
+```{r}
+#| label: setup
+pkgs <- c("forecast", "tseries", "urca", "lmtest", "ggplot2")
+invisible(lapply(pkgs, function(p) if (!requireNamespace(p, quietly = TRUE))
+  install.packages(p, repos = "https://cran.r-project.org")))
+library(forecast); library(tseries); library(urca); library(lmtest); library(ggplot2)
+
+brand_green <- "#2C5F2D"
+brand_brown <- "#8B7355"
+```
+
+## Data preparation
+
+```{r}
+#| label: load-data
+df <- read.csv(params$data_path, stringsAsFactors = FALSE)
+df$Date <- as.Date(df$Date, format = "%d/%m/%Y")
+df <- df[order(df$Date), ]
+stopifnot(!anyNA(df$log_commodity_price), !anyNA(df$log_polysilicon))
+
+y <- ts(df$log_commodity_price, start = c(2017, 1), frequency = 12)  # panel price (log)
+x <- ts(df$log_polysilicon,     start = c(2017, 1), frequency = 12)  # polysilicon price (log)
+
+knitr::kable(head(df, 6), caption = "First six observations")
+```
+
+## Exploratory analysis
+
+```{r}
+#| label: eda-plot
+#| fig-cap: "Log panel price (Pakistan) vs log polysilicon price"
+autoplot(cbind(PanelPrice = y, Polysilicon = x), facets = TRUE) +
+  scale_color_manual(values = c(brand_green, brand_brown)) +
+  labs(x = NULL, y = NULL) + theme_minimal()
+```
+
+```{r}
+#| label: stl-decomp
+#| fig-cap: "STL decomposition: log panel price"
+#| fig-height: 6
+stl_y <- stl(y, s.window = "periodic")
+autoplot(stl_y) + theme_minimal()
+```
+
+## Stationarity tests
+
+Both series look non-stationary in levels. The battery below runs ADF, KPSS, and
+Phillips-Perron on levels and first differences.
+
+```{r}
+#| label: unit-root
+unit_root_battery <- function(series, name) {
+  cat("\n===", name, "===\n")
+  cat("ADF (level):  p =", round(adf.test(series)$p.value, 4), "\n")
+  cat("KPSS (level): p =", round(kpss.test(series, "Level")$p.value, 4), "\n")
+  cat("PP  (level):  p =", round(pp.test(series)$p.value, 4), "\n")
+  cat("ADF (1st diff): p =", round(adf.test(diff(series))$p.value, 4), "\n")
+}
+unit_root_battery(y, "Log Panel Price")
+unit_root_battery(x, "Log Polysilicon Price")
+cat("\nndiffs(y) =", ndiffs(y), " | ndiffs(x) =", ndiffs(x), "\n")
+```
+
+## ACF / PACF identification
+
+```{r}
+#| label: acf-pacf
+#| fig-width: 9
+#| fig-height: 7
+#| fig-cap: "ACF/PACF of first-differenced series"
+par(mfrow = c(2, 2))
+acf(diff(y),  main = "ACF: d(Panel Price)")
+pacf(diff(y), main = "PACF: d(Panel Price)")
+acf(diff(x),  main = "ACF: d(Polysilicon)")
+pacf(diff(x), main = "PACF: d(Polysilicon)")
+par(mfrow = c(1, 1))
+```
+
+## Cointegration
+
+```{r}
+#| label: cointegration-eg
+eg_reg <- lm(y ~ x)
+summary(eg_reg)
+eg_resid <- residuals(eg_reg)
+eg_adf <- ur.df(eg_resid, type = "none", selectlags = "AIC")
+cat("\nEngle-Granger step 2 (residual ADF), tau =", round(eg_adf@teststat[1], 3),
+    " | 5% crit =", eg_adf@cval[1, "5pct"], "\n")
+```
+
+```{r}
+#| label: cointegration-jo
+jo <- ca.jo(cbind(y, x), type = "trace", ecdet = "const", K = 2)
+summary(jo)
+```
+
+::: {.callout-warning}
+## Sample-size caveat
+With n = 113 monthly observations, the Johansen and Engle-Granger tests have
+limited power. Read the cointegration result as indicative and re-estimate as
+more months of data accrue.
+:::
+
+## Granger causality
+
+```{r}
+#| label: granger
+cat("Does polysilicon Granger-cause panel price?\n")
+print(grangertest(y ~ x, order = 3))
+cat("\nDoes panel price Granger-cause polysilicon?\n")
+print(grangertest(x ~ y, order = 3))
+```
+
+## Model estimation and out-of-sample accuracy
+
+The last 13 months are held out; ARIMA, ARIMAX, and a naive random-walk
+benchmark are compared on RMSE, MAE, and MAPE.
+
+```{r}
+#| label: split-models
+train_h  <- 100
+y_train  <- window(y, end = time(y)[train_h])
+x_train  <- window(x, end = time(x)[train_h])
+y_test   <- window(y, start = time(y)[train_h + 1])
+x_test   <- window(x, start = time(x)[train_h + 1])
+
+m_arima  <- auto.arima(y_train, stepwise = FALSE, approximation = FALSE)
+m_arimax <- auto.arima(y_train, xreg = x_train, stepwise = FALSE, approximation = FALSE)
+
+summary(m_arima)
+summary(m_arimax)
+```
+
+```{r}
+#| label: diagnostics
+#| fig-cap: "Residual diagnostics: ARIMAX model"
+checkresiduals(m_arimax)
+cat("Jarque-Bera (ARIMAX resid): p =",
+    round(jarque.bera.test(residuals(m_arimax))$p.value, 4), "\n")
+cat("ARCH-LM (ARIMAX resid, lag 6):\n")
+print(Box.test(residuals(m_arimax)^2, lag = 6, type = "Ljung-Box"))
+```
+
+```{r}
+#| label: oos-accuracy
+h <- length(y_test)
+f_arima  <- forecast(m_arima,  h = h)
+f_arimax <- forecast(m_arimax, xreg = x_test, h = h)   # oracle: actual future polysilicon
+f_naive  <- naive(y_train, h = h)
+
+acc_tbl <- rbind(
+  ARIMA  = accuracy(f_arima,  y_test)["Test set", c("RMSE", "MAE", "MAPE")],
+  ARIMAX = accuracy(f_arimax, y_test)["Test set", c("RMSE", "MAE", "MAPE")],
+  Naive  = accuracy(f_naive,  y_test)["Test set", c("RMSE", "MAE", "MAPE")]
+)
+knitr::kable(round(acc_tbl, 4), caption = "Out-of-sample accuracy, 13-month holdout")
+```
+
+```{r}
+#| label: rolling-cv
+cv_arima <- tsCV(y, function(z, h) forecast(auto.arima(z), h = h), h = 1)
+rmse_cv  <- round(sqrt(mean(cv_arima^2, na.rm = TRUE)), 4)
+cat("Rolling 1-step CV RMSE (ARIMA):", rmse_cv, "\n")
+```
+
+## Final model and 12-month forecast
+
+```{r}
+#| label: final-forecast
+#| fig-cap: "12-month forecast: log panel price (Pakistan)"
+final_arimax <- auto.arima(y, xreg = x, stepwise = FALSE, approximation = FALSE)
+final_x_ar   <- auto.arima(x)
+x_future     <- forecast(final_x_ar, h = 12)$mean
+
+fc_trend <- forecast(final_arimax, xreg = x_future, h = 12)
+fc_flat  <- forecast(final_arimax, xreg = rep(tail(x, 1), 12), h = 12)
+
+autoplot(fc_trend) +
+  labs(subtitle = "xreg = ARIMA-projected polysilicon price", y = "log(panel price)") +
+  theme_minimal()
+```
+
+```{r}
+#| label: forecast-table
+fc_table <- data.frame(
+  Month          = seq(as.Date("2026-06-01"), by = "month", length.out = 12),
+  Trend_scenario = as.numeric(fc_trend$mean),
+  Flat_scenario  = as.numeric(fc_flat$mean),
+  Lo95           = as.numeric(fc_trend$lower[, 2]),
+  Hi95           = as.numeric(fc_trend$upper[, 2])
+)
+knitr::kable(round(fc_table[, -1], 3), caption = "12-month forecast (log scale)")
+
+trend_dir <- ifelse(tail(fc_table$Trend_scenario, 1) < fc_table$Trend_scenario[1],
+                     "continued decline", "stabilization")
+```
+
+## Policy relevance
+
+::: {.callout-important}
+## Policy relevance
+
+- **Pass-through**: the cointegrating regression implies a 1% rise in global
+  polysilicon price is associated with roughly a
+  `r round(coef(eg_reg)["x"], 3)`% long-run change in Pakistan panel prices.
+- **Direction of influence**: the Granger results point to the global
+  polysilicon market driving domestic panel prices rather than the reverse,
+  consistent with Pakistan being a price-taker with negligible domestic module
+  manufacturing.
+- **Forecast signal**: the 12-month projection points to a
+  `r trend_dir` in log panel prices, which is supportive of further
+  residential and commercial solar uptake so long as duty and tax structures
+  on imported modules are not tightened.
+- **Levers with real traction**: since pricing is driven by an imported input
+  with no domestic hedge, the policy options with the most bite are
+  (a) tariff/GST rationalization on panels and inverters, (b) exchange-rate
+  pass-through management, and (c) incentives for local cell/module assembly
+  to reduce exposure to polysilicon price cycles.
+:::
+
+## Reproducibility
+
+```{r}
+#| label: session-info
+#| code-fold: true
+sessionInfo()
+```

@@ -1,0 +1,228 @@
+---
+title: "Spillover Effect NIFTY50 and SP500"
+format: docx
+execute: 
+  freeze: auto
+  warning: false
+---
+
+
+
+
+
+
+## Load libraries
+
+```{r}
+library(tidyverse)
+
+library(xts)
+
+library(zoo)
+
+
+library(janitor)
+library(tseries)
+
+library(Spillover)
+library(gt)
+library(urca)
+```
+
+
+## Load data
+
+```{r}
+dyn_df <- read_csv('data/indo_us.csv') 
+
+
+dyn_df |> glimpse()  # inspect data
+
+
+dyn_df$date <- dmy(dyn_df$Date) #convert Date from string to date format
+
+dyndf <- dyn_df |> dplyr::select(date, NIFTY50,SP500) |> clean_names() #all names in short alphabets
+
+```
+
+
+## Time Plot  
+
+To inspect time series data, first step is always to plot and see how it looks like.
+```{r}
+# Time plots to see idea how indices move 
+
+dyndf |> 
+  pivot_longer(cols = c(nifty50, sp500), names_to = "Variable", values_to = "Value") |> 
+ggplot()+ aes(x = date, y = log(Value), color = Variable) +
+  geom_line() +
+  labs(title = "Multiple Line Graph", x = "Date", y = "Y-Axis Label", color = "Variable") +
+  theme_minimal()
+```
+
+
+## Descriptive Statistics
+
+```{r}
+library(modelsummary)
+
+dyndf  |> datasummary_skim()
+
+# Or another way to have summary of data
+
+
+
+```
+
+
+Codes for this summary are not displayed in the output
+
+
+```{r}
+#|echo: false
+# Calculate statistics for nifty50
+mean_nifty50 <- mean(dyndf$nifty50)
+sd_nifty50 <- sd(dyndf$nifty50)
+var_nifty50 <- var(dyndf$nifty50)
+max_nifty50 <- max(dyndf$nifty50)
+min_nifty50 <- min(dyndf$nifty50)
+
+# Calculate statistics for sp500
+mean_sp500 <- mean(dyndf$sp500)
+sd_sp500 <- sd(dyndf$sp500)
+var_sp500 <- var(dyndf$sp500)
+max_sp500 <- max(dyndf$sp500)
+min_sp500 <- min(dyndf$sp500)
+
+# Perform Jarque-Bera test for nifty50
+jb_test_nifty50 <- jarque.bera.test(dyndf$nifty50)
+# Perform Jarque-Bera test for sp500
+jb_test_sp500 <- jarque.bera.test(dyndf$sp500)
+
+# Perform ADF test for nfity50
+adf_test_nfity50 <- ur.df(dyndf$nifty50, lags = 1)
+
+# Perform ADF test for ts2
+adf_test_sp500 <- ur.df(dyndf$sp500, lags = 1)
+
+# Create a data frame for the results
+results <- data.frame(
+  Variable = c("nifty50", "sp500"),
+  Mean = c(mean_nifty50, mean_sp500),
+  SD = c(sd_nifty50, sd_sp500),
+  Variance = c(var_nifty50, var_sp500),
+  Max = c(max_nifty50, max_sp500),
+  Min = c(min_nifty50, min_sp500),
+  JB_P_Value = c(2.43975e-07, 2.129131e-06 ),
+  ADF_Statistic = c(1.53, 1.063)
+)
+
+results
+
+library(tidyr)
+library(gt)
+
+results %>%
+  gather(Statistic, Value, -Variable) |> gt() |> fmt_number(decimals = 3)
+
+
+```
+
+
+
+
+
+##  Variance decomposition using VAR 
+
+VAR(2) and 10-day-ahead variance decomposition.
+
+
+```{r}
+dyndf %>% 
+  dplyr::select(-date) %>% 
+  VAR(p=2) %>% 
+  G.spillover(standardized = FALSE) %>% 
+  round(2)
+```
+
+
+
+
+## Now, let’s move on, and get the dynamic total spillover index:
+
+
+```{r}
+
+# total_dynamic <- total.dynamic.spillover(as.zoo(dyndf[,-1]),
+#                                          width = 20, 
+#                                          index="generalized",
+#                                          p=2)
+
+load("data/total_dynamic.RData")
+tibble(Date= dyndf$date[-c(1:19)],  index = total_dynamic) %>% 
+   ggplot(aes(x=Date, y=index)) +
+  geom_line()+
+  labs(caption = "Fig 2. Total volatility spillovers for both indices")+
+  theme(plot.caption = element_text(hjust = 0))
+
+```
+
+
+## 
+
+#### Directional volatility spillovers, FROM four asset classes
+#### In order to get Figure 3 from Diebold and Yilmaz (2012), we proceed as follows:
+
+
+```{r}
+# dy_results <- dynamic.spillover(data=dyndf, 
+#                                 width=20, 
+#                                 p=2) 
+
+load("data/dy_results.RData")
+pp_from <- plotdy(data=dy_results, direction = "from") 
+
+
+pp_from +
+  labs(caption = "Fig 3. Directional volatility spillovers, FROM four asset classes.")+
+  theme(plot.caption = element_text(hjust = 0.5))  
+pp_to <- plotdy(dy_results, direction = "to")  
+
+
+# Just for customization 
+pp_from +
+  labs(caption = "Fig. 4. Directional volatility spillovers, TO four asset classes.")+
+  theme(plot.caption = element_text(hjust = 0.5)) 
+
+```
+
+
+## 
+
+
+```{r}
+pp_net <- plotdy(dy_results, direction = "net")  
+
+pp_net +
+  labs(caption = "Fig. 5. Net volatility spillovers, four asset classes.")+
+  theme(plot.caption = element_text(hjust = 0.5))
+
+```
+
+
+## Net pairwise volatility spillovers.
+
+```{r}
+pp_netpairwise <- plotdy(dy_results, direction = "net_pairwise")  
+
+pp_netpairwise +
+  labs(caption = "Fig. 6. Net pairwise volatility spillovers.")+
+  theme(plot.caption = element_text(hjust = 0.5))  
+
+pp_from_to_pairwise <- plotdy(dy_results, direction = "from_to_pairwise")
+
+```
+
+
+
+

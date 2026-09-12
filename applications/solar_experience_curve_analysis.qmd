@@ -1,0 +1,456 @@
+---
+title: "When Technology Outruns the Forecast: Experience Curves and Pakistan's Solar Price Collapse"
+subtitle: "Wright's Law vs Moore's Law, the identification trap, and scenario-based price forecasting for policy"
+author: "Prof. Dr. Zahid Asghar"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: show
+    code-tools: true
+    theme: cosmo
+    fig-width: 8
+    fig-height: 5
+    embed-resources: true
+    include-in-header:
+      text: |
+        <style>
+        h1, h2, h3 { color: #2C5F2D; }
+        h1 { border-bottom: 2px solid #8B7355; padding-bottom: 6px; }
+        a { color: #8B7355; }
+        .callout-important .callout-title { background-color: #2C5F2D22; }
+        body { font-family: Georgia, 'Gill Sans MT', Calibri, sans-serif; }
+        </style>
+params:
+  data_path: "data/experiencecurveDataset_maria.csv"
+execute:
+  warning: false
+  message: false
+---
+
+## Why technological forecasting is different
+
+Macroeconomic forecasting treats price as a stochastic process: the trend is
+"drift," a nuisance parameter estimated and extrapolated. Technological
+forecasting treats price as a *function of accumulated deployment*. Wright's
+Law (Wright, 1936) states that unit cost falls a fixed percentage with every
+doubling of cumulative production; Moore's Law-type formulations posit a fixed
+exponential decline in calendar time. The distinction is not academic. It is
+the reason the IEA under-forecast solar deployment and over-forecast solar
+costs in essentially every World Energy Outlook for two decades, and it is the
+reason the ARIMA models of the companion analysis lost, out of sample, to a
+naive random walk: a statistical model has no concept of a technology whose
+cost declines *because* it is being deployed.
+
+This note estimates the experience-curve relationship for Pakistan's solar
+panel prices (January 2017 - May 2026, n = 113), subjects it to the
+econometric discipline it is usually spared, and converts it into a
+scenario-based five-year price forecast. Two findings complicate the naive
+story in instructive ways, and both are treated as central results: the
+Wright/Moore identification trap, and the reduced-form (imported) nature of
+the local learning curve.
+
+```{r}
+#| label: setup
+pkgs <- c("forecast", "ggplot2", "scales", "knitr")
+invisible(lapply(pkgs, function(x) if (!requireNamespace(x, quietly = TRUE))
+  install.packages(x, repos = "https://cran.r-project.org")))
+library(forecast); library(ggplot2); library(scales); library(knitr)
+
+brand_green <- "#2C5F2D"; brand_brown <- "#8B7355"
+```
+
+## Data
+
+```{r}
+#| label: load
+df <- read.csv(params$data_path, stringsAsFactors = FALSE)
+df$Date <- as.Date(df$Date, format = "%d/%m/%Y")
+df <- df[order(df$Date), ]
+stopifnot(!anyNA(df[, 4:6]))
+
+p  <- df$log_commodity_price          # Pakistan panel price (log)
+q  <- df$log_cumulative_capacity_mw   # Pakistan cumulative capacity (log MW)
+ps <- df$log_polysilicon_usd          # global polysilicon price (log)
+Q  <- exp(q); n <- nrow(df); t <- 1:n
+
+kable(head(df, 6), caption = "First six observations")
+```
+
+```{r}
+#| label: additions
+#| fig-cap: "Annual capacity additions (MW): the diffusion S-curve in action"
+annual_add <- tapply(Q, format(df$Date, "%Y"), max) -
+              tapply(Q, format(df$Date, "%Y"), min)
+add_df <- data.frame(Year = names(annual_add), MW = as.numeric(annual_add))
+ggplot(add_df, aes(Year, MW)) +
+  geom_col(fill = brand_green) +
+  scale_y_continuous(labels = comma) +
+  labs(x = NULL, y = "MW added") + theme_minimal()
+```
+
+Cumulative capacity grew from `r round(Q[1])` MW to
+`r comma(round(Q[n]))` MW - `r round((q[n]-q[1])/log(2), 1)` doublings in
+nine years. Annual additions exploded from roughly 690 MW in 2017 to about
+15 GW in 2024, timed exactly with the global panel price collapse, before
+decelerating visibly in 2025-2026 as buy-back reform and tax uncertainty
+arrived. Note for later: the deceleration matters for the scenario ceilings
+in @sec-scenarios.
+
+## Wright's Law vs Moore's Law {#sec-wright-moore}
+
+```{r}
+#| label: wright-plot
+#| fig-cap: "The experience-curve view: log price against log cumulative capacity"
+ggplot(df, aes(log_cumulative_capacity_mw, log_commodity_price)) +
+  geom_point(color = brand_green, alpha = 0.7) +
+  geom_smooth(method = "lm", se = TRUE, color = brand_brown) +
+  labs(x = "log cumulative capacity (MW)", y = "log panel price") +
+  theme_minimal()
+```
+
+```{r}
+#| label: wright-moore
+m_wright <- lm(p ~ q)      # price ~ cumulative experience
+m_moore  <- lm(p ~ t)      # price ~ calendar time
+b_w <- -coef(m_wright)["q"]
+
+comp <- data.frame(
+  Model = c("Wright (experience)", "Moore (time trend)"),
+  Slope = c(round(coef(m_wright)["q"], 4), round(coef(m_moore)["t"], 5)),
+  `R2`  = c(round(summary(m_wright)$r.squared, 3),
+            round(summary(m_moore)$r.squared, 3)),
+  Implied = c(paste0(percent(1 - 2^(-b_w), 0.1), " per doubling"),
+              paste0(percent(1 - exp(12 * coef(m_moore)["t"]), 0.1), " per year"))
+)
+kable(comp, caption = "Wright vs Moore on the same series")
+```
+
+```{r}
+#| label: identification
+cat("cor(log capacity, time) =", round(cor(q, t), 4), "\n")
+cat("R2 of q ~ t (exponential-growth check):",
+    round(summary(lm(q ~ t))$r.squared, 3), "\n")
+```
+
+::: {.callout-important}
+## The identification trap
+The naive Wright regression implies a learning rate of
+`r percent(1 - 2^(-b_w), 0.1)` per doubling - deceptively close to the
+canonical ~20% global solar figure. But the Moore time-trend fits this sample
+*slightly better*, and log-capacity correlates with calendar time at
+`r round(cor(q, t), 3)`. This is the Nagy et al. (2013) result live in our own
+data: when deployment grows exponentially, experience and time are
+observationally near-equivalent, and no regression on a single national series
+can establish that deployment *causes* cost decline. Any policy argument built
+on "our deployment drives learning" is unidentified here.
+:::
+
+## Econometric guards {#sec-guards}
+
+Experience curves are usually estimated as static log-log regressions on two
+trending series - exactly the setting in which spurious fit flourishes. Three
+guards are applied: first differences, cointegration testing with correct
+critical values, and a dynamic OLS estimator for the long-run elasticities.
+
+### First differences
+
+```{r}
+#| label: first-diff
+fd  <- lm(diff(p) ~ diff(q))
+fd2 <- lm(diff(p) ~ diff(q) + diff(ps))
+kable(round(summary(fd2)$coefficients, 4),
+      caption = "First-difference regression: monthly price changes")
+```
+
+Month to month, capacity growth predicts nothing about price changes (the
+Wright slope collapses to zero, t ≈ 0.3). This is not a failure of the data -
+it is the economically correct result. Pakistan holds roughly 2-3% of global
+cumulative solar capacity; the learning happens in Chinese factories, and
+Pakistan *imports* the learning curve. The local price-capacity relationship
+also runs substantially in reverse: global price declines trigger Pakistani
+adoption surges (the 2023-24 additions boom). What looks like a learning curve
+is, in the short run, a diffusion curve wearing its clothes.
+
+### Cointegration with correct critical values
+
+```{r}
+#| label: cointegration
+eg2 <- lm(p ~ q)          # bivariate
+eg3 <- lm(p ~ q + ps)     # trivariate
+tau <- function(res) {
+  r <- res; d <- diff(r); l <- r[-length(r)]
+  summary(lm(d ~ l - 1))$coefficients[1, "t value"]
+}
+cat("EG tau, p ~ q      :", round(tau(residuals(eg2)), 3),
+    " (5% MacKinnon crit ~ -3.37)\n")
+cat("EG tau, p ~ q + ps :", round(tau(residuals(eg3)), 3),
+    " (5% MacKinnon crit ~ -3.80)\n")
+```
+
+Price and capacity alone are not cointegrated. Adding polysilicon moves the
+statistic to the borderline of its (correct, MacKinnon) critical value: the
+long-run anchor, to the extent one exists, is *joint* - global technological
+progress proxied by cumulative deployment, plus the upstream input cost.
+
+### DOLS long-run elasticities and the error-correction structure
+
+```{r}
+#| label: dols
+k <- 2
+lead_lag <- function(x, j) {
+  if (j > 0) c(x[-(1:j)], rep(NA, j)) else if (j < 0)
+    c(rep(NA, -j), x[1:(length(x) + j)]) else x
+}
+dq <- c(NA, diff(q)); dps <- c(NA, diff(ps))
+D  <- data.frame(p = p, q = q, ps = ps)
+for (j in -k:k) {
+  D[[paste0("dq",  j)]] <- lead_lag(dq,  j)
+  D[[paste0("dps", j)]] <- lead_lag(dps, j)
+}
+dols <- lm(p ~ ., data = D)
+cd <- summary(dols)$coefficients
+b_q <- cd["q", "Estimate"]; b_ps <- cd["ps", "Estimate"]
+kable(round(cd[c("q", "ps"), ], 4),
+      caption = "DOLS (Stock-Watson) long-run elasticities, leads/lags k = 2")
+cat("DOLS-implied learning rate:", percent(1 - 2^(b_q), 0.1), "per doubling\n")
+```
+
+```{r}
+#| label: ecm
+r3  <- residuals(eg3)
+ecm <- lm(diff(p) ~ r3[-n] + diff(q) + diff(ps))
+kable(round(summary(ecm)$coefficients, 4),
+      caption = "Error-correction model for monthly price changes")
+lambda <- coef(ecm)["r3[-n]"]
+cat("Adjustment speed:", round(lambda, 3), "per month | half-life:",
+    round(log(0.5) / log(1 + lambda), 1), "months\n")
+cat("Current disequilibrium: price is",
+    percent(exp(tail(r3, 1)) - 1, 0.1), "above the long-run relation\n")
+```
+
+::: {.callout-important}
+## The disequilibrium premium
+As of May 2026 the panel price sits roughly
+`r percent(exp(tail(r3, 1)) - 1, 0.1)` **above** the estimated long-run
+relation - the footprint of the 2026 GST scare and the polysilicon rebound at
+the end of the sample. The error-correction term (significant, half-life about
+`r round(log(0.5) / log(1 + lambda), 1)` months) implies steady downward
+reversion pressure if policy uncertainty clears. This is a falsifiable
+near-term prediction that no ARIMA can generate, because a drift model has no
+concept of "above equilibrium." It is also a direct measure of what policy
+*signaling alone* costs consumers: the 18% GST never passed, yet its shadow is
+in the price.
+:::
+
+## Decomposing the 2017-2026 decline
+
+```{r}
+#| label: decomposition
+dq_tot <- q[n] - q[1]; dps_tot <- ps[n] - ps[1]; dp_tot <- p[n] - p[1]
+c_q  <- b_q  * dq_tot
+c_ps <- b_ps * dps_tot
+dec <- data.frame(
+  Component = c("Capacity / technological progress (proxy)",
+                "Polysilicon input cost",
+                "Unexplained residual (tax, tariff, FX, margins)"),
+  `Log contribution` = round(c(c_q, c_ps, dp_tot - c_q - c_ps), 3),
+  `Share of fitted decline` = c(percent(c_q / (c_q + c_ps), 1),
+                                percent(c_ps / (c_q + c_ps), 1), "-")
+)
+kable(dec, caption = "Decomposition of the actual log price change (Jan 2017 - May 2026)")
+```
+
+Roughly `r percent(c_q / (c_q + c_ps), 1)` of the fitted decline tracks the
+deployment/learning proxy and `r percent(c_ps / (c_q + c_ps), 1)` tracks
+polysilicon. The sizeable positive residual is domestic: it is the wedge that
+GST episodes, import tariffs, rupee depreciation, and dealer margins drive
+between the world module price and what a Pakistani buyer actually pays.
+
+## Uncertainty in the learning rate
+
+```{r}
+#| label: bootstrap
+set.seed(42)
+B <- 2000; bl <- 12; nb <- ceiling(n / bl)
+sl <- numeric(B)
+for (i in 1:B) {
+  starts <- sample(1:(n - bl + 1), nb, replace = TRUE)
+  idx <- unlist(lapply(starts, function(s) s:(s + bl - 1)))[1:n]
+  sl[i] <- coef(lm(p[idx] ~ q[idx] + ps[idx]))[2]
+}
+lr_ci <- 1 - 2^(quantile(sl, c(0.95, 0.5, 0.05)))
+cat("Learning rate 90% interval:", percent(lr_ci[1], 0.1), "to",
+    percent(lr_ci[3], 0.1), "| median", percent(lr_ci[2], 0.1), "\n")
+```
+
+A twelve-month block bootstrap puts the learning rate between roughly
+`r percent(lr_ci[1], 0.1)` and `r percent(lr_ci[3], 0.1)` per doubling.
+Carrying this parameter uncertainty into the forecast - rather than reporting
+a single curve - is what separates the probabilistic experience-curve
+tradition (Way et al., 2022) from both deterministic "law" extrapolation and
+falsely-narrow ARIMA intervals.
+
+## Scenario engine: capacity paths to price paths {#sec-scenarios}
+
+```{r}
+#| label: scenarios
+fit_logistic <- function(K) {
+  if (any(Q >= K)) return(NULL)
+  z <- log(Q / (K - Q))
+  f <- lm(z ~ t)
+  list(K = K, a = coef(f)[1], b = coef(f)[2],
+       ss = sum((Q - K / (1 + exp(-fitted(f))))^2))
+}
+grid <- Filter(Negate(is.null), lapply(seq(60000, 400000, 5000), fit_logistic))
+best <- grid[[which.min(sapply(grid, `[[`, "ss"))]]
+cat("Best-fit logistic saturation ceiling K =", comma(best$K), "MW\n")
+
+H <- 60; t_f <- (n + 1):(n + H)
+cap_path <- function(K, a, b) K / (1 + exp(-(a + b * t_f)))
+scen <- list(
+  baseline    = { f <- fit_logistic(best$K);  cap_path(f$K, f$a, f$b) },
+  constrained = { f <- fit_logistic(100000);  cap_path(f$K, f$a, f$b) },
+  accelerated = { f <- fit_logistic(250000);  cap_path(f$K, f$a, f$b) }
+)
+
+ps_f <- tryCatch(
+  as.numeric(forecast(auto.arima(ts(ps, frequency = 12)), h = H)$mean),
+  error = function(e) rep(ps[n], H))
+
+a0 <- coef(eg3)[1]
+forecast_price <- function(cap, b_q_use = b_q) {
+  pf <- numeric(H); pc <- p[n]
+  for (h in 1:H) {
+    p_star <- a0 + b_q_use * log(cap[h]) + b_ps * ps_f[h]
+    pc <- pc + lambda * (pc - p_star)
+    pf[h] <- pc
+  }
+  pf
+}
+paths <- sapply(scen, forecast_price)
+
+fan <- sapply(sample(sl, 500), function(bq) forecast_price(scen$baseline, bq))
+fan_lo <- apply(fan, 1, quantile, 0.05)
+fan_hi <- apply(fan, 1, quantile, 0.95)
+```
+
+The engine has three moving parts: (i) a logistic diffusion curve fitted to
+cumulative capacity, with the saturation ceiling K chosen by grid search
+(best fit near `r comma(best$K)` MW) and bracketed by a policy-constrained
+scenario (K = 100 GW: net-billing and tax friction bite) and an accelerated
+scenario (K = 250 GW: batteries unlock a second adoption wave); (ii) an
+auxiliary ARIMA projection of polysilicon; (iii) the error-correction
+forecaster, in which the price converges at rate
+`r round(abs(lambda), 3)`/month toward a *moving* equilibrium defined by the
+DOLS elasticities. The forecast therefore respects both the current
+disequilibrium premium and the falling technological anchor.
+
+```{r}
+#| label: fan-chart
+#| fig-cap: "Five-year forecasts: technological (scenario fan) vs statistical benchmarks"
+#| fig-height: 5.5
+arima_fc <- tryCatch(
+  as.numeric(forecast(auto.arima(ts(p, frequency = 12)), h = H)$mean),
+  error = function(e) rep(NA, H))
+naive_fc <- rep(p[n], H)
+
+dates_f <- seq(df$Date[n] + 31, by = "month", length.out = H)
+plot_df <- rbind(
+  data.frame(Date = df$Date, value = p, series = "Actual"),
+  data.frame(Date = dates_f, value = paths[, "baseline"],    series = "Wright-ECM baseline (K=150GW)"),
+  data.frame(Date = dates_f, value = paths[, "constrained"], series = "Policy-constrained (K=100GW)"),
+  data.frame(Date = dates_f, value = paths[, "accelerated"], series = "Accelerated (K=250GW)"),
+  data.frame(Date = dates_f, value = arima_fc,               series = "ARIMA drift"),
+  data.frame(Date = dates_f, value = naive_fc,               series = "Naive")
+)
+ribbon_df <- data.frame(Date = dates_f, lo = fan_lo, hi = fan_hi)
+ggplot(plot_df, aes(Date, value, color = series)) +
+  geom_ribbon(data = ribbon_df, aes(x = Date, ymin = lo, ymax = hi),
+              inherit.aes = FALSE, alpha = 0.15, fill = brand_green) +
+  geom_line(linewidth = 0.8) +
+  scale_color_manual(values = c(
+    "Actual" = "black",
+    "Wright-ECM baseline (K=150GW)" = brand_green,
+    "Policy-constrained (K=100GW)" = brand_brown,
+    "Accelerated (K=250GW)" = "#4C9A2A",
+    "ARIMA drift" = "steelblue", "Naive" = "grey55")) +
+  labs(y = "log panel price", x = NULL, color = NULL,
+       subtitle = "Ribbon: 90% learning-rate uncertainty on the baseline") +
+  theme_minimal() + theme(legend.position = "bottom")
+```
+
+```{r}
+#| label: forecast-table
+fc_tbl <- data.frame(
+  Horizon      = c("12 months", "36 months", "60 months"),
+  Baseline     = round(paths[c(12, 36, 60), "baseline"], 3),
+  Constrained  = round(paths[c(12, 36, 60), "constrained"], 3),
+  Accelerated  = round(paths[c(12, 36, 60), "accelerated"], 3),
+  ARIMA        = round(arima_fc[c(12, 36, 60)], 3),
+  Naive        = round(naive_fc[c(12, 36, 60)], 3)
+)
+kable(fc_tbl, caption = "Forecast comparison (log price)")
+cat("Baseline implied cumulative price change at 60 months:",
+    percent(exp(paths[60, "baseline"] - p[n]) - 1, 0.1), "\n")
+```
+
+The baseline implies a further decline of roughly
+`r percent(1 - exp(paths[60, "baseline"] - p[n]), 0.1)` over five years, but
+the honest headline is the width of the fan: at 60 months the 90% band spans
+about `r round(fan_lo[60], 2)` to `r round(fan_hi[60], 2)` in log terms. The
+scenarios diverge slowly at 12 months and widely at 60 - technological
+forecasts earn their keep precisely at the horizons where statistical models
+extrapolate blind.
+
+## What this means for policy
+
+::: {.callout-important}
+## Policy relevance
+
+- **Planning institutions are structurally exposed.** IGCEP-style generation
+  planning and DISCO revenue models built on ARIMA-class or static cost
+  assumptions will keep being ambushed: Pakistan's ~56 GW of largely
+  behind-the-meter capacity arrived because official projections treated cost
+  declines as drift rather than as a function of deployment. The February 2026
+  net-billing rush is the institutional aftershock of a forecasting failure.
+- **Suppressing adoption does not stop the cost decline - it shifts its
+  composition.** An 18% GST or an Rs 11/unit buy-back pushes households toward
+  self-consumption plus storage; batteries sit on their own ~25-30% learning
+  curve and will hit the grid as a second, larger surprise on a predictable
+  schedule.
+- **Policy signaling has a measurable price.** The
+  `r percent(exp(tail(r3, 1)) - 1, 0.1)` disequilibrium premium at the end of
+  the sample is the cost of GST *uncertainty alone* - the tax never passed,
+  yet its shadow is in the price paid by every buyer in early 2026.
+- **The right planning input is a scenario range, not a point forecast.**
+  Tariff design, cross-subsidy recovery, and IPP capacity-payment exposure
+  should be stress-tested against the fan above, in the spirit of Way et al.
+  (2022): on experience-curve evidence, the fast-transition path is the
+  cheap path, and models that assume static technology costs compound against
+  the state.
+:::
+
+## Key references
+
+Nagy, B., Farmer, J. D., Bui, Q. M., & Trancik, J. E. (2013). Statistical
+basis for predicting technological progress. *PLoS ONE*, 8(2), e52669.
+
+Way, R., Ives, M. C., Mealy, P., & Farmer, J. D. (2022). Empirically grounded
+technology forecasts and the energy transition. *Joule*, 6(9), 2057-2082.
+
+Wright, T. P. (1936). Factors affecting the cost of airplanes. *Journal of the
+Aeronautical Sciences*, 3(4), 122-128.
+
+Kavlak, G., McNerney, J., & Trancik, J. E. (2018). Evaluating the causes of
+cost reduction in photovoltaic modules. *Energy Policy*, 123, 700-710.
+
+## Reproducibility
+
+```{r}
+#| label: session-info
+#| code-fold: true
+sessionInfo()
+```

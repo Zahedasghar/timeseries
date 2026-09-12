@@ -1,0 +1,71 @@
+---
+title: "Labs"
+subtitle: "Hands-on time series analysis in R"
+toc: false
+---
+
+The lectures argue; the labs make you do it. Each one is a complete Quarto
+document — open the `.qmd`, run it chunk by chunk, then change something and see
+what breaks. Data comes from the `data/` folder or is pulled live from SBP, PBS,
+Yahoo Finance and the World Bank.
+
+## New to R?
+
+Start here before the method labs. These four sessions take you from installing
+R to writing tidyverse pipelines confidently.
+
+::: {.card-grid}
+<a class="tcard" href="r-foundations/r-01-getting-started.html">
+  <span class="num">R 1</span><span class="ttl">Learn the basics of R</span>
+  <span class="dsc">Installation, the Positron/RStudio interface, objects, vectors and your first plot.</span></a>
+<a class="tcard" href="r-foundations/r-02-r-fundamentals.html">
+  <span class="num">R 2</span><span class="ttl">R fundamentals, extended</span>
+  <span class="dsc">Data types, subsetting, functions and reading files of every awkward format.</span></a>
+<a class="tcard" href="r-foundations/r-03-tidyverse-day-1.html">
+  <span class="num">R 3</span><span class="ttl">Tidyverse, day one</span>
+  <span class="dsc">filter, select, mutate, group_by and summarise — the five verbs that do most of the work.</span></a>
+<a class="tcard" href="r-foundations/r-04-tidyverse-in-action.html">
+  <span class="num">R 4</span><span class="ttl">Tidyverse in action</span>
+  <span class="dsc">A full analysis end to end: import, tidy, model, visualise, communicate.</span></a>
+:::
+
+## Method labs
+
+::: {.card-grid}
+<a class="tcard" href="lab-01-forecasting-in-r.html">
+  <span class="num">Lab 1</span><span class="ttl">Forecasting in R</span>
+  <span class="dsc">tsibbles, benchmark methods, ETS and automatic ARIMA with the fable workflow.</span></a>
+<a class="tcard" href="lab-02-spurious-regression.html">
+  <span class="num">Lab 2</span><span class="ttl">Spurious regression by simulation</span>
+  <span class="dsc">Generate two independent random walks a thousand times and watch the t-statistics lie.</span></a>
+<a class="tcard" href="lab-03-ardl-in-r.html">
+  <span class="num">Lab 3</span><span class="ttl">ARDL models in R</span>
+  <span class="dsc">Bounds testing and error correction estimation on Pakistani macro data.</span></a>
+<a class="tcard" href="lab-04-ardl-denmark.html">
+  <span class="num">Lab 4</span><span class="ttl">ARDL: the Denmark money demand case</span>
+  <span class="dsc">The classic Johansen dataset, worked through the ARDL route for comparison.</span></a>
+<a class="tcard" href="lab-05-consumption-function.html">
+  <span class="num">Lab 5</span><span class="ttl">Estimating a consumption function</span>
+  <span class="dsc">Econometric modelling from first principles on Pakistani consumption and income.</span></a>
+<a class="tcard" href="lab-06-prophet-forecasting.html">
+  <span class="num">Lab 6</span><span class="ttl">Forecasting with Prophet</span>
+  <span class="dsc">An additive alternative to ARIMA — where it helps, and where it quietly misleads.</span></a>
+<a class="tcard" href="lab-07-kse100-index.html">
+  <span class="num">Lab 7</span><span class="ttl">KSE-100 index analysis</span>
+  <span class="dsc">Returns, volatility and interactive time series plots of the Pakistan Stock Exchange.</span></a>
+<a class="tcard" href="lab-08-usd-pkr-exchange-rate.html">
+  <span class="num">Lab 8</span><span class="ttl">The USD/PKR exchange rate</span>
+  <span class="dsc">Daily exchange rate data: dates, irregular frequencies, and what a break looks like.</span></a>
+<a class="tcard" href="lab-09-stationarity-tutorial.html">
+  <span class="num">Lab 9</span><span class="ttl">Stationarity tutorial</span>
+  <span class="dsc">A short guided drill on diagnosing and correcting non-stationarity.</span></a>
+<a class="tcard" href="lab-10-cement-demand.html">
+  <span class="num">Lab 10</span><span class="ttl">Forecasting cement demand</span>
+  <span class="dsc">Seasonality, trend and a real production planning question for a Pakistani industry.</span></a>
+:::
+
+---
+
+Applied case studies that go beyond the teaching sequence — remittances,
+exports, tax revenue, solar prices — live in the `applications/` folder of the
+[repository](https://github.com/Zahedasghar/timeseries).

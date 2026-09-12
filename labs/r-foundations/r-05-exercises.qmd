@@ -1,0 +1,15 @@
+---
+format: html
+editor: visual
+---
+
+## Exercises
+There is a well-known result in economics called the `“Efficient Market Hypothesis”` that states that asset prices reflect all available information. A consequence of this is that the daily changes in stock prices should behave like white noise (ignoring dividends, interest rates and transaction costs). The consequence for forecasters is that the best forecast of the future price is the current price.
+
+We can test this hypothesis by looking at the `fpp2::goog` series, which contains the closing stock price for Google over 1000 trading days ending on February 13, 2017. This data has been loaded into your workspace.
+
+### Plot the goog series using autoplot.
+If you apply `diff(goog)`, this will produce a time series of the daily changes in Google stock prices. Save this output and plot the daily changes with `autoplot`. Does this appear to be white noise? 
+
+Use the `ggAcf()` function to check if these daily changes look like white noise.
+Now apply a `Ljung-Box` test on the daily changes using 10 lags. A p-value greater than 0.05 suggests the daily changes are not significantly different from white noise. So are the daily changes in the Google stock price white noise?
