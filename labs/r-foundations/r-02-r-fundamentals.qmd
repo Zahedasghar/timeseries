@@ -48,40 +48,40 @@ library(scales)
 
 ## Data Science
 
--   [You go into data analysis with the tools you know, not the tools you need]{.hi}
+- [You go into data analysis with the tools you know, not the tools you need]{.hi}
 
--   The next couple of days are all about giving you the tools you need
+- The next couple of days are all about giving you the tools you need
 
-    -   Admittedly, a bit before you know what you need them *for*
+  - Admittedly, a bit before you know what you need them *for*
 
--   We will extend them as we learn specific models
+- We will extend them as we learn specific models
 
 ## R
 
-::: columns
+::::: columns
 ::: {.column width="50%"}
--   **Free** and **open source**
+- **Free** and **open source**
 
--   A very large community
+- A very large community
 
-    -   Written by statisticians for statistics
-    -   Most packages are written for `R` first
+  - Written by statisticians for statistics
+  - Most packages are written for `R` first
 
--   Can handle virtually any data format
+- Can handle virtually any data format
 
--   Makes replication easy
+- Makes replication easy
 
--   Can integrate into documents (with `R markdown`)
+- Can integrate into documents (with `R markdown`)
 
--   R is a *language* so it can do *everything*
+- R is a *language* so it can do *everything*
 
-    -   A good stepping stone to learning other languages like *Python*
+  - A good stepping stone to learning other languages like *Python*
 :::
 
 ::: {.column width="50%"}
 ![](../../assets/images/r.png)
 :::
-:::
+:::::
 
 ## Excel (or Stata) Can't Do This
 
@@ -156,38 +156,38 @@ leaflet() %>%
 
 ## R and R Studio
 
-::: columns
+::::: columns
 ::: {.column width="50%"}
--   [R]{.hi} is the programming language that executes commands
+- [R]{.hi} is the programming language that executes commands
 
--   Could run this from your computer's shell
+- Could run this from your computer's shell
 
-    -   On Windows: **Command prompt**
-    -   On Mac/Linux: **Terminal**
+  - On Windows: **Command prompt**
+  - On Mac/Linux: **Terminal**
 :::
 
 ::: {.column width="50%"}
 ![](../../assets/images/r_terminal.png)
 :::
-:::
+:::::
 
 ## R and R Studio
 
-::: columns
+::::: columns
 ::: {.column width="50%"}
--   [R Studio]{.hi-purple}[^1] is an **integrated development environment** (IDE) that makes your coding life a lot easier
-    -   Write code in scripts
-    -   Execute individual commands & scripts
-    -   Auto-complete, highlight syntax
-    -   View data, objects, and plots
-    -   Get help and documentation on commands and functions
-    -   Integrate code into documents with `Quarto`
+- [R Studio]{.hi-purple}[^1] is an **integrated development environment** (IDE) that makes your coding life a lot easier
+  - Write code in scripts
+  - Execute individual commands & scripts
+  - Auto-complete, highlight syntax
+  - View data, objects, and plots
+  - Get help and documentation on commands and functions
+  - Integrate code into documents with `Quarto`
 :::
 
 ::: {.column width="50%"}
 ![](../../assets/images/r4screens1.png)
 :::
-:::
+:::::
 
 [^1]: The company R Studio recently [announced](https://www.rstudio.com/blog/rstudio-is-becoming-posit/) they will be rebranding later this fall as **Posit**.
 
@@ -197,39 +197,39 @@ leaflet() %>%
 
 ## Ways to Use R Studio: Using the Console
 
-::: columns
+::::: columns
 ::: {.column width="50%"}
--   Type individual commands into the console pane (bottom left)
+- Type individual commands into the console pane (bottom left)
 
--   Great for testing individual commands to see what happens
+- Great for testing individual commands to see what happens
 
--   Not saved! Not reproducible! Not recommended!
+- Not saved! Not reproducible! Not recommended!
 :::
 
 ::: {.column width="50%"}
 ![](../../assets/images/rconsole1.png)
 :::
-:::
+:::::
 
 ## Ways to Use R Studio: Writing a `.R` Script
 
-::: columns
+::::: columns
 ::: {.column width="50%"}
--   Source pane is a text-editor
+- Source pane is a text-editor
 
--   Make `.R` files: all input commands in a single script
+- Make `.R` files: all input commands in a single script
 
--   Comment with `#`
+- Comment with `#`
 
--   Can run any or all of script at once
+- Can run any or all of script at once
 
--   Can save, reproduce, and send to others!
+- Can save, reproduce, and send to others!
 :::
 
 ::: {.column width="50%"}
 ![](../../assets/images/rscriptbetter.png)
 :::
-:::
+:::::
 
 ## 
 
@@ -544,9 +544,9 @@ Stat graphics is a mapping of variable to `aes`thetic attributes of `geom`etric 
 
 ## 3 Essential components of `ggplot2`
 
--   data: dataset containing the variables of interest
--   geom: geometric object in question line, point, bars
--   aes: aesthetic attributes of an object x/y position, colors, shape, size
+- data: dataset containing the variables of interest
+- geom: geometric object in question line, point, bars
+- aes: aesthetic attributes of an object x/y position, colors, shape, size
 
 ## Scatter plot
 

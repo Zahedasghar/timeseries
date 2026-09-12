@@ -60,26 +60,26 @@ website:
         - lectures/index.qmd
         - section: "Foundations"
           contents:
-            - lectures/01-course-overview.qmd
-            - lectures/02-stationarity-and-nonstationarity.qmd
-            - lectures/03-nonstationary-series.qmd
-            - lectures/04-unit-root-tests.qmd
-            - lectures/05-spurious-regression.qmd
+            - lectures/week-01-course-overview.qmd
+            - lectures/week-02-stationarity-and-nonstationarity.qmd
+            - lectures/week-03-nonstationary-series.qmd
+            - lectures/week-04-unit-root-tests.qmd
+            - lectures/week-05-spurious-regression.qmd
         - section: "Univariate modelling and forecasting"
           contents:
-            - lectures/06-arima-modelling.qmd
-            - lectures/07-forecast-uncertainty-and-evaluation.qmd
-            - lectures/08-volatility-arch-garch.qmd
+            - lectures/week-06-arima-modelling.qmd
+            - lectures/week-07-forecast-uncertainty-and-evaluation.qmd
+            - lectures/week-08-volatility-arch-garch.qmd
         - section: "Multivariate and long-run relationships"
           contents:
-            - lectures/09-cointegration-and-vecm.qmd
-            - lectures/10-ardl-and-bounds-testing.qmd
-            - lectures/11-vector-autoregressions.qmd
-            - lectures/12-structural-var.qmd
-            - lectures/13-svar-macro-forecasting.qmd
+            - lectures/week-09-cointegration-and-vecm.qmd
+            - lectures/week-10-ardl-and-bounds-testing.qmd
+            - lectures/week-11-vector-autoregressions.qmd
+            - lectures/week-12-structural-var.qmd
+            - lectures/week-13-svar-macro-forecasting.qmd
         - section: "Panel data"
           contents:
-            - lectures/14-panel-data-models.qmd
+            - lectures/week-14-panel-data-models.qmd
   page-footer:
     background: light
     left: "© Prof. Dr. Zahid Asghar · School of Economics, Quaid-i-Azam University"

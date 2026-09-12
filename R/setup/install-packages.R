@@ -49,7 +49,7 @@ if (length(missing) == 0) {
 # Notes
 # ---------------------------------------------------------------------------
 # * fredr needs a free API key: fredr::fredr_set_key("...") in ~/.Renviron.
-#   Only used in an eval:false chunk in lectures/01-course-overview.qmd.
+#   Only used in an eval:false chunk in lectures/week-01-course-overview.qmd.
 # * prophet pulls in a Stan toolchain and is the slowest install here.
 #   It is used by labs/lab-06-prophet-forecasting.qmd.
 # * No Python or reticulate is required. The Python in lecture 1 is shown as

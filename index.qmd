@@ -15,7 +15,7 @@ pulls real data — SBP, PBS, World Bank, Yahoo Finance, UN Comtrade — and run
 estimation in front of you.
 
 ::: {.meta}
-14 lecture decks · 10 hands-on labs · 90+ datasets · all code in R
+14 weekly lectures · 10 hands-on labs · 90+ datasets · all code in R
 :::
 :::
 
@@ -30,7 +30,7 @@ estimation in front of you.
 <a class="tcard" href="lectures/index.html">
   <span class="num">Step 2</span>
   <span class="ttl">Lectures</span>
-  <span class="dsc">From stationarity and unit roots through ARIMA, ARCH, cointegration, ARDL and structural VARs.</span>
+  <span class="dsc">Week by week, from stationarity and unit roots through ARIMA, ARCH, cointegration, ARDL and structural VARs.</span>
 </a>
 <a class="tcard" href="labs/index.html">
   <span class="num">Step 3</span>
@@ -47,12 +47,12 @@ regressions that look magnificent and mean nothing. From there the course builds
 outward: modelling a single series, quantifying how wrong the forecast is likely
 to be, then moving to systems of series where the interesting economics lives.
 
-| Block | Topics | Lectures |
+| Block | Topics | When |
 |---|---|---|
-| **Foundations** | Stationarity, unit root testing, spurious regression | 1–5 |
-| **Univariate modelling** | ARIMA, forecast uncertainty and evaluation, ARCH/GARCH volatility | 6–8 |
-| **Multivariate systems** | Cointegration and VECM, ARDL bounds testing, VAR, structural VAR | 9–13 |
-| **Panel data** | Fixed and random effects, panel unit roots | 14 |
+| **Foundations** | Stationarity, unit root testing, spurious regression | Weeks 1–5 |
+| **Univariate modelling** | ARIMA, forecast uncertainty and evaluation, ARCH/GARCH volatility | Weeks 6–8 |
+| **Multivariate systems** | Cointegration and VECM, ARDL bounds testing, VAR, structural VAR | Weeks 9–13 |
+| **Panel data** | Fixed and random effects, panel unit roots | Week 14 |
 
 ## Software
 
@@ -72,7 +72,7 @@ install.packages(c("tidyverse", "fpp3", "fable", "feasts", "tsibble",
 
 | Folder | What lives there |
 |---|---|
-| `lectures/` | The 14 lecture documents that make up the site |
+| `lectures/` | The 14 weekly lecture documents, named `week-01-…` to `week-14-…` |
 | `labs/` | Hands-on R walkthroughs, including `labs/r-foundations/` for students new to R |
 | `applications/` | Applied Pakistan studies — remittances, exchange rate, exports, tax, solar prices, KSE |
 | `assessments/` | Exams, assignment briefs and the term paper specification |

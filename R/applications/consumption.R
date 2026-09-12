@@ -10,7 +10,7 @@ cons_inc$year<-as_date(cons_inc$year)
 cons_inc<-cons_inc %>% mutate(Trend=1:52)
 
 
-cons_inc<-ts(con_inc,start = 1960, end=2019)
+cons_inc_ts<-ts(cons_inc[,c("C","Y")],start = 1960, end=2011, frequency = 1)
 
 #cons_inc<-as_tibble(con_inc)
 ggplot(cons_inc)+aes(x=year)+geom_line(aes(y = C), color = "darkred",size=0.8) + 

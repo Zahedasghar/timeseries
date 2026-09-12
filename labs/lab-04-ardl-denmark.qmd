@@ -3,7 +3,6 @@ title: "ARDL Model for Denmark"
 format:
   html:
     toc: true
-  typst: default
 ---
 
 ## Basic Example

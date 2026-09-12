@@ -223,8 +223,19 @@ If you get an error, what does the error say, and how can you fix it? Implement 
 ```{r load-data}
 library(readr)
 
-#bike <- read_csv("https://stat.duke.edu/~mc301/data/nc_bike_crash.csv",                  sep = ";", stringsAsFactors = FALSE, na.strings = c("NA", "", "."))
-bike <- read_csv("https://stat.duke.edu/~mc301/data/nc_bike_crash.csv")
+# Local copy of the NC bike crash data (semicolon-delimited).
+# Source mirror: https://raw.githubusercontent.com/rstudio-education/dsbox/main/data-raw/ncbikecrash/ncbikecrash.csv
+bike <- read_delim("data/nc_bike_crash.csv",
+                   delim = ";", na = c("NA", "", ".", "#NULL!"))
+
+# Standardize CamelCase column names to snake_case to match the code below
+bike <- bike |>
+  janitor::clean_names() |>
+  rename(ambulance_req = ambulance_r, crash_location = crash_loc,
+         bike_age_group = bike_age_grp, drvr_age_group = drvr_age_grp,
+         object_id = objectid) |>
+  # Extract numeric age; "Unknown" etc. become NA
+  mutate(bike_age = parse_number(bike_age))
 ```
 
 View the names of variables via

@@ -1,87 +1,1563 @@
 [
   {
-    "objectID": "lectures/06-arima-modelling.html#inspect-data",
-    "href": "lectures/06-arima-modelling.html#inspect-data",
-    "title": "ARIMA modeling using bonds and petrol prices data",
-    "section": "Inspect data",
-    "text": "Inspect data\n\n\nRows: 960\nColumns: 4\n$ b1ret  &lt;dbl&gt; 0.002663, 0.000887, -0.000143, -0.000481, 0.000433, 0.000650, -…\n$ t30ret &lt;dbl&gt; 0.000178, 0.000111, 0.000108, 0.000068, 0.000161, 0.000249, 0.0…\n$ cpiret &lt;dbl&gt; 0.012903, 0.006369, 0.012658, 0.006250, 0.012422, 0.000000, 0.0…\n$ date   &lt;date&gt; 1942-01-31, 1942-02-28, 1942-03-31, 1942-04-30, 1942-05-29, 19…\n\n\nOnce we have data in required format, we can proceed to handle the questions asked about it.",
-    "crumbs": [
-      "Lectures",
-      "Univariate modelling and forecasting",
-      "ARIMA modeling using bonds and petrol prices data"
-    ]
+    "objectID": "labs/r-foundations/r-01-getting-started.html#outline",
+    "href": "labs/r-foundations/r-01-getting-started.html#outline",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Outline ",
+    "text": "Outline \n\nIntroduction to R and RStudio\nReproducible data analysis with R Markdown\nLoading data\nData visualization\nData wrangling\nBasic R syntax\nWhat next?\nHands on exercises"
   },
   {
-    "objectID": "lectures/06-arima-modelling.html#description-of-the-problem-on-bonds-data",
-    "href": "lectures/06-arima-modelling.html#description-of-the-problem-on-bonds-data",
-    "title": "ARIMA modeling using bonds and petrol prices data",
-    "section": "Description of the problem on bonds data",
-    "text": "Description of the problem on bonds data\nIn all the following questions above mentiond data frame is used. In this problem, we are interested in the time series properties of bond returns. We collect monthly data from 1942M01 to 2021M12 for the following variables:\n\nb1ret denotes the 1-year bond return,\nt30ret denotes the 30-day return on treasury bill,\ncpiret denotes the inflation rate.\n\nWe will be focusing on the bond return variable b1ret throughout this analysis. Create a second variable b1ret1 from the original variable, where b1ret1 has observations from 1942M01 to 2020M12. We will be using b1ret1 for estimation, and forecast the months of 2021 at the end.\na) Plot the TS variable and comment on its features.\n\n\n\n\n\n\n\nFigure 1\n\n\n\n\nThis Figure 1 indicates that around 1980s, these bond returns were highly volatile and from 1970-1990s period is also of high return period. In mid 2010, these returns show very promising growth but then after 2008 crisis bonds return have least volatility closely mirroring 1940s.\nb) Estimate a quadratic trend for this TS variable. Write down the equation and test the regression residuals “Res1” for stationary and autocorrelation.\n\n\n\n  \n\n\n\nc) Using the ACF and PACF for the stationary version of Res1 to propose an initial ARIMA model for Res1.\n\n\n\n\n\n\n\nFigure 2: ACF plots of the residuals of the quadratic trend model\n\n\n\n\n\n\n\n\n\n\n\nFigure 3: PACF plots of the residuals of the quadratic trend model\n\n\n\n\nFigure 2 and Figure 3 indicates that residuals are not stationary and have significant autocorrelation at lag 1. So we may need to further investigate the model.\nd) Provide several ARIMA models and discuss which ARIMA model you would pick as the final model. Explain your reasoning.\n\n\n          Order       AIC\n1  ARIMA(0,0,0) -7489.192\n2  ARIMA(0,0,1) -7649.737\n3  ARIMA(0,0,2) -7669.217\n4  ARIMA(0,1,0) -7378.844\n5  ARIMA(0,1,1) -7795.822\n6  ARIMA(0,1,2) -7826.394\n7  ARIMA(1,0,0) -7696.349\n8  ARIMA(1,0,1) -7804.604\n9  ARIMA(1,0,2) -7833.807\n10 ARIMA(1,1,0) -7516.357\n11 ARIMA(1,1,1) -7822.932\n12 ARIMA(1,1,2) -7829.002\n13 ARIMA(2,0,0) -7709.165\n14 ARIMA(2,0,1) -7830.262\n15 ARIMA(2,0,2) -7836.822\n16 ARIMA(2,1,0) -7613.721\n17 ARIMA(2,1,1) -7825.043\n18 ARIMA(2,1,2) -7828.701\n\n\nAs per Figure 1 we have observed in the plot that the bond returns are not stationary and have significant autocorrelation at lag 1. So we may need to further investigate the model. We have estimated a quadratic trend model and residuals are not stationary. We have calculated ACF and PACF of residuals and found that residuals are not stationary and have significant autocorrelation at lag 1. We have estimated several ARIMA models and the\nBest model comes out to be ARIMA(1,0,1). So we are estimating model as follows:\n\n\n# A tibble: 3 × 3\n  term      estimate std.error\n  &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;\n1 ar1        0.991     0.00545\n2 ma1       -0.904     0.0194 \n3 intercept  0.00322   0.00128\n\n\ne) Forecast using both trend and ARIMA(1,0,1) models\n\n\nTime Series:\nStart = 961 \nEnd = 970 \nFrequency = 1 \n [1] 0.0005113466 0.0005364218 0.0005612652 0.0005858789 0.0006102650\n [6] 0.0006344256 0.0006583628 0.0006820787 0.0007055753 0.0007288547\n\n\nForecast from quadratic trend model\n\\[y_t = \\beta_0 + \\beta_1 t + \\beta_2 t^2 + \\epsilon_t \\tag{1}\\]\nAs Equation 1 suggests, we can use the quadratic trend model to forecast the bond returns.\n2.\nIn this problem, we are interested in examining the factors affecting the petrol prices. Petrol prices in New Zealand is split into three components: importer cost, importer’s margin, and the taxes. We collect the weekly data on the following variables from 2004W16 (week 16) to 2020W23 (week 23):\n\nDubai denotes the Dubai crude oil prices,\nPrice denotes the discounted retail petrol price,\nMargin denotes the importer’s margin,\nCost denotes the importer’s cost.\n\nWe will be focusing on the variable Margin and Cost throughout this analysis. We will also restrict our attention to the period from 2004W16 to 2019W52 for estimation. We will be forecasting the first 23 weeks of 2020 at the end. You can find the dataset titled “PetrolPrices.csv”, use the 5% significance level. Please follow the procedure below for the analysis:",
-    "crumbs": [
-      "Lectures",
-      "Univariate modelling and forecasting",
-      "ARIMA modeling using bonds and petrol prices data"
-    ]
+    "objectID": "labs/r-foundations/r-01-getting-started.html#materials",
+    "href": "labs/r-foundations/r-01-getting-started.html#materials",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Materials",
+    "text": "Materials\n\nAll source code are taken from https://github.com/mine-cetinkaya-rundel/rworkshop-mem"
   },
   {
-    "objectID": "lectures/06-arima-modelling.html#load-and-inspect-data",
-    "href": "lectures/06-arima-modelling.html#load-and-inspect-data",
-    "title": "ARIMA modeling using bonds and petrol prices data",
-    "section": "Load and Inspect data",
-    "text": "Load and Inspect data\n\n\nRows: 840\nColumns: 5\n$ Week_ending_Friday &lt;chr&gt; \"4/23/2004\", \"4/30/2004\", \"5/7/2004\", \"5/14/2004\", …\n$ Dubai              &lt;dbl&gt; 50.74, 52.16, 52.94, 56.55, 59.40, 56.68, 56.13, 53…\n$ Cost               &lt;dbl&gt; 48.6, 52.2, 53.3, 56.4, 54.3, 53.7, 49.4, 48.2, 47.…\n$ Price              &lt;dbl&gt; 114.5, 113.0, 117.3, 121.9, 121.3, 123.9, 123.6, 12…\n$ Margin             &lt;dbl&gt; 13.9, 11.8, 13.8, 14.2, 12.6, 11.8, 13.6, 11.5, 14.…\n\n\nSo first there is need to convert Week_ending_Friday as date variable.\n\n\nRows: 840\nColumns: 6\n$ Week_ending_Friday &lt;chr&gt; \"4/23/2004\", \"4/30/2004\", \"5/7/2004\", \"5/14/2004\", …\n$ Dubai              &lt;dbl&gt; 50.74, 52.16, 52.94, 56.55, 59.40, 56.68, 56.13, 53…\n$ Cost               &lt;dbl&gt; 48.6, 52.2, 53.3, 56.4, 54.3, 53.7, 49.4, 48.2, 47.…\n$ Price              &lt;dbl&gt; 114.5, 113.0, 117.3, 121.9, 121.3, 123.9, 123.6, 12…\n$ Margin             &lt;dbl&gt; 13.9, 11.8, 13.8, 14.2, 12.6, 11.8, 13.6, 11.5, 14.…\n$ date               &lt;date&gt; 2004-04-23, 2004-04-30, 2004-05-07, 2004-05-14, 20…\n\n\nPerfect. Now we have date variable and 4 other variables measured as dbl means continuous.\n\nPlot the margin and cost variables and comment on their features. De termine the order of integration for the two variables. Define the hypotheses and report the relevant test statistic and P-value. Interpret your findings.\n\n\n\n\n\n\n\n\n\n\nEstimate the model where Margin is regressed on a linear trend and Cost. Write down the equation and comment on the coefficient of Cost. Test the regression residuals “Res2” for stationarity, autocorrelation, and heteroskedasticity.\n\n\n\n\n  \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAnalyse the variable Res2 and propose a final ARIMA model for this variable.\n\n\n\nSeries: Res2 \nARIMA(1,0,0) with zero mean \n\nCoefficients:\n         ar1\n      0.8199\ns.e.  0.0197\n\nsigma^2 = 3.807:  log likelihood = -1753.46\nAIC=3510.91   AICc=3510.93   BIC=3520.38",
-    "crumbs": [
-      "Lectures",
-      "Univariate modelling and forecasting",
-      "ARIMA modeling using bonds and petrol prices data"
-    ]
+    "objectID": "labs/r-foundations/r-01-getting-started.html#what-is-r-and-rstudio",
+    "href": "labs/r-foundations/r-01-getting-started.html#what-is-r-and-rstudio",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "What is R and RStudio",
+    "text": "What is R and RStudio\n\nR: Statistical programming language\nRStudio:\n\nIntegtrated development environment for R\nPowerful and productive user interface for R\n\nBoth are free and open-source"
   },
   {
-    "objectID": "labs/lab-05-consumption-function.html",
-    "href": "labs/lab-05-consumption-function.html",
-    "title": "Understanding econometric modeling with simple  Consumption Function for Pakistan",
+    "objectID": "labs/r-foundations/r-01-getting-started.html#getting-started",
+    "href": "labs/r-foundations/r-01-getting-started.html#getting-started",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Getting started",
+    "text": "Getting started\n\nTraditionally you would install R and RStudio on your computer\nLocal installation instructions will be provided at the end of the workshop"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#anatomy-of-rstudio",
+    "href": "labs/r-foundations/r-01-getting-started.html#anatomy-of-rstudio",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Anatomy of RStudio",
+    "text": "Anatomy of RStudio\n\nLeft: Console\n\nText on top at launch: version of R that you’re running\nBelow that is the prompt\n\nUpper right: Workspace and command history\nLower right: Plots, access to files, help, packages, data viewer"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#what-version-am-i-using",
+    "href": "labs/r-foundations/r-01-getting-started.html#what-version-am-i-using",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "What version am I using?",
+    "text": "What version am I using?\n\nThe version of R is text that pops up in the Console when you start RStudio\nTo find out the version of RStudio go to Help \\(\\rightarrow\\) About RStudio\nIt’s good practice to keep both R and RStudio up to date"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#r-packages",
+    "href": "labs/r-foundations/r-01-getting-started.html#r-packages",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "R packages",
+    "text": "R packages\n\nPackages are the fundamental units of reproducible R code. They include reusable R functions, the documentation that describes how to use them, and (often) sample data. From\nWe will use the ggplot2 package for plots and dplyr for data wrangling in this workshop\nInstall these packages by running the following in the Console:\n\n\nThen, load the packages by running the following:\n\n\nThis is just one way of installing a package, there is also a GUI approach in the Packages pane in RStudio"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#what-is-quarto",
+    "href": "labs/r-foundations/r-01-getting-started.html#what-is-quarto",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "What is Quarto?",
+    "text": "What is Quarto?\n\nQuarto is an authoring format that enables easy creation of dynamic documents, presentations, and reports from R/Python/Julia.\nIt combines the core syntax of markdown (an easy-to-write plain text format) with embedded R code chunks that are run so their output can be included in the final document.\nQuarto documents are fully reproducible (they can be automatically regenerated whenever underlying R/Python/Julia code or data changes).\n\nSource"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#your-turn",
+    "href": "labs/r-foundations/r-01-getting-started.html#your-turn",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Your turn!",
+    "text": "Your turn!\nCreate your first Quarto document, knit it, and examine the source code and the output.\n\nFile \\(\\rightarrow\\) Quarto Document…\nEnter a title (e.g. “My first Quarto document”) and author info\nChoose Document as file type, and HTML as the output\nHit OK\nClick Knit HTML in the new document, which will prompt you to save your document\n\nNaming tip: Do not use spaces\nViewing tip: Click on the down arrow next to Knit HTML and select View in Pane"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#r-code-chunks",
+    "href": "labs/r-foundations/r-01-getting-started.html#r-code-chunks",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "R Code Chunks",
+    "text": "R Code Chunks\nWithin an R Markdown file, R Code Chunks can be embedded using the native Markdown syntax for fenced code regions.\n\nCode chunks"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#your-turn-1",
+    "href": "labs/r-foundations/r-01-getting-started.html#your-turn-1",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Your turn!",
+    "text": "Your turn!\nHow many code chunks are in your R Markdown document?\nWhat does each code chunk do? You may not understand the R syntax yet, but you should be able to compare the source file and the output to answer this question."
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#inline-r-code",
+    "href": "labs/r-foundations/r-01-getting-started.html#inline-r-code",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Inline R Code",
+    "text": "Inline R Code\nYou can also evaluate R expressions inline by enclosing the expression within a single back-tick qualified with r. For example, the following code: I counted 2 trucks on highway.\nResults in this output: “I counted 2 red trucks on the highway.”"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#your-turn-2",
+    "href": "labs/r-foundations/r-01-getting-started.html#your-turn-2",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Your turn!",
+    "text": "Your turn!\nSuppose Sammy works on average 8.37 hours per day, 5 days per week. How many hours does Sammy work on average per week?\nAdd a sentence to your document that includes simple inline R code that answers this question, along the lines of…\n“Sammy works 8.37 * 5 hours per week, on average.”"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#workspaces",
+    "href": "labs/r-foundations/r-01-getting-started.html#workspaces",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Workspaces",
+    "text": "Workspaces\nR Markdown workspace and Console workspace are independent of each other\n\nIf you define a variable in your Console and it shows up in the Environment tab, it is not going to be automatically included in your R Markdown document\nIf you define a variable in your R Markdown document, it won’t automatically be available in your Console\n\n[ Demo ]\nTip: Use the Run all previous chunks in the source file and Run current chunk code functionality in the buttons in each code chunk to help manage workspaces."
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#workspaces-and-reproducibilty",
+    "href": "labs/r-foundations/r-01-getting-started.html#workspaces-and-reproducibilty",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Workspaces and reproducibilty",
+    "text": "Workspaces and reproducibilty\n\nThe fact that the two workspaces do not automatically have access to the same variables might / will be frustrating at first.\nBut this is not a bug, in fact, it’s a functionality that helps reproducibility, as it ensures that all variables, functions, etc. that are being used in the R Markdown document are explicitly defined or loaded."
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#your-turn-3",
+    "href": "labs/r-foundations/r-01-getting-started.html#your-turn-3",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Your turn!",
+    "text": "Your turn!\n\nDefine x = 2 in the Console. Then, in your Console run x * 3. Does your code run as expected?\nNow, insert a new code chunk in your R Markdown document and in this chunk type x * 3 only. Knit your document. Does the document compile, or do you get an error? If you get an error, what does the error say, and how can you fix it? Implement the fix and Knit your document. Make sure you are able to compile without errors before you move on.\n\nTip: Insert a new code chunk bu clicking Chunks \\(\\rightarrow\\) Insert Chunk.\n\nNext insert another code chunk in your R Markdown document and define y = 4 and calculate y + 5. Knit your document. Does everything work as expected?\nNow run y + 5 in your Console. Does your code run as expected or do you get an error? If you get an error, what does the error say, and how can you fix it? Implement the fix."
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#code-chunk-options",
+    "href": "labs/r-foundations/r-01-getting-started.html#code-chunk-options",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Code chunk options",
+    "text": "Code chunk options\n\nYou can hide the code, hide the result, hide warnings, messages, etc.\nRefer to the handy R Markdown cheatsheet\nAnother good reference: http://rmarkdown.rstudio.com/authoring_rcodechunks.html"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#nc-dot-fatal-crashes-in-north-carolina",
+    "href": "labs/r-foundations/r-01-getting-started.html#nc-dot-fatal-crashes-in-north-carolina",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "NC DOT Fatal Crashes in North Carolina",
+    "text": "NC DOT Fatal Crashes in North Carolina\nView the names of variables via\n\n##  [1] \"geo_point\"      \"geo_shape\"      \"bike_race\"      \"city\"          \n##  [5] \"bike_pos\"       \"num_units\"      \"crash_hour\"     \"locality\"      \n##  [9] \"bike_sex\"       \"drvr_veh_typ\"   \"num_bikes_no\"   \"bike_alc_drg\"  \n## [13] \"num_bikes_bi\"   \"rte_invd_cd\"    \"drvr_race\"      \"workzone\"      \n## [17] \"num_bikes_ci\"   \"bike_age_group\" \"crash_type\"     \"rd_defects\"    \n## [21] \"crash_alcoh\"    \"bike_alcoho\"    \"rd_conditio\"    \"dstnc_mi_frm\"  \n## [25] \"rural_urban\"    \"hit_run\"        \"crash_date\"     \"num_bikes_ui\"  \n## [29] \"crash_time\"     \"drvr_sex\"       \"drvr_alcoho\"    \"developmen\"    \n## [33] \"crash_sevr\"     \"ambulance_req\"  \"drvr_injury\"    \"object_id\"     \n## [37] \"crash_month\"    \"num_bikes_ki\"   \"rd_characte\"    \"region\"        \n## [41] \"bike_dir\"       \"traff_cntrl\"    \"crash_day\"      \"crash_location\"\n## [45] \"bike_age\"       \"num_bikes_to\"   \"rd_config\"      \"num_lanes\"     \n## [49] \"num_bikes_ai\"   \"drvr_alc_drg\"   \"on_road\"        \"rd_surface\"    \n## [53] \"towrd_rd\"       \"rd_feature\"     \"crash_grp\"      \"rd_class\"      \n## [57] \"bike_injury\"    \"county\"         \"drvr_age\"       \"weather\"       \n## [61] \"frm_rd\"         \"drvr_est_spd\"   \"speed_limit\"    \"crash_year\"    \n## [65] \"light_cond\"     \"drvr_age_group\"\n\nand see detailed descriptions at https://stat.duke.edu/~mc301/data/nc_bike_crash.html."
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#aside-strings-characters-vs-factors",
+    "href": "labs/r-foundations/r-01-getting-started.html#aside-strings-characters-vs-factors",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Aside: Strings (characters) vs factors",
+    "text": "Aside: Strings (characters) vs factors\n\nBy default R will convert character vectors into factors when they are included in a data frame.\nSometimes this is useful, sometimes it isn’t – either way it is important to know what type/class you are working with.\nThis behavior can be changed using the stringsAsFactors = FALSE when loading a data drame."
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#viewing-your-data",
+    "href": "labs/r-foundations/r-01-getting-started.html#viewing-your-data",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Viewing your data",
+    "text": "Viewing your data\n\nIn the Environment, click on the name of the data frame to view it in the data viewer\nUse the str() function to compactly display the internal structure of an R object\n\n\n## tibble [7,467 × 66] (S3: tbl_df/tbl/data.frame)\n##  $ geo_point     : chr [1:7467] \"35.3336070056, -77.9955023901\" \"36.3151872016, -78.4057025669\" \"35.5246969313, -81.2295033733\" \"34.3314967628, -78.7080025567\" ...\n##  $ geo_shape     : chr [1:7467] \"{\\\"type\\\": \\\"Point\\\", \\\"coordinates\\\": [-77.99550239012649, 35.33360700564749]}\" \"{\\\"type\\\": \\\"Point\\\", \\\"coordinates\\\": [-78.4057025668518, 36.31518720156319]}\" \"{\\\"type\\\": \\\"Point\\\", \\\"coordinates\\\": [-81.22950337331442, 35.524696931320605]}\" \"{\\\"type\\\": \\\"Point\\\", \\\"coordinates\\\": [-78.70800255666208, 34.33149676278382]}\" ...\n##  $ bike_race     : chr [1:7467] \"Black\" \"Black\" \"White\" \"Black\" ...\n##  $ city          : chr [1:7467] \"None - Rural Crash\" \"Henderson\" \"None - Rural Crash\" \"Whiteville\" ...\n##  $ bike_pos      : chr [1:7467] \"Bike Lane / Paved Shoulder\" \"Travel Lane\" \"Travel Lane\" \"Unknown\" ...\n##  $ num_units     : num [1:7467] 2 2 2 2 2 2 2 2 2 2 ...\n##  $ crash_hour    : num [1:7467] 6 20 18 18 13 17 17 7 15 2 ...\n##  $ locality      : chr [1:7467] \"Rural (&lt;30% Developed)\" \"Mixed (30% To 70% Developed)\" \"Rural (&lt;30% Developed)\" \"Urban (&gt;70% Developed)\" ...\n##  $ bike_sex      : chr [1:7467] \"Male\" \"Male\" \"Male\" \"Male\" ...\n##  $ drvr_veh_typ  : chr [1:7467] \"Single Unit Truck (2-Axle, 6-Tire)\" \"Unknown\" \"Passenger Car\" \"Passenger Car\" ...\n##  $ num_bikes_no  : num [1:7467] 0 0 0 0 0 0 0 0 0 0 ...\n##  $ bike_alc_drg  : chr [1:7467] NA NA NA NA ...\n##  $ num_bikes_bi  : num [1:7467] 0 0 0 0 0 0 0 0 0 0 ...\n##  $ rte_invd_cd   : num [1:7467] 0 0 0 0 0 0 0 0 0 0 ...\n##  $ drvr_race     : chr [1:7467] \"White\" \"Unknown/Missing\" \"Hispanic\" \"Black\" ...\n##  $ workzone      : chr [1:7467] \"No\" \"No\" \"No\" \"No\" ...\n##  $ num_bikes_ci  : num [1:7467] 0 0 0 0 0 0 0 0 0 0 ...\n##  $ bike_age_group: chr [1:7467] \"50-59\" \"60-69\" \"30-39\" \"50-59\" ...\n##  $ crash_type    : chr [1:7467] \"Motorist Overtaking - Undetected Bicyclist\" \"Bicyclist Ride Out - Sign-Controlled Intersection\" \"Motorist Overtaking - Undetected Bicyclist\" \"Bicyclist Ride Out - Signalized  Intersection\" ...\n##  $ rd_defects    : chr [1:7467] \"None\" \"Unknown\" \"None\" \"None\" ...\n##  $ crash_alcoh   : chr [1:7467] \"No\" \"No\" \"No\" \"Yes\" ...\n##  $ bike_alcoho   : chr [1:7467] \"No\" \"No\" \"No\" \"Yes\" ...\n##  $ rd_conditio   : chr [1:7467] \"Dry\" \"Dry\" \"Dry\" \"Water (Standing, Moving)\" ...\n##  $ dstnc_mi_frm  : num [1:7467] 0 0 0 0 0 0 0 0 0 0 ...\n##  $ rural_urban   : chr [1:7467] \"Rural\" \"Urban\" \"Rural\" \"Urban\" ...\n##  $ hit_run       : chr [1:7467] \"No\" \"Yes\" \"No\" \"No\" ...\n##  $ crash_date    : chr [1:7467] \"11DEC2013\" \"20NOV2013\" \"03NOV2013\" \"14DEC2013\" ...\n##  $ num_bikes_ui  : num [1:7467] 0 0 0 0 0 0 0 0 0 0 ...\n##  $ crash_time    : 'hms' num [1:7467] 06:10:00 20:41:00 18:05:00 18:34:00 ...\n##   ..- attr(*, \"units\")= chr \"secs\"\n##  $ drvr_sex      : chr [1:7467] \"Male\" \"Unknown\" \"Female\" \"Male\" ...\n##  $ drvr_alcoho   : chr [1:7467] \"No\" \"Missing\" \"No\" \"No\" ...\n##  $ developmen    : chr [1:7467] \"Farms, Woods, Pastures\" \"Residential\" \"Farms, Woods, Pastures\" \"Commercial\" ...\n##  $ crash_sevr    : chr [1:7467] \"B: Evident Injury\" \"C: Possible Injury\" \"C: Possible Injury\" \"C: Possible Injury\" ...\n##  $ ambulance_req : chr [1:7467] \"Yes\" \"No\" \"Yes\" \"Yes\" ...\n##  $ drvr_injury   : chr [1:7467] \"O: No Injury\" \"Unknown Injury\" \"O: No Injury\" \"O: No Injury\" ...\n##  $ object_id     : num [1:7467] 1686 1674 1673 1687 1653 ...\n##  $ crash_month   : chr [1:7467] \"December\" \"November\" \"November\" \"December\" ...\n##  $ num_bikes_ki  : num [1:7467] 0 0 0 0 0 0 0 0 0 0 ...\n##  $ rd_characte   : chr [1:7467] \"Straight - Level\" \"Straight - Level\" \"Straight - Grade\" \"Straight - Level\" ...\n##  $ region        : chr [1:7467] \"Coastal\" \"Piedmont\" \"Piedmont\" \"Coastal\" ...\n##  $ bike_dir      : chr [1:7467] \"With Traffic\" \"With Traffic\" \"With Traffic\" \"Unknown\" ...\n##  $ traff_cntrl   : chr [1:7467] \"No Control Present\" \"Stop Sign\" \"Double Yellow Line, No Passing Zone\" \"No Control Present\" ...\n##  $ crash_day     : chr [1:7467] \"Wednesday\" \"Wednesday\" \"Sunday\" \"Saturday\" ...\n##  $ crash_location: chr [1:7467] \"Non-Intersection\" \"Intersection\" \"Non-Intersection\" \"Intersection\" ...\n##  $ bike_age      : num [1:7467] 52 66 33 52 22 15 41 14 16 54 ...\n##   ..- attr(*, \"problems\")= tibble [113 × 4] (S3: tbl_df/tbl/data.frame)\n##   .. ..$ row     : int [1:113] 110 159 184 209 271 274 305 382 452 461 ...\n##   .. ..$ col     : int [1:113] NA NA NA NA NA NA NA NA NA NA ...\n##   .. ..$ expected: chr [1:113] \"a number\" \"a number\" \"a number\" \"a number\" ...\n##   .. ..$ actual  : chr [1:113] \"Unknown\" \"Unknown\" \"Unknown\" \"Unknown\" ...\n##  $ num_bikes_to  : num [1:7467] 0 0 0 0 0 0 0 0 0 0 ...\n##  $ rd_config     : chr [1:7467] \"Two-Way, Not Divided\" \"Two-Way, Divided, Unprotected Median\" \"Two-Way, Not Divided\" \"Two-Way, Not Divided\" ...\n##  $ num_lanes     : chr [1:7467] \"2 lanes\" \"2 lanes\" \"2 lanes\" \"1 lane\" ...\n##  $ num_bikes_ai  : num [1:7467] 0 0 0 0 0 0 0 0 0 0 ...\n##  $ drvr_alc_drg  : chr [1:7467] NA NA NA NA ...\n##  $ on_road       : chr [1:7467] \"SR 1915\" \"NICHOLAS ST\" \"US 321\" \"W BURKHEAD ST\" ...\n##  $ rd_surface    : chr [1:7467] \"Coarse Asphalt\" \"Smooth Asphalt\" \"Smooth Asphalt\" \"Coarse Asphalt\" ...\n##  $ towrd_rd      : chr [1:7467] NA NA NA NA ...\n##  $ rd_feature    : chr [1:7467] \"No Special Feature\" \"T-Intersection\" \"No Special Feature\" \"No Special Feature\" ...\n##  $ crash_grp     : chr [1:7467] \"Motorist Overtaking Bicyclist\" \"Bicyclist Failed to Yield - Sign-Controlled Intersection\" \"Motorist Overtaking Bicyclist\" \"Bicyclist Failed to Yield - Signalized Intersection\" ...\n##  $ rd_class      : chr [1:7467] \"State Secondary Route\" \"Local Street\" \"US Route\" \"Local Street\" ...\n##  $ bike_injury   : chr [1:7467] \"B: Evident Injury\" \"C: Possible Injury\" \"C: Possible Injury\" \"C: Possible Injury\" ...\n##  $ county        : chr [1:7467] \"Wayne\" \"Vance\" \"Lincoln\" \"Columbus\" ...\n##  $ drvr_age      : chr [1:7467] \"34\" \"Unknown\" \"37\" \"55\" ...\n##  $ weather       : chr [1:7467] \"Clear\" \"Clear\" \"Clear\" \"Rain\" ...\n##  $ frm_rd        : chr [1:7467] NA NA NA NA ...\n##  $ drvr_est_spd  : chr [1:7467] \"51-55 mph\" \"6-10 mph\" \"41-45 mph\" \"11-15 mph\" ...\n##  $ speed_limit   : chr [1:7467] \"50 - 55  MPH\" \"30 - 35  MPH\" \"50 - 55  MPH\" \"30 - 35  MPH\" ...\n##  $ crash_year    : num [1:7467] 2013 2013 2013 2013 2013 ...\n##  $ light_cond    : chr [1:7467] \"Dark - Roadway Not Lighted\" \"Unknown\" \"Dark - Roadway Not Lighted\" \"Dark - Lighted Roadway\" ...\n##  $ drvr_age_group: chr [1:7467] \"30-39\" \"Unknown\" \"30-39\" \"50-59\" ..."
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#data-visualization-in-r",
+    "href": "labs/r-foundations/r-01-getting-started.html#data-visualization-in-r",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Data visualization in R",
+    "text": "Data visualization in R\n\nUsing base R functions\nUsing the ggplot2 package \\(\\leftarrow\\) our focus today\nUsing a variety of other packages like lattice, ggvis, etc."
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#the-grammar-of-graphics",
+    "href": "labs/r-foundations/r-01-getting-started.html#the-grammar-of-graphics",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "The Grammar of Graphics",
+    "text": "The Grammar of Graphics\n\nVisualisation concept created by Wilkinson (1999)\n\nto define the basic elements of a statistical graphic\n\nAdapted for R by Wickham (2009) who created the ggplot2 package\n\nconsistent and compact syntax to describe statistical graphics\nhighly modular as it breaks up graphs into semantic components\n\nIs not a guide which graph to choose and how to convey information best!\n\nSource: https://rpubs.com/timwinke/ggplot2workshop"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#the-grammar-of-graphics---terminology",
+    "href": "labs/r-foundations/r-01-getting-started.html#the-grammar-of-graphics---terminology",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "The Grammar of Graphics - Terminology",
+    "text": "The Grammar of Graphics - Terminology\nA statistical graphic is a…\n\nmapping of data\nto aesthetic attributes (color, size, xy-position)\nusing geometric objects (points, lines, bars)\nwith data being statistically transformed (summarised, log-transformed)\nand mapped onto a specific facet and coordinate system"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#biker-age-vs.-crash-hour",
+    "href": "labs/r-foundations/r-01-getting-started.html#biker-age-vs.-crash-hour",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Biker age vs. crash hour",
+    "text": "Biker age vs. crash hour\n\n\nWhich data is used as an input?\nWhat geometric objects are chosen for visualization?\nWhat variables are mapped onto which attributes?\nWhat type of scales are used to map data to aesthetics?\nAre the variables statistically transformed before plotting?"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#biker-age-vs.-crash-hour---code",
+    "href": "labs/r-foundations/r-01-getting-started.html#biker-age-vs.-crash-hour---code",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Biker age vs. crash hour - code",
+    "text": "Biker age vs. crash hour - code"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#altering-features",
+    "href": "labs/r-foundations/r-01-getting-started.html#altering-features",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Altering features",
+    "text": "Altering features\n\n\nHow did the plot change?\nAre these changes based on data (i.e. can be mapped to variables in the dataset) or changes in preferences for geometric objects?"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#altering-features---code",
+    "href": "labs/r-foundations/r-01-getting-started.html#altering-features---code",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Altering features - code",
+    "text": "Altering features - code"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#more-alterations",
+    "href": "labs/r-foundations/r-01-getting-started.html#more-alterations",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "More alterations",
+    "text": "More alterations\n\n\nHow did the plot change?\nAre these changes based on data (i.e. can be mapped to variables in the dataset) or changes in preferences for geometric objects?"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#more-alterations---code",
+    "href": "labs/r-foundations/r-01-getting-started.html#more-alterations---code",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "More alterations - code",
+    "text": "More alterations - code"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#anatomy-of-ggplots",
+    "href": "labs/r-foundations/r-01-getting-started.html#anatomy-of-ggplots",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Anatomy of ggplots",
+    "text": "Anatomy of ggplots\nggplot(data = [dataframe], aes(x = [var_x], y = [var_y], \n       color = [var_for_color], fill = [var_for_fill], \n       shape = [var_for_shape])) +\n    geom_[some_geom] +\n    ... # other options"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#histograms",
+    "href": "labs/r-foundations/r-01-getting-started.html#histograms",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Histograms",
+    "text": "Histograms"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#boxplots",
+    "href": "labs/r-foundations/r-01-getting-started.html#boxplots",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Boxplots",
+    "text": "Boxplots"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#barplots",
+    "href": "labs/r-foundations/r-01-getting-started.html#barplots",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Barplots",
+    "text": "Barplots"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#segmented-barplots",
+    "href": "labs/r-foundations/r-01-getting-started.html#segmented-barplots",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Segmented barplots",
+    "text": "Segmented barplots"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#segmented-barplots---proportions",
+    "href": "labs/r-foundations/r-01-getting-started.html#segmented-barplots---proportions",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Segmented barplots - proportions",
+    "text": "Segmented barplots - proportions"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#more-ggplot2-resources",
+    "href": "labs/r-foundations/r-01-getting-started.html#more-ggplot2-resources",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "More ggplot2 resources",
+    "text": "More ggplot2 resources\n\nVisit http://docs.ggplot2.org/current/ for documentation on the current version of the ggplot2 package. It’s full of examples!\nRefer to the ggplot2 cheatsheet."
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#data-wrangling-in-r",
+    "href": "labs/r-foundations/r-01-getting-started.html#data-wrangling-in-r",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Data wrangling in R",
+    "text": "Data wrangling in R\n\nUsing base R functions\nUsing the dplyr package \\(\\leftarrow\\) our focus today\nUsing a variety of other packages like plyr, tidyr, lubridate, etc."
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#data-wrangling-with-dplyr",
+    "href": "labs/r-foundations/r-01-getting-started.html#data-wrangling-with-dplyr",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Data wrangling with dplyr",
+    "text": "Data wrangling with dplyr\nThe dplyr package is based on the concepts of functions as verbs that manipulate data frames:\n\nfilter(): pick rows matching criteria\nselect(): pick columns by name\nrename(): rename specific columns\narrange(): reorder rows\nmutate(): add new variables\ntransmute(): create new data frame with variables\nsample_n() / sample_frac(): randomly sample rows\nsummarise(): reduce variables to values"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#dplyr-rules",
+    "href": "labs/r-foundations/r-01-getting-started.html#dplyr-rules",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "dplyr rules",
+    "text": "dplyr rules\n\nFirst argument is a data frame\nSubsequent arguments say what to do with data frame\nAlways return a data frame\nAvoid modify in place"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#filter-rows-with-filter",
+    "href": "labs/r-foundations/r-01-getting-started.html#filter-rows-with-filter",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Filter rows with filter()",
+    "text": "Filter rows with filter()\n\nSelect a subset of rows in a data frame.\nEasily filter for many conditions at once."
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#filter",
+    "href": "labs/r-foundations/r-01-getting-started.html#filter",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "filter()",
+    "text": "filter()\nfor crashes in Durham County\n\n## # A tibble: 340 × 66\n##    geo_point        geo_shape bike_race city  bike_pos num_units crash_hour\n##    &lt;chr&gt;            &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;        &lt;dbl&gt;      &lt;dbl&gt;\n##  1 35.9935571162, … \"{\\\"type… Black     Durh… Non-Roa…         2         18\n##  2 35.9915271145, … \"{\\\"type… White     Durh… Travel …         2          9\n##  3 35.9903871139, … \"{\\\"type… Black     Durh… Non-Roa…         2         16\n##  4 35.9966271172, … \"{\\\"type… Black     Durh… Unknown          2         18\n##  5 35.9899271152, … \"{\\\"type… Black     Durh… Travel …         2         18\n##  6 36.0306171247, … \"{\\\"type… Black     Durh… Travel …         2         15\n##  7 36.0106001186, … \"{\\\"type… White     Durh… Sidewal…         2          9\n##  8 35.992633116, -… \"{\\\"type… Black     Durh… Sidewal…         2         11\n##  9 36.0773371334, … \"{\\\"type… Hispanic  Durh… Non-Roa…         2         12\n## 10 35.9934071161, … \"{\\\"type… Black     Durh… Travel …         2         13\n## # ℹ 330 more rows\n## # ℹ 59 more variables: locality &lt;chr&gt;, bike_sex &lt;chr&gt;, drvr_veh_typ &lt;chr&gt;,\n## #   num_bikes_no &lt;dbl&gt;, bike_alc_drg &lt;chr&gt;, num_bikes_bi &lt;dbl&gt;,\n## #   rte_invd_cd &lt;dbl&gt;, drvr_race &lt;chr&gt;, workzone &lt;chr&gt;,\n## #   num_bikes_ci &lt;dbl&gt;, bike_age_group &lt;chr&gt;, crash_type &lt;chr&gt;,\n## #   rd_defects &lt;chr&gt;, crash_alcoh &lt;chr&gt;, bike_alcoho &lt;chr&gt;,\n## #   rd_conditio &lt;chr&gt;, dstnc_mi_frm &lt;dbl&gt;, rural_urban &lt;chr&gt;, …"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#filter-1",
+    "href": "labs/r-foundations/r-01-getting-started.html#filter-1",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "filter()",
+    "text": "filter()\nfor crashes in Durham County where biker was &lt; 10 yrs old\n\n## # A tibble: 27 × 66\n##    geo_point        geo_shape bike_race city  bike_pos num_units crash_hour\n##    &lt;chr&gt;            &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;        &lt;dbl&gt;      &lt;dbl&gt;\n##  1 35.9935571162, … \"{\\\"type… Black     Durh… Non-Roa…         2         18\n##  2 35.9966271172, … \"{\\\"type… Black     Durh… Unknown          2         18\n##  3 35.9625371071, … \"{\\\"type… Black     Durh… Travel …         2         19\n##  4 35.9783271161, … \"{\\\"type… Black     Durh… Non-Roa…         2         16\n##  5 36.0011901184, … \"{\\\"type… Black     Durh… Travel …         2         17\n##  6 36.0337971252, … \"{\\\"type… Hispanic  Durh… Unknown          2         12\n##  7 35.9394941044, … \"{\\\"type… Black     Durh… Unknown          2         17\n##  8 36.019327123, -… \"{\\\"type… Black     Durh… Drivewa…         2         20\n##  9 36.0027501191, … \"{\\\"type… Black     Durh… Drivewa…         2         13\n## 10 35.9917211153, … \"{\\\"type… Black     Durh… Travel …         2         18\n## # ℹ 17 more rows\n## # ℹ 59 more variables: locality &lt;chr&gt;, bike_sex &lt;chr&gt;, drvr_veh_typ &lt;chr&gt;,\n## #   num_bikes_no &lt;dbl&gt;, bike_alc_drg &lt;chr&gt;, num_bikes_bi &lt;dbl&gt;,\n## #   rte_invd_cd &lt;dbl&gt;, drvr_race &lt;chr&gt;, workzone &lt;chr&gt;,\n## #   num_bikes_ci &lt;dbl&gt;, bike_age_group &lt;chr&gt;, crash_type &lt;chr&gt;,\n## #   rd_defects &lt;chr&gt;, crash_alcoh &lt;chr&gt;, bike_alcoho &lt;chr&gt;,\n## #   rd_conditio &lt;chr&gt;, dstnc_mi_frm &lt;dbl&gt;, rural_urban &lt;chr&gt;, …"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#commonly-used-logical-operators-in-r",
+    "href": "labs/r-foundations/r-01-getting-started.html#commonly-used-logical-operators-in-r",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Commonly used logical operators in R",
+    "text": "Commonly used logical operators in R\n\n\n\noperator\ndefinition\n\n\n\n\n&lt;\nless than\n\n\n&lt;=\nless than or equal to\n\n\n&gt;\ngreater than\n\n\n&gt;=\ngreater than or equal to\n\n\n==\nexactly equal to\n\n\n!=\nnot equal to\n\n\nx | y\nx OR y\n\n\nx & y\nx AND y"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#commonly-used-logical-operators-in-r-1",
+    "href": "labs/r-foundations/r-01-getting-started.html#commonly-used-logical-operators-in-r-1",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Commonly used logical operators in R",
+    "text": "Commonly used logical operators in R\n\n\n\noperator\ndefinition\n\n\n\n\nis.na(x)\ntest if x is NA\n\n\n!is.na(x)\ntest if x is not NA\n\n\nx %in% y\ntest if x is in y\n\n\n!(x %in% y)\ntest if x is not in y\n\n\n!x\nnot x"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#aside-real-data-is-messy",
+    "href": "labs/r-foundations/r-01-getting-started.html#aside-real-data-is-messy",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Aside: real data is messy!",
+    "text": "Aside: real data is messy!\n\nWhat in the world does a bike_age_group of 10-Jun or 15-Nov mean?\n\n\n## # A tibble: 12 × 2\n##    bike_age_group crash_count\n##    &lt;chr&gt;                &lt;int&gt;\n##  1 0-5                     86\n##  2 11-15                  933\n##  3 16-19                  794\n##  4 20-24                  910\n##  5 25-29                  578\n##  6 30-39                  881\n##  7 40-49                 1144\n##  8 50-59                 1013\n##  9 6-10                   537\n## 10 60-69                  382\n## 11 70+                     96\n## 12 Unknown                113"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#careful-data-scientists-clean-up-their-data-first",
+    "href": "labs/r-foundations/r-01-getting-started.html#careful-data-scientists-clean-up-their-data-first",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Careful data scientists clean up their data first!",
+    "text": "Careful data scientists clean up their data first!\n\nWe’re going to need to do some text parsing to clean up these data\n\n10-Jun should be 6-10\n15-Nov should be 11-15\n\nNew R package: stringr"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#install-and-load-stringr",
+    "href": "labs/r-foundations/r-01-getting-started.html#install-and-load-stringr",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Install and load: stringr",
+    "text": "Install and load: stringr\n\nInstall:\n\n\nLoad:\n\n\nPackage reference: Most R packages come with a vignette that describe in detail what each function does and how to use them, they’re incredibly useful resources (in addition to other worked out examples on the web) https://cran.r-project.org/web/packages/stringr/vignettes/stringr.html"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#replace-with-str_replace-and-add-new-variables-with-mutate",
+    "href": "labs/r-foundations/r-01-getting-started.html#replace-with-str_replace-and-add-new-variables-with-mutate",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Replace with str_replace() and add new variables with mutate()",
+    "text": "Replace with str_replace() and add new variables with mutate()\n\nRemember we want to do the following in the bike_age_group variable: 10-Jun should be 6-10 and 15-Nov should be 11-15\n\n\nNote that we’re overwriting existing data and columns, so be careful!\n\nBut remember, it’s easy to revert if you make a mistake since we didn’t touch the raw data, we can always reload it and start over"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#check-before-you-move-on",
+    "href": "labs/r-foundations/r-01-getting-started.html#check-before-you-move-on",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Check before you move on",
+    "text": "Check before you move on\nAlways check your changes and confirm code did what you wanted it to do\n\n## # A tibble: 12 × 2\n##    bike_age_group count\n##    &lt;chr&gt;          &lt;int&gt;\n##  1 0-5               86\n##  2 11-15            933\n##  3 16-19            794\n##  4 20-24            910\n##  5 25-29            578\n##  6 30-39            881\n##  7 40-49           1144\n##  8 50-59           1013\n##  9 6-10             537\n## 10 60-69            382\n## 11 70+               96\n## 12 Unknown          113"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#slice-for-certain-row-numbers",
+    "href": "labs/r-foundations/r-01-getting-started.html#slice-for-certain-row-numbers",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "slice() for certain row numbers",
+    "text": "slice() for certain row numbers\nFirst five\n\n## # A tibble: 5 × 66\n##   geo_point         geo_shape bike_race city  bike_pos num_units crash_hour\n##   &lt;chr&gt;             &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;        &lt;dbl&gt;      &lt;dbl&gt;\n## 1 35.3336070056, -… \"{\\\"type… Black     None… Bike La…         2          6\n## 2 36.3151872016, -… \"{\\\"type… Black     Hend… Travel …         2         20\n## 3 35.5246969313, -… \"{\\\"type… White     None… Travel …         2         18\n## 4 34.3314967628, -… \"{\\\"type… Black     Whit… Unknown          2         18\n## 5 34.2347367682, -… \"{\\\"type… White     Wilm… Sidewal…         2         13\n## # ℹ 59 more variables: locality &lt;chr&gt;, bike_sex &lt;chr&gt;, drvr_veh_typ &lt;chr&gt;,\n## #   num_bikes_no &lt;dbl&gt;, bike_alc_drg &lt;chr&gt;, num_bikes_bi &lt;dbl&gt;,\n## #   rte_invd_cd &lt;dbl&gt;, drvr_race &lt;chr&gt;, workzone &lt;chr&gt;,\n## #   num_bikes_ci &lt;dbl&gt;, bike_age_group &lt;chr&gt;, crash_type &lt;chr&gt;,\n## #   rd_defects &lt;chr&gt;, crash_alcoh &lt;chr&gt;, bike_alcoho &lt;chr&gt;,\n## #   rd_conditio &lt;chr&gt;, dstnc_mi_frm &lt;dbl&gt;, rural_urban &lt;chr&gt;,\n## #   hit_run &lt;chr&gt;, crash_date &lt;chr&gt;, num_bikes_ui &lt;dbl&gt;, …"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#slice-for-certain-row-numbers-1",
+    "href": "labs/r-foundations/r-01-getting-started.html#slice-for-certain-row-numbers-1",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "slice() for certain row numbers",
+    "text": "slice() for certain row numbers\nLast five\n\n## # A tibble: 5 × 66\n##   geo_point         geo_shape bike_race city  bike_pos num_units crash_hour\n##   &lt;chr&gt;             &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;        &lt;dbl&gt;      &lt;dbl&gt;\n## 1 35.9642570698, -… \"{\\\"type… Black     High… Travel …         2         17\n## 2 34.249566771, -7… \"{\\\"type… Black     Wilm… Travel …         2         22\n## 3 35.269592006, -7… \"{\\\"type… Black     Kins… Travel …         2         13\n## 4 35.0222009072, -… \"{\\\"type… White     Faye… Travel …         2         21\n## 5 34.7845528978, -… \"{\\\"type… White     None… Travel …         3          6\n## # ℹ 59 more variables: locality &lt;chr&gt;, bike_sex &lt;chr&gt;, drvr_veh_typ &lt;chr&gt;,\n## #   num_bikes_no &lt;dbl&gt;, bike_alc_drg &lt;chr&gt;, num_bikes_bi &lt;dbl&gt;,\n## #   rte_invd_cd &lt;dbl&gt;, drvr_race &lt;chr&gt;, workzone &lt;chr&gt;,\n## #   num_bikes_ci &lt;dbl&gt;, bike_age_group &lt;chr&gt;, crash_type &lt;chr&gt;,\n## #   rd_defects &lt;chr&gt;, crash_alcoh &lt;chr&gt;, bike_alcoho &lt;chr&gt;,\n## #   rd_conditio &lt;chr&gt;, dstnc_mi_frm &lt;dbl&gt;, rural_urban &lt;chr&gt;,\n## #   hit_run &lt;chr&gt;, crash_date &lt;chr&gt;, num_bikes_ui &lt;dbl&gt;, …"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#select-to-keep-only-the-variables-you-mention",
+    "href": "labs/r-foundations/r-01-getting-started.html#select-to-keep-only-the-variables-you-mention",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "select() to keep only the variables you mention",
+    "text": "select() to keep only the variables you mention\n\n##                       hit_run\n## crash_location           No  Yes\n##   Intersection         2878  352\n##   Intersection-Related  369   72\n##   Non-Intersection     2876  587\n##   Non-Roadway           281   38\n##   Unknown Location        3    7"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#or-selectto-exclude-variables",
+    "href": "labs/r-foundations/r-01-getting-started.html#or-selectto-exclude-variables",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "or select()to exclude variables",
+    "text": "or select()to exclude variables\n\n## # A tibble: 7,467 × 65\n##    geo_point        geo_shape bike_race city  bike_pos num_units crash_hour\n##    &lt;chr&gt;            &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;        &lt;dbl&gt;      &lt;dbl&gt;\n##  1 35.3336070056, … \"{\\\"type… Black     None… Bike La…         2          6\n##  2 36.3151872016, … \"{\\\"type… Black     Hend… Travel …         2         20\n##  3 35.5246969313, … \"{\\\"type… White     None… Travel …         2         18\n##  4 34.3314967628, … \"{\\\"type… Black     Whit… Unknown          2         18\n##  5 34.2347367682, … \"{\\\"type… White     Wilm… Sidewal…         2         13\n##  6 34.7061968304, … \"{\\\"type… Native A… None… Travel …         2         17\n##  7 34.912756854, -… \"{\\\"type… White     None… Bike La…         2         17\n##  8 35.7759970789, … \"{\\\"type… Black     Rale… Unknown          2          7\n##  9 34.3486067664, … \"{\\\"type… Black     Whit… Unknown          2         15\n## 10 35.1149669893, … \"{\\\"type… Black     New … Travel …         2          2\n## # ℹ 7,457 more rows\n## # ℹ 58 more variables: locality &lt;chr&gt;, bike_sex &lt;chr&gt;, drvr_veh_typ &lt;chr&gt;,\n## #   num_bikes_no &lt;dbl&gt;, bike_alc_drg &lt;chr&gt;, num_bikes_bi &lt;dbl&gt;,\n## #   rte_invd_cd &lt;dbl&gt;, drvr_race &lt;chr&gt;, workzone &lt;chr&gt;,\n## #   num_bikes_ci &lt;dbl&gt;, bike_age_group &lt;chr&gt;, crash_type &lt;chr&gt;,\n## #   rd_defects &lt;chr&gt;, crash_alcoh &lt;chr&gt;, bike_alcoho &lt;chr&gt;,\n## #   rd_conditio &lt;chr&gt;, dstnc_mi_frm &lt;dbl&gt;, rural_urban &lt;chr&gt;, …"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#rename-specific-columns",
+    "href": "labs/r-foundations/r-01-getting-started.html#rename-specific-columns",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "rename() specific columns",
+    "text": "rename() specific columns\nCorrect typos and rename to make variable names shorter and/or more informative\n\nOriginal names:\n\n\n##  [1] \"geo_point\"      \"geo_shape\"      \"bike_race\"      \"city\"          \n##  [5] \"bike_pos\"       \"num_units\"      \"crash_hour\"     \"locality\"      \n##  [9] \"bike_sex\"       \"drvr_veh_typ\"   \"num_bikes_no\"   \"bike_alc_drg\"  \n## [13] \"num_bikes_bi\"   \"rte_invd_cd\"    \"drvr_race\"      \"workzone\"      \n## [17] \"num_bikes_ci\"   \"bike_age_group\" \"crash_type\"     \"rd_defects\"    \n## [21] \"crash_alcoh\"    \"bike_alcoho\"    \"rd_conditio\"    \"dstnc_mi_frm\"  \n## [25] \"rural_urban\"    \"hit_run\"        \"crash_date\"     \"num_bikes_ui\"  \n## [29] \"crash_time\"     \"drvr_sex\"       \"drvr_alcoho\"    \"developmen\"    \n## [33] \"crash_sevr\"     \"ambulance_req\"  \"drvr_injury\"    \"object_id\"     \n## [37] \"crash_month\"    \"num_bikes_ki\"   \"rd_characte\"    \"region\"        \n## [41] \"bike_dir\"       \"traff_cntrl\"    \"crash_day\"      \"crash_location\"\n## [45] \"bike_age\"       \"num_bikes_to\"   \"rd_config\"      \"num_lanes\"     \n## [49] \"num_bikes_ai\"   \"drvr_alc_drg\"   \"on_road\"        \"rd_surface\"    \n## [53] \"towrd_rd\"       \"rd_feature\"     \"crash_grp\"      \"rd_class\"      \n## [57] \"bike_injury\"    \"county\"         \"drvr_age\"       \"weather\"       \n## [61] \"frm_rd\"         \"drvr_est_spd\"   \"speed_limit\"    \"crash_year\"    \n## [65] \"light_cond\"     \"drvr_age_group\"\n\n\nRename Speed_Limi to Speed_Limit:"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#check-before-you-move-on-1",
+    "href": "labs/r-foundations/r-01-getting-started.html#check-before-you-move-on-1",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Check before you move on",
+    "text": "Check before you move on\nAlways check your changes and confirm code did what you wanted it to do\n\n##  [1] \"geo_point\"      \"geo_shape\"      \"bike_race\"      \"city\"          \n##  [5] \"bike_pos\"       \"num_units\"      \"crash_hour\"     \"locality\"      \n##  [9] \"bike_sex\"       \"drvr_veh_typ\"   \"num_bikes_no\"   \"bike_alc_drg\"  \n## [13] \"num_bikes_bi\"   \"rte_invd_cd\"    \"drvr_race\"      \"workzone\"      \n## [17] \"num_bikes_ci\"   \"bike_age_group\" \"crash_type\"     \"rd_defects\"    \n## [21] \"crash_alcoh\"    \"bike_alcoho\"    \"rd_conditio\"    \"dstnc_mi_frm\"  \n## [25] \"rural_urban\"    \"hit_run\"        \"crash_date\"     \"num_bikes_ui\"  \n## [29] \"crash_time\"     \"drvr_sex\"       \"drvr_alcoho\"    \"developmen\"    \n## [33] \"crash_sevr\"     \"ambulance_req\"  \"drvr_injury\"    \"object_id\"     \n## [37] \"crash_month\"    \"num_bikes_ki\"   \"rd_characte\"    \"region\"        \n## [41] \"bike_dir\"       \"traff_cntrl\"    \"crash_day\"      \"crash_location\"\n## [45] \"bike_age\"       \"num_bikes_to\"   \"rd_config\"      \"num_lanes\"     \n## [49] \"num_bikes_ai\"   \"drvr_alc_drg\"   \"on_road\"        \"rd_surface\"    \n## [53] \"towrd_rd\"       \"rd_feature\"     \"crash_grp\"      \"rd_class\"      \n## [57] \"bike_injury\"    \"county\"         \"drvr_age\"       \"weather\"       \n## [61] \"frm_rd\"         \"drvr_est_spd\"   \"speed_limit\"    \"crash_year\"    \n## [65] \"light_cond\"     \"drvr_age_group\""
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#summarise-in-a-new-data-frame",
+    "href": "labs/r-foundations/r-01-getting-started.html#summarise-in-a-new-data-frame",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "summarise() in a new data frame",
+    "text": "summarise() in a new data frame\n\n## # A tibble: 12 × 2\n##    bike_age_group crash_count\n##    &lt;chr&gt;                &lt;int&gt;\n##  1 0-5                     86\n##  2 70+                     96\n##  3 Unknown                113\n##  4 60-69                  382\n##  5 6-10                   537\n##  6 25-29                  578\n##  7 16-19                  794\n##  8 30-39                  881\n##  9 20-24                  910\n## 10 11-15                  933\n## 11 50-59                 1013\n## 12 40-49                 1144"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#and-arrange-to-order-rows",
+    "href": "labs/r-foundations/r-01-getting-started.html#and-arrange-to-order-rows",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "and arrange() to order rows",
+    "text": "and arrange() to order rows\n\n## # A tibble: 12 × 2\n##    bike_age_group crash_count\n##    &lt;chr&gt;                &lt;int&gt;\n##  1 40-49                 1144\n##  2 50-59                 1013\n##  3 11-15                  933\n##  4 20-24                  910\n##  5 30-39                  881\n##  6 16-19                  794\n##  7 25-29                  578\n##  8 6-10                   537\n##  9 60-69                  382\n## 10 Unknown                113\n## 11 70+                     96\n## 12 0-5                     86"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#select-rows-with-sample_n-or-sample_frac",
+    "href": "labs/r-foundations/r-01-getting-started.html#select-rows-with-sample_n-or-sample_frac",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Select rows with sample_n() or sample_frac()",
+    "text": "Select rows with sample_n() or sample_frac()\n\nsample_n(): randomly sample 5 observations\n\n\n## [1]  5 66\n\n\nsample_frac(): randomly sample 20% of observations\n\n\n## [1] 1493   66"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#more-dplyr-resources",
+    "href": "labs/r-foundations/r-01-getting-started.html#more-dplyr-resources",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "More dplyr resources",
+    "text": "More dplyr resources\n\nVisit https://cran.r-project.org/web/packages/dplyr/vignettes/introduction.html for the package vignette.\nRefer to the dplyr cheatsheet."
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#few-important-r-syntax-notes",
+    "href": "labs/r-foundations/r-01-getting-started.html#few-important-r-syntax-notes",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Few important R syntax notes",
+    "text": "Few important R syntax notes\nFor when not working with dplyr or ggplot2\n\nRefer to a variable in a dataset as bike$crash_location\nAccess any element in a dataframe using square brackets\n\n\n## # A tibble: 1 × 1\n##   bike_pos                  \n##   &lt;chr&gt;                     \n## 1 Bike Lane / Paved Shoulder\n\n- For all observations in row 1: `bike[1, ]`\n- For all observations in column 5: `bike[, 5]`"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#want-more-r",
+    "href": "labs/r-foundations/r-01-getting-started.html#want-more-r",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Want more R?",
+    "text": "Want more R?\n\nLocal install\n\nR: https://cran.r-project.org/\nRStudio: https://www.rstudio.com/products/RStudio/#Desktop\n\nResources for learning R:\n\nCoursera\nDataCamp\nMany many online demos, resources, examples, as well as books\n\nDebugging R errors:\n\nRead the error!\nStackOverflow\n\nKeeping up with what’s new in R land:\n\nR-bloggers\nTwitter: #rstats"
+  },
+  {
+    "objectID": "labs/r-foundations/r-01-getting-started.html#your-turn-4",
+    "href": "labs/r-foundations/r-01-getting-started.html#your-turn-4",
+    "title": "Learn basics of R workshop KPRA",
+    "section": "Your turn",
+    "text": "Your turn\nCreate a new dataframe that doesn’t include observations where bike_injury = Injury since it’s not clear what this means.\nThis new dataframe also should include observations in Durham, and where the biker is a teenager (13 to 19 years, inclusive).\nCreate a visualization that will help answer whether facing traffic or riding with traffic (Bike_Dir) is more dangerous in bike crashes for teenagers in Durham, based on the bike_injury variable."
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html",
+    "title": "Basic Data Handling Techniques in R",
     "section": "",
-    "text": "Time series models are those where the data occurs in sequential time periods, so that there is a concept of progression of time. As opposed to this we have cross section models, where the data is from the same period of time but taken from different places. Within time series models, the simplest type is the static model. In static models, all the action takes place within one time period, and there is no effect of activity in one time period on the next. The simplest consumption function is the Keynesian consumption function, which is a static function. It says that current consumption depends only on current income, so that \\(C_t = f(Y_t)\\). Assuming that the function is linear, and that there can be a random error, leads to the simplest Keynesian consumption function: \\(C_t =\\alpha + \\beta Y_t + \\epsilon_t\\)\n\nData on annual income and consumption for Pakistan with some approximations due to definition issues of consumption expenditure over time (main source :WDI) has been used for this lecture. Figure 1 indicates that both consumption and income are trending variables.\n\n\n\n\n\n\n\nFigure 1: Consumption and Income per capita over time\n\n\n\n\nThe Keynesian consumption function is one of the most widely accepted and estimated regression models. The causal hypothesis is that Income (GDP) determines Consumption (Con): \\(GDP \\Rightarrow Con\\). The simplest regression model which embodies this relationship is: \\(C = \\alpha + \\beta Y\\). Running this regression on the data Table 1 gives the first five observations of the regression results.\n\n\n\nTable 1\n\n\n\n  \n\n\n\n\n\n\nNow we have regression results in Table 2.\n\n\n\nTable 2: Regression results of Consumption on Income\n\n\n\n\n    \n\n\n      \n\n \n                (1)\n              \n+ p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001\n\n\n(Intercept)\n                  -4.418\n                \n\n\n                  (15.424)\n                \n\nY\n                  0.785***\n                \n\n\n                  (0.020)\n                \n\nNum.Obs.\n                  52\n                \n\nR2\n                  0.970\n                \n\nR2 Adj.\n                  0.969\n                \n\nAIC\n                  509.1\n                \n\nBIC\n                  515.0\n                \n\nLog.Lik.\n                  -251.556\n                \n\nF\n                  1589.518\n                \n\nRMSE\n                  30.53\n                \n\n\n\n\n\n\n\n\n\nThe regression has \\(R^2\\) of 0.97, which is interpreted to mean that \\(97\\%\\) of the variation in Pakistani Consumption can be explained by the Pakistani GDP. The \\(t-stat=\\frac{0.785}{0.020}=39\\) shows that the coefficient income is highly significant. The \\(p-value\\) of \\(0.000\\) means we can reject the null hypothesis that the true coefficient is zero, corresponding to the idea that \\(Y\\) has no influence on \\(C\\). Validity of regression results depends on a large number of assumptions, which are discussed in econometrics textbooks.\nHere is the plot of residuals of regressing Per Capita consumption in Pakistan on Per Capita GDP from 1967 to 2018.\n\n\n\n\n\n\n\nFigure 2\n\n\n\n\nOne of the central assumptions is that the regression residuals should be random, and should come from a common distribution. Figure 2 indicates high correlation among the residuals and these dont follow random pattern. This plot shows serious problems, since these residuals display systematic behavior. They are all negative and small early. To see how these patterns differ from independent random variables, we provide a graph of independent random variables with mean 0 and standard error 4.579, matching the estimated regression model standard error. The Keynesian consumption function is one of the most widely accepted and estimated regression models. To verify further,we have some more analysis of these residuals to assess normality, heteroscedasticity and independence given in Figure 3.\n\n\n\n\n\n\n\nFigure 3\n\n\n\n\nThe causal hypothesis is that Income (GDP) determines Consumption (Con): \\(GDP \\Rightarrow Con\\). There may be a deterministic trend and now I regress consumption on trend and show graphical results of trend model and residuals are given in Figure 4.:\n\n\n\n\n\n\n\nFigure 4: Consumption and Income per capita over time\n\n\n\n\nRandom residuals frequently switch signs. They do not display any patterns in sequencing. The patterned residuals in the consumption function prove that the regression is not valid. In such situations, econometricians typically assume that the problem is due to missing regressors or wrong functional form. By adding suitable additional regressors, and modifying the functional form, one can generally ensure that the residuals appear to satisfy the assumptions made about them."
+    "text": "You go into data analysis with the tools you know, not the tools you need\n\nThe next couple of days are all about giving you the tools you need\n\nAdmittedly, a bit before you know what you need them for\n\n\n\nWe will extend them as we learn specific models\n\n\n\n\nFree and open source\n\nA very large community\n\nWritten by statisticians for statistics\nMost packages are written for R first\n\n\nCan handle virtually any data format\nMakes replication easy\nCan integrate into documents (with R markdown)\n\nR is a language so it can do everything\n\nA good stepping stone to learning other languages like Python\n\n\n\n\n\n\n\n\n\n\n\nCode\nOutput\n\n\n\n\nggplot(data = gapminder, \n       aes(x = gdpPercap,\n           y = lifeExp,\n           color = continent))+\n  geom_point(alpha=0.3)+\n  geom_smooth(method = \"lm\")+\n    scale_x_log10(breaks=c(1000,10000, 100000),\n                  label=scales::dollar)+\n    labs(x = \"GDP/Capita\",\n         y = \"Life Expectancy (Years)\")+\n  facet_wrap(~continent)+\n  guides(color = F)+\n  theme_light()\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nInput\nOutput\n\n\n\nThe average GDP per capita is ` r dollar(mean(gapminder$gdpPercap)) ` with a standard deviation of ` r dollar(sd(gapminder$gdpPercap)) `.\n\n\nThe average GDP per capita is $7,215.33 with a standard deviation of $9,857.45.\n\n\n\n\n\nlibrary(leaflet)\nleaflet() %&gt;%\n  addTiles() %&gt;%\n  addMarkers(lng = 73.136946, lat =33.748294 ,\n             popup = \"School of Economics, QAU, Islamabad\")"
   },
   {
-    "objectID": "labs/lab-05-consumption-function.html#keynesian-consumption-function-for-pakistan",
-    "href": "labs/lab-05-consumption-function.html#keynesian-consumption-function-for-pakistan",
-    "title": "Understanding econometric modeling with simple  Consumption Function for Pakistan",
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#data-science",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#data-science",
+    "title": "Basic Data Handling Techniques in R",
     "section": "",
-    "text": "Time series models are those where the data occurs in sequential time periods, so that there is a concept of progression of time. As opposed to this we have cross section models, where the data is from the same period of time but taken from different places. Within time series models, the simplest type is the static model. In static models, all the action takes place within one time period, and there is no effect of activity in one time period on the next. The simplest consumption function is the Keynesian consumption function, which is a static function. It says that current consumption depends only on current income, so that \\(C_t = f(Y_t)\\). Assuming that the function is linear, and that there can be a random error, leads to the simplest Keynesian consumption function: \\(C_t =\\alpha + \\beta Y_t + \\epsilon_t\\)\n\nData on annual income and consumption for Pakistan with some approximations due to definition issues of consumption expenditure over time (main source :WDI) has been used for this lecture. Figure 1 indicates that both consumption and income are trending variables.\n\n\n\n\n\n\n\nFigure 1: Consumption and Income per capita over time\n\n\n\n\nThe Keynesian consumption function is one of the most widely accepted and estimated regression models. The causal hypothesis is that Income (GDP) determines Consumption (Con): \\(GDP \\Rightarrow Con\\). The simplest regression model which embodies this relationship is: \\(C = \\alpha + \\beta Y\\). Running this regression on the data Table 1 gives the first five observations of the regression results.\n\n\n\nTable 1\n\n\n\n  \n\n\n\n\n\n\nNow we have regression results in Table 2.\n\n\n\nTable 2: Regression results of Consumption on Income\n\n\n\n\n    \n\n\n      \n\n \n                (1)\n              \n+ p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001\n\n\n(Intercept)\n                  -4.418\n                \n\n\n                  (15.424)\n                \n\nY\n                  0.785***\n                \n\n\n                  (0.020)\n                \n\nNum.Obs.\n                  52\n                \n\nR2\n                  0.970\n                \n\nR2 Adj.\n                  0.969\n                \n\nAIC\n                  509.1\n                \n\nBIC\n                  515.0\n                \n\nLog.Lik.\n                  -251.556\n                \n\nF\n                  1589.518\n                \n\nRMSE\n                  30.53\n                \n\n\n\n\n\n\n\n\n\nThe regression has \\(R^2\\) of 0.97, which is interpreted to mean that \\(97\\%\\) of the variation in Pakistani Consumption can be explained by the Pakistani GDP. The \\(t-stat=\\frac{0.785}{0.020}=39\\) shows that the coefficient income is highly significant. The \\(p-value\\) of \\(0.000\\) means we can reject the null hypothesis that the true coefficient is zero, corresponding to the idea that \\(Y\\) has no influence on \\(C\\). Validity of regression results depends on a large number of assumptions, which are discussed in econometrics textbooks.\nHere is the plot of residuals of regressing Per Capita consumption in Pakistan on Per Capita GDP from 1967 to 2018.\n\n\n\n\n\n\n\nFigure 2\n\n\n\n\nOne of the central assumptions is that the regression residuals should be random, and should come from a common distribution. Figure 2 indicates high correlation among the residuals and these dont follow random pattern. This plot shows serious problems, since these residuals display systematic behavior. They are all negative and small early. To see how these patterns differ from independent random variables, we provide a graph of independent random variables with mean 0 and standard error 4.579, matching the estimated regression model standard error. The Keynesian consumption function is one of the most widely accepted and estimated regression models. To verify further,we have some more analysis of these residuals to assess normality, heteroscedasticity and independence given in Figure 3.\n\n\n\n\n\n\n\nFigure 3\n\n\n\n\nThe causal hypothesis is that Income (GDP) determines Consumption (Con): \\(GDP \\Rightarrow Con\\). There may be a deterministic trend and now I regress consumption on trend and show graphical results of trend model and residuals are given in Figure 4.:\n\n\n\n\n\n\n\nFigure 4: Consumption and Income per capita over time\n\n\n\n\nRandom residuals frequently switch signs. They do not display any patterns in sequencing. The patterned residuals in the consumption function prove that the regression is not valid. In such situations, econometricians typically assume that the problem is due to missing regressors or wrong functional form. By adding suitable additional regressors, and modifying the functional form, one can generally ensure that the residuals appear to satisfy the assumptions made about them."
+    "text": "You go into data analysis with the tools you know, not the tools you need\n\nThe next couple of days are all about giving you the tools you need\n\nAdmittedly, a bit before you know what you need them for\n\n\n\nWe will extend them as we learn specific models"
   },
   {
-    "objectID": "labs/lab-05-consumption-function.html#sec-autocorr",
-    "href": "labs/lab-05-consumption-function.html#sec-autocorr",
-    "title": "Understanding econometric modeling with simple  Consumption Function for Pakistan",
-    "section": "2. What to do when errors are not independent?",
-    "text": "2. What to do when errors are not independent?\nNote that \\(e_t=y_t-\\hat{\\beta}x_t\\) and \\(e_{t-1}=y_{t-1}-\\hat{\\beta}x_{t-1}\\). A relationship between the two errors shows that what happens in period \\(t-1\\) has an effect on what happens in period \\(t\\). In other words, we have a dynamic model instead of a static model."
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#r",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#r",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "",
+    "text": "Free and open source\n\nA very large community\n\nWritten by statisticians for statistics\nMost packages are written for R first\n\n\nCan handle virtually any data format\nMakes replication easy\nCan integrate into documents (with R markdown)\n\nR is a language so it can do everything\n\nA good stepping stone to learning other languages like Python"
   },
   {
-    "objectID": "labs/lab-05-consumption-function.html#sec-static_dynamic",
-    "href": "labs/lab-05-consumption-function.html#sec-static_dynamic",
-    "title": "Understanding econometric modeling with simple  Consumption Function for Pakistan",
-    "section": "STATIC VERSUS DYNAMIC MODELS",
-    "text": "STATIC VERSUS DYNAMIC MODELS\nA model of the type \\(C_t = \\alpha + \\beta Y_t + e_t\\) is called a static model. Events in time period \\(t\\) are isolated from those of period \\(t-1\\) and \\(t+1\\). As opposed to this, if data from period \\(t-1\\) enters into the equation for period \\(t\\), then we have dynamic model.\nSuppose that we conduct tests and learn that \\(e_t\\) is correlated with \\(e_{t-1}\\). Note that \\(e_{t-1}=C_{t-1}-\\alpha-\\beta Y_{t-1}\\). It follows that \\(C_{t-1}\\) and \\(Y_{t-1}\\) have an effect on current consumption.\nThe main message of correlated residuals is that variables from one period ago have an effect on current period. ?@sec-static-dynamic shows that the static model is not valid.\nThus in order to fix up the problem of correlated residuals, we need to build a dynamic model. The simplest dynamic extension of the Keynesian model is the following: \\[C_t=\\alpha+\\beta Y_t+\\gamma C_{t-1}+\\delta Y_{t-1}+e_t\\]\nWe put in ALL the information we have about ALL the variables in the model at period \\(t-1\\). Similarly we could go back to period \\(t-2\\). As in Section 2, we could have \\(e_t\\) correlated with \\(e_{t-1}\\) and \\(e_{t-2}\\). This would suggest a second order dynamic model. We could keep increasing the order of the model until we get to a point where the errors are not correlated.\nGeneral-to-Simple vs. Simple-to-General Modelling:\nIn fixing problems detected by tests, there are two strategies which are commonly used. The older and more traditional strategy is called the bottom-up or simple-to-general strategy. In this strategy, we would start with the simplest model, which is a static Keynesian model. Then we note that the errors are correlated. Then we make the simplest dynamic extension. Next we test the errors. If the problem of autocorrelation has been eliminated then we stop here. If there is still autocorrelation, it follows that a higher order dynamic model is needed. So we go to a second order model. We keep increasing the order (and complexity) of the model until we get to a point where the errors are not autocorrelated. This is one aspect of simple-to-general modelling.\nThe alternative to this which has recently been proposed, and shown to have superior properties, is general to simple modelling. In this method, we note that errors seem to be correlated upto the fourth order. So we start with a fourth order dynamic model. In general the goal is to start with the biggest model you might possibly need and simplify it down to a simpler model. This is called the top-down or general to simple strategy. We have illustrated this on the data set as well. The final model which emerges from our analysis is \\(C_t = \\alpha + \\beta Y_t + \\gamma C_{t-1} + e_t\\). However, this model suffers from both structural change and heteroskedasticity. This suggests that we should try a log transformation to get rid of the heteroskedasticity. Perhaps this will eliminate or reduce the structural change problem as well.\nthe simple Keynesian consumption function \\(C_t= \\alpha + \\beta Y_t + e_t\\) failed several tests on Pakistani data – it has autocorrelated errors, and maybe structural stability.\nHow should we proceed? Experience with consumption functions shows that they very often have dynamic properties. This is indicated by the autocorrelation of the errors as well. Thus we try the simplest dynamic extension:"
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#excel-or-stata-cant-do-this",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#excel-or-stata-cant-do-this",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "",
+    "text": "Code\nOutput\n\n\n\n\nggplot(data = gapminder, \n       aes(x = gdpPercap,\n           y = lifeExp,\n           color = continent))+\n  geom_point(alpha=0.3)+\n  geom_smooth(method = \"lm\")+\n    scale_x_log10(breaks=c(1000,10000, 100000),\n                  label=scales::dollar)+\n    labs(x = \"GDP/Capita\",\n         y = \"Life Expectancy (Years)\")+\n  facet_wrap(~continent)+\n  guides(color = F)+\n  theme_light()"
   },
   {
-    "objectID": "labs/lab-05-consumption-function.html#dynamic-model",
-    "href": "labs/lab-05-consumption-function.html#dynamic-model",
-    "title": "Understanding econometric modeling with simple  Consumption Function for Pakistan",
-    "section": "Dynamic Model",
-    "text": "Dynamic Model\nWe start with General to Specific approach and include upto three lags of both consumption and income. There is no hard and fast rule but it is suggested that number of regressors should not exceed number of observations. We have in total 52 observations we can select 3 or 4 lages of each (had it been quarterly data we would have selected 4 lags of each). Some studies suggest to have regressor should not exceed one third of the total number of observations.\n\n\n\nTable 3: Dynamic Consumption Function\n\n\n\n\n    \n\n\n      \n\n \n                (1)\n              \n\n\n(Intercept)\n                  -8.881 (8.590)\n                \n\n\n                  (8.590)\n                \n\nY\n                  0.618 (0.169)***\n                \n\n\n                  (0.169)\n                \n\nlag(Y, 1)\n                  -0.118 (0.296)\n                \n\n\n                  (0.296)\n                \n\nlag(C, 1)\n                  0.798 (0.156)***\n                \n\n\n                  (0.156)\n                \n\nlag(Y, 2)\n                  -0.544 (0.297)+\n                \n\n\n                  (0.297)\n                \n\nlag(C, 2)\n                  0.114 (0.189)\n                \n\n\n                  (0.189)\n                \n\nlag(Y, 3)\n                  0.105 (0.214)\n                \n\n\n                  (0.214)\n                \n\nlag(C, 3)\n                  0.025 (0.159)\n                \n\n\n                  (0.159)\n                \n\nNum.Obs.\n                  49\n                \n\nR2\n                  0.993\n                \n\nR2 Adj.\n                  0.992\n                \n\nAIC\n                  417.0\n                \n\nBIC\n                  434.0\n                \n\nLog.Lik.\n                  -199.494\n                \n\nF\n                  817.725\n                \n\nRMSE\n                  14.19\n                \n\n\n\n\n\n\n\n\n\nResults in Table 3 indicate that \\(Y\\) and first lag of \\(C\\) are highly significant and second lag of Y is significant at 10%. So by standard statistical procedure, one should drop all variables and re-run the regression with significant variables as follows:\n\n\nRows: 50\nColumns: 11\n$ year        &lt;dbl&gt; 1969, 1970, 1971, 1972, 1973, 1974, 1975, 1976, 1977, 1978…\n$ C           &lt;dbl&gt; 348.4950, 380.0568, 365.3227, 356.0221, 367.2798, 396.0909…\n$ Y           &lt;dbl&gt; 433.0744, 469.4377, 459.0634, 450.3759, 469.0675, 472.1552…\n$ lnc         &lt;dbl&gt; 5.853624, 5.940320, 5.900781, 5.874993, 5.906124, 5.981644…\n$ lny         &lt;dbl&gt; 6.070910, 6.151536, 6.129189, 6.110083, 6.150747, 6.157308…\n$ c_y         &lt;dbl&gt; 0.9642087, 0.9656647, 0.9627345, 0.9615243, 0.9602288, 0.9…\n$ cdividy     &lt;dbl&gt; 0.8047000, 0.8096000, 0.7958000, 0.7905000, 0.7830001, 0.8…\n$ Trend       &lt;int&gt; 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 1…\n$ resid       &lt;dbl&gt; 12.763683, 15.764683, 9.178845, 6.701742, 3.278557, 29.664…\n$ trend_resid &lt;dbl&gt; 30.063569, 50.242900, 24.126271, 3.443237, 3.318460, 20.74…\n$ g2s1res     &lt;dbl&gt; 12.222517, 12.470682, -20.045428, 4.372311, 9.566801, 22.8…\n\n\n\nTable 4: Dynamic Consumption Function\n\n\n\n\n    \n\n\n      \n\n \n                (1)\n              \n\n\n(Intercept)\n                  -7.094 (8.024)\n                \n\n\n                  (8.024)\n                \n\nY\n                  0.527 (0.101)***\n                \n\n\n                  (0.101)\n                \n\nlag(C, 1)\n                  0.896 (0.071)***\n                \n\n\n                  (0.071)\n                \n\nlag(Y, 2)\n                  -0.438 (0.097)***\n                \n\n\n                  (0.097)\n                \n\nNum.Obs.\n                  50\n                \n\nR2\n                  0.993\n                \n\nR2 Adj.\n                  0.992\n                \n\nAIC\n                  419.7\n                \n\nBIC\n                  429.3\n                \n\nLog.Lik.\n                  -204.854\n                \n\nF\n                  2082.114\n                \n\nRMSE\n                  14.56\n                \n\n\n\n\n\n\n\n\n\nOh great now we have all the variables are highly significant in Table 4 and if residuals satisfy all standard assumptions, it will be perfect fit. So lets have a look at the residuals behavior.\nLets have first look at residuals plot over time.\n\n\n\n\n\n\n\nFigure 5: Residuals of Dynamic Consumption Function\n\n\n\n\nFrom Figure 5, it seems residuals are behaving randomly. Lets apply some more tests before I finalize the model.\n\n\n\n\n\n\n\n\nThis seems quite a good job. But what about theoretical interpretation."
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#or-this",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#or-this",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "",
+    "text": "Input\nOutput\n\n\n\nThe average GDP per capita is ` r dollar(mean(gapminder$gdpPercap)) ` with a standard deviation of ` r dollar(sd(gapminder$gdpPercap)) `.\n\n\nThe average GDP per capita is $7,215.33 with a standard deviation of $9,857.45."
   },
   {
-    "objectID": "labs/lab-05-consumption-function.html#multicolinearity-and-economic-rationale",
-    "href": "labs/lab-05-consumption-function.html#multicolinearity-and-economic-rationale",
-    "title": "Understanding econometric modeling with simple  Consumption Function for Pakistan",
-    "section": "Multicolinearity and economic rationale",
-    "text": "Multicolinearity and economic rationale\nNow if we interpret and explain our model, it will be fine to say that consumption is function of current income, but little difficult to justify 2 years lagged income effect on consumption while no effect of One year lagged income. As first two coefficient makes sense and we shall also learn about these later on as well. But instead of first lag of income , what does explain second lag to be in the model either needs a very solid reason or needs econometric model to be explored little more.\nAs in time series data there is very high correlation of variables with their own lagged values. So lets have a look at the correlation matrix and observe how highly they are correlated with each other.\n\n\n          C     Y lagY1 lagY2 lagY3 lagC1 lagC2 lagC3\nC     1.000 0.983 0.979 0.973 0.968 0.994 0.987 0.983\nY     0.983 1.000 0.998 0.994 0.989 0.982 0.980 0.979\nlagY1 0.979 0.998 1.000 0.998 0.994 0.982 0.981 0.979\nlagY2 0.973 0.994 0.998 1.000 0.998 0.979 0.982 0.981\nlagY3 0.968 0.989 0.994 0.998 1.000 0.974 0.980 0.982\nlagC1 0.994 0.982 0.982 0.979 0.974 1.000 0.994 0.988\nlagC2 0.987 0.980 0.981 0.982 0.980 0.994 1.000 0.994\nlagC3 0.983 0.979 0.979 0.981 0.982 0.988 0.994 1.000\n\n\nThis correlation plot indicated very correlation between variables and their lags which implies these variables have very high multicollinearity and indicating they are almost perfect substitutes. Economic rationale suggests that first lag of income should be more relevant in explaining current consumption than that of second lag of income. Correlation between lag(Y,1) and lag(Y,2) is 0.998, therefore, lets use first lag of Y in the model.\n\n\n\n\n    \n\n\n      \n\n \n                (1)\n              \n\n\n(Intercept)\n                  -7.375 (7.985)\n                \n\n\n                  (7.985)\n                \n\nY\n                  0.727 (0.156)***\n                \n\n\n                  (0.156)\n                \n\nlag(C, 1)\n                  0.903 (0.074)***\n                \n\n\n                  (0.074)\n                \n\nlag(Y, 1)\n                  -0.639 (0.161)***\n                \n\n\n                  (0.161)\n                \n\nNum.Obs.\n                  51\n                \n\nR2\n                  0.992\n                \n\nR2 Adj.\n                  0.992\n                \n\nAIC\n                  430.8\n                \n\nBIC\n                  440.4\n                \n\nLog.Lik.\n                  -210.392\n                \n\nF\n                  2067.854\n                \n\nRMSE\n                  14.98\n                \n\n\n\n\n\n\n\nOh that makes sense and current consumption is explained by current income, past year consumption and past year income and all other variables are insignificant. This model pass all diagnostic tests as well."
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#or-this-1",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#or-this-1",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "",
+    "text": "library(leaflet)\nleaflet() %&gt;%\n  addTiles() %&gt;%\n  addMarkers(lng = 73.136946, lat =33.748294 ,\n             popup = \"School of Economics, QAU, Islamabad\")"
   },
   {
-    "objectID": "labs/lab-05-consumption-function.html#summary-and-conclusion",
-    "href": "labs/lab-05-consumption-function.html#summary-and-conclusion",
-    "title": "Understanding econometric modeling with simple  Consumption Function for Pakistan",
-    "section": "Summary and conclusion",
-    "text": "Summary and conclusion"
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#r-and-r-studio",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#r-and-r-studio",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "R and R Studio",
+    "text": "R and R Studio\n\n\n\nR is the programming language that executes commands\n\nCould run this from your computer’s shell\n\nOn Windows: Command prompt\n\nOn Mac/Linux: Terminal"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#r-and-r-studio-1",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#r-and-r-studio-1",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "R and R Studio",
+    "text": "R and R Studio\n\n\n\n\nR Studio1 is an integrated development environment (IDE) that makes your coding life a lot easier\n\nWrite code in scripts\nExecute individual commands & scripts\nAuto-complete, highlight syntax\nView data, objects, and plots\nGet help and documentation on commands and functions\nIntegrate code into documents with Quarto"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#r-studio-four-panes",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#r-studio-four-panes",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "R Studio — Four Panes",
+    "text": "R Studio — Four Panes"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#ways-to-use-r-studio-using-the-console",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#ways-to-use-r-studio-using-the-console",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "Ways to Use R Studio: Using the Console",
+    "text": "Ways to Use R Studio: Using the Console\n\n\n\nType individual commands into the console pane (bottom left)\nGreat for testing individual commands to see what happens\nNot saved! Not reproducible! Not recommended!"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#ways-to-use-r-studio-writing-a-.r-script",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#ways-to-use-r-studio-writing-a-.r-script",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "Ways to Use R Studio: Writing a .R Script",
+    "text": "Ways to Use R Studio: Writing a .R Script\n\n\n\nSource pane is a text-editor\nMake .R files: all input commands in a single script\nComment with #\nCan run any or all of script at once\nCan save, reproduce, and send to others!"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#section",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#section",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "",
+    "text": "I have discussed the Gapminder dataset in my videos and we shall use it as a reference for this training. It’s available through CRAN, so make sure to install it. Here’s how to load in all required packages:"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#the-dataset-is-provided-in-the-gapminder-library",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#the-dataset-is-provided-in-the-gapminder-library",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "The dataset is provided in the gapminder library",
+    "text": "The dataset is provided in the gapminder library\n\nlibrary(gapminder)\n\ngapminder %&gt;% filter(country==\"Sweden\")%&gt;%\n  mutate(gdpPercap=round(gdpPercap,0), lifeExp=round(lifeExp,2))%&gt;%kable()%&gt;%\n  kable_styling(bootstrap_options = \"striped\", full_width = F)\n\n\n\ncountry\ncontinent\nyear\nlifeExp\npop\ngdpPercap\n\n\n\nSweden\nEurope\n1952\n71.86\n7124673\n8528\n\n\nSweden\nEurope\n1957\n72.49\n7363802\n9912\n\n\nSweden\nEurope\n1962\n73.37\n7561588\n12329\n\n\nSweden\nEurope\n1967\n74.16\n7867931\n15258\n\n\nSweden\nEurope\n1972\n74.72\n8122293\n17832\n\n\nSweden\nEurope\n1977\n75.44\n8251648\n18856\n\n\nSweden\nEurope\n1982\n76.42\n8325260\n20667\n\n\nSweden\nEurope\n1987\n77.19\n8421403\n23587\n\n\nSweden\nEurope\n1992\n78.16\n8718867\n23880\n\n\nSweden\nEurope\n1997\n79.39\n8897619\n25267\n\n\nSweden\nEurope\n2002\n80.04\n8954175\n29342\n\n\nSweden\nEurope\n2007\n80.88\n9031088\n33860"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#information-in-gapminder-data",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#information-in-gapminder-data",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "Information in gapminder data",
+    "text": "Information in gapminder data\nView command opens data in new worksheet while glimpse lists nature of variables (numeric/character/factor…) and total number of rows and columns.\n\nglimpse(gapminder) # We see that there are 1704 rows for 6 columns and also tells nature of variable\n\nRows: 1,704\nColumns: 6\n$ country   &lt;fct&gt; \"Afghanistan\", \"Afghanistan\", \"Afghanistan\", \"Afghanistan\", …\n$ continent &lt;fct&gt; Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, …\n$ year      &lt;int&gt; 1952, 1957, 1962, 1967, 1972, 1977, 1982, 1987, 1992, 1997, …\n$ lifeExp   &lt;dbl&gt; 28.801, 30.332, 31.997, 34.020, 36.088, 38.438, 39.854, 40.8…\n$ pop       &lt;int&gt; 8425333, 9240934, 10267083, 11537966, 13079460, 14880372, 12…\n$ gdpPercap &lt;dbl&gt; 779.4453, 820.8530, 853.1007, 836.1971, 739.9811, 786.1134, …\n\n#View(gapminder)    # This opens up full data in a new window"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#filtering-with-respect-to-two-variables",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#filtering-with-respect-to-two-variables",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "Filtering with respect to two variables",
+    "text": "Filtering with respect to two variables\nOne can apply multiple filters\n\n\ngapminder %&gt;% filter(year==2007,country==\"Sri Lanka\")\n\n\n  \n\n\ngapminder %&gt;% filter(year==2007, country==\"Pakistan\")\n\n\n  \n\n\n\nNow we are selecting multiple countries for year 2007.\n\ngapminder %&gt;% filter(year==2007, country %in% c(\"India\", \"Pakistan\",\"Bangladesh\", \"Afghanistan\", \"Iran\"))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#filtering-data-for-south-asia-countries",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#filtering-data-for-south-asia-countries",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "Filtering data for South Asia countries",
+    "text": "Filtering data for South Asia countries\n\ngapminderSA&lt;-gapminder %&gt;% filter(country %in% c(\"Bangladesh\",\"India\",\"Pakistan\",\"Sri Lanka\",\"Nepal\", \"Afghanistan\",\"Bhutan\", \"Maldives\"))\ngapminderSA"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#sort-data-with-arrange",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#sort-data-with-arrange",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "Sort data with arrange()\n",
+    "text": "Sort data with arrange()\n\n\ngapminderSA %&gt;% arrange(gdpPercap)\n\n\n  \n\n\n\n##\nNote that by default arrange() sorts in ascending order. If we want to sort in descending order, we use the function desc().\n\ngapminderSA %&gt;% arrange(desc(gdpPercap))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#life-expectancy-in-south-asia-in-2007",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#life-expectancy-in-south-asia-in-2007",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "Life Expectancy in South Asia in 2007",
+    "text": "Life Expectancy in South Asia in 2007\nWhat is the lowest and highest life expectancy among South Asian countries?\n\ngapminderSA %&gt;% filter(year==2007) %&gt;%  arrange(lifeExp)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#what-was-it-in-1952",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#what-was-it-in-1952",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "What was it in 1952?",
+    "text": "What was it in 1952?\nmutate() to change existing or create new variable\n\ngapminderSA %&gt;% mutate(pop=pop/1000000)\n\n\n  \n\n\n\nIf we want to calculate GDP, we need to multiply gdpPercap by pop.\nBut wait! Didn’t we just change pop so it’s expressed in millions? No: we never stored the results of our previous command, we simply displayed them. Just as I discussed above, unless you overwrite it, the original gapminder dataset will be unchanged. With this in mind, we can create the gdp variable as follows:\n\ngapminderSA %&gt;% mutate(gdp = pop * gdpPercap)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#how-to-calculate-new-variables",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#how-to-calculate-new-variables",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "How to calculate new variables",
+    "text": "How to calculate new variables\nAs mentioned above, mutate is used to calculate new variable. Here we have calculated a new variable gdp and then arrange() data and selected top_n(10) countries to see whether higher lifeExpectancy and higher gdp are linked or not?\n\ngapminder %&gt;% filter(year==2007) %&gt;% \n  mutate(gdp=gdpPercap*pop) %&gt;% \n  arrange(desc(gdp)) %&gt;% \n  top_n(10)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#section-1",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#section-1",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "",
+    "text": "transmute() keeps only the derived column. Let’s use it in the example from above:\n\ngapminder %&gt;% filter(year==2007) %&gt;% \n  transmute(gdp=gdpPercap*pop) %&gt;% \n  arrange(desc(gdp)) %&gt;% \n  top_n(10)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#ordering",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#ordering",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "Ordering",
+    "text": "Ordering\narrange data by life expectancy, we use arrange() function\n\ngapminder %&gt;% \n  select(country, year,lifeExp) %&gt;% \n  filter(year==2007) %&gt;% \n  arrange(lifeExp)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#section-2",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#section-2",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "",
+    "text": "top to bottom, then use arrange(desc()) command as follows:\n\ngapminder %&gt;% \n  select(country, year,lifeExp) %&gt;% \n  filter(year==2007) %&gt;% \n  arrange(desc(lifeExp))\n\n\n  \n\n\n\nTop 5\n\ngapminder %&gt;% \n  select(country, year,lifeExp) %&gt;% \n  filter(year==2007) %&gt;% \n  arrange(desc(lifeExp)) %&gt;% \n  top_n(5)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#summarising-data",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#summarising-data",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "Summarising data",
+    "text": "Summarising data\nAnother feature of dplyr is summarise data\n\ngapminder %&gt;% filter(year==2007) %&gt;% group_by(continent) %&gt;% summarise(mean=mean(lifeExp),min=min(lifeExp),max=max(lifeExp))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#section-3",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#section-3",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "",
+    "text": "gapminder %&gt;% \n  summarise(avglifeExp=mean(lifeExp))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#summarising-data-by-groups",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#summarising-data-by-groups",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "Summarising data by groups",
+    "text": "Summarising data by groups\n\ngapminder %&gt;%\n  filter(year == 2007, continent == \"Asia\") %&gt;%\n  summarize(avgLifeExp = mean(lifeExp))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#section-4",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#section-4",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "",
+    "text": "gapminder %&gt;% \n  group_by(continent) %&gt;% \n  filter(year==2007) %&gt;% \n  summarize(avglife=mean(lifeExp))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#section-5",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#section-5",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "",
+    "text": "we could get the mean, maximum, and mean life expectancy of the entire dataset.\n\ngapminder %&gt;%\n  summarise(\n    lifeExp_min = min(lifeExp),\n    lifeExp_max = max(lifeExp),\n    lifeExp_mean = mean(lifeExp)\n  )"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#section-6",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#section-6",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "",
+    "text": "For example, let’s say we want to get the mean, minimum, and maximum of life expectancy, but instead of for the entire dataset, we want to see it for each year.\n\ngapminder %&gt;%\n  group_by(year) %&gt;%\n  summarise(\n    lifeExp_min = min(lifeExp),\n    lifeExp_max = max(lifeExp),\n    lifeExp_mean = mean(lifeExp)\n  )"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#dplyr-tutorial0",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#dplyr-tutorial0",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "dplyr tutorial0",
+    "text": "dplyr tutorial0\nif_else command alongwith mutate\n\ngapminder %&gt;%\n  filter(year == 2007) %&gt;%\n  group_by(continent) %&gt;%\n  summarize(avgLifeExp = mean(lifeExp)) %&gt;%\n  mutate(over75 = if_else(avgLifeExp &gt; 70, \"Y\", \"N\"))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#total-population-by-continents-in-2007",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#total-population-by-continents-in-2007",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "Total Population by Continents in 2007",
+    "text": "Total Population by Continents in 2007\n\ngapminder %&gt;% \n  filter(year==2007) %&gt;% \n  group_by(continent) %&gt;% \n  summarize(tot_pop=sum(pop))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#percentiles",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#percentiles",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "Percentiles",
+    "text": "Percentiles\nIn general it is assumed that higher the GDP , higher the lifeExp. To test this assumption, lets calculate percentiles of lifeExp. This will indicate how many countries have ranking lower than the current country.\n\ngapminder %&gt;% select(country,year, lifeExp, gdpPercap) %&gt;% \n  filter(year == 2007) %&gt;%\n  mutate(percentile = ntile(lifeExp, 100)) %&gt;%\n  arrange(desc(gdpPercap))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#section-7",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#section-7",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "",
+    "text": "One can notice that all countries are well above 60th percentile on lifeExpectancy when arranged by GDP per capita.\nBefore you conclude, lets see the bottom side\nSo it makes sense that higher the GDP, higher the lifeExp. This is not formal testing but exploratory data makes lot of sense here.\n\ngapminder %&gt;% select(country,year, lifeExp, gdpPercap) %&gt;% \n  filter(year == 2007) %&gt;%\n  mutate(percentile = ntile(lifeExp, 100)) %&gt;%\n  arrange(gdpPercap)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#advanced-analysis",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#advanced-analysis",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "Advanced Analysis",
+    "text": "Advanced Analysis\nFiltering data as done in introductory analysis seems quite difficult if you are not familiar with these simple things. But if you are working with dplyr for quite sometime, there is not anything very advanced or difficult.\nFor example, let’s say you have to find out the top 10 countries in the 90th percentile regarding life expectancy in 2007. You can reuse some of the logic from the previous sections, but answering this question alone requires multiple filtering and subsetting:\n\ngapminder %&gt;% filter(year==2007) %&gt;% \n  mutate(percentile=ntile(lifeExp,100)) %&gt;% \n  filter(percentile&gt;90) %&gt;% \n  arrange(desc(percentile)) %&gt;% \n  top_n(10,wt=percentile) %&gt;% \n  select(country,continent,lifeExp,gdpPercap)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#section-8",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#section-8",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "",
+    "text": "In case you are interested in bottom 10 (worst lifeExp countries from the bottom), use top_n with -10.\n\ngapminder %&gt;% filter(year==2007) %&gt;% \n  mutate(percentile=ntile(lifeExp,100)) %&gt;% \n  filter(percentile&lt;10) %&gt;% \n  arrange(percentile) %&gt;% \n  top_n(-10,wt=percentile) %&gt;% \n  select(country,continent,lifeExp,gdpPercap)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#visualizing-data-to-get-data-insight",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#visualizing-data-to-get-data-insight",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "Visualizing data to get data insight",
+    "text": "Visualizing data to get data insight\nVisualizing data is one of the most important aspect of getting data insight and may provide a better data insight than a complicated model. Visualizing large data sets were not an easy task, so researchers relied on mathematical and core econometric/regression models. ggplot2 which is a set of tidyverse package is probably one of the greatest tool for data visualization used in R. In the following sections we are going to visualize gapminder data.\nStat graphics is a mapping of variable to aesthetic attributes of geometric objects."
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#essential-components-of-ggplot2",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#essential-components-of-ggplot2",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "3 Essential components of ggplot2\n",
+    "text": "3 Essential components of ggplot2\n\n\ndata: dataset containing the variables of interest\ngeom: geometric object in question line, point, bars\naes: aesthetic attributes of an object x/y position, colors, shape, size"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#scatter-plot",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#scatter-plot",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "Scatter plot",
+    "text": "Scatter plot\n\ngapminder2007&lt;-gapminder %&gt;% filter(year==2007)\np1&lt;-ggplot(data=gapminder2007,mapping = aes(x=gdpPercap,y=lifeExp,color=continent,size=pop))+geom_point()\np1+facet_wrap(~continent)\n\n\n\n\n\n\np1+  labs(x = \"GDP Per Capita\", y = \"Life Expectancy in Years\",\n          title = \"Economic Growth and Life Expectancy\",\n          subtitle = \"Data points are country-years\",\n          caption = \"Source: Gapminder.\")"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#bubbleplot",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#bubbleplot",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "Bubbleplot",
+    "text": "Bubbleplot"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#section-9",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#section-9",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "",
+    "text": "If you just want to highlight the relationship between gbp per capita and life Expectancy you’ve probably done most of the work now. However, it is a good practice to highlight a few interesting dots in this chart to give more insight to the plot:\n\n\n\n\n\n\n\n\n\n##This is a table of data about a large number of countries, each observed over several years. Let's make a scatterplot with it.\nP&lt;-ggplot(data=gapminder,mapping = aes(x=gdpPercap,y=lifeExp))  \n\nP+geom_point()+geom_smooth()\n\n\n\n\n\n\nP+geom_point()+geom_smooth(method = \"lm\")\n\n\n\n\n\n\nP+geom_point()+geom_smooth(method = \"gam\")+scale_x_log10()\n\n\n\n\n\n\nP+geom_point()+geom_smooth(method = \"gam\")+scale_x_log10(labels=scales::dollar)\n\n\n\n\n\n\nP&lt;-ggplot(data=gapminder,mapping = aes(gdpPercap,y=lifeExp,color=\"purple\"))\nP+geom_point()+geom_smooth(method = \"loess\")+scale_x_log10()"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#with-proper-title",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#with-proper-title",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "With proper title",
+    "text": "With proper title\n\nP&lt;-ggplot(data=gapminder,mapping = aes(gdpPercap,y=lifeExp))\nP+geom_point(alpha=0.3)+\n  geom_smooth(method = \"gam\")+\n  scale_x_log10(labels=scales::dollar)+\n  labs(x = \"GDP Per Capita\", y = \"Life Expectancy in Years\",\n       title = \"Economic Growth and Life Expectancy\",\n       subtitle = \"Data points are country-years\",\n       caption = \"Source: Gapminder.\")"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#section-13",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#section-13",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "",
+    "text": "p + geom_point(mapping = aes(color = log(pop))) +\nscale_x_log10()"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#comparison-of-2007-vs-1952-continentwise",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#comparison-of-2007-vs-1952-continentwise",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "Comparison of 2007 vs 1952 continentwise",
+    "text": "Comparison of 2007 vs 1952 continentwise"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#section-14",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#section-14",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "",
+    "text": "p1+labs(x = \"GDP Per Capita\", y = \"Life Expectancy in Years\",\n        title = \"Economic Growth and Life Expectancy\",\n        subtitle = \"Data points are country-years\",\n        caption = \"Source: Gapminder.\")"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#section-16",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#section-16",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "",
+    "text": "gapminder %&gt;%  \n  select(-pop, -gdpPercap) %&gt;%  \n  filter(year == 2007) %&gt;%  \n  group_by(continent) %&gt;%  \n  summarise(mean_life_exp =  \n              mean(lifeExp),median_life_exp=median(lifeExp))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#section-17",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#section-17",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "",
+    "text": "gapminder %&gt;%  \n  select(-pop, -gdpPercap) %&gt;%  \n  filter(year == 2007) %&gt;%  \n  group_by(continent) %&gt;%  \n  summarise(median_life_exp =  \n              median(lifeExp)) %&gt;%  \n  ggplot() +  \n  aes(x = continent) +  \n  aes(y = median_life_exp) +  \n  geom_point(color = \"blue\", size = 3,  \n             alpha = .4) +  \n  scale_y_continuous(limits = c(0,85)) +  \n  labs(title = \"Median life expectency by continent in 2007\") +  \n  labs(subtitle = \"Data Source: Gapminder package in R\") +  \n  labs(x = \"\") +  \n  labs(y = \"Median life expectancy\") +  \n  labs(caption = \"Zahid Asghar for 'QM4SSH'\") +  \n  theme_minimal()"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#section-18",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#section-18",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "",
+    "text": "gapminder %&gt;%  \n      filter(year == 1997) %&gt;%  \n      select(country, continent, lifeExp) %&gt;%  \n      mutate(  \n        life_cats =  \n          case_when(lifeExp &gt;= 70 ~ \"70+\",  \n                    lifeExp &lt; 70 ~ \"&lt;70\")) %&gt;%  \n      ggplot() +  \n      aes(x = continent, y = life_cats) +  \n      geom_jitter(width = .25, height = .25)+  \n      aes(col = continent) +  \n      scale_color_discrete(guide = FALSE) +  \n      theme_dark() +  \n      labs(x = \"\", y = \"\") +  \n      labs(title = \"Life expectency beyond 70 in 1997\")"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#section-19",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#section-19",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "",
+    "text": "gapminder %&gt;%  \n      mutate(gdp_billions =  \n               gdpPercap *  \n               pop/1000000000) %&gt;%  \n      ggplot() +  \n      aes(x = year) +  \n      aes(y = gdp_billions) +  \n      geom_line() +  \n      aes(group = country) +  \n      scale_y_log10() +  \n      aes(col = continent) +  \n      facet_wrap( ~ continent) +  \n      scale_color_discrete(guide = F) +  \n      theme_minimal()"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#section-20",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#section-20",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "",
+    "text": "gapminder %&gt;%  \n      filter(year == 2007) %&gt;%  \n    ggplot() +  \n      aes(x = continent, y = lifeExp) +  \n      geom_boxplot() +  \n      geom_jitter(height = 0, width = .2) +  \n      stat_summary(fun.y = mean,\n                   geom = \"point\",\n                   col = \"goldenrod3\",\n                   size = 5)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#pakistan",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#pakistan",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "Pakistan",
+    "text": "Pakistan\n\n    gapminder %&gt;%  \n      filter(country == \"Pakistan\") %&gt;%  \n      ggplot() +  \n      aes(x = year, y = lifeExp) +  \n      geom_point() +  \n      geom_line() +  \n      aes(alpha = year) +  \n      aes(col = year) +  \n      scale_color_viridis_c() +  \n      theme_classic()\n\n\n\n\n\n\n\n\n    gapminder %&gt;%  \n      filter(year == 2007) %&gt;%  \n      ggplot() +  \n      aes(x = gdpPercap) +  \n      aes(y = lifeExp) +  \n      geom_point(alpha = .5) +  \n      geom_rug(size = 1) +  \n      aes(col = continent) +  \n      aes(col = lifeExp) +  \n      scale_x_log10() +  \n      aes(size = gdpPercap) +  \n      aes(size = pop) +  \n      geom_point(col = \"darkgreen\", size = 1) +  \n      facet_wrap(~ continent)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-02-r-fundamentals.html#footnotes",
+    "href": "labs/r-foundations/r-02-r-fundamentals.html#footnotes",
+    "title": "Basic Data Handling Techniques in R",
+    "section": "Footnotes",
+    "text": "Footnotes\n\nThe company R Studio recently announced they will be rebranding later this fall as Posit.↩︎"
+  },
+  {
+    "objectID": "labs/r-foundations/r-05-exercises.html",
+    "href": "labs/r-foundations/r-05-exercises.html",
+    "title": "Time Series Econometrics & Macroeconomic Forecasting",
+    "section": "",
+    "text": "There is a well-known result in economics called the “Efficient Market Hypothesis” that states that asset prices reflect all available information. A consequence of this is that the daily changes in stock prices should behave like white noise (ignoring dividends, interest rates and transaction costs). The consequence for forecasters is that the best forecast of the future price is the current price.\nWe can test this hypothesis by looking at the fpp2::goog series, which contains the closing stock price for Google over 1000 trading days ending on February 13, 2017. This data has been loaded into your workspace.\n\n\nIf you apply diff(goog), this will produce a time series of the daily changes in Google stock prices. Save this output and plot the daily changes with autoplot. Does this appear to be white noise?\nUse the ggAcf() function to check if these daily changes look like white noise. Now apply a Ljung-Box test on the daily changes using 10 lags. A p-value greater than 0.05 suggests the daily changes are not significantly different from white noise. So are the daily changes in the Google stock price white noise?"
+  },
+  {
+    "objectID": "labs/r-foundations/r-05-exercises.html#exercises",
+    "href": "labs/r-foundations/r-05-exercises.html#exercises",
+    "title": "Time Series Econometrics & Macroeconomic Forecasting",
+    "section": "",
+    "text": "There is a well-known result in economics called the “Efficient Market Hypothesis” that states that asset prices reflect all available information. A consequence of this is that the daily changes in stock prices should behave like white noise (ignoring dividends, interest rates and transaction costs). The consequence for forecasters is that the best forecast of the future price is the current price.\nWe can test this hypothesis by looking at the fpp2::goog series, which contains the closing stock price for Google over 1000 trading days ending on February 13, 2017. This data has been loaded into your workspace.\n\n\nIf you apply diff(goog), this will produce a time series of the daily changes in Google stock prices. Save this output and plot the daily changes with autoplot. Does this appear to be white noise?\nUse the ggAcf() function to check if these daily changes look like white noise. Now apply a Ljung-Box test on the daily changes using 10 lags. A p-value greater than 0.05 suggests the daily changes are not significantly different from white noise. So are the daily changes in the Google stock price white noise?"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "Ph.D (Economics) — Pakistan Institute of Development Economics, 2007\nDirector, School of Economics (2019-Jan-22)\nRegistrar(2020-2021), Quaid-i-Azam University, Islamabad\nSpecializations:\n\nApplied Econometrics\nData Analyst\nDevelopment Economics\n\n\nResearch interests : data for policy, data and analytical skill development ,data for policy"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#about-me",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#about-me",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "Ph.D (Economics) — Pakistan Institute of Development Economics, 2007\nDirector, School of Economics (2019-Jan-22)\nRegistrar(2020-2021), Quaid-i-Azam University, Islamabad\nSpecializations:\n\nApplied Econometrics\nData Analyst\nDevelopment Economics\n\n\nResearch interests : data for policy, data and analytical skill development ,data for policy"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#data-science",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#data-science",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Data Science",
+    "text": "Data Science\n\nYou go into data analysis with the tools you know, not the tools you need\n\nThe next few days are all about giving you the tools you need\n\nAdmittedly, a bit before you know what you need them for\n\n\n\nWe will extend them as we learn specific models"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#r",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#r",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "R",
+    "text": "R\n\n\n\nFree and open source\n\nA very large community\n\nWritten by statisticians for statistics\nMost packages are written for R first\n\n\nCan handle virtually any data format\nMakes replication easy\nCan integrate into documents (with Quarto)\n\nR is a language so it can do everything\n\nA good stepping stone to learning other languages like Python"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#excel-or-stata-cant-do-this",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#excel-or-stata-cant-do-this",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Excel (or Stata) Can’t Do This",
+    "text": "Excel (or Stata) Can’t Do This\n\n\nCode\nOutput\n\n\n\n\nggplot(data = gapminder, \n       aes(x = gdpPercap,\n           y = lifeExp,\n           color = continent))+\n  geom_point(alpha=0.3)+\n  geom_smooth(method = \"lm\")+\n    scale_x_log10(breaks=c(1000,10000, 100000),\n                  label=scales::dollar)+\n    labs(x = \"GDP/Capita\",\n         y = \"Life Expectancy (Years)\")+\n  facet_wrap(~continent)+\n  guides(color = F)+\n  theme_light()"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#or-this",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#or-this",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Or This",
+    "text": "Or This\n\n\nInput\nOutput\n\n\n\nThe average GDP per capita is ` r dollar(mean(gapminder$gdpPercap)) ` with a standard deviation of ` r dollar(sd(gapminder$gdpPercap)) `.\n\n\nThe average GDP per capita is $7,215.33 with a standard deviation of $9,857.45."
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#or-this-1",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#or-this-1",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Or This",
+    "text": "Or This\n\nlibrary(leaflet)\nleaflet() %&gt;%\n  addTiles() %&gt;%\n  addMarkers(lng = 73.0874, lat =33.6604 ,\n             popup = \"Avari Xpress Hotel, Islamabad\")"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#r-and-r-studio",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#r-and-r-studio",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "R and R Studio",
+    "text": "R and R Studio\n\n\n\nR is the programming language that executes commands\n\nCould run this from your computer’s shell\n\nOn Windows: Command prompt\n\nOn Mac/Linux: Terminal"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#r-and-r-studio-1",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#r-and-r-studio-1",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "R and R Studio",
+    "text": "R and R Studio\n\n\n\n\nR Studio1 is an integrated development environment (IDE) that makes your coding life a lot easier\n\nWrite code in scripts\nExecute individual commands & scripts\nAuto-complete, highlight syntax\nView data, objects, and plots\nGet help and documentation on commands and functions\nIntegrate code into documents with Quarto"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#r-studio-four-panes",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#r-studio-four-panes",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "R Studio — Four Panes",
+    "text": "R Studio — Four Panes"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#ways-to-use-r-studio-using-the-console",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#ways-to-use-r-studio-using-the-console",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Ways to Use R Studio: Using the Console",
+    "text": "Ways to Use R Studio: Using the Console\n\n\n\nType individual commands into the console pane (bottom left)\nGreat for testing individual commands to see what happens\nNot saved! Not reproducible! Not recommended!"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#ways-to-use-r-studio-writing-a-.r-script",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#ways-to-use-r-studio-writing-a-.r-script",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Ways to Use R Studio: Writing a .R Script",
+    "text": "Ways to Use R Studio: Writing a .R Script\n\n\n\nSource pane is a text-editor\nMake .R files: all input commands in a single script\nComment with #\nCan run any or all of script at once\nCan save, reproduce, and send to others!"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#ways-to-use-r-studio-quarto-documents",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#ways-to-use-r-studio-quarto-documents",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Ways to Use R Studio: Quarto Documents",
+    "text": "Ways to Use R Studio: Quarto Documents"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#getting-to-know-your-computer",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#getting-to-know-your-computer",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Getting to Know Your Computer",
+    "text": "Getting to Know Your Computer\n\n\nR assumes a default (often inconvenient) “working directory” on your computer\n\nThe first place it looks to open or save files\n\n\nFind out where R this is with getwd()\nChange it with setwd(path/to/folder)2"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#avoid-this-hassle-with-r-projects",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#avoid-this-hassle-with-r-projects",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Avoid this Hassle with R Projects",
+    "text": "Avoid this Hassle with R Projects\n\n\n\nA R Project is a way of systematically organizing your R history, working directory, and related files in a single, self-contained directory\nCan easily be sent to others who can reproduce your work easily\nConnects well with version control software like GitHub\nCan open multiple projects in multiple windows"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#avoid-this-hassle-with-r-projects-1",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#avoid-this-hassle-with-r-projects-1",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Avoid this Hassle with R Projects",
+    "text": "Avoid this Hassle with R Projects\n\n\n\nIn almost all cases, you simply want a New Project\nFor more advanced uses, your project can be an R Package or a Shiny Web Application\nIf you have other packages that create templates installed (as I do, in the previous image), they will also show up as options"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#avoid-this-hassle-with-r-projects-2",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#avoid-this-hassle-with-r-projects-2",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Avoid this Hassle with R Projects",
+    "text": "Avoid this Hassle with R Projects\n\n\n\n\nEnter a name for the project in the top field\n\nAlso creates a folder on your computer with the name you enter into the field\n\n\nChoose the location of the folder on your computer\nDepending on if you have other packages or utilities installed (such as git, see below!), there may be additional options, do not check them unless you know what you are doing\nBottom left checkbox allows you to open a new instance (window) of R just for this project (and keep existing windows open)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#learning",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#learning",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Learning…",
+    "text": "Learning…\n\nYou don’t “learn R”, you learn how to do things in R\nIn order to do learn this, you need to learn how to search for what you want to do"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#building-good-workflow-habits",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#building-good-workflow-habits",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Building Good Workflow Habits",
+    "text": "Building Good Workflow Habits\n\n\n\nI will show you the tools to make your workflow:\n\nReproducible\nComputer- and Human-Readable (!)\nAutomated\nAll in one program"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#for-example",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#for-example",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "For Example",
+    "text": "For Example\n\n\nOutput\nCode\n\n\n\n\n\n\n\nlibrary(gapminder)\nlibrary(gganimate)\ngapminder %&gt;%\n  filter(continent != \"Oceania\") %&gt;%\nggplot(aes(x = gdpPercap,\n           y = lifeExp,\n           color = country,\n           size = pop))+\n  geom_point(alpha=0.3)+\n    scale_x_log10(breaks=c(1000,10000, 100000),\n                  label=scales::dollar)+\n  scale_size(range = c(0.5, 12)) +\n  scale_color_manual(values = gapminder::country_colors) +\n    labs(x = \"GDP/Capita\",\n         y = \"Life Expectancy (Years)\",\n         caption = \"Source: Hans Rosling's gapminder.org\",\n         title = \"Income & Life Expectancy - {frame_time}\")+\n  facet_wrap(~continent)+\n  guides(color = F, size = F)+\n  theme_minimal(base_family = \"Fira Sans Condensed\")+\n  transition_time(year)+\n  ease_aes(\"linear\")"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#agenda-5-important-verbs-for-handling-data",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#agenda-5-important-verbs-for-handling-data",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Agenda : 5 Important verbs for handling data",
+    "text": "Agenda : 5 Important verbs for handling data\nView, glimpse, structure, head, tail\nselect() for column selection\nfilter() for data filtering\narrange() Data Ordering\nmutate() Creating Derived Columns\nsummarise() Calculating Summary Statistics\ngroup_by()"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#gapminder-dataset",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#gapminder-dataset",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Gapminder dataset",
+    "text": "Gapminder dataset\n\nlibrary(tidyverse)\nlibrary(knitr)\nlibrary(kableExtra)\n#install.packages(\"gapminder\")\nlibrary(hrbrthemes)\nlibrary(viridis)\nlibrary(kableExtra)\noptions(knitr.table.format = \"html\")\nlibrary(plotly)\nlibrary(gridExtra)\nlibrary(ggrepel)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#the-dataset-is-provided-in-the-gapminder-library",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#the-dataset-is-provided-in-the-gapminder-library",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "The dataset is provided in the gapminder library",
+    "text": "The dataset is provided in the gapminder library\n\nlibrary(gapminder)\n\ngapminder %&gt;% filter(country==\"Sweden\")%&gt;%\n  mutate(gdpPercap=round(gdpPercap,0), lifeExp=round(lifeExp,2))%&gt;%kable()%&gt;%\n  kable_styling(bootstrap_options = \"striped\", full_width = F)\n\n\n\ncountry\ncontinent\nyear\nlifeExp\npop\ngdpPercap\n\n\n\nSweden\nEurope\n1952\n71.9\n7124673\n8528\n\n\nSweden\nEurope\n1957\n72.5\n7363802\n9912\n\n\nSweden\nEurope\n1962\n73.4\n7561588\n12329\n\n\nSweden\nEurope\n1967\n74.2\n7867931\n15258\n\n\nSweden\nEurope\n1972\n74.7\n8122293\n17832\n\n\nSweden\nEurope\n1977\n75.4\n8251648\n18856\n\n\nSweden\nEurope\n1982\n76.4\n8325260\n20667\n\n\nSweden\nEurope\n1987\n77.2\n8421403\n23587\n\n\nSweden\nEurope\n1992\n78.2\n8718867\n23880\n\n\nSweden\nEurope\n1997\n79.4\n8897619\n25267\n\n\nSweden\nEurope\n2002\n80.0\n8954175\n29342\n\n\nSweden\nEurope\n2007\n80.9\n9031088\n33860"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#information-in-gapminder-data",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#information-in-gapminder-data",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Information in gapminder data",
+    "text": "Information in gapminder data\nView command opens data in new worksheet while glimpse lists nature of variables (numeric/character/factor…) and total number of rows and columns.\n\nglimpse(gapminder) # We see that there are 1704 rows for 6 columns and also tells nature of variable\nRows: 1,704\nColumns: 6\n$ country   &lt;fct&gt; \"Afghanistan\", \"Afghanistan\", \"Afghanistan\", \"Afghanist…\n$ continent &lt;fct&gt; Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, A…\n$ year      &lt;int&gt; 1952, 1957, 1962, 1967, 1972, 1977, 1982, 1987, 1992, 1…\n$ lifeExp   &lt;dbl&gt; 28.8, 30.3, 32.0, 34.0, 36.1, 38.4, 39.9, 40.8, 41.7, 4…\n$ pop       &lt;int&gt; 8425333, 9240934, 10267083, 11537966, 13079460, 1488037…\n$ gdpPercap &lt;dbl&gt; 779, 821, 853, 836, 740, 786, 978, 852, 649, 635, 727, …\n#View(gapminder)    # This opens up full data in a new window"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#summary",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#summary",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Summary",
+    "text": "Summary\n\nsummary(gapminder) \n##         country        continent        year         lifeExp    \n##  Afghanistan:  12   Africa  :624   Min.   :1952   Min.   :23.6  \n##  Albania    :  12   Americas:300   1st Qu.:1966   1st Qu.:48.2  \n##  Algeria    :  12   Asia    :396   Median :1980   Median :60.7  \n##  Angola     :  12   Europe  :360   Mean   :1980   Mean   :59.5  \n##  Argentina  :  12   Oceania : 24   3rd Qu.:1993   3rd Qu.:70.8  \n##  Australia  :  12                  Max.   :2007   Max.   :82.6  \n##  (Other)    :1632                                               \n##       pop             gdpPercap     \n##  Min.   :6.00e+04   Min.   :   241  \n##  1st Qu.:2.79e+06   1st Qu.:  1202  \n##  Median :7.02e+06   Median :  3532  \n##  Mean   :2.96e+07   Mean   :  7215  \n##  3rd Qu.:1.96e+07   3rd Qu.:  9325  \n##  Max.   :1.32e+09   Max.   :113523  \n##"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#column-selection",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#column-selection",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Column Selection",
+    "text": "Column Selection\nFor example PDHS files have more than 5000 columns in some files and maybe 40 or 50 or even fewer than that are needed for your analysis. Select() function of R’s dplyr is used to select columns of your interest\n\ngapminder %&gt;% select(country, pop, lifeExp)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#select-most-of-the-variables-and-drop-one-or-two",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#select-most-of-the-variables-and-drop-one-or-two",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "select most of the variables and drop one or two",
+    "text": "select most of the variables and drop one or two\n\ngapminder %&gt;% select(-gdpPercap)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#data-filtering",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#data-filtering",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Data Filtering",
+    "text": "Data Filtering\n\nfilter() funtion\n\ngapminder_07&lt;- gapminder %&gt;% filter(year==2007)\nkbl(gapminder_07[1:10,])%&gt;%kable_styling(fixed_thead=T)\n\n\n\ncountry\ncontinent\nyear\nlifeExp\npop\ngdpPercap\n\n\n\nAfghanistan\nAsia\n2007\n43.8\n3.19e+07\n975\n\n\nAlbania\nEurope\n2007\n76.4\n3.60e+06\n5937\n\n\nAlgeria\nAfrica\n2007\n72.3\n3.33e+07\n6223\n\n\nAngola\nAfrica\n2007\n42.7\n1.24e+07\n4797\n\n\nArgentina\nAmericas\n2007\n75.3\n4.03e+07\n12779\n\n\nAustralia\nOceania\n2007\n81.2\n2.04e+07\n34435\n\n\nAustria\nEurope\n2007\n79.8\n8.20e+06\n36126\n\n\nBahrain\nAsia\n2007\n75.6\n7.09e+05\n29796\n\n\nBangladesh\nAsia\n2007\n64.1\n1.50e+08\n1391\n\n\nBelgium\nEurope\n2007\n79.4\n1.04e+07\n33693\n\n\n\n\n\n##&gt;Have we accidently deleted all other rows? Answer is no.\nNope: If you don’t believe me try entering gapminder at the console.\n\ngapminder %&gt;% filter(year==2007)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#filtering-with-respect-to-two-variables",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#filtering-with-respect-to-two-variables",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Filtering with respect to two variables",
+    "text": "Filtering with respect to two variables\nOne can apply multiple filters\n\n\ngapminder %&gt;% filter(year==2007,country==\"Sri Lanka\")\n\n\n  \n\n\n\ngapminder %&gt;% filter(year==2007, country==\"Pakistan\")\n\n\n  \n\n\n\nNow we are selecting multiple countries for year 2007.\n\ngapminder %&gt;% filter(year==2007, country %in% c(\"India\", \"Pakistan\",\"Bangladesh\", \"Afghanistan\", \"Iran\"))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#filtering-data-for-south-asia-countries",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#filtering-data-for-south-asia-countries",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Filtering data for South Asia countries",
+    "text": "Filtering data for South Asia countries\n\ngapminderSA&lt;-gapminder %&gt;% filter(country %in% c(\"Bangladesh\",\"India\",\"Pakistan\",\"Sri Lanka\",\"Nepal\", \"Afghanistan\",\"Bhutan\", \"Maldives\"))\ngapminderSA"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#sort-data-with-arrange",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#sort-data-with-arrange",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Sort data with arrange()\n",
+    "text": "Sort data with arrange()\n\n\ngapminderSA %&gt;% arrange(gdpPercap)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#arrange-sorts-in-ascending-order.-sort-in-descending-order-desc.",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#arrange-sorts-in-ascending-order.-sort-in-descending-order-desc.",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "\narrange() sorts in ascending order. Sort in descending order, desc().",
+    "text": "arrange() sorts in ascending order. Sort in descending order, desc().\n\ngapminderSA %&gt;% arrange(desc(gdpPercap))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#life-expectancy-in-south-asia-in-2007",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#life-expectancy-in-south-asia-in-2007",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Life Expectancy in South Asia in 2007",
+    "text": "Life Expectancy in South Asia in 2007\nWhat is the lowest and highest life expectancy among South Asian countries?\n\ngapminderSA %&gt;% filter(year==2007) %&gt;%  arrange(lifeExp)\n\n\n  \n\n\n\nWhat was it in 1952?"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#mutate-to-change-existing-or-create-new-variable",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#mutate-to-change-existing-or-create-new-variable",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "\nmutate() to change existing or create new variable",
+    "text": "mutate() to change existing or create new variable\n\ngapminderSA %&gt;% mutate(pop=pop/1000000)\n\n\n  \n\n\n\nIf we want to calculate GDP, we need to multiply gdpPercap by pop.\nBut wait! Didn't we just change pop so it's expressed in millions? \nNo: we never stored the results of our previous command, we simply displayed them. Just as I discussed above, unless you overwrite it, the original gapminder dataset will be unchanged. With this in mind, we can create the gdp variable as follows:\n\ngapminderSA %&gt;% mutate(gdp = pop * gdpPercap)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#how-to-calculate-new-variables",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#how-to-calculate-new-variables",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "How to calculate new variables",
+    "text": "How to calculate new variables\nAs mentioned above, mutate is used to calculate new variable. Here we have calculated a new variable gdp and then arrange() data and selected top_n(10) countries to see whether higher lifeExpectancy and higher gdp are linked or not?\n\ngapminder %&gt;% filter(year==2007) %&gt;% \n  mutate(gdp=gdpPercap*pop) %&gt;% \n  arrange(desc(gdp)) %&gt;% \n  top_n(10)\n\n\n  \n\n\n\ntransmute() keeps only the derived column. Let’s use it in the example from above:\n\ngapminder %&gt;% filter(year==2007) %&gt;% \n  transmute(gdp=gdpPercap*pop) %&gt;% \n  arrange(desc(gdp)) %&gt;% \n  top_n(10)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#ordering",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#ordering",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Ordering",
+    "text": "Ordering\narrange data by life expectancy, we use arrange() function\n\ngapminder %&gt;% \n  select(country, year,lifeExp) %&gt;% \n  filter(year==2007) %&gt;% \n  arrange(lifeExp)\n\n\n  \n\n\n\ntop to bottom, then use arrange(desc()) command as follows:\n\ngapminder %&gt;% \n  select(country, year,lifeExp) %&gt;% \n  filter(year==2007) %&gt;% \n  arrange(desc(lifeExp))\n\n\n  \n\n\n\nTop 5\n\ngapminder %&gt;% \n  select(country, year,lifeExp) %&gt;% \n  filter(year==2007) %&gt;% \n  arrange(desc(lifeExp)) %&gt;% \n  top_n(5)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#summarising-data-by-groups",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#summarising-data-by-groups",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Summarising data by groups",
+    "text": "Summarising data by groups\n\ngapminder %&gt;%\n  filter(year == 2007, continent == \"Asia\") %&gt;%\n  summarize(avgLifeExp = mean(lifeExp))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#section",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#section",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "gapminder %&gt;% \n  group_by(continent) %&gt;% \n  filter(year==2007) %&gt;% \n  summarize(avglife=mean(lifeExp))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#mean-maximum-and-mean-life-expectancy",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#mean-maximum-and-mean-life-expectancy",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "mean, maximum, and mean life expectancy",
+    "text": "mean, maximum, and mean life expectancy\n\ngapminder %&gt;%\n  summarise(\n    lifeExp_min = min(lifeExp),\n    lifeExp_max = max(lifeExp),\n    lifeExp_mean = mean(lifeExp)\n  )"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#le-for-each-year",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#le-for-each-year",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "LE for each year",
+    "text": "LE for each year\n\ngapminder %&gt;%\n  group_by(year) %&gt;%\n  summarise(\n    lifeExp_min = min(lifeExp),\n    lifeExp_max = max(lifeExp),\n    lifeExp_mean = mean(lifeExp)\n  )\n\n\n  \n\n\n\n##dplyr tutorial0"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#if_else-command-alongwith-mutate",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#if_else-command-alongwith-mutate",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "if_else command alongwith mutate",
+    "text": "if_else command alongwith mutate\n\ngapminder %&gt;%\n  filter(year == 2007) %&gt;%\n  group_by(continent) %&gt;%\n  summarize(avgLifeExp = mean(lifeExp)) %&gt;%\n  mutate(over75 = if_else(avgLifeExp &gt; 70, \"Y\", \"N\"))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#total-population-by-continets-in-2007",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#total-population-by-continets-in-2007",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Total Population by Continets in 2007",
+    "text": "Total Population by Continets in 2007\n\ngapminder %&gt;% \n  filter(year==2007) %&gt;% \n  group_by(continent) %&gt;% \n  summarize(tot_pop=sum(pop))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#percentiles",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#percentiles",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Percentiles",
+    "text": "Percentiles\n\ngapminder %&gt;% select(country,year, lifeExp, gdpPercap) %&gt;% \n  filter(year == 2007) %&gt;%\n  mutate(percentile = ntile(lifeExp, 100)) %&gt;%\n  arrange(desc(gdpPercap))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#bottom-side",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#bottom-side",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Bottom side",
+    "text": "Bottom side\nSo it makes sense that higher the GDP, higher the lifeExp. This is not formal testing but exploratory data makes lot of sense here.\n\ngapminder %&gt;% select(country,year, lifeExp, gdpPercap) %&gt;% \n  filter(year == 2007) %&gt;%\n  mutate(percentile = ntile(lifeExp, 100)) %&gt;%\n  arrange(gdpPercap)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#section-1",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#section-1",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "gapminder %&gt;% filter(year==2007) %&gt;% \n  mutate(percentile=ntile(lifeExp,100)) %&gt;% \n  filter(percentile&gt;90) %&gt;% \n  arrange(desc(percentile)) %&gt;% \n  top_n(10,wt=percentile) %&gt;% \n  select(country,continent,lifeExp,gdpPercap)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#section-2",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#section-2",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "In case you are interested in bottom 10 (worst lifeExp countries from the bottom), use top_n with -10.\n\ngapminder %&gt;% filter(year==2007) %&gt;% \n  mutate(percentile=ntile(lifeExp,100)) %&gt;% \n  filter(percentile&lt;10) %&gt;% \n  arrange(percentile) %&gt;% \n  top_n(-10,wt=percentile) %&gt;% \n  select(country,continent,lifeExp,gdpPercap)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#visualizing-data-to-get-data-insight",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#visualizing-data-to-get-data-insight",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Visualizing data to get data insight",
+    "text": "Visualizing data to get data insight\nVisualizing data is one of the most important aspect of getting data insight and may provide a better data insight than a complicated model. Visualizing large data sets were not an easy task, so researchers relied on mathematical and core econometric/regression models. ggplot2 which is a set of tidyverse package is probably one of the greatest tool for data visualization used in R. In the following sections we are going to visualize gapminder data.\nStat graphics is a mapping of variable to aesthetic attributes of geometric objects."
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#essential-components-of-ggplot2",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#essential-components-of-ggplot2",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "3 Essential components of ggplot2\n",
+    "text": "3 Essential components of ggplot2\n\n\ndata: dataset containing the variables of interest\ngeom: geometric object in question line, point, bars\naes: aesthetic attributes of an object x/y position, colors, shape, size"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#scatter-plot",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#scatter-plot",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Scatter plot",
+    "text": "Scatter plot\n\n\ngapminder2007&lt;-gapminder %&gt;% filter(year==2007)\np1&lt;-ggplot(data=gapminder2007,mapping = aes(x=gdpPercap,y=lifeExp,color=continent,size=pop))+geom_point()\np1+facet_wrap(~continent)\n\n\n\n\n\n\np1+  labs(x = \"GDP Per Capita\", y = \"Life Expectancy in Years\",\n       title = \"Economic Growth and Life Expectancy\",\n       subtitle = \"Data points are country-years\",\n       caption = \"Source: Gapminder.\")"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#bubbleplot",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#bubbleplot",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Bubbleplot",
+    "text": "Bubbleplot"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#section-4",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#section-4",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "##This is a table of data about a large number of countries, each observed over several years. Let's make a scatterplot with it.\nP&lt;-ggplot(data=gapminder,mapping = aes(x=gdpPercap,y=lifeExp))  \n\nP+geom_point()+geom_smooth()\n\n\n\n\n\n\n\nP+geom_point()+geom_smooth(method = \"lm\")\n\n\n\n\n\n\n\nP+geom_point()+geom_smooth(method = \"gam\")+scale_x_log10()\n\n\n\n\n\n\n\n\nP+geom_point()+geom_smooth(method = \"gam\")+scale_x_log10(labels=scales::dollar)\n\n\n\n\n\n\n\n\nP&lt;-ggplot(data=gapminder,mapping = aes(gdpPercap,y=lifeExp,color=\"purple\"))\nP+geom_point()+geom_smooth(method = \"loess\")+scale_x_log10()"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#with-proper-title",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#with-proper-title",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "With proper title",
+    "text": "With proper title\n\nP&lt;-ggplot(data=gapminder,mapping = aes(gdpPercap,y=lifeExp))\nP+geom_point(alpha=0.3)+\n  geom_smooth(method = \"gam\")+\n  scale_x_log10(labels=scales::dollar)+\n  labs(x = \"GDP Per Capita\", y = \"Life Expectancy in Years\",\n       title = \"Economic Growth and Life Expectancy\",\n       subtitle = \"Data points are country-years\",\n       caption = \"Source: Gapminder.\")"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#section-9",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#section-9",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "p + geom_point(mapping = aes(color = log(pop))) +\n  scale_x_log10()"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#comparison-of-2007-vs-1952-continentwise",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#comparison-of-2007-vs-1952-continentwise",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Comparison of 2007 vs 1952 continentwise",
+    "text": "Comparison of 2007 vs 1952 continentwise"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#section-10",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#section-10",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "p1+labs(x = \"GDP Per Capita\", y = \"Life Expectancy in Years\",\n       title = \"Economic Growth and Life Expectancy\",\n       subtitle = \"Data points are country-years\",\n       caption = \"Source: Gapminder.\")"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#section-12",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#section-12",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "gapminder %&gt;%  \n  select(-pop, -gdpPercap) %&gt;%  \n  filter(year == 2007) %&gt;%  \n  group_by(continent) %&gt;%  \n  summarise(mean_life_exp =  \n              mean(lifeExp),median_life_exp=median(lifeExp))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#section-13",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#section-13",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "gapminder %&gt;%  \n  select(-pop, -gdpPercap) %&gt;%  \n  filter(year == 2007) %&gt;%  \n  group_by(continent) %&gt;%  \n  summarise(median_life_exp =  \n              median(lifeExp)) %&gt;%  \n  ggplot() +  \n  aes(x = continent) +  \n  aes(y = median_life_exp) +  \n  geom_point(color = \"blue\", size = 3,  \n             alpha = .4) +  \n  scale_y_continuous(limits = c(0,85)) +  \n  labs(title = \"Median life expectency by continent in 2007\") +  \n  labs(subtitle = \"Data Source: Gapminder package in R\") +  \n  labs(x = \"\") +  \n  labs(y = \"Median life expectancy\") +  \n  labs(caption = \"Zahid Asghar for 'QM4SSH'\") +  \n  theme_minimal()"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#section-14",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#section-14",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "gapminder %&gt;%  \n  filter(year == 1997) %&gt;%  \n  select(country, continent, lifeExp) %&gt;%  \n  mutate(  \n    life_cats =  \n      case_when(lifeExp &gt;= 70 ~ \"70+\",  \n                lifeExp &lt; 70 ~ \"&lt;70\")) %&gt;%  \n  ggplot() +  \n  aes(x = continent, y = life_cats) +  \n  geom_jitter(width = .25, height = .25)+  \n  aes(col = continent) +  \n  scale_color_discrete(guide = FALSE) +  \n  theme_dark() +  \n  labs(x = \"\", y = \"\") +  \n  labs(title = \"Life expectency beyond 70 in 1997\")"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#section-15",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#section-15",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "gapminder %&gt;%  \n  mutate(gdp_billions =  \n           gdpPercap *  \n           pop/1000000000) %&gt;%  \n  ggplot() +  \n  aes(x = year) +  \n  aes(y = gdp_billions) +  \n  geom_line() +  \n  aes(group = country) +  \n  scale_y_log10() +  \n  aes(col = continent) +  \n  facet_wrap( ~ continent) +  \n  scale_color_discrete(guide = F) +  \n  theme_minimal()"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#section-16",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#section-16",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "gapminder %&gt;%  \n  filter(year == 2007) %&gt;%  \n  ggplot() +  \n  aes(x = continent, y = lifeExp) +  \n  geom_boxplot() +  \n  geom_jitter(height = 0, width = .2) +  \n  stat_summary(fun.y = mean,\n               geom = \"point\",\n               col = \"goldenrod3\",\n               size = 5)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#pakistan",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#pakistan",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Pakistan",
+    "text": "Pakistan\n\ngapminder %&gt;%  \n  filter(country == \"Pakistan\") %&gt;%  \n  ggplot() +  \n  aes(x = year, y = lifeExp) +  \n  geom_point() +  \n  geom_line() +  \n  aes(alpha = year) +  \n  aes(col = year) +  \n  scale_color_viridis_c() +  \n  theme_classic()"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#section-17",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#section-17",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "gapminder %&gt;%  \n  filter(year == 2007) %&gt;%  \n  ggplot() +  \n  aes(x = gdpPercap) +  \n  aes(y = lifeExp) +  \n  geom_point(alpha = .5) +  \n  geom_rug(size = 1) +  \n  aes(col = continent) +  \n  aes(col = lifeExp) +  \n  scale_x_log10() +  \n  aes(size = gdpPercap) +  \n  aes(size = pop) +  \n  geom_point(col = \"darkgreen\", size = 1) +  \n  facet_wrap(~ continent)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-03-tidyverse-day-1.html#footnotes",
+    "href": "labs/r-foundations/r-03-tidyverse-day-1.html#footnotes",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Footnotes",
+    "text": "Footnotes\n\nThe company R Studio recently announced they will be rebranding later this fall as Posit.↩︎\nNote the path is OS-specific. For Windows it might be C:/Documents/. For Mac it is often your username folder.↩︎"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "I will show you the tools to make your workflow:\n\nReproducible\nComputer- and Human-Readable (!)\nAutomated\nAll in one program"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#building-good-workflow-habits",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#building-good-workflow-habits",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "I will show you the tools to make your workflow:\n\nReproducible\nComputer- and Human-Readable (!)\nAutomated\nAll in one program"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#for-example",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#for-example",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "For Example",
+    "text": "For Example\n\n\nOutput\nCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nlibrary(gapminder)\nlibrary(gganimate)\ngapminder %&gt;%\n  filter(continent != \"Oceania\") %&gt;%\nggplot(aes(x = gdpPercap,\n           y = lifeExp,\n           color = country,\n           size = pop))+\n  geom_point(alpha=0.3)+\n    scale_x_log10(breaks=c(1000,10000, 100000),\n                  label=scales::dollar)+\n  scale_size(range = c(0.5, 12)) +\n  scale_color_manual(values = gapminder::country_colors) +\n    labs(x = \"GDP/Capita\",\n         y = \"Life Expectancy (Years)\",\n         caption = \"Source: Hans Rosling's gapminder.org\",\n         title = \"Income & Life Expectancy - {frame_time}\")+\n  facet_wrap(~continent)+\n  guides(color = F, size = F)+\n  theme_minimal(base_family = \"Fira Sans Condensed\")+\n  transition_time(year)+\n  ease_aes(\"linear\")"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#agenda-5-important-verbs-for-handling-data",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#agenda-5-important-verbs-for-handling-data",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Agenda : 5 Important verbs for handling data",
+    "text": "Agenda : 5 Important verbs for handling data\nView, glimpse, structure, head, tail\nselect() for column selection\nfilter() for data filtering\narrange() Data Ordering\nmutate() Creating Derived Columns\nsummarise() Calculating Summary Statistics\ngroup_by()"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#gapminder-dataset",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#gapminder-dataset",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Gapminder dataset",
+    "text": "Gapminder dataset\n\nlibrary(tidyverse)\nlibrary(knitr)\nlibrary(kableExtra)\n#install.packages(\"gapminder\")\nlibrary(hrbrthemes)\nlibrary(viridis)\nlibrary(kableExtra)\noptions(knitr.table.format = \"html\")\nlibrary(plotly)\nlibrary(gridExtra)\nlibrary(ggrepel)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#the-dataset-is-provided-in-the-gapminder-library",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#the-dataset-is-provided-in-the-gapminder-library",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "The dataset is provided in the gapminder library",
+    "text": "The dataset is provided in the gapminder library\n\nlibrary(gapminder)\n\ngapminder %&gt;% filter(country==\"Sweden\")%&gt;%\n  mutate(gdpPercap=round(gdpPercap,0), lifeExp=round(lifeExp,2))%&gt;%kable()%&gt;%\n  kable_styling(bootstrap_options = \"striped\", full_width = F)\n\n\n\ncountry\ncontinent\nyear\nlifeExp\npop\ngdpPercap\n\n\n\nSweden\nEurope\n1952\n71.86\n7124673\n8528\n\n\nSweden\nEurope\n1957\n72.49\n7363802\n9912\n\n\nSweden\nEurope\n1962\n73.37\n7561588\n12329\n\n\nSweden\nEurope\n1967\n74.16\n7867931\n15258\n\n\nSweden\nEurope\n1972\n74.72\n8122293\n17832\n\n\nSweden\nEurope\n1977\n75.44\n8251648\n18856\n\n\nSweden\nEurope\n1982\n76.42\n8325260\n20667\n\n\nSweden\nEurope\n1987\n77.19\n8421403\n23587\n\n\nSweden\nEurope\n1992\n78.16\n8718867\n23880\n\n\nSweden\nEurope\n1997\n79.39\n8897619\n25267\n\n\nSweden\nEurope\n2002\n80.04\n8954175\n29342\n\n\nSweden\nEurope\n2007\n80.88\n9031088\n33860"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#information-in-gapminder-data",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#information-in-gapminder-data",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Information in gapminder data",
+    "text": "Information in gapminder data\nView command opens data in new worksheet while glimpse lists nature of variables (numeric/character/factor…) and total number of rows and columns.\n\nglimpse(gapminder) # We see that there are 1704 rows for 6 columns and also tells nature of variable\n\nRows: 1,704\nColumns: 6\n$ country   &lt;fct&gt; \"Afghanistan\", \"Afghanistan\", \"Afghanistan\", \"Afghanistan\", …\n$ continent &lt;fct&gt; Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, …\n$ year      &lt;int&gt; 1952, 1957, 1962, 1967, 1972, 1977, 1982, 1987, 1992, 1997, …\n$ lifeExp   &lt;dbl&gt; 28.801, 30.332, 31.997, 34.020, 36.088, 38.438, 39.854, 40.8…\n$ pop       &lt;int&gt; 8425333, 9240934, 10267083, 11537966, 13079460, 14880372, 12…\n$ gdpPercap &lt;dbl&gt; 779.4453, 820.8530, 853.1007, 836.1971, 739.9811, 786.1134, …\n\n#View(gapminder)    # This opens up full data in a new window"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#summary",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#summary",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Summary",
+    "text": "Summary\n\nsummary(gapminder) \n\n        country        continent        year         lifeExp     \n Afghanistan:  12   Africa  :624   Min.   :1952   Min.   :23.60  \n Albania    :  12   Americas:300   1st Qu.:1966   1st Qu.:48.20  \n Algeria    :  12   Asia    :396   Median :1980   Median :60.71  \n Angola     :  12   Europe  :360   Mean   :1980   Mean   :59.47  \n Argentina  :  12   Oceania : 24   3rd Qu.:1993   3rd Qu.:70.85  \n Australia  :  12                  Max.   :2007   Max.   :82.60  \n (Other)    :1632                                                \n      pop              gdpPercap       \n Min.   :6.001e+04   Min.   :   241.2  \n 1st Qu.:2.794e+06   1st Qu.:  1202.1  \n Median :7.024e+06   Median :  3531.8  \n Mean   :2.960e+07   Mean   :  7215.3  \n 3rd Qu.:1.959e+07   3rd Qu.:  9325.5  \n Max.   :1.319e+09   Max.   :113523.1"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#column-selection",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#column-selection",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Column Selection",
+    "text": "Column Selection\nFor example PDHS files have more than 5000 columns in some files and maybe 40 or 50 or even fewer than that are needed for your analysis. Select() function of R’s dplyr is used to select columns of your interest\n\ngapminder %&gt;% select(country, pop, lifeExp)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#select-most-of-the-variables-and-drop-one-or-two",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#select-most-of-the-variables-and-drop-one-or-two",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "select most of the variables and drop one or two",
+    "text": "select most of the variables and drop one or two\n\ngapminder %&gt;% select(-gdpPercap)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#data-filtering",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#data-filtering",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Data Filtering",
+    "text": "Data Filtering\n\nfilter() funtion\n\ngapminder_07&lt;- gapminder %&gt;% filter(year==2007)\nkbl(gapminder_07[1:10,])%&gt;%kable_styling(fixed_thead=T)\n\n\n\ncountry\ncontinent\nyear\nlifeExp\npop\ngdpPercap\n\n\n\nAfghanistan\nAsia\n2007\n43.828\n31889923\n974.5803\n\n\nAlbania\nEurope\n2007\n76.423\n3600523\n5937.0295\n\n\nAlgeria\nAfrica\n2007\n72.301\n33333216\n6223.3675\n\n\nAngola\nAfrica\n2007\n42.731\n12420476\n4797.2313\n\n\nArgentina\nAmericas\n2007\n75.320\n40301927\n12779.3796\n\n\nAustralia\nOceania\n2007\n81.235\n20434176\n34435.3674\n\n\nAustria\nEurope\n2007\n79.829\n8199783\n36126.4927\n\n\nBahrain\nAsia\n2007\n75.635\n708573\n29796.0483\n\n\nBangladesh\nAsia\n2007\n64.062\n150448339\n1391.2538\n\n\nBelgium\nEurope\n2007\n79.441\n10392226\n33692.6051\n\n\n\n\n\n##&gt;Have we accidently deleted all other rows? Answer is no.\nNope: If you don’t believe me try entering gapminder at the console.\n\ngapminder %&gt;% filter(year==2007)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#filtering-with-respect-to-two-variables",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#filtering-with-respect-to-two-variables",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Filtering with respect to two variables",
+    "text": "Filtering with respect to two variables\nOne can apply multiple filters\n\n\ngapminder %&gt;% filter(year==2007,country==\"Sri Lanka\")\n\n\n  \n\n\ngapminder %&gt;% filter(year==2007, country==\"Pakistan\")\n\n\n  \n\n\n\nNow we are selecting multiple countries for year 2007.\n\ngapminder %&gt;% filter(year==2007, country %in% c(\"India\", \"Pakistan\",\"Bangladesh\", \"Afghanistan\", \"Iran\"))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#filtering-data-for-south-asia-countries",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#filtering-data-for-south-asia-countries",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Filtering data for South Asia countries",
+    "text": "Filtering data for South Asia countries\n\ngapminderSA&lt;-gapminder %&gt;% filter(country %in% c(\"Bangladesh\",\"India\",\"Pakistan\",\"Sri Lanka\",\"Nepal\", \"Afghanistan\",\"Bhutan\", \"Maldives\"))\ngapminderSA"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#sort-data-with-arrange",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#sort-data-with-arrange",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Sort data with arrange()\n",
+    "text": "Sort data with arrange()\n\n\ngapminderSA %&gt;% arrange(gdpPercap)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#arrange-sorts-in-ascending-order.-sort-in-descending-order-desc.",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#arrange-sorts-in-ascending-order.-sort-in-descending-order-desc.",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "\narrange() sorts in ascending order. Sort in descending order, desc().",
+    "text": "arrange() sorts in ascending order. Sort in descending order, desc().\n\ngapminderSA %&gt;% arrange(desc(gdpPercap))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#life-expectancy-in-south-asia-in-2007",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#life-expectancy-in-south-asia-in-2007",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Life Expectancy in South Asia in 2007",
+    "text": "Life Expectancy in South Asia in 2007\nWhat is the lowest and highest life expectancy among South Asian countries?\n\ngapminderSA %&gt;% filter(year==2007) %&gt;%  arrange(lifeExp)\n\n\n  \n\n\n\nWhat was it in 1952?"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#mutate-to-change-existing-or-create-new-variable",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#mutate-to-change-existing-or-create-new-variable",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "\nmutate() to change existing or create new variable",
+    "text": "mutate() to change existing or create new variable\n\ngapminderSA %&gt;% mutate(pop=pop/1000000)\n\n\n  \n\n\n\nIf we want to calculate GDP, we need to multiply gdpPercap by pop.\nBut wait! Didn't we just change pop so it's expressed in millions? \nNo: we never stored the results of our previous command, we simply displayed them. Just as I discussed above, unless you overwrite it, the original gapminder dataset will be unchanged. With this in mind, we can create the gdp variable as follows:\n\ngapminderSA %&gt;% mutate(gdp = pop * gdpPercap)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#how-to-calculate-new-variables",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#how-to-calculate-new-variables",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "How to calculate new variables",
+    "text": "How to calculate new variables\nAs mentioned above, mutate is used to calculate new variable. Here we have calculated a new variable gdp and then arrange() data and selected top_n(10) countries to see whether higher lifeExpectancy and higher gdp are linked or not?\n\ngapminder %&gt;% filter(year==2007) %&gt;% \n  mutate(gdp=gdpPercap*pop) %&gt;% \n  arrange(desc(gdp)) %&gt;% \n  top_n(10)\n\n\n  \n\n\n\ntransmute() keeps only the derived column. Let’s use it in the example from above:\n\ngapminder %&gt;% filter(year==2007) %&gt;% \n  transmute(gdp=gdpPercap*pop) %&gt;% \n  arrange(desc(gdp)) %&gt;% \n  top_n(10)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#ordering",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#ordering",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Ordering",
+    "text": "Ordering\narrange data by life expectancy, we use arrange() function\n\ngapminder %&gt;% \n  select(country, year,lifeExp) %&gt;% \n  filter(year==2007) %&gt;% \n  arrange(lifeExp)\n\n\n  \n\n\n\ntop to bottom, then use arrange(desc()) command as follows:\n\ngapminder %&gt;% \n  select(country, year,lifeExp) %&gt;% \n  filter(year==2007) %&gt;% \n  arrange(desc(lifeExp))\n\n\n  \n\n\n\nTop 5\n\ngapminder %&gt;% \n  select(country, year,lifeExp) %&gt;% \n  filter(year==2007) %&gt;% \n  arrange(desc(lifeExp)) %&gt;% \n  top_n(5)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#summarising-data-by-groups",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#summarising-data-by-groups",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Summarising data by groups",
+    "text": "Summarising data by groups\n\ngapminder %&gt;%\n  filter(year == 2007, continent == \"Asia\") %&gt;%\n  summarize(avgLifeExp = mean(lifeExp))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#section",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#section",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "gapminder %&gt;% \n  group_by(continent) %&gt;% \n  filter(year==2007) %&gt;% \n  summarize(avglife=mean(lifeExp))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#mean-maximum-and-mean-life-expectancy",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#mean-maximum-and-mean-life-expectancy",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "mean, maximum, and mean life expectancy",
+    "text": "mean, maximum, and mean life expectancy\n\ngapminder %&gt;%\n  summarise(\n    lifeExp_min = min(lifeExp),\n    lifeExp_max = max(lifeExp),\n    lifeExp_mean = mean(lifeExp)\n  )"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#le-for-each-year",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#le-for-each-year",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "LE for each year",
+    "text": "LE for each year\n\ngapminder %&gt;%\n  group_by(year) %&gt;%\n  summarise(\n    lifeExp_min = min(lifeExp),\n    lifeExp_max = max(lifeExp),\n    lifeExp_mean = mean(lifeExp)\n  )\n\n\n  \n\n\n\n##dplyr tutorial0"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#if_else-command-alongwith-mutate",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#if_else-command-alongwith-mutate",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "if_else command alongwith mutate",
+    "text": "if_else command alongwith mutate\n\ngapminder %&gt;%\n  filter(year == 2007) %&gt;%\n  group_by(continent) %&gt;%\n  summarize(avgLifeExp = mean(lifeExp)) %&gt;%\n  mutate(over75 = if_else(avgLifeExp &gt; 70, \"Y\", \"N\"))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#total-population-by-continets-in-2007",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#total-population-by-continets-in-2007",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Total Population by Continets in 2007",
+    "text": "Total Population by Continets in 2007\n\ngapminder %&gt;% \n  filter(year==2007) %&gt;% \n  group_by(continent) %&gt;% \n  summarize(tot_pop=sum(pop))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#percentiles",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#percentiles",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Percentiles",
+    "text": "Percentiles\n\ngapminder %&gt;% select(country,year, lifeExp, gdpPercap) %&gt;% \n  filter(year == 2007) %&gt;%\n  mutate(percentile = ntile(lifeExp, 100)) %&gt;%\n  arrange(desc(gdpPercap))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#bottom-side",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#bottom-side",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Bottom side",
+    "text": "Bottom side\nSo it makes sense that higher the GDP, higher the lifeExp. This is not formal testing but exploratory data makes lot of sense here.\n\ngapminder %&gt;% select(country,year, lifeExp, gdpPercap) %&gt;% \n  filter(year == 2007) %&gt;%\n  mutate(percentile = ntile(lifeExp, 100)) %&gt;%\n  arrange(gdpPercap)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#section-1",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#section-1",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "gapminder %&gt;% filter(year==2007) %&gt;% \n  mutate(percentile=ntile(lifeExp,100)) %&gt;% \n  filter(percentile&gt;90) %&gt;% \n  arrange(desc(percentile)) %&gt;% \n  top_n(10,wt=percentile) %&gt;% \n  select(country,continent,lifeExp,gdpPercap)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#section-2",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#section-2",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "In case you are interested in bottom 10 (worst lifeExp countries from the bottom), use top_n with -10.\n\ngapminder %&gt;% filter(year==2007) %&gt;% \n  mutate(percentile=ntile(lifeExp,100)) %&gt;% \n  filter(percentile&lt;10) %&gt;% \n  arrange(percentile) %&gt;% \n  top_n(-10,wt=percentile) %&gt;% \n  select(country,continent,lifeExp,gdpPercap)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#visualizing-data-to-get-data-insight",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#visualizing-data-to-get-data-insight",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Visualizing data to get data insight",
+    "text": "Visualizing data to get data insight\nVisualizing data is one of the most important aspect of getting data insight and may provide a better data insight than a complicated model. Visualizing large data sets were not an easy task, so researchers relied on mathematical and core econometric/regression models. ggplot2 which is a set of tidyverse package is probably one of the greatest tool for data visualization used in R. In the following sections we are going to visualize gapminder data.\nStat graphics is a mapping of variable to aesthetic attributes of geometric objects."
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#essential-components-of-ggplot2",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#essential-components-of-ggplot2",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "3 Essential components of ggplot2\n",
+    "text": "3 Essential components of ggplot2\n\n\ndata: dataset containing the variables of interest\ngeom: geometric object in question line, point, bars\naes: aesthetic attributes of an object x/y position, colors, shape, size"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#scatter-plot",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#scatter-plot",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Scatter plot",
+    "text": "Scatter plot\n\ngapminder2007&lt;-gapminder %&gt;% filter(year==2007)\np1&lt;-ggplot(data=gapminder2007,mapping = aes(x=gdpPercap,y=lifeExp,color=continent,size=pop))+geom_point()\np1+facet_wrap(~continent)\n\n\n\n\n\n\np1+  labs(x = \"GDP Per Capita\", y = \"Life Expectancy in Years\",\n       title = \"Economic Growth and Life Expectancy\",\n       subtitle = \"Data points are country-years\",\n       caption = \"Source: Gapminder.\")"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#bubbleplot",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#bubbleplot",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Bubbleplot",
+    "text": "Bubbleplot"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#section-4",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#section-4",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "##This is a table of data about a large number of countries, each observed over several years. Let's make a scatterplot with it.\nP&lt;-ggplot(data=gapminder,mapping = aes(x=gdpPercap,y=lifeExp))  \n\nP+geom_point()+geom_smooth()\n\n\n\n\n\n\nP+geom_point()+geom_smooth(method = \"lm\")\n\n\n\n\n\n\nP+geom_point()+geom_smooth(method = \"gam\")+scale_x_log10()\n\n\n\n\n\n\nP+geom_point()+geom_smooth(method = \"gam\")+scale_x_log10(labels=scales::dollar)\n\n\n\n\n\n\nP&lt;-ggplot(data=gapminder,mapping = aes(gdpPercap,y=lifeExp,color=\"purple\"))\nP+geom_point()+geom_smooth(method = \"loess\")+scale_x_log10()"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#with-proper-title",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#with-proper-title",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "With proper title",
+    "text": "With proper title\n\nP&lt;-ggplot(data=gapminder,mapping = aes(gdpPercap,y=lifeExp))\nP+geom_point(alpha=0.3)+\n  geom_smooth(method = \"gam\")+\n  scale_x_log10(labels=scales::dollar)+\n  labs(x = \"GDP Per Capita\", y = \"Life Expectancy in Years\",\n       title = \"Economic Growth and Life Expectancy\",\n       subtitle = \"Data points are country-years\",\n       caption = \"Source: Gapminder.\")"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#section-9",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#section-9",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "p + geom_point(mapping = aes(color = log(pop))) +\n  scale_x_log10()"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#comparison-of-2007-vs-1952-continentwise",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#comparison-of-2007-vs-1952-continentwise",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Comparison of 2007 vs 1952 continentwise",
+    "text": "Comparison of 2007 vs 1952 continentwise"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#section-10",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#section-10",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "p1+labs(x = \"GDP Per Capita\", y = \"Life Expectancy in Years\",\n       title = \"Economic Growth and Life Expectancy\",\n       subtitle = \"Data points are country-years\",\n       caption = \"Source: Gapminder.\")"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#section-12",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#section-12",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "gapminder %&gt;%  \n  select(-pop, -gdpPercap) %&gt;%  \n  filter(year == 2007) %&gt;%  \n  group_by(continent) %&gt;%  \n  summarise(mean_life_exp =  \n              mean(lifeExp),median_life_exp=median(lifeExp))"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#section-13",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#section-13",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "gapminder %&gt;%  \n  select(-pop, -gdpPercap) %&gt;%  \n  filter(year == 2007) %&gt;%  \n  group_by(continent) %&gt;%  \n  summarise(median_life_exp =  \n              median(lifeExp)) %&gt;%  \n  ggplot() +  \n  aes(x = continent) +  \n  aes(y = median_life_exp) +  \n  geom_point(color = \"blue\", size = 3,  \n             alpha = .4) +  \n  scale_y_continuous(limits = c(0,85)) +  \n  labs(title = \"Median life expectency by continent in 2007\") +  \n  labs(subtitle = \"Data Source: Gapminder package in R\") +  \n  labs(x = \"\") +  \n  labs(y = \"Median life expectancy\") +  \n  labs(caption = \"Zahid Asghar for 'QM4SSH'\") +  \n  theme_minimal()"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#section-14",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#section-14",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "gapminder %&gt;%  \n  filter(year == 1997) %&gt;%  \n  select(country, continent, lifeExp) %&gt;%  \n  mutate(  \n    life_cats =  \n      case_when(lifeExp &gt;= 70 ~ \"70+\",  \n                lifeExp &lt; 70 ~ \"&lt;70\")) %&gt;%  \n  ggplot() +  \n  aes(x = continent, y = life_cats) +  \n  geom_jitter(width = .25, height = .25)+  \n  aes(col = continent) +  \n  scale_color_discrete(guide = FALSE) +  \n  theme_dark() +  \n  labs(x = \"\", y = \"\") +  \n  labs(title = \"Life expectency beyond 70 in 1997\")"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#section-15",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#section-15",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "gapminder %&gt;%  \n  mutate(gdp_billions =  \n           gdpPercap *  \n           pop/1000000000) %&gt;%  \n  ggplot() +  \n  aes(x = year) +  \n  aes(y = gdp_billions) +  \n  geom_line() +  \n  aes(group = country) +  \n  scale_y_log10() +  \n  aes(col = continent) +  \n  facet_wrap( ~ continent) +  \n  scale_color_discrete(guide = F) +  \n  theme_minimal()"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#section-16",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#section-16",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "gapminder %&gt;%  \n  filter(year == 2007) %&gt;%  \n  ggplot() +  \n  aes(x = continent, y = lifeExp) +  \n  geom_boxplot() +  \n  geom_jitter(height = 0, width = .2) +  \n  stat_summary(fun.y = mean,\n               geom = \"point\",\n               col = \"goldenrod3\",\n               size = 5)"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#pakistan",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#pakistan",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "Pakistan",
+    "text": "Pakistan\n\ngapminder %&gt;%  \n  filter(country == \"Pakistan\") %&gt;%  \n  ggplot() +  \n  aes(x = year, y = lifeExp) +  \n  geom_point() +  \n  geom_line() +  \n  aes(alpha = year) +  \n  aes(col = year) +  \n  scale_color_viridis_c() +  \n  theme_classic()"
+  },
+  {
+    "objectID": "labs/r-foundations/r-04-tidyverse-in-action.html#section-17",
+    "href": "labs/r-foundations/r-04-tidyverse-in-action.html#section-17",
+    "title": "USAID’s Khyber Pakhtukhwa Revenue Mobilization (KPRM) Activity",
+    "section": "",
+    "text": "gapminder %&gt;%  \n  filter(year == 2007) %&gt;%  \n  ggplot() +  \n  aes(x = gdpPercap) +  \n  aes(y = lifeExp) +  \n  geom_point(alpha = .5) +  \n  geom_rug(size = 1) +  \n  aes(col = continent) +  \n  aes(col = lifeExp) +  \n  scale_x_log10() +  \n  aes(size = gdpPercap) +  \n  aes(size = pop) +  \n  geom_point(col = \"darkgreen\", size = 1) +  \n  facet_wrap(~ continent)"
   }
 ]

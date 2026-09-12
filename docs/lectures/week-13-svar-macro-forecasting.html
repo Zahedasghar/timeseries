@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<link href="../assets/images/fpp3.png" rel="icon" type="image/png">
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.9.37">
+
+  <meta name="author" content="Zahid Asghar, Professor, School of Economics, QAU">
+  <title>Time Series Econometrics &amp; Macroeconomic Forecasting – Macroeconomic Forecasting: Structural VAR</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-1d7a6aa08282beccf9aa778401a94ff4.css">
+  <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" data-background-image="https://www.slidekit.com/wp-content/uploads/2023/12/Aesthetic-Google-Slide-Background.jpg" class="quarto-title-block center">
+  <h1 class="title"><span class="flow">Macroeconomic Forecasting: Structural VAR</span></h1>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+<span style="color:blue;"><a href="https://zahedasghar.netlify.app">Zahid Asghar, Professor, School of Economics, QAU</a></span> 
+</div>
+</div>
+</div>
+
+  <p class="date">12-09-2026</p>
+</section>
+<section>
+<section id="svar-models" class="title-slide slide level1 center">
+<h1>SVAR models</h1>
+
+</section>
+<section id="objectives" class="slide level2">
+<h2>Objectives</h2>
+<h4 id="why-a-structural-var">Why a structural VAR</h4>
+<h4 id="var-identification-identifying-a">VAR identification: Identifying <strong>A</strong></h4>
+<h4 id="impulse-responses">Impulse responses</h4>
+<h4 id="variance-decomposition">Variance decomposition</h4>
+<h4 id="two-identification-strategies">Two identification strategies</h4>
+<ul>
+<li>Recursive idendtification: Sims (1992)</li>
+<li>Non Recursive: Blanchard and Perotti (2002)</li>
+</ul>
+</section>
+<section id="why-a-strucutural-var" class="slide level2">
+<h2>Why a strucutural VAR</h2>
+<p><strong>Effect of monetary policy</strong>. Consider these events:</p>
+<ol type="1">
+<li>Anticipating a rise in inflation …</li>
+<li>The central bank increases the monetary policy interest rate… inflation still rises, as anticipated.</li>
+</ol>
+<ul>
+<li>One could <span style="color:red;"><strong>wrongly</strong></span> conclude that the interest rate hike led to the inflation.</li>
+<li>It wan an endogenous reaction to expected inflation</li>
+</ul>
+</section>
+<section id="challenge-svar-identification" class="slide level2">
+<h2>Challenge: SVAR Identification</h2>
+<h4 id="we-must-identify-purely-exogenous-policy-or-other-type-of-shocks-tobe-able-to-trace-out-its-dynamic-effects.-identify-the-structural-var.">We must identify purely exogenous (policy or other type of) shocks tobe able to trace out its dynamic effects. Identify the structural VAR.</h4>
+<ul>
+<li>Uncovering the structural model is called identification</li>
+<li>According to Sims (1986):</li>
+</ul>
+<blockquote>
+<p>identification is the interpretation of historically observed variation in data in a way that allows the variation to be used to predict the consequences of an action not yet undertaken.</p>
+</blockquote>
+</section>
+<section id="svar-identification" class="slide level2">
+<h2>SVAR Identification</h2>
+<ul>
+<li><p>Suppose we have the following **Structural VAR(1): <span class="math inline">\(AX_t=\beta_0+\beta_1 X_{t-1}+u_t\)</span> Structural shocks u are independent</p></li>
+<li><p>If <span class="math inline">\(X\)</span> variables GDP gap (<span class="math inline">\(y\)</span>) and the interest rate (<span class="math inline">\(r\)</span>): <span class="math display">\[X_t=\begin{bmatrix}
+y  \\
+r  \\
+\end{bmatrix}\]</span> the system will be <span class="math inline">\(y_t+a_{12}r_t=\beta_{10}+\beta_{12}y_{t-1}+\beta_{12}r_{t-1}+u_{yt}\)</span></p></li>
+</ul>
+<p><span class="math inline">\(a_{21}y_t+r_t=\beta_{20}+\beta_{21}y_{t-1}+\beta_{22}r_{t-1}+u_{rt}\)</span></p>
+</section>
+<section class="slide level2">
+
+<p>In martrix form : <span class="math display">\[\begin{bmatrix}
+1 &amp; a12\\
+a21 &amp; 1 \\
+\end{bmatrix}\begin{bmatrix}
+y_t\\
+r_t\\
+\end{bmatrix}=\begin{bmatrix}
+\beta_{10}\\
+\beta_{20}\\
+\end{bmatrix}+\begin{bmatrix}
+\beta_{11} &amp; \beta_{12}\\
+\beta_{21} &amp; \beta_{22} \\
+\end{bmatrix}\begin{bmatrix}
+y_{t-1}\\
+r_{t-1}\\
+\end{bmatrix}+\begin{bmatrix}
+u_{yt}\\
+u_{rt}\\
+\end{bmatrix}\]</span></p>
+<h3 id="e-combination-of-u"><span class="math inline">\(e\)</span> combination of <span class="math inline">\(u\)</span></h3>
+<p>If we pre multiply this VAR by <span class="math inline">\(A^{-1}\)</span> we get the reduced-form VAR</p>
+<p><span class="math inline">\(A^{-1}A X_t=A^{-1}\beta_0+A^{-1}\beta_1 X_{t-1}+A^{-1}u_t\)</span> <span class="math inline">\(X_t=G_0+G_1 X_{t-1}+e_t\)</span> <span class="math inline">\(A^{-1}A=I\)</span></p>
+<ul>
+<li>Matrix <span class="math inline">\(A\)</span> also relates the forecast errors of the reduced-form VAR, <span class="math inline">\(e\)</span> and the structural shocks <span class="math inline">\(u\)</span>: <span class="math inline">\(e_t=A^{-1}u_t\)</span></li>
+</ul>
+</section>
+<section id="e-combinations-of-u" class="slide level2">
+<h2><span class="math inline">\(e\)</span> combinations of <span class="math inline">\(u\)</span></h2>
+<ul>
+<li>The forecast errors <span class="math inline">\(e\)</span> are linear combinations of the structural shocks <span class="math inline">\(u\)</span></li>
+</ul>
+<p><span class="math inline">\(e_t=A^{-1}u_t\)</span> <span class="math inline">\(e_{yt}=(u_{yt}-a_{12}u_{rt})/(1-a{12}a_{21})\)</span></p>
+<p><span class="math inline">\(e_{rt}=(u_{-a_{12}u_{yt}+rt})/(1-a{12}a_{21})\)</span></p>
+</section>
+<section id="identification-getting-a" class="slide level2">
+<h2>Identification, getting <span class="math inline">\(A\)</span></h2>
+<ul>
+<li><p>The structural VAR cannot be estimated directly.</p></li>
+<li><p>Start from the reduced-form VAR: <span class="math inline">\(X_t=G_0+G_1 X_{t-1}+u_{t}\)</span> and get to the structurala one: <span class="math inline">\(AX_t=\beta_0+\beta_1 X_{t-1}+u_t\)</span></p></li>
+<li><p>To do that, we need to restrict matrix <strong>A: IDENTIFICATION</strong></p></li>
+</ul>
+</section>
+<section id="identification-find-a" class="slide level2">
+<h2>Identification, find A</h2>
+<ul>
+<li>Get <strong>A</strong> and multiply the reduced-form VAR by <strong>A</strong> to get the structural model, shocks, and contemporaneous relations among variables.</li>
+</ul>
+<p><span class="math inline">\(AX_t=AG_0+AG_1 X_{t-1}+A e_t\)</span></p>
+<p><span class="math inline">\(AX_t=\beta_0+\beta_1 X_{t-1}+y_t\)</span></p>
+<p><span class="math inline">\(AA^{-1}\beta_0=\beta_0\)</span></p>
+</section>
+<section id="svar-identification-getting-a" class="slide level2">
+<h2>SVAR Identification: getting A</h2>
+<p>Usual approach: impose restrictions on matrix <strong>A</strong> which is equivalent to:</p>
+<ul>
+<li>Imposing restrictions on the contemporaneous relations among the endogenous variables of the structural model (based on economics).</li>
+</ul>
+<p><span class="math display">\[\begin{bmatrix}
+1 &amp; 0\\
+a21 &amp; 1 \\
+\end{bmatrix}\begin{bmatrix}
+y_t\\
+r_t\\
+\end{bmatrix}=\begin{bmatrix}
+\beta_{10}\\
+\beta_{20}\\
+\end{bmatrix}+\begin{bmatrix}
+\beta_{11} &amp; \beta_{12}\\
+\beta_{21} &amp; \beta_{22} \\
+\end{bmatrix}\begin{bmatrix}
+y_{t-1}\\
+r_{t-1}\\
+\end{bmatrix}+\begin{bmatrix}
+u_{yt}\\
+u_{rt}\\
+\end{bmatrix}\]</span></p>
+<p>This is what identification is about: <span style="color:red;">0</span> in top left corner of A.</p>
+</section>
+<section id="svar-identification-getting-a-1" class="slide level2">
+<h2>SVAR Identification: getting A</h2>
+<p>If we impose <span class="math inline">\(a_{12}=0\)</span>, we impose that <span class="math inline">\(y\)</span> is only affected with a lag by a shock to <span class="math inline">\(r\)</span> but that a shock to <span class="math inline">\(y\)</span> affects <span class="math inline">\(r\)</span> contemporaneously</p>
+<p><span class="math inline">\(y_t=\beta_{10}+\beta_{12}y_{t-1}+\beta_{12}r_{t-1}+u_{yt}\)</span></p>
+<p><span class="math inline">\(a_{21}y_t+r_t=\beta_{20}+\beta_{21}y_{t-1}+\beta_{22}r_{t-1}+u_{rt}\)</span></p>
+</section>
+<section id="svar-identification-getting-a-2" class="slide level2">
+<h2>SVAR Identification: getting A</h2>
+<ul>
+<li>Be aware that by imposing restrictions on <strong>A</strong> you also impose restrictions on <span class="math inline">\(A^{-}\)</span>. Again, if we look at the reduced form,</li>
+</ul>
+<p><span class="math inline">\(A^{-1}A X_t=A^{-1}\beta_0+A^{-1}\beta_1 X_{t-1}+A^{-1}u_t\)</span></p>
+<p><span class="math display">\[\begin{bmatrix}
+y_t\\
+r_t\\
+\end{bmatrix}=\begin{bmatrix}
+1 &amp; 0\\
+a21 &amp; 1 \\
+\end{bmatrix}^{-1}\begin{bmatrix}
+\beta_{10}\\
+\beta_{20}\\
+\end{bmatrix}+\begin{bmatrix}
+1 &amp; 0\\
+a21 &amp; 1 \\
+\end{bmatrix}^{-1}\begin{bmatrix}
+\beta_{11} &amp; \beta_{12}\\
+\beta_{21} &amp; \beta_{22} \\
+\end{bmatrix}\begin{bmatrix}
+y_{t-1}\\
+r_{t-1}\\
+\end{bmatrix}+\\ \begin{bmatrix}
+1 &amp; 0\\
+a21 &amp; 1 \\
+\end{bmatrix}^{-1}\begin{bmatrix}
+u_{yt}\\
+u_{rt}\\
+\end{bmatrix}\]</span></p>
+<ul>
+<li>It is also a restriction on the relation between the forecast errors and the structural shocks. Forecast errors of <span class="math inline">\(y\)</span> = structural shocks to y: <span class="math inline">\(e_{yt}=u_{yt}\)</span></li>
+</ul>
+</section>
+<section id="svar-identification-restrictions" class="slide level2">
+<h2>SVAR Identification: restrictions</h2>
+<p>The matrices product makes the reduced-form VAR:</p>
+<p><span class="math display">\[\begin{bmatrix}
+y_t\\
+r_t\\
+\end{bmatrix}=\begin{bmatrix}
+\beta_0\\
+-a_{21}\beta_{10}+\beta_{20} \\
+\end{bmatrix}+\begin{bmatrix}
+\beta_{11} &amp; \beta_{12}\\
+-a_{21}\beta_{11}+\beta_{12} &amp; -a_{21}\beta_{12}+\beta_{22} \\
+\end{bmatrix}\begin{bmatrix}
+y_{t-1}\\
+r_{t-1}\\
+\end{bmatrix}+\\ \begin{bmatrix}
+u_{yt}\\
+-a_{21}u_{yt}+u_{rt}\\
+\end{bmatrix}\]</span></p>
+<ul>
+<li>The OLS VAR estimation gives:</li>
+</ul>
+<p><span class="math display">\[\begin{bmatrix}
+y_t\\
+r_t\\
+\end{bmatrix}=\begin{bmatrix}
+g_{10}\\
+g_{20} \\
+\end{bmatrix}+\begin{bmatrix}
+g_{11} &amp; g_{12}\\
+g_{21} &amp; g{22} \\
+\end{bmatrix}\begin{bmatrix}
+y_{t-1}\\
+r_{t-1}\\
+\end{bmatrix}+ \begin{bmatrix}
+e_{yt}\\
+e_{rt}\\
+\end{bmatrix}\]</span></p>
+</section>
+<section id="svar-identification-restrictions-1" class="slide level2">
+<h2>SVAR Identification : restrictions</h2>
+<ul>
+<li>With the restriction, the number of unknown parameters in the structural model is equal to the number of equations known from the estimated VAR</li>
+<li>Substitute the results from the estimation for these 9 parameters <span class="math inline">\(g_{10},g_{11},g_{12},g_{20},g_{21},g_{22},\sigma_{ey}^2,\sigma_{er}^2 and \sigma_{ey-er}\)</span><br>
+into 9 equations, to solve for :</li>
+</ul>
+<p><span class="math inline">\(a_{21}, \beta_{10},\beta_{20},\beta_{11},\beta_{21},\beta_{22}, \sigma_{vy}^2 and \sigma_{vr}^2\)</span> - The structural shocks may also be recovered.</p>
+</section>
+<section id="svar-identification-restrictions-2" class="slide level2">
+<h2>SVAR Identification: restrictions</h2>
+<p>Summary of SVAR Identification up to now: - Get the structural model, - to do that, we need to get A, so - impose restrictions on A, based on economics, to recover the structural shocks and the structural parameters, using the reduced-form estimation.</p>
+<h4 id="therefore-svar-identification-is-about-imposing-restrictions-on-matrix-a.">Therefore, SVAR identification is about imposing restrictions on matrix A.</h4>
+</section>
+<section id="svar-identification-how-many-restrictions" class="slide level2">
+<h2>SVAR Identification: how many restrictions?</h2>
+<ul>
+<li><p>The minimum number of restrictions required: <strong>difference</strong> between the number of unknown and known elements. Let <strong>n</strong> be the number of variable in the VAR.</p></li>
+<li><p><strong>Unknown</strong>: as the elements of the diagonal of <strong>A</strong> are equal 1’s, there are <span class="math inline">\(n(n-1)\)</span> unknown elements in <strong>A</strong>. There are also n unknown variances of <span class="math inline">\(u\)</span>. The total is: <span class="math inline">\(n(n-1)+n=n^2\)</span>.</p></li>
+<li><p><strong>Known elements</strong>: the estimation allows us to get <span class="math inline">\(n(n-1)/2+n=n(n+1)/2\)</span> distinct elements contained in the <strong>symmetric</strong> var-cov matrix of the errors: <span class="math inline">\(Ee_t e_t'=\Sigma_e\)</span>.</p></li>
+</ul>
+</section>
+<section id="svar-identification-how-many-restrictions-1" class="slide level2">
+<h2>SVAR Identification: how many restrictions?</h2>
+<p><strong>Why the known</strong> elements are <span class="math inline">\(n(n+1)/2\)</span>? The distinct elements contained in the symmetric var-cov matrix of the forecast errors: <span class="math inline">\(Ee_t e_t'=\Sigma_e\)</span></p>
+<ul>
+<li><p>Because there are n distinct elements in the diagonal of <span class="math inline">\(\Sigma_e\)</span> and <span class="math inline">\(n(n-1)/2\)</span> distinct elements in the upper triangular part of <span class="math inline">\(\Sigma_e\)</span>. The total number of known elements is: <span class="math inline">\(n+n(n-1)/2=n(n+1)/2\)</span>.</p></li>
+<li><p>Thus, impose <span class="math inline">\(n^2-n(n+1)/2=n(n-1)/2\)</span> restrictions on <strong>A</strong>.A VAR with 3 variables requires 3(3-1)/2=3 restrictions on <strong>A</strong>; A VAR with 4 variables requires 4(4-1)/2=6 restrictions on <strong>A</strong>.</p></li>
+</ul>
+</section>
+<section id="impulse-responses-1" class="slide level2">
+<h2>Impulse Responses</h2>
+<ul>
+<li><p>Impulse responses trace the effects of structural shocks on the endogenous variables over time.</p></li>
+<li><p>Each response includes the effect of a specific shock on one of the endogenous variables of the system at impact t, then on <strong>t+1</strong>, and so on.</p></li>
+<li><p>Transform our structural autoregressive vector <span class="math inline">\(AX_t=\beta_0+\beta_1 X_{t-1}+u_t\)</span> into a moving average representation: <span class="math inline">\(X_t=\mu+\sum_{i=0}^{\infty}C_i u_t\)</span></p></li>
+</ul>
+</section>
+<section id="variance-decomposition-1" class="slide level2">
+<h2>Variance Decomposition</h2>
+<ul>
+<li><p>Forecast errors and the relationships among the variables.</p></li>
+<li><p>Propotion of the movements of a variable due to shocks to itself and shocks to other variables in the system.</p></li>
+<li><p>This forecast error variance decomposition and the foreces behind business cycles.</p></li>
+</ul>
+</section>
+<section id="variance-decomposition-2" class="slide level2">
+<h2>Variance Decomposition</h2>
+<ul>
+<li><p>Are all business cycles alike? Are GDP surprises mostly due to technology shocks or to monetary policy shocks?</p></li>
+<li><p>Are demand shocks the main source of GDP forecast errors at long hirzons?</p></li>
+<li><p>In our recursive ordering for <span class="math inline">\(y\)</span> and <span class="math inline">\(r\)</span>, all of the one period forecast-error variance of <span class="math inline">\(y\)</span> is due to shocks to <span class="math inline">\(u_{yt}\)</span>. At longer horizons the explanatory share of shocks to <span class="math inline">\(u_{yt}\)</span> will diminish.</p></li>
+</ul>
+</section></section>
+<section>
+<section id="two-identification-strategies-1" class="title-slide slide level1 center">
+<h1>Two identification strategies</h1>
+
+</section>
+<section id="svar-identification-recursive-ordering" class="slide level2">
+<h2>SVAR Identification: recursive ordering</h2>
+<ul>
+<li>In our example the residuals take on a recursive ordering: Matrix <span class="math inline">\(A^{-1}\)</span> is lower triangular ( only has zeros above the diagonal).</li>
+</ul>
+<p><span class="math inline">\(e_{yt}=u_{yt}\)</span> and <span class="math inline">\(e_{rt}=u_{rt}-a_{21}u_{yt}\)</span></p>
+<p><span class="math display">\[\begin{bmatrix}
+e_{yt}\\
+e_{rt}\\
+\end{bmatrix}=\begin{bmatrix}
+1 &amp; 0\\
+-a_{21} &amp; 1 \\
+\end{bmatrix}\begin{bmatrix}
+u_{yt}\\
+u_{rt}\\
+\end{bmatrix}\]</span></p>
+<ul>
+<li>The recursive ordering means that there is a sequential chain.</li>
+</ul>
+</section>
+<section id="svar-identification-recursive-ordering-1" class="slide level2">
+<h2>SVAR Identification: recursive ordering</h2>
+<ul>
+<li><p>Shocks to <span class="math inline">\(r\)</span> only affects output gap <span class="math inline">\(y\)</span> with a lag: <span class="math inline">\(y_t=\beta_0+\beta_1 y_{t-1}+\beta_2 r_{t-1}+u_{yt}\)</span></p></li>
+<li><p>Both shocks have contemporaneous effects on the interest rate<span class="math inline">\(r\)</span>: <span class="math inline">\(r_t+a_{21}y_t=\beta_0+\beta_1 y_{t-1}+\beta_2 r_{t-1}+u_{rt}\)</span></p></li>
+<li><p>If <span class="math inline">\(r\)</span> is the policy rate, then the recursive ordering is consistent with the view that monetary policy responds to output gap <span class="math inline">\(y\)</span> with a lag, but responds to the interest rate <span class="math inline">\(r\)</span> contemporaneously.</p></li>
+</ul>
+</section>
+<section id="svar-identification-recursive-ordering-2" class="slide level2 scrollable">
+<h2>SVAR Identification: recursive ordering</h2>
+<ul>
+<li>Another example: a three-variable recursive ordering with <span class="math inline">\(y\)</span>, <span class="math inline">\(\pi\)</span>(inflation) and <span class="math inline">\(r\)</span>:</li>
+</ul>
+<p><span class="math inline">\(e_{yt}=u_{yt}\)</span> <span class="math inline">\(e_{\pi t}=-a_{21}u_{yt}+u_{\pi t}\)</span> <span class="math inline">\(e_{rt}=(-a_{31}+a_{21}a_{32})u_{yt}-a_{32}u_{\pi t}+u_{rt}\)</span></p>
+<p><span class="math display">\[\begin{bmatrix}
+e_{yt}\\
+e_{\pi t}\\
+e_{rt}\\
+\end{bmatrix}=\begin{bmatrix}
+1 &amp; 0 &amp; 0\\
+-a_{21} &amp; 1 &amp; 0\\
+-a_{31}+a_{21}a_{32} &amp; -a_{32} &amp; 1\\
+\end{bmatrix}\begin{bmatrix}
+u_{yt}\\
+u_{\pi t}\\
+u_{rt}\\
+\end{bmatrix}\]</span></p>
+<ul>
+<li><p>If movements of <span class="math inline">\(r\)</span> are monetary policy(MP) decisions, policy is reacting to output <span class="math inline">\(y\)</span> and inflation <span class="math inline">\(\pi\)</span> within the period. All shocks have contemporaneous effects on <span class="math inline">\(r\)</span>.</p></li>
+<li><p>The policy rate <span class="math inline">\(r\)</span> affects output <span class="math inline">\(y\)</span> with a lag, and inflation <span class="math inline">\(\pi\)</span> with a lag.</p></li>
+</ul>
+</section>
+<section id="svar-identification-recursive-ordering-3" class="slide level2">
+<h2>SVAR Identification: recursive ordering</h2>
+<ul>
+<li>The good news is that it is easy to find matrix <span class="math inline">\(A^{-1}\)</span> and <span class="math inline">\(A\)</span> when one has a recursive ordering. And with <span class="math inline">\(A\)</span> we get the impulse-responses.</li>
+<li>Any invertible matrix may be broken into two lower triangular factors(Choleski factors). It is a numerica technique(not economics) to easily estimate a recursive ordering.</li>
+<li>You must be aware of the economic restrictions you are imposing. <span style="color:red">The zeros</span> on the upper side <span style="color:red">are RESTRICTIONS</span> on the contemporaneous effects of the shocks.</li>
+</ul>
+</section>
+<section id="svar-identification-recursive-ordering-4" class="slide level2">
+<h2>SVAR Identification: recursive ordering</h2>
+<ul>
+<li><p>Indeed, when one has a recursive odering.</p></li>
+<li><p><span class="math inline">\(A^{-1}\)</span> is the <strong>Choleski factor</strong> of the variance-covariance matrix.</p></li>
+<li><p>Why? substitute <span class="math inline">\(e_t=A^{-1}u_t\)</span> into <span class="math inline">\(Ee_t e_t'=\Sigma_e\)</span> and get <span class="math inline">\(A^{-1}\Sigma_u A^{-1'}=\Sigma_e\)</span>.</p></li>
+<li><p>Assuming that <span class="math inline">\(u_tu_t'\)</span> is diagonal, then <span class="math inline">\(A^{-1}I (A^{-1})'=\Sigma_e\)</span> same as <span class="math inline">\(\Sigma_e=A^{-1}A^{-1'}\)</span>. The inverse of <span class="math inline">\(A\)</span> is lower triangular consistent with a recursive ordering.</p></li>
+</ul>
+<p>Not that assuming <span class="math inline">\(\Sigma_u=1\)</span> implies that <span class="math inline">\(A\)</span> will not have <span class="math inline">\(1s\)</span> on the diagonal.</p>
+</section>
+<section id="svar-identification-recursive-ordering-5" class="slide level2">
+<h2>SVAR Identification: recursive ordering</h2>
+<ul>
+<li>If correlations between the errors are low, the order is irrelevant. But usually, correlations are strong and the order matters.</li>
+<li>Deciding the ordering (restrictions) to be imposed is crucial. Use economic intuition to decide it.</li>
+<li>It is impractical to try all possible orderings. With 4 variables there are 4!=24 possible orderings. Too many.</li>
+</ul>
+</section>
+<section id="svar-identification-recursive-ordering-6" class="slide level2">
+<h2>SVAR Identification: recursive ordering</h2>
+<ul>
+<li>If you are sure that there is a recursive ordering, or sequential chain, you must then know in what order the variables are recursive.</li>
+<li>It is often difficult to justify the economics of a recursive ordering</li>
+</ul>
+</section>
+<section id="example-sims1992" class="slide level2">
+<h2>Example : Sims(1992)</h2>
+<blockquote>
+<p><em>Interepreting the macroeconomic time series facts</em> European Economic Review</p>
+</blockquote>
+<ul>
+<li><p>Sims estimated a VAR to trace the effect of a shock to monetary policy (Central Bank Interest Rate) using specific ordering.</p></li>
+<li><p>To assess the empirical support for alternative views (models) about monetary policy: VAR agenda.</p></li>
+<li><p>He included:</p>
+<ul>
+<li>Federal Funds Rate(ff) and the logs of <span class="math inline">\(M1\)</span> (lm), CPI (lp), and <strong>Industrial production</strong>(ly). The VAR was estimated using 14 lags during the sample period : 1958:04- 1991:02</li>
+</ul></li>
+</ul>
+</section>
+<section id="example-sims1992-1" class="slide level2">
+<h2>Example : Sims(1992)</h2>
+<ul>
+<li>The policy variable (ff) was observed first. So the ordering is equivalent to assuming that:</li>
+</ul>
+<ol type="1">
+<li><p>Shocks to the nominal interest rate <strong>ff</strong>, represent monetary policy shocks.</p></li>
+<li><p>A shcok to the policy variable affects all other variables contemporaneously.</p></li>
+<li><p>The variable that is affected by all the others, within the period, is ordered last.</p></li>
+<li><p>Authorities only observe non-policy variables with a lag.</p></li>
+</ol>
+</section>
+<section id="example-sims1992-2" class="slide level2">
+<h2>Example : Sims(1992)</h2>
+<p>Empirical results:</p>
+</section>
+<section id="svar-identification-non-recursive-ordering" class="slide level2">
+<h2>SVAR Identification: non recursive ordering</h2>
+<ul>
+<li>Until now we have used <span class="math inline">\(e_t=A^{-1}u_t\)</span> to show the relation between forecast errors and structural shocks.</li>
+<li>Bernanke and Mihov (1998), Blanchard and Perotti (2002), and other authors use a more general way of relating errors and shocks in structural VARs: <span class="math inline">\(Ae_t=Bu_t\)</span>.</li>
+<li>The specification of these equations can have both errors and shocks on the right hand side. To get the system responses to shocks one needs to have <span class="math inline">\(e_t=A^{-1}Bu_t\)</span>. or <span class="math inline">\(e_t=Fu_t\)</span>. So we use the estimated <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> to compute <span class="math inline">\(F=A^{-1}B\)</span>.</li>
+</ul>
+</section>
+<section id="svar-identification-non-recursive-ordering-1" class="slide level2">
+<h2>SVAR Identification: non recursive ordering</h2>
+<blockquote>
+<p>“An empirical characterization of the dynamic effects of changes in government spending and taxes on output.” Quarterly Journal of Economics, 117(4):1329–1368, 2002.</p>
+</blockquote>
+<p>Use a semi-recursive VAR to econometrically identify fiscal policy shocks; i.e.&nbsp;exogenous movements in public expenditure/taxes. - They estimate a VAR: - Using contemporaneous identification restrictions on variables. - Imposing, on matrix A, coefficients estimated outside the VAR. - They pay careful attention to institutional procedures and periods of tax collection and public spending.</p>
+</section>
+<section id="exmaple-blanchard-and-perotti-2002" class="slide level2">
+<h2>Exmaple: Blanchard and Perotti (2002)</h2>
+<ul>
+<li><p>The <strong>VAR</strong> is <span class="math inline">\(X_t=G(L)X_{t-1}+e_t\)</span> where <span class="math inline">\(X_t=[S_t,T_t,Y_t]\)</span> includes the logs of quarterly real per capita government spending, taxes, and GDP, respectively.</p></li>
+<li><p>And <span class="math inline">\(e_t=[e_t^S,e_t^T,e_t^Y\)</span> is the vector of reduced form residuals or forecast errors of spending, taxes, and GDP, respectively.</p></li>
+<li><p><strong>Spending</strong>: government <strong>consumption</strong> and <strong>investment</strong>.</p></li>
+<li><p><strong>Revenue</strong>: total <strong>taxes</strong> minus <strong>transfers</strong> and minus interest payments.</p></li>
+</ul>
+</section>
+<section id="exmaple-blanchard-and-perotti-2002-1" class="slide level2">
+<h2>Exmaple: Blanchard and Perotti (2002)</h2>
+<blockquote>
+<p>An empirical characterization of the dynamic effects …</p>
+</blockquote>
+<ul>
+<li>The whole system is: <span class="math inline">\(e_t^{S}=b_1e_t^{y}+b_2e_t^{T}+b_3e_t^{S}\)</span> <span class="math inline">\(e_t^{T}=a_1e_t^{y}+a_2e_t^{S}+b_6e_t^{T}\)</span> <span class="math inline">\(e_t^{y}=c_1e_t^{T}+c_2e_t^{S}+c_3e_t^{y}\)</span></li>
+</ul>
+<p><span class="math display">\[\begin{bmatrix}
+1 &amp; 0 &amp; -b_1\\
+0 &amp; 1 &amp; -a_1\\
+-c_1 &amp; -c_2 &amp; 1\\
+\end{bmatrix}\begin{bmatrix}
+e_t^{S}\\
+e_t^{T}\\
+e_t^{y}\\
+\end{bmatrix}=\begin{bmatrix}
+1 &amp; b_2 &amp; 0\\
+a_2 &amp; 1 &amp; 0\\
+0 &amp; 0 &amp; 1\\
+\end{bmatrix}\begin{bmatrix}
+u_t^{S}\\
+u_t^{T}\\
+u_t^{y}\\
+\end{bmatrix}\]</span> These are matrices <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> to be estimated.</p>
+<ul>
+<li><span class="math inline">\(U_t=[u_t^S,u_t^T,u_t^Y]\)</span> is the vector of structural shocks to spending, taxes, and GDP.</li>
+</ul>
+</section>
+<section id="exmaple-blanchard-and-perotti-2002-2" class="slide level2">
+<h2>Exmaple: Blanchard and Perotti (2002)</h2>
+<blockquote>
+<p>An empirical characterization of the dynamic effects …</p>
+</blockquote>
+<ul>
+<li>Forecast errors are a mix of <span class="math inline">\(e\)</span> and structural shocks <span class="math inline">\(u\)</span>:</li>
+</ul>
+<ol type="1">
+<li><span class="math inline">\(e_t^S=b_1 e_t^{y}+b_2 e_t^{T}+u_t^S\)</span> Unexpected movements in spending (<span class="math inline">\(e_t^S\)</span>) are due to shocks to GDP forecast errors (<span class="math inline">\(b_1 e_t^{y}\)</span>) structural shocks to taxes (<span class="math inline">\(b_2 e_t^{T}\)</span>) and structural shocks to government spending (<span class="math inline">\(u_t^S\)</span>).</li>
+</ol>
+<ul>
+<li>Key: At high frequencies (quarterly), there is no discretionary, within the period, response of government spending to unexpected movements in <span class="math inline">\(y: b1\)</span> is always 0.</li>
+<li>Are taxes responding to spending decisions? Or the reverse? Here government spending decisions go before tax decisions so <span class="math inline">\(b2 = 0\)</span>.</li>
+</ul>
+</section>
+<section id="exmaple-blanchard-and-perotti-2002-3" class="slide level2">
+<h2>Exmaple: Blanchard and Perotti (2002)</h2>
+<blockquote>
+<p>An empirical characterization of the dynamic effects …</p>
+</blockquote>
+<ol start="2" type="1">
+<li><span class="math inline">\(e_t^T=a_1 e_t^{y}+a_2 e_t^{S}+u_t^T\)</span></li>
+</ol>
+<ul>
+<li>Forecast errors in taxes are due to surprises in GDP (<span class="math inline">\(a_1 e_t^{y}\)</span>), surprises in spending (<span class="math inline">\(a_2 u_t^{S}\)</span>), and structural shocks to taxes (<span class="math inline">\(u_t^T\)</span>).</li>
+<li>They constructed the elasticity to output of taxes minus transfers ( ) to get the automatic effect of GDP on taxes within the quarter. On average</li>
+<li>Assumed that spending decisions go first, so a2 was estimated with the SVAR</li>
+</ul>
+</section>
+<section id="exmaple-blanchard-and-perotti-2002-4" class="slide level2">
+<h2>Exmaple: Blanchard and Perotti (2002)</h2>
+<p><span style="color:blue">SPENDING SHOCKS</span> VAR 4 lags 1960:1 1997:4 (<span class="math inline">\(a_2neq0\)</span>,<span class="math inline">\(b_2=0\)</span>)</p>
+</section>
+<section id="r-codes-for-blanchard-and-perotti-2002" class="slide level2">
+<h2>R Codes for Blanchard and Perotti (2002)</h2>
+
+
+</section></section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="../site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="../site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="../site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="../site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="../site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="../site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp("https:\/\/zahedasghar\.github\.io\/timeseries\/");
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

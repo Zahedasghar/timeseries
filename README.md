@@ -12,7 +12,7 @@ School of Economics, Quaid-i-Azam University, Islamabad.
 
 | Folder | Contents |
 |---|---|
-| `lectures/` | The 14 lecture documents, numbered in teaching order. These make up the site. |
+| `lectures/` | The 14 weekly lecture documents, `week-01-…` to `week-14-…`, in teaching order. These make up the site. |
 | `labs/` | Hands-on R walkthroughs. `labs/r-foundations/` covers R itself for students starting from zero. |
 | `applications/` | Applied Pakistan studies: remittances, exchange rate, exports and trade, tax revenue, solar prices, KSE. |
 | `assessments/` | Exam papers, assignment briefs, term paper specification. |
@@ -30,7 +30,7 @@ School of Economics, Quaid-i-Azam University, Islamabad.
 ```bash
 quarto render            # full site into docs/
 quarto preview           # live preview while editing
-quarto render lectures/11-vector-autoregressions.qmd   # one document
+quarto render lectures/week-11-vector-autoregressions.qmd   # one document
 ```
 
 GitHub Pages is served from the `docs/` folder on `main`
