@@ -588,7 +588,7 @@ pip install fredapi yfinance wbdata
 
 **Questions?**
 
-Contact: zahid.asghar@qau.edu.pk
+Contact: zasghar@qau.edu.pk
 :::
 
 ::::
