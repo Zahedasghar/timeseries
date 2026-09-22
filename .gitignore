@@ -19,6 +19,10 @@
 _archive/
 data/large/
 
+# ---- Secrets / API keys ----
+.Renviron
+.env
+
 # ---- OS / editor / Office lock files ----
 .DS_Store
 Thumbs.db

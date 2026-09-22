@@ -8,8 +8,20 @@ project:
     - lectures/*.qmd
     - labs/*.qmd
     - labs/r-foundations/*.qmd
+    - applications/index.qmd
+    - applications/remittances_sbp.qmd
+    - applications/exports_sbp.qmd
+    - applications/trade_sbp.qmd
+    - applications/Pak_tax_data_analysis.qmd
+    - applications/charting_pak_economy.qmd
+    - applications/kse30-interactive.qmd
+    - applications/solar_energy.qmd
+    - applications/solar_experience_curve_analysis.qmd
+    - applications/solar_price_arimax_analysis.qmd
+    - applications/trend-season-smoothing.qmd
+    - applications/Machine_Learning_Forecasting_Using_Time_Series_Signature.qmd
+    - applications/Export-Data-Analysis111.qmd
     - "!_archive/**"
-    - "!applications/**"
     - "!assessments/**"
     - "!slides/**"
     - "!references/**"
@@ -44,6 +56,8 @@ website:
         text: Lectures
       - href: labs/index.qmd
         text: Labs
+      - href: applications/index.qmd
+        text: Applications
     right:
       - icon: github
         href: https://github.com/Zahedasghar/timeseries

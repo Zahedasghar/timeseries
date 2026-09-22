@@ -1,0 +1,2710 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="author" content="Prof.&nbsp;Dr.&nbsp;Zahid Asghar · School of Economics, QAU">
+<meta name="dcterms.date" content="2026-09-22">
+<title>Trend, Season and Simple Forecasting – Time Series Econometrics &amp; Macroeconomic Forecasting</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../assets/images/fpp3.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-27766ece6bd3eeb285874ddb9e7fbaa0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-d2fa471584cbcee62d73db67d8c7ce76.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><style>html{ scroll-behavior: smooth; }</style>
+<link href="../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../site_libs/pagedtable-1.1/js/pagedtable.js"></script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+</head>
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Time Series Econometrics &amp; Macroeconomic Forecasting</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../outline.html"> 
+<span class="menu-text">Course outline</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../lectures/index.html"> 
+<span class="menu-text">Lectures</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../labs/index.html"> 
+<span class="menu-text">Labs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../applications/index.html"> 
+<span class="menu-text">Applications</span></a>
+  </li>  
+</ul>
+<ul class="navbar-nav navbar-nav-scroll ms-auto">
+<li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/Zahedasghar/timeseries"> <i class="bi bi-github" role="img" aria-label="GitHub repository">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://zahidasghar.com"> <i class="bi bi-globe" role="img" aria-label="zahidasghar.com">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul>
+<li>
+<a href="#why-start-here" id="toc-why-start-here" class="nav-link active" data-scroll-target="#why-start-here">Why start here?</a>
+  <ul class="collapse">
+<li><a href="#the-methods-everyone-skips" id="toc-the-methods-everyone-skips" class="nav-link" data-scroll-target="#the-methods-everyone-skips">The methods everyone skips</a></li>
+  <li><a href="#roadmap" id="toc-roadmap" class="nav-link" data-scroll-target="#roadmap">Roadmap</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#part-1-the-components" id="toc-part-1-the-components" class="nav-link" data-scroll-target="#part-1-the-components">Part 1 · The components</a>
+  <ul class="collapse">
+<li><a href="#what-a-series-is-made-of" id="toc-what-a-series-is-made-of" class="nav-link" data-scroll-target="#what-a-series-is-made-of">What a series is made of</a></li>
+  <li><a href="#additive-or-multiplicative" id="toc-additive-or-multiplicative" class="nav-link" data-scroll-target="#additive-or-multiplicative">Additive or multiplicative?</a></li>
+  <li><a href="#the-data-in-your-workbook" id="toc-the-data-in-your-workbook" class="nav-link" data-scroll-target="#the-data-in-your-workbook">The data in your workbook</a></li>
+  <li><a href="#always-plot-first" id="toc-always-plot-first" class="nav-link" data-scroll-target="#always-plot-first">Always plot first</a></li>
+  <li><a href="#the-seasonal-plot" id="toc-the-seasonal-plot" class="nav-link" data-scroll-target="#the-seasonal-plot">The seasonal plot</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#part-2-moving-averages" id="toc-part-2-moving-averages" class="nav-link" data-scroll-target="#part-2-moving-averages">Part 2 · Moving averages</a>
+  <ul class="collapse">
+<li><a href="#a-moving-average-is-a-local-mean" id="toc-a-moving-average-is-a-local-mean" class="nav-link" data-scroll-target="#a-moving-average-is-a-local-mean">A moving average is a local mean</a></li>
+  <li><a href="#the-problem-with-even-k" id="toc-the-problem-with-even-k" class="nav-link" data-scroll-target="#the-problem-with-even-k">The problem with even <span class="math inline">\(k\)</span></a></li>
+  <li><a href="#computing-both-columns" id="toc-computing-both-columns" class="nav-link" data-scroll-target="#computing-both-columns">Computing both columns</a></li>
+  <li><a href="#the-one-line-version" id="toc-the-one-line-version" class="nav-link" data-scroll-target="#the-one-line-version">The one-line version</a></li>
+  <li><a href="#alignment-the-classic-spreadsheet-bug" id="toc-alignment-the-classic-spreadsheet-bug" class="nav-link" data-scroll-target="#alignment-the-classic-spreadsheet-bug">Alignment: the classic spreadsheet bug</a></li>
+  <li><a href="#how-much-smoothing" id="toc-how-much-smoothing" class="nav-link" data-scroll-target="#how-much-smoothing">How much smoothing?</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#part-3-seasonal-indices" id="toc-part-3-seasonal-indices" class="nav-link" data-scroll-target="#part-3-seasonal-indices">Part 3 · Seasonal indices</a>
+  <ul class="collapse">
+<li><a href="#step-1-detrend-by-division" id="toc-step-1-detrend-by-division" class="nav-link" data-scroll-target="#step-1-detrend-by-division">Step 1 — detrend by division</a></li>
+  <li><a href="#step-2-average-out-the-irregular" id="toc-step-2-average-out-the-irregular" class="nav-link" data-scroll-target="#step-2-average-out-the-irregular">Step 2 — average out the irregular</a></li>
+  <li><a href="#why-normalise" id="toc-why-normalise" class="nav-link" data-scroll-target="#why-normalise">Why normalise?</a></li>
+  <li><a href="#reading-the-indices" id="toc-reading-the-indices" class="nav-link" data-scroll-target="#reading-the-indices">Reading the indices</a></li>
+  <li><a href="#step-3-the-components" id="toc-step-3-the-components" class="nav-link" data-scroll-target="#step-3-the-components">Step 3 — the components</a></li>
+  <li><a href="#seasonally-adjusted-vs-raw" id="toc-seasonally-adjusted-vs-raw" class="nav-link" data-scroll-target="#seasonally-adjusted-vs-raw">Seasonally adjusted vs raw</a></li>
+  <li><a href="#cross-check-with-decompose" id="toc-cross-check-with-decompose" class="nav-link" data-scroll-target="#cross-check-with-decompose">Cross-check with <code>decompose()</code></a></li>
+  <li><a href="#and-with-stl" id="toc-and-with-stl" class="nav-link" data-scroll-target="#and-with-stl">And with <code>stl()</code></a></li>
+  </ul>
+</li>
+  <li>
+<a href="#part-4-forecasting-from-the-decomposition" id="toc-part-4-forecasting-from-the-decomposition" class="nav-link" data-scroll-target="#part-4-forecasting-from-the-decomposition">Part 4 · Forecasting from the decomposition</a>
+  <ul class="collapse">
+<li><a href="#the-logic" id="toc-the-logic" class="nav-link" data-scroll-target="#the-logic">The logic</a></li>
+  <li><a href="#fitting-the-trend" id="toc-fitting-the-trend" class="nav-link" data-scroll-target="#fitting-the-trend">Fitting the trend</a></li>
+  <li><a href="#fitted-values-and-errors" id="toc-fitted-values-and-errors" class="nav-link" data-scroll-target="#fitted-values-and-errors">Fitted values and errors</a></li>
+  <li><a href="#how-good-is-the-fit" id="toc-how-good-is-the-fit" class="nav-link" data-scroll-target="#how-good-is-the-fit">How good is the fit?</a></li>
+  <li><a href="#a-common-shortcut-and-what-it-costs" id="toc-a-common-shortcut-and-what-it-costs" class="nav-link" data-scroll-target="#a-common-shortcut-and-what-it-costs">A common shortcut — and what it costs</a></li>
+  <li><a href="#forecasting-year-5" id="toc-forecasting-year-5" class="nav-link" data-scroll-target="#forecasting-year-5">Forecasting year 5</a></li>
+  <li><a href="#the-forecast-in-context" id="toc-the-forecast-in-context" class="nav-link" data-scroll-target="#the-forecast-in-context">The forecast in context</a></li>
+  <li><a href="#what-this-forecast-assumes" id="toc-what-this-forecast-assumes" class="nav-link" data-scroll-target="#what-this-forecast-assumes">What this forecast assumes</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#part-5-the-additive-case" id="toc-part-5-the-additive-case" class="nav-link" data-scroll-target="#part-5-the-additive-case">Part 5 · The additive case</a>
+  <ul class="collapse">
+<li><a href="#when-the-swings-do-not-grow" id="toc-when-the-swings-do-not-grow" class="nav-link" data-scroll-target="#when-the-swings-do-not-grow">When the swings do not grow</a></li>
+  <li><a href="#the-quick-method-and-when-it-is-legitimate" id="toc-the-quick-method-and-when-it-is-legitimate" class="nav-link" data-scroll-target="#the-quick-method-and-when-it-is-legitimate">The quick method — and when it is legitimate</a></li>
+  <li><a href="#the-proper-method-for-comparison" id="toc-the-proper-method-for-comparison" class="nav-link" data-scroll-target="#the-proper-method-for-comparison">The proper method, for comparison</a></li>
+  <li><a href="#additive-vs-multiplicative-side-by-side" id="toc-additive-vs-multiplicative-side-by-side" class="nav-link" data-scroll-target="#additive-vs-multiplicative-side-by-side">Additive vs multiplicative, side by side</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#part-6-exponential-smoothing" id="toc-part-6-exponential-smoothing" class="nav-link" data-scroll-target="#part-6-exponential-smoothing">Part 6 · Exponential smoothing</a>
+  <ul class="collapse">
+<li><a href="#the-idea" id="toc-the-idea" class="nav-link" data-scroll-target="#the-idea">The idea</a></li>
+  <li><a href="#the-ses-sheet-reproduced" id="toc-the-ses-sheet-reproduced" class="nav-link" data-scroll-target="#the-ses-sheet-reproduced">The SES sheet, reproduced</a></li>
+  <li><a href="#the-smoothing-table" id="toc-the-smoothing-table" class="nav-link" data-scroll-target="#the-smoothing-table">The smoothing table</a></li>
+  <li><a href="#accuracy-and-choosing-alpha" id="toc-accuracy-and-choosing-alpha" class="nav-link" data-scroll-target="#accuracy-and-choosing-alpha">Accuracy, and choosing <span class="math inline">\(\alpha\)</span></a></li>
+  <li><a href="#let-the-data-pick-alpha" id="toc-let-the-data-pick-alpha" class="nav-link" data-scroll-target="#let-the-data-pick-alpha">Let the data pick <span class="math inline">\(\alpha\)</span></a></li>
+  <li><a href="#the-same-thing-in-one-line" id="toc-the-same-thing-in-one-line" class="nav-link" data-scroll-target="#the-same-thing-in-one-line">The same thing, in one line</a></li>
+  <li><a href="#holt-adding-a-trend" id="toc-holt-adding-a-trend" class="nav-link" data-scroll-target="#holt-adding-a-trend">Holt: adding a trend</a></li>
+  <li><a href="#holt-on-the-car-sales" id="toc-holt-on-the-car-sales" class="nav-link" data-scroll-target="#holt-on-the-car-sales">Holt on the car sales</a></li>
+  <li><a href="#global-trend-vs-local-trend" id="toc-global-trend-vs-local-trend" class="nav-link" data-scroll-target="#global-trend-vs-local-trend">Global trend vs local trend</a></li>
+  <li><a href="#holtwinters-trend-and-season-together" id="toc-holtwinters-trend-and-season-together" class="nav-link" data-scroll-target="#holtwinters-trend-and-season-together">Holt–Winters: trend and season together</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#part-7-application-monthly-car-sales-in-pakistan" id="toc-part-7-application-monthly-car-sales-in-pakistan" class="nav-link" data-scroll-target="#part-7-application-monthly-car-sales-in-pakistan">Part 7 · Application: monthly car sales in Pakistan</a>
+  <ul class="collapse">
+<li><a href="#the-data" id="toc-the-data" class="nav-link" data-scroll-target="#the-data">The data</a></li>
+  <li><a href="#the-series" id="toc-the-series" class="nav-link" data-scroll-target="#the-series">The series</a></li>
+  <li><a href="#seasonal-subseries-plot" id="toc-seasonal-subseries-plot" class="nav-link" data-scroll-target="#seasonal-subseries-plot">Seasonal subseries plot</a></li>
+  <li><a href="#the-212-centred-moving-average" id="toc-the-212-centred-moving-average" class="nav-link" data-scroll-target="#the-212-centred-moving-average">The 2×12 centred moving average</a></li>
+  <li><a href="#trend-and-seasonally-adjusted-series" id="toc-trend-and-seasonally-adjusted-series" class="nav-link" data-scroll-target="#trend-and-seasonally-adjusted-series">Trend and seasonally adjusted series</a></li>
+  <li><a href="#a-proper-forecasting-test" id="toc-a-proper-forecasting-test" class="nav-link" data-scroll-target="#a-proper-forecasting-test">A proper forecasting test</a></li>
+  <li><a href="#rule-1-seasonal-naive" id="toc-rule-1-seasonal-naive" class="nav-link" data-scroll-target="#rule-1-seasonal-naive">Rule 1: seasonal naive</a></li>
+  <li><a href="#rule-2-decomposition-plus-linear-trend" id="toc-rule-2-decomposition-plus-linear-trend" class="nav-link" data-scroll-target="#rule-2-decomposition-plus-linear-trend">Rule 2: decomposition plus linear trend</a></li>
+  <li><a href="#rule-3-holtwinters" id="toc-rule-3-holtwinters" class="nav-link" data-scroll-target="#rule-3-holtwinters">Rule 3: Holt–Winters</a></li>
+  <li><a href="#the-scoreboard" id="toc-the-scoreboard" class="nav-link" data-scroll-target="#the-scoreboard">The scoreboard</a></li>
+  <li><a href="#the-forecasts-plotted" id="toc-the-forecasts-plotted" class="nav-link" data-scroll-target="#the-forecasts-plotted">The forecasts, plotted</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#part-8-diagnostics-and-pitfalls" id="toc-part-8-diagnostics-and-pitfalls" class="nav-link" data-scroll-target="#part-8-diagnostics-and-pitfalls">Part 8 · Diagnostics and pitfalls</a>
+  <ul class="collapse">
+<li><a href="#check-what-is-left-over" id="toc-check-what-is-left-over" class="nav-link" data-scroll-target="#check-what-is-left-over">Check what is left over</a></li>
+  <li><a href="#four-residual-questions" id="toc-four-residual-questions" class="nav-link" data-scroll-target="#four-residual-questions">Four residual questions</a></li>
+  <li><a href="#pitfalls-specific-to-pakistani-data" id="toc-pitfalls-specific-to-pakistani-data" class="nav-link" data-scroll-target="#pitfalls-specific-to-pakistani-data">Pitfalls specific to Pakistani data</a></li>
+  <li><a href="#when-classical-decomposition-is-the-wrong-tool" id="toc-when-classical-decomposition-is-the-wrong-tool" class="nav-link" data-scroll-target="#when-classical-decomposition-is-the-wrong-tool">When classical decomposition is the wrong tool</a></li>
+  <li><a href="#what-we-covered" id="toc-what-we-covered" class="nav-link" data-scroll-target="#what-we-covered">What we covered</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  <li><a href="#sources-and-further-reading" id="toc-sources-and-further-reading" class="nav-link" data-scroll-target="#sources-and-further-reading">Sources and further reading</a></li>
+  <li><a href="#appendix-the-same-work-in-fpp3" id="toc-appendix-the-same-work-in-fpp3" class="nav-link" data-scroll-target="#appendix-the-same-work-in-fpp3">Appendix · The same work in <code>fpp3</code></a></li>
+  </ul>
+</li>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/Zahedasghar/timeseries/blob/main/labs/trend-season-smoothing.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/Zahedasghar/timeseries/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="trend-season-smoothing.html"><i class="bi bi-file-slides"></i>RevealJS</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title">Trend, Season and Simple Forecasting</h1>
+<p class="subtitle lead">Moving averages, classical decomposition and exponential smoothing — from the spreadsheet to R</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Prof.&nbsp;Dr.&nbsp;Zahid Asghar · School of Economics, QAU </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 22, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header><style>
+:root {
+  --qau-green: #2C5F2D;
+  --qau-brown: #8B7355;
+}
+.reveal h1, .reveal h2, .reveal h3 { color: var(--qau-green); font-family: Georgia, serif; }
+.reveal .slide-number { color: var(--qau-brown); }
+.reveal blockquote { border-left: 4px solid var(--qau-brown); }
+.reveal code { color: #1f3d20; }
+.reveal .callout { border-left: 5px solid var(--qau-brown); padding-left: .7em; }
+.reveal table { font-size: 0.75em; }
+</style>
+<section id="why-start-here" class="level1" data-background-color="#2C5F2D"><h1 data-background-color="#2C5F2D">Why start here?</h1>
+<section id="the-methods-everyone-skips" class="level2"><h2 class="anchored" data-anchor-id="the-methods-everyone-skips">The methods everyone skips</h2>
+<p>Most forecasting courses jump straight to ARIMA and ETS. That is a mistake.</p>
+<p>Before any model is estimated, three questions have to be answered from the data itself:</p>
+<ol type="1">
+<li><strong>Is there a trend, and is it straight?</strong></li>
+<li><strong>Is there a season, and is it fixed or growing with the level?</strong></li>
+<li><strong>What is left over, and does it look like noise?</strong></li>
+</ol>
+<p>Classical decomposition answers all three with arithmetic a student can do by hand — averages, ratios and one regression. Once you can see the components, every later model becomes a statement about them.</p>
+<div class="callout callout-style-simple callout-none no-icon">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>The deck follows your Excel workbook column by column. Every spreadsheet column — <code>MA(4)</code>, <code>CMA(4)</code>, <code>St·It</code>, <code>St</code>, deseasonalised, <code>Tt</code>, fitted, error — is reproduced in R, so students can put the two side by side.</p>
+</div>
+</div>
+</div>
+</section><section id="roadmap" class="level2"><h2 class="anchored" data-anchor-id="roadmap">Roadmap</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead><tr class="header">
+<th>Part</th>
+<th>Topic</th>
+<th>Data</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Components and the two models</td>
+<td>quarterly car sales</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Moving averages and the centred MA</td>
+<td>quarterly car sales</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Ratio-to-moving-average seasonal indices</td>
+<td>quarterly car sales</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Deseasonalise, fit trend, forecast</td>
+<td>quarterly car sales</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>Additive decomposition</td>
+<td>daily hits</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>Exponential smoothing: SES, Holt, Holt–Winters</td>
+<td>monthly series</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>Application: monthly car sales in Pakistan</td>
+<td>PAMA-style monthly data</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>Accuracy, diagnostics, pitfalls</td>
+<td>all</td>
+</tr>
+</tbody>
+</table>
+<hr></section></section><section id="part-1-the-components" class="level1" data-background-color="#2C5F2D"><h1 data-background-color="#2C5F2D">Part 1 · The components</h1>
+<section id="what-a-series-is-made-of" class="level2"><h2 class="anchored" data-anchor-id="what-a-series-is-made-of">What a series is made of</h2>
+<p>A seasonal series is usually written as four pieces:</p>
+<p><span class="math display">\[
+Y_t = T_t \times S_t \times C_t \times I_t \qquad \text{(multiplicative)}
+\]</span></p>
+<p><span class="math display">\[
+Y_t = T_t + S_t + C_t + I_t \qquad \text{(additive)}
+\]</span></p>
+<ul>
+<li>
+<span class="math inline">\(T_t\)</span> — <strong>trend</strong>: the slow movement of the level</li>
+<li>
+<span class="math inline">\(S_t\)</span> — <strong>season</strong>: a pattern that repeats every <span class="math inline">\(m\)</span> periods (<span class="math inline">\(m = 4\)</span> quarterly, <span class="math inline">\(12\)</span> monthly)</li>
+<li>
+<span class="math inline">\(C_t\)</span> — <strong>cycle</strong>: longer swings with no fixed length; in practice we merge it into the trend and speak of a <strong>trend–cycle</strong>
+</li>
+<li>
+<span class="math inline">\(I_t\)</span> — <strong>irregular</strong>: what is left</li>
+</ul>
+<p>Classical decomposition estimates <span class="math inline">\(T\)</span> first, removes it, then estimates <span class="math inline">\(S\)</span>, then calls the residue <span class="math inline">\(I\)</span>.</p>
+</section><section id="additive-or-multiplicative" class="level2"><h2 class="anchored" data-anchor-id="additive-or-multiplicative">Additive or multiplicative?</h2>
+<p>Look at the seasonal swings as the level rises.</p>
+<ul>
+<li>
+<strong>Additive</strong> — the peaks and troughs stay the same <em>distance</em> from the trend. Seasonal effect measured in units. Indices sum to 0.</li>
+<li>
+<strong>Multiplicative</strong> — the peaks and troughs stay the same <em>proportion</em> of the trend, so they widen as the series grows. Seasonal effect measured as a ratio. Indices sum to <span class="math inline">\(m\)</span>.</li>
+</ul>
+<div class="callout callout-style-simple callout-none no-icon">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>Rule of thumb: if the fan widens with the level, go multiplicative — or take logs and work additively, because <span class="math inline">\(\log(T_t S_t I_t) = \log T_t + \log S_t + \log I_t\)</span>.</p>
+</div>
+</div>
+</div>
+<p>Car sales, electricity demand and most Pakistani nominal series are multiplicative. Temperature is additive.</p>
+</section><section id="the-data-in-your-workbook" class="level2"><h2 class="anchored" data-anchor-id="the-data-in-your-workbook">The data in your workbook</h2>
+<p>Sixteen quarters of car sales, in thousands of units.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cars</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span></span>
+<span>  t       <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">16</span>,</span>
+<span>  year    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, each <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,</span>
+<span>  quarter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, times <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,</span>
+<span>  sales   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">4.8</span>, <span class="fl">4.1</span>, <span class="fl">6.0</span>, <span class="fl">6.5</span>,</span>
+<span>              <span class="fl">5.8</span>, <span class="fl">5.2</span>, <span class="fl">6.8</span>, <span class="fl">7.4</span>,</span>
+<span>              <span class="fl">6.0</span>, <span class="fl">5.6</span>, <span class="fl">7.5</span>, <span class="fl">7.8</span>,</span>
+<span>              <span class="fl">6.3</span>, <span class="fl">5.9</span>, <span class="fl">8.0</span>, <span class="fl">8.4</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">cars</span>, <span class="fl">8</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["t"],"name":[1],"type":["int"],"align":["right"]},{"label":["year"],"name":[2],"type":["int"],"align":["right"]},{"label":["quarter"],"name":[3],"type":["int"],"align":["right"]},{"label":["sales"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"1","3":"1","4":"4.8"},{"1":"2","2":"1","3":"2","4":"4.1"},{"1":"3","2":"1","3":"3","4":"6.0"},{"1":"4","2":"1","3":"4","4":"6.5"},{"1":"5","2":"2","3":"1","4":"5.8"},{"1":"6","2":"2","3":"2","4":"5.2"},{"1":"7","2":"2","3":"3","4":"6.8"},{"1":"8","2":"2","3":"4","4":"7.4"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+</section><section id="always-plot-first" class="level2"><h2 class="anchored" data-anchor-id="always-plot-first">Always plot first</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="trend-season-smoothing_files/figure-html/cars-plot-1.png" class="img-fluid figure-img" width="1280"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Two things are visible without any model: the level drifts up by roughly 0.15 per quarter, and Q2 is always the low point while Q4 is always the high point.</p>
+</section><section id="the-seasonal-plot" class="level2"><h2 class="anchored" data-anchor-id="the-seasonal-plot">The seasonal plot</h2>
+<p>Overlaying years is the fastest seasonality check.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="trend-season-smoothing_files/figure-html/cars-seasonal-plot-1.png" class="img-fluid figure-img" width="1280"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Parallel lines that shift upward mean a stable seasonal shape on a rising trend — exactly what decomposition assumes.</p>
+<hr></section></section><section id="part-2-moving-averages" class="level1" data-background-color="#2C5F2D"><h1 data-background-color="#2C5F2D">Part 2 · Moving averages</h1>
+<section id="a-moving-average-is-a-local-mean" class="level2"><h2 class="anchored" data-anchor-id="a-moving-average-is-a-local-mean">A moving average is a local mean</h2>
+<p>A <span class="math inline">\(k\)</span>-term moving average replaces each observation by the average of its neighbours:</p>
+<p><span class="math display">\[
+\hat{T}_t = \frac{1}{k}\sum_{j=-h}^{h} y_{t+j}, \qquad k = 2h+1
+\]</span></p>
+<ul>
+<li>
+<strong>Odd <span class="math inline">\(k\)</span></strong> (3, 5, 7) is naturally centred on <span class="math inline">\(t\)</span>.</li>
+<li>
+<strong>Larger <span class="math inline">\(k\)</span></strong> smooths more: it kills noise but also flattens genuine turning points and costs you <span class="math inline">\(h\)</span> observations at each end.</li>
+<li>With <span class="math inline">\(k = m\)</span> (the seasonal period) the average covers one full year, so the seasonal effect cancels out. That is the whole trick.</li>
+</ul></section><section id="the-problem-with-even-k" class="level2"><h2 class="anchored" data-anchor-id="the-problem-with-even-k">The problem with even <span class="math inline">\(k\)</span>
+</h2>
+<p>For quarterly data we need <span class="math inline">\(k = 4\)</span> to sweep out the season. But a 4-term average of <span class="math inline">\(y_1,\dots,y_4\)</span> sits at time <strong>2.5</strong>, not at any observation.</p>
+<p>The fix is to average two consecutive 4-term averages. This is the <strong>centred moving average</strong>, written <span class="math inline">\(2\times4\)</span>-MA:</p>
+<p><span class="math display">\[
+\text{CMA}_t = \frac{\text{MA}_{t-0.5} + \text{MA}_{t+0.5}}{2}
+= \frac{\tfrac12 y_{t-2} + y_{t-1} + y_t + y_{t+1} + \tfrac12 y_{t+2}}{4}
+\]</span></p>
+<p>The half-weights at the ends are what makes it land on <span class="math inline">\(t\)</span>. For monthly data the same logic gives the <span class="math inline">\(2\times12\)</span>-MA with weights <span class="math inline">\(\tfrac{1}{24},\tfrac{1}{12},\dots,\tfrac{1}{12},\tfrac{1}{24}\)</span>.</p>
+</section><section id="computing-both-columns" class="level2"><h2 class="anchored" data-anchor-id="computing-both-columns">Computing both columns</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cars_ma</span> <span class="op">&lt;-</span> <span class="va">cars</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    <span class="co"># MA(4): average of t-2, t-1, t, t+1  → sits at t - 0.5</span></span>
+<span>    ma4  <span class="op">=</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lag.html">lag</a></span><span class="op">(</span><span class="va">sales</span>, <span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/lag.html">lag</a></span><span class="op">(</span><span class="va">sales</span>, <span class="fl">1</span><span class="op">)</span> <span class="op">+</span> <span class="va">sales</span> <span class="op">+</span> <span class="fu">lead</span><span class="op">(</span><span class="va">sales</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">4</span>,</span>
+<span>    <span class="co"># CMA(4): average of the two neighbouring MA(4) values → sits at t</span></span>
+<span>    cma4 <span class="op">=</span> <span class="op">(</span><span class="va">ma4</span> <span class="op">+</span> <span class="fu">lead</span><span class="op">(</span><span class="va">ma4</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">cars_ma</span> <span class="op">|&gt;</span> <span class="fu">select</span><span class="op">(</span><span class="va">t</span>, <span class="va">quarter</span>, <span class="va">sales</span>, <span class="va">ma4</span>, <span class="va">cma4</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fl">8</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">show_tbl</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: right;">t</th>
+<th style="text-align: right;">quarter</th>
+<th style="text-align: right;">sales</th>
+<th style="text-align: right;">ma4</th>
+<th style="text-align: right;">cma4</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4.8</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4.1</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">6.0</td>
+<td style="text-align: right;">5.350</td>
+<td style="text-align: right;">5.4750</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6.5</td>
+<td style="text-align: right;">5.600</td>
+<td style="text-align: right;">5.7375</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5.8</td>
+<td style="text-align: right;">5.875</td>
+<td style="text-align: right;">5.9750</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5.2</td>
+<td style="text-align: right;">6.075</td>
+<td style="text-align: right;">6.1875</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">6.8</td>
+<td style="text-align: right;">6.300</td>
+<td style="text-align: right;">6.3250</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">7.4</td>
+<td style="text-align: right;">6.350</td>
+<td style="text-align: right;">6.4000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The first CMA appears at <span class="math inline">\(t = 3\)</span> and the last at <span class="math inline">\(t = 14\)</span>: a <span class="math inline">\(2\times4\)</span>-MA costs two observations at each end.</p>
+</section><section id="the-one-line-version" class="level2"><h2 class="anchored" data-anchor-id="the-one-line-version">The one-line version</h2>
+<p>The weighted form gives the identical column without any lag bookkeeping:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cars_ma</span> <span class="op">&lt;-</span> <span class="va">cars_ma</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>cma_direct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span></span>
+<span>    <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">sales</span>, filter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0.5</span><span class="op">)</span> <span class="op">/</span> <span class="fl">4</span>, sides <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span>  <span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span><span class="op">(</span><span class="va">cars_ma</span><span class="op">$</span><span class="va">cma4</span>, <span class="va">cars_ma</span><span class="op">$</span><span class="va">cma_direct</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; [1] TRUE</code></pre>
+</div>
+</div>
+<div class="callout callout-style-simple callout-none no-icon">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>Use <code><a href="https://rdrr.io/r/stats/filter.html">stats::filter()</a></code> with the <code>stats::</code> prefix — <code><a href="https://dplyr.tidyverse.org/reference/filter.html">dplyr::filter()</a></code> will otherwise mask it and give a confusing error.</p>
+</div>
+</div>
+</div>
+</section><section id="alignment-the-classic-spreadsheet-bug" class="level2"><h2 class="anchored" data-anchor-id="alignment-the-classic-spreadsheet-bug">Alignment: the classic spreadsheet bug</h2>
+<p>In a spreadsheet nothing stops you writing the CMA one row too high. The numbers still look plausible, and the seasonal indices come out wrong.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">misaligned</span> <span class="op">&lt;-</span> <span class="va">cars_ma</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>cma_bad <span class="op">=</span> <span class="fu">lead</span><span class="op">(</span><span class="va">cma4</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span>         <span class="co"># trend shifted one quarter early</span></span>
+<span>  <span class="fu">summarise</span><span class="op">(</span></span>
+<span>    correct    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">sales</span> <span class="op">/</span> <span class="va">cma4</span>,    na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    shifted    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">sales</span> <span class="op">/</span> <span class="va">cma_bad</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    .by <span class="op">=</span> <span class="va">quarter</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span><span class="fu">across</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">correct</span>, <span class="va">shifted</span><span class="op">)</span>, \<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span> <span class="op">*</span> <span class="fl">4</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">show_tbl</span><span class="op">(</span><span class="va">misaligned</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: right;">quarter</th>
+<th style="text-align: right;">correct</th>
+<th style="text-align: right;">shifted</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.9307</td>
+<td style="text-align: right;">0.9342</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0.8364</td>
+<td style="text-align: right;">0.8220</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1.0915</td>
+<td style="text-align: right;">1.0981</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1.1414</td>
+<td style="text-align: right;">1.1457</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Q2’s index moves by more than a full percentage point of the level. Whenever you replicate a spreadsheet, check that the first CMA sits at <span class="math inline">\(t = m/2 + 1\)</span> — here, quarter 3.</p>
+</section><section id="how-much-smoothing" class="level2"><h2 class="anchored" data-anchor-id="how-much-smoothing">How much smoothing?</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="trend-season-smoothing_files/figure-html/cars-ma-compare-1.png" class="img-fluid figure-img" width="1280"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The 3-MA still wobbles with the season because it does not cover a full year. Only a span equal to the seasonal period removes the season cleanly.</p>
+<hr></section></section><section id="part-3-seasonal-indices" class="level1" data-background-color="#2C5F2D"><h1 data-background-color="#2C5F2D">Part 3 · Seasonal indices</h1>
+<section id="step-1-detrend-by-division" class="level2"><h2 class="anchored" data-anchor-id="step-1-detrend-by-division">Step 1 — detrend by division</h2>
+<p>If <span class="math inline">\(Y_t = T_t S_t I_t\)</span> and the CMA estimates <span class="math inline">\(T_t\)</span>, then</p>
+<p><span class="math display">\[
+\frac{Y_t}{\text{CMA}_t} \approx S_t \times I_t
+\]</span></p>
+<p>This is the <strong>ratio-to-moving-average</strong>, the <code>St, It</code> column of your sheet. For an additive series you subtract instead of divide.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cars_ratio</span> <span class="op">&lt;-</span> <span class="va">cars_ma</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>ratio <span class="op">=</span> <span class="va">sales</span> <span class="op">/</span> <span class="va">cma4</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cars_ratio</span> <span class="op">|&gt;</span> <span class="fu">select</span><span class="op">(</span><span class="va">t</span>, <span class="va">quarter</span>, <span class="va">sales</span>, <span class="va">cma4</span>, <span class="va">ratio</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">slice</span><span class="op">(</span><span class="fl">3</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">show_tbl</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: right;">t</th>
+<th style="text-align: right;">quarter</th>
+<th style="text-align: right;">sales</th>
+<th style="text-align: right;">cma4</th>
+<th style="text-align: right;">ratio</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">6.0</td>
+<td style="text-align: right;">5.4750</td>
+<td style="text-align: right;">1.0959</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6.5</td>
+<td style="text-align: right;">5.7375</td>
+<td style="text-align: right;">1.1329</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5.8</td>
+<td style="text-align: right;">5.9750</td>
+<td style="text-align: right;">0.9707</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5.2</td>
+<td style="text-align: right;">6.1875</td>
+<td style="text-align: right;">0.8404</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">6.8</td>
+<td style="text-align: right;">6.3250</td>
+<td style="text-align: right;">1.0751</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">7.4</td>
+<td style="text-align: right;">6.4000</td>
+<td style="text-align: right;">1.1563</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6.0</td>
+<td style="text-align: right;">6.5375</td>
+<td style="text-align: right;">0.9178</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5.6</td>
+<td style="text-align: right;">6.6750</td>
+<td style="text-align: right;">0.8390</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section><section id="step-2-average-out-the-irregular" class="level2"><h2 class="anchored" data-anchor-id="step-2-average-out-the-irregular">Step 2 — average out the irregular</h2>
+<p>Each quarter now has three or four ratios. Averaging them cancels <span class="math inline">\(I_t\)</span> and leaves <span class="math inline">\(S_t\)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">seasonal_tbl</span> <span class="op">&lt;-</span> <span class="va">cars_ratio</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">summarise</span><span class="op">(</span>index_raw <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">ratio</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">quarter</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>index <span class="op">=</span> <span class="va">index_raw</span> <span class="op">*</span> <span class="fl">4</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">index_raw</span><span class="op">)</span><span class="op">)</span>   <span class="co"># normalise: indices must sum to m</span></span>
+<span></span>
+<span><span class="fu">show_tbl</span><span class="op">(</span><span class="va">seasonal_tbl</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: right;">quarter</th>
+<th style="text-align: right;">index_raw</th>
+<th style="text-align: right;">index</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.9322</td>
+<td style="text-align: right;">0.9307</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0.8378</td>
+<td style="text-align: right;">0.8364</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1.0933</td>
+<td style="text-align: right;">1.0915</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1.1433</td>
+<td style="text-align: right;">1.1414</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">seasonal_tbl</span><span class="op">$</span><span class="va">index_raw</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">seasonal_tbl</span><span class="op">$</span><span class="va">index</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; [1] 4.006614</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; [1] 4</code></pre>
+</div>
+</div>
+</section><section id="why-normalise" class="level2"><h2 class="anchored" data-anchor-id="why-normalise">Why normalise?</h2>
+<p>The raw averages will not sum to exactly 4 — here they miss by a fraction of a percent. If you skip the rescaling, the seasonal factors quietly add or subtract level from every forecast you make.</p>
+<p>Rescale by <span class="math inline">\(m / \sum \hat S_j\)</span> for multiplicative, and subtract the mean for additive:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># multiplicative</span></span>
+<span><span class="va">index</span> <span class="op">&lt;-</span> <span class="va">index_raw</span> <span class="op">*</span> <span class="va">m</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">index_raw</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># additive</span></span>
+<span><span class="va">index</span> <span class="op">&lt;-</span> <span class="va">index_raw</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">index_raw</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-simple callout-none no-icon">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>Some textbook spreadsheets leave this step out. If the two sheets in your workbook give slightly different indices for the same recipe, normalisation and CMA alignment are the first places to look.</p>
+</div>
+</div>
+</div>
+</section><section id="reading-the-indices" class="level2"><h2 class="anchored" data-anchor-id="reading-the-indices">Reading the indices</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="trend-season-smoothing_files/figure-html/cars-index-plot-1.png" class="img-fluid figure-img" width="1280"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Q4 runs about 14% above trend, Q2 about 16% below. A dealer reading a 16% drop from Q1 to Q2 as a collapse in demand is reading the calendar, not the market.</p>
+</section><section id="step-3-the-components" class="level2"><h2 class="anchored" data-anchor-id="step-3-the-components">Step 3 — the components</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cars_dec</span> <span class="op">&lt;-</span> <span class="va">cars_ratio</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">seasonal_tbl</span>, by <span class="op">=</span> <span class="fu">join_by</span><span class="op">(</span><span class="va">quarter</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    deseason  <span class="op">=</span> <span class="va">sales</span> <span class="op">/</span> <span class="va">index</span>,          <span class="co"># seasonally adjusted series</span></span>
+<span>    irregular <span class="op">=</span> <span class="va">sales</span> <span class="op">/</span> <span class="op">(</span><span class="va">cma4</span> <span class="op">*</span> <span class="va">index</span><span class="op">)</span>  <span class="co"># what the model cannot explain</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">cars_dec</span> <span class="op">|&gt;</span> <span class="fu">select</span><span class="op">(</span><span class="va">t</span>, <span class="va">sales</span>, <span class="va">cma4</span>, <span class="va">index</span>, <span class="va">deseason</span>, <span class="va">irregular</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">slice</span><span class="op">(</span><span class="fl">3</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">show_tbl</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: right;">t</th>
+<th style="text-align: right;">sales</th>
+<th style="text-align: right;">cma4</th>
+<th style="text-align: right;">index</th>
+<th style="text-align: right;">deseason</th>
+<th style="text-align: right;">irregular</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">6.0</td>
+<td style="text-align: right;">5.4750</td>
+<td style="text-align: right;">1.0915</td>
+<td style="text-align: right;">5.4968</td>
+<td style="text-align: right;">1.0040</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6.5</td>
+<td style="text-align: right;">5.7375</td>
+<td style="text-align: right;">1.1414</td>
+<td style="text-align: right;">5.6947</td>
+<td style="text-align: right;">0.9925</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5.8</td>
+<td style="text-align: right;">5.9750</td>
+<td style="text-align: right;">0.9307</td>
+<td style="text-align: right;">6.2321</td>
+<td style="text-align: right;">1.0430</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5.2</td>
+<td style="text-align: right;">6.1875</td>
+<td style="text-align: right;">0.8364</td>
+<td style="text-align: right;">6.2173</td>
+<td style="text-align: right;">1.0048</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">6.8</td>
+<td style="text-align: right;">6.3250</td>
+<td style="text-align: right;">1.0915</td>
+<td style="text-align: right;">6.2297</td>
+<td style="text-align: right;">0.9849</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">7.4</td>
+<td style="text-align: right;">6.4000</td>
+<td style="text-align: right;">1.1414</td>
+<td style="text-align: right;">6.4832</td>
+<td style="text-align: right;">1.0130</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">6.0</td>
+<td style="text-align: right;">6.5375</td>
+<td style="text-align: right;">0.9307</td>
+<td style="text-align: right;">6.4470</td>
+<td style="text-align: right;">0.9862</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">5.6</td>
+<td style="text-align: right;">6.6750</td>
+<td style="text-align: right;">0.8364</td>
+<td style="text-align: right;">6.6956</td>
+<td style="text-align: right;">1.0031</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section><section id="seasonally-adjusted-vs-raw" class="level2"><h2 class="anchored" data-anchor-id="seasonally-adjusted-vs-raw">Seasonally adjusted vs raw</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="trend-season-smoothing_files/figure-html/cars-sa-plot-1.png" class="img-fluid figure-img" width="1280"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This is precisely what PBS, SBP and every statistical agency publish as “seasonally adjusted” — nothing more mysterious than dividing by an index.</p>
+</section><section id="cross-check-with-decompose" class="level2"><h2 class="anchored" data-anchor-id="cross-check-with-decompose">Cross-check with <code>decompose()</code>
+</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cars_ts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/ts.html">ts</a></span><span class="op">(</span><span class="va">cars</span><span class="op">$</span><span class="va">sales</span>, start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, frequency <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="va">dc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/decompose.html">decompose</a></span><span class="op">(</span><span class="va">cars_ts</span>, type <span class="op">=</span> <span class="st">"multiplicative"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">tibble</span><span class="op">(</span></span>
+<span>  quarter   <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>,</span>
+<span>  by_hand   <span class="op">=</span> <span class="va">seasonal_tbl</span><span class="op">$</span><span class="va">index</span>,</span>
+<span>  decompose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">dc</span><span class="op">$</span><span class="va">figure</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">show_tbl</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: right;">quarter</th>
+<th style="text-align: right;">by_hand</th>
+<th style="text-align: right;">decompose</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.9307</td>
+<td style="text-align: right;">0.9307</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0.8364</td>
+<td style="text-align: right;">0.8364</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1.0915</td>
+<td style="text-align: right;">1.0915</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1.1414</td>
+<td style="text-align: right;">1.1414</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Identical to the last decimal. <code><a href="https://rdrr.io/r/stats/decompose.html">decompose()</a></code> is the same recipe: centred MA, ratio, average by cycle position, normalise.</p>
+</section><section id="and-with-stl" class="level2"><h2 class="anchored" data-anchor-id="and-with-stl">And with <code>stl()</code>
+</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">stl_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/stl.html">stl</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">cars_ts</span><span class="op">)</span>, s.window <span class="op">=</span> <span class="st">"periodic"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">stl_fit</span>, main <span class="op">=</span> <span class="st">"STL on log sales"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="trend-season-smoothing_files/figure-html/cars-stl-1.png" class="img-fluid figure-img" width="1280"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><code><a href="https://rdrr.io/r/stats/stl.html">stl()</a></code> is the modern workhorse: loess instead of simple averages, robust to outliers, and it allows the seasonal shape to evolve (<code>s.window = 7</code> rather than <code>"periodic"</code>). Classical decomposition assumes the shape never changes.</p>
+<hr></section></section><section id="part-4-forecasting-from-the-decomposition" class="level1" data-background-color="#2C5F2D"><h1 data-background-color="#2C5F2D">Part 4 · Forecasting from the decomposition</h1>
+<section id="the-logic" class="level2"><h2 class="anchored" data-anchor-id="the-logic">The logic</h2>
+<p>You cannot extrapolate a moving average — it stops two periods from the end. So:</p>
+<ol type="1">
+<li>
+<strong>Deseasonalise</strong> the series: <span class="math inline">\(D_t = Y_t / S_t\)</span>
+</li>
+<li>
+<strong>Fit a trend</strong> to <span class="math inline">\(D_t\)</span> — a straight line is usually enough</li>
+<li>
+<strong>Extrapolate</strong> the trend to <span class="math inline">\(t + h\)</span>
+</li>
+<li>
+<strong>Re-seasonalise</strong>: <span class="math inline">\(\hat Y_{t+h} = \hat T_{t+h} \times S_{t+h}\)</span>
+</li>
+</ol>
+<p>Step 2 is where the regression enters, and it must be run on the <strong>deseasonalised</strong> series, not on raw sales.</p>
+</section><section id="fitting-the-trend" class="level2"><h2 class="anchored" data-anchor-id="fitting-the-trend">Fitting the trend</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">trend_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">deseason</span> <span class="op">~</span> <span class="va">t</span>, data <span class="op">=</span> <span class="va">cars_dec</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">trend_fit</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; (Intercept)           t 
+#&gt;    5.108042    0.147382</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="trend-season-smoothing_files/figure-html/cars-trend-plot-1.png" class="img-fluid figure-img" width="1280"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="fitted-values-and-errors" class="level2"><h2 class="anchored" data-anchor-id="fitted-values-and-errors">Fitted values and errors</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cars_fit</span> <span class="op">&lt;-</span> <span class="va">cars_dec</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    trend_hat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html">fitted</a></span><span class="op">(</span><span class="va">trend_fit</span><span class="op">)</span>,</span>
+<span>    fitted    <span class="op">=</span> <span class="va">trend_hat</span> <span class="op">*</span> <span class="va">index</span>,</span>
+<span>    error     <span class="op">=</span> <span class="va">sales</span> <span class="op">-</span> <span class="va">fitted</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">cars_fit</span> <span class="op">|&gt;</span> <span class="fu">select</span><span class="op">(</span><span class="va">t</span>, <span class="va">quarter</span>, <span class="va">sales</span>, <span class="va">trend_hat</span>, <span class="va">index</span>, <span class="va">fitted</span>, <span class="va">error</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fl">8</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">show_tbl</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: right;">t</th>
+<th style="text-align: right;">quarter</th>
+<th style="text-align: right;">sales</th>
+<th style="text-align: right;">trend_hat</th>
+<th style="text-align: right;">index</th>
+<th style="text-align: right;">fitted</th>
+<th style="text-align: right;">error</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4.8</td>
+<td style="text-align: right;">5.2554</td>
+<td style="text-align: right;">0.9307</td>
+<td style="text-align: right;">4.8910</td>
+<td style="text-align: right;">-0.0910</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4.1</td>
+<td style="text-align: right;">5.4028</td>
+<td style="text-align: right;">0.8364</td>
+<td style="text-align: right;">4.5188</td>
+<td style="text-align: right;">-0.4188</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">6.0</td>
+<td style="text-align: right;">5.5502</td>
+<td style="text-align: right;">1.0915</td>
+<td style="text-align: right;">6.0583</td>
+<td style="text-align: right;">-0.0583</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6.5</td>
+<td style="text-align: right;">5.6976</td>
+<td style="text-align: right;">1.1414</td>
+<td style="text-align: right;">6.5033</td>
+<td style="text-align: right;">-0.0033</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5.8</td>
+<td style="text-align: right;">5.8450</td>
+<td style="text-align: right;">0.9307</td>
+<td style="text-align: right;">5.4397</td>
+<td style="text-align: right;">0.3603</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5.2</td>
+<td style="text-align: right;">5.9923</td>
+<td style="text-align: right;">0.8364</td>
+<td style="text-align: right;">5.0118</td>
+<td style="text-align: right;">0.1882</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">6.8</td>
+<td style="text-align: right;">6.1397</td>
+<td style="text-align: right;">1.0915</td>
+<td style="text-align: right;">6.7018</td>
+<td style="text-align: right;">0.0982</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">7.4</td>
+<td style="text-align: right;">6.2871</td>
+<td style="text-align: right;">1.1414</td>
+<td style="text-align: right;">7.1762</td>
+<td style="text-align: right;">0.2238</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section><section id="how-good-is-the-fit" class="level2"><h2 class="anchored" data-anchor-id="how-good-is-the-fit">How good is the fit?</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">accuracy_tbl</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">actual</span>, <span class="va">fitted</span>, <span class="va">label</span> <span class="op">=</span> <span class="st">"model"</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">e</span> <span class="op">&lt;-</span> <span class="va">actual</span> <span class="op">-</span> <span class="va">fitted</span></span>
+<span>  <span class="fu">tibble</span><span class="op">(</span></span>
+<span>    model <span class="op">=</span> <span class="va">label</span>,</span>
+<span>    ME    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">e</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    MAE   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">e</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    RMSE  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">e</span><span class="op">^</span><span class="fl">2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    MAPE  <span class="op">=</span> <span class="fl">100</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">e</span> <span class="op">/</span> <span class="va">actual</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu">accuracy_tbl</span><span class="op">(</span><span class="va">cars_fit</span><span class="op">$</span><span class="va">sales</span>, <span class="va">cars_fit</span><span class="op">$</span><span class="va">fitted</span>, <span class="st">"decomposition + linear trend"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">show_tbl</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: left;">model</th>
+<th style="text-align: right;">ME</th>
+<th style="text-align: right;">MAE</th>
+<th style="text-align: right;">RMSE</th>
+<th style="text-align: right;">MAPE</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td style="text-align: left;">decomposition + linear trend</td>
+<td style="text-align: right;">0.0041</td>
+<td style="text-align: right;">0.1388</td>
+<td style="text-align: right;">0.1817</td>
+<td style="text-align: right;">2.4395</td>
+</tr></tbody>
+</table>
+</div>
+</div>
+<p>MAPE under 3% on a series with a 30% seasonal swing: the two components have done nearly all the work.</p>
+</section><section id="a-common-shortcut-and-what-it-costs" class="level2"><h2 class="anchored" data-anchor-id="a-common-shortcut-and-what-it-costs">A common shortcut — and what it costs</h2>
+<p>A tempting shortcut is to regress <strong>raw</strong> sales on <span class="math inline">\(t\)</span> and then multiply by the seasonal index. The slope looks fine, but the intercept has already absorbed the average seasonal level, so multiplying by <span class="math inline">\(S_t\)</span> counts the season one and a half times.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">shortcut</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">sales</span> <span class="op">~</span> <span class="va">t</span>, data <span class="op">=</span> <span class="va">cars_fit</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">bind_rows</span><span class="op">(</span></span>
+<span>  <span class="fu">accuracy_tbl</span><span class="op">(</span><span class="va">cars_fit</span><span class="op">$</span><span class="va">sales</span>, <span class="va">cars_fit</span><span class="op">$</span><span class="va">fitted</span>, <span class="st">"trend on deseasonalised (correct)"</span><span class="op">)</span>,</span>
+<span>  <span class="fu">accuracy_tbl</span><span class="op">(</span><span class="va">cars_fit</span><span class="op">$</span><span class="va">sales</span>, <span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html">fitted</a></span><span class="op">(</span><span class="va">shortcut</span><span class="op">)</span> <span class="op">*</span> <span class="va">cars_fit</span><span class="op">$</span><span class="va">index</span>, <span class="st">"trend on raw sales (shortcut)"</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">show_tbl</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: left;">model</th>
+<th style="text-align: right;">ME</th>
+<th style="text-align: right;">MAE</th>
+<th style="text-align: right;">RMSE</th>
+<th style="text-align: right;">MAPE</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">trend on deseasonalised (correct)</td>
+<td style="text-align: right;">0.0041</td>
+<td style="text-align: right;">0.1388</td>
+<td style="text-align: right;">0.1817</td>
+<td style="text-align: right;">2.4395</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">trend on raw sales (shortcut)</td>
+<td style="text-align: right;">-0.0200</td>
+<td style="text-align: right;">0.2057</td>
+<td style="text-align: right;">0.2425</td>
+<td style="text-align: right;">3.3096</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The fit is a third worse, and the gap grows with the forecast horizon.</p>
+</section><section id="forecasting-year-5" class="level2"><h2 class="anchored" data-anchor-id="forecasting-year-5">Forecasting year 5</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">future</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span>t <span class="op">=</span> <span class="fl">17</span><span class="op">:</span><span class="fl">20</span>, quarter <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">seasonal_tbl</span>, by <span class="op">=</span> <span class="fu">join_by</span><span class="op">(</span><span class="va">quarter</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    trend_hat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">trend_fit</span>, newdata <span class="op">=</span> <span class="fu">pick</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    forecast  <span class="op">=</span> <span class="va">trend_hat</span> <span class="op">*</span> <span class="va">index</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">future</span> <span class="op">|&gt;</span> <span class="fu">select</span><span class="op">(</span><span class="va">t</span>, <span class="va">quarter</span>, <span class="va">trend_hat</span>, <span class="va">index</span>, <span class="va">forecast</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">show_tbl</span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: right;">t</th>
+<th style="text-align: right;">quarter</th>
+<th style="text-align: right;">trend_hat</th>
+<th style="text-align: right;">index</th>
+<th style="text-align: right;">forecast</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">7.614</td>
+<td style="text-align: right;">0.931</td>
+<td style="text-align: right;">7.086</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">7.761</td>
+<td style="text-align: right;">0.836</td>
+<td style="text-align: right;">6.491</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">7.908</td>
+<td style="text-align: right;">1.092</td>
+<td style="text-align: right;">8.632</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">8.056</td>
+<td style="text-align: right;">1.141</td>
+<td style="text-align: right;">9.195</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section><section id="the-forecast-in-context" class="level2"><h2 class="anchored" data-anchor-id="the-forecast-in-context">The forecast in context</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="trend-season-smoothing_files/figure-html/cars-forecast-plot-1.png" class="img-fluid figure-img" width="1280"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="what-this-forecast-assumes" class="level2"><h2 class="anchored" data-anchor-id="what-this-forecast-assumes">What this forecast assumes</h2>
+<p>Worth saying out loud to students, because the arithmetic hides it:</p>
+<ul>
+<li>the trend stays <strong>linear</strong> — no saturation, no policy shock</li>
+<li>the seasonal shape is <strong>fixed</strong> for all time</li>
+<li>the irregular component has <strong>no memory</strong>
+</li>
+<li>there is <strong>no uncertainty band</strong>, because we never modelled the errors</li>
+</ul>
+<p>Every one of these is relaxed later by ETS and ARIMA. But the point estimate of a good decomposition is often within a few percent of theirs, and you can explain it to a secretary in a ministry.</p>
+<hr></section></section><section id="part-5-the-additive-case" class="level1" data-background-color="#2C5F2D"><h1 data-background-color="#2C5F2D">Part 5 · The additive case</h1>
+<section id="when-the-swings-do-not-grow" class="level2"><h2 class="anchored" data-anchor-id="when-the-swings-do-not-grow">When the swings do not grow</h2>
+<p>Average daily hits on a website, five years of quarterly data — the <code>Sheet1 (2)</code> example from your workbook.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">hits</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span></span>
+<span>  t       <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span>,</span>
+<span>  year    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">2001</span><span class="op">:</span><span class="fl">2005</span>, each <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,</span>
+<span>  quarter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, times <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
+<span>  hits    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">242</span>,  <span class="fl">58</span>,  <span class="fl">34</span>, <span class="fl">116</span>,</span>
+<span>              <span class="fl">289</span>, <span class="fl">129</span>,  <span class="fl">32</span>, <span class="fl">217</span>,</span>
+<span>              <span class="fl">239</span>,  <span class="fl">79</span>,  <span class="fl">55</span>, <span class="fl">157</span>,</span>
+<span>              <span class="fl">180</span>, <span class="fl">101</span>,  <span class="fl">91</span>, <span class="fl">138</span>,</span>
+<span>              <span class="fl">250</span>, <span class="fl">165</span>,  <span class="fl">91</span>, <span class="fl">144</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="trend-season-smoothing_files/figure-html/hits-plot-1.png" class="img-fluid figure-img" width="1280"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="the-quick-method-and-when-it-is-legitimate" class="level2"><h2 class="anchored" data-anchor-id="the-quick-method-and-when-it-is-legitimate">The quick method — and when it is legitimate</h2>
+<p>With no visible trend, the seasonal effect is simply each quarter’s mean minus the grand mean.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">grand</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">hits</span><span class="op">$</span><span class="va">hits</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">hits_idx</span> <span class="op">&lt;-</span> <span class="va">hits</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">summarise</span><span class="op">(</span>q_mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">hits</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">quarter</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>index_add <span class="op">=</span> <span class="va">q_mean</span> <span class="op">-</span> <span class="va">grand</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">show_tbl</span><span class="op">(</span><span class="va">hits_idx</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: right;">quarter</th>
+<th style="text-align: right;">q_mean</th>
+<th style="text-align: right;">index_add</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">240.0</td>
+<td style="text-align: right;">99.65</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">106.4</td>
+<td style="text-align: right;">-33.95</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">60.6</td>
+<td style="text-align: right;">-79.75</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">154.4</td>
+<td style="text-align: right;">14.05</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">grand</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; [1] 140.35</code></pre>
+</div>
+</div>
+<p>Seasonally adjusted series: <span class="math inline">\(Y_t - S_j\)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">hits_sa</span> <span class="op">&lt;-</span> <span class="va">hits</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">hits_idx</span>, by <span class="op">=</span> <span class="fu">join_by</span><span class="op">(</span><span class="va">quarter</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>seas_adj <span class="op">=</span> <span class="va">hits</span> <span class="op">-</span> <span class="va">index_add</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">hits_sa</span> <span class="op">|&gt;</span> <span class="fu">select</span><span class="op">(</span><span class="va">t</span>, <span class="va">quarter</span>, <span class="va">hits</span>, <span class="va">index_add</span>, <span class="va">seas_adj</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fl">8</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">show_tbl</span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: right;">t</th>
+<th style="text-align: right;">quarter</th>
+<th style="text-align: right;">hits</th>
+<th style="text-align: right;">index_add</th>
+<th style="text-align: right;">seas_adj</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">242</td>
+<td style="text-align: right;">99.65</td>
+<td style="text-align: right;">142.35</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">-33.95</td>
+<td style="text-align: right;">91.95</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">-79.75</td>
+<td style="text-align: right;">113.75</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">14.05</td>
+<td style="text-align: right;">101.95</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">289</td>
+<td style="text-align: right;">99.65</td>
+<td style="text-align: right;">189.35</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">129</td>
+<td style="text-align: right;">-33.95</td>
+<td style="text-align: right;">162.95</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">-79.75</td>
+<td style="text-align: right;">111.75</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">217</td>
+<td style="text-align: right;">14.05</td>
+<td style="text-align: right;">202.95</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section><section id="the-proper-method-for-comparison" class="level2"><h2 class="anchored" data-anchor-id="the-proper-method-for-comparison">The proper method, for comparison</h2>
+<p>If there <em>is</em> a trend, the quick method confuses trend with season and you must detrend first — by subtraction, since the model is additive.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">hits_proper</span> <span class="op">&lt;-</span> <span class="va">hits</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    cma4 <span class="op">=</span> <span class="op">(</span><span class="fl">0.5</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/lag.html">lag</a></span><span class="op">(</span><span class="va">hits</span>, <span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/lag.html">lag</a></span><span class="op">(</span><span class="va">hits</span><span class="op">)</span> <span class="op">+</span> <span class="va">hits</span> <span class="op">+</span> <span class="fu">lead</span><span class="op">(</span><span class="va">hits</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> <span class="fu">lead</span><span class="op">(</span><span class="va">hits</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">4</span>,</span>
+<span>    diff <span class="op">=</span> <span class="va">hits</span> <span class="op">-</span> <span class="va">cma4</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">summarise</span><span class="op">(</span>raw <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">diff</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">quarter</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>index_add <span class="op">=</span> <span class="va">raw</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">raw</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">hits_idx</span> <span class="op">|&gt;</span> <span class="fu">select</span><span class="op">(</span><span class="va">quarter</span>, quick <span class="op">=</span> <span class="va">index_add</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">hits_proper</span> <span class="op">|&gt;</span> <span class="fu">select</span><span class="op">(</span><span class="va">quarter</span>, detrended <span class="op">=</span> <span class="va">index_add</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu">join_by</span><span class="op">(</span><span class="va">quarter</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">show_tbl</span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: right;">quarter</th>
+<th style="text-align: right;">quick</th>
+<th style="text-align: right;">detrended</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">99.65</td>
+<td style="text-align: right;">94.70</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">-33.95</td>
+<td style="text-align: right;">-28.95</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">-79.75</td>
+<td style="text-align: right;">-83.08</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">14.05</td>
+<td style="text-align: right;">17.33</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Close, because the trend here is weak. On a trending series the two diverge sharply — which is why the detrended route is the default.</p>
+</section><section id="additive-vs-multiplicative-side-by-side" class="level2"><h2 class="anchored" data-anchor-id="additive-vs-multiplicative-side-by-side">Additive vs multiplicative, side by side</h2>
+<table class="caption-top table">
+<thead><tr class="header">
+<th></th>
+<th>Additive</th>
+<th>Multiplicative</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Model</td>
+<td><span class="math inline">\(Y = T + S + I\)</span></td>
+<td><span class="math inline">\(Y = T \times S \times I\)</span></td>
+</tr>
+<tr class="even">
+<td>Detrend</td>
+<td><span class="math inline">\(Y_t - \text{CMA}_t\)</span></td>
+<td><span class="math inline">\(Y_t / \text{CMA}_t\)</span></td>
+</tr>
+<tr class="odd">
+<td>Indices sum to</td>
+<td>0</td>
+<td><span class="math inline">\(m\)</span></td>
+</tr>
+<tr class="even">
+<td>Adjust</td>
+<td><span class="math inline">\(Y_t - S_j\)</span></td>
+<td><span class="math inline">\(Y_t / S_j\)</span></td>
+</tr>
+<tr class="odd">
+<td>Use when</td>
+<td>swings constant in units</td>
+<td>swings constant in percent</td>
+</tr>
+<tr class="even">
+<td>Trick</td>
+<td>—</td>
+<td>take logs, then use additive</td>
+</tr>
+</tbody>
+</table>
+<hr></section></section><section id="part-6-exponential-smoothing" class="level1" data-background-color="#2C5F2D"><h1 data-background-color="#2C5F2D">Part 6 · Exponential smoothing</h1>
+<section id="the-idea" class="level2"><h2 class="anchored" data-anchor-id="the-idea">The idea</h2>
+<p>A moving average gives equal weight to the last <span class="math inline">\(k\)</span> observations and none to the rest. That is an odd belief. Simple exponential smoothing instead lets weights fade geometrically:</p>
+<p><span class="math display">\[
+F_{t+1} = \alpha Y_t + (1-\alpha) F_t
+= \alpha \sum_{j\ge 0}(1-\alpha)^j\, Y_{t-j}
+\]</span></p>
+<ul>
+<li>
+<span class="math inline">\(\alpha\)</span> near 1 → the forecast chases the last observation</li>
+<li>
+<span class="math inline">\(\alpha\)</span> near 0 → the forecast is a long memory, almost a constant</li>
+<li>No trend, no season: every future period gets the same forecast</li>
+</ul></section><section id="the-ses-sheet-reproduced" class="level2"><h2 class="anchored" data-anchor-id="the-ses-sheet-reproduced">The SES sheet, reproduced</h2>
+<p>Twenty-four monthly observations, <span class="math inline">\(\alpha = 0.4\)</span>, starting level <span class="math inline">\(F_2 = Y_1\)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">ses_data</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span></span>
+<span>  date  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fu">ymd</span><span class="op">(</span><span class="st">"2010-01-01"</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"month"</span>, length.out <span class="op">=</span> <span class="fl">24</span><span class="op">)</span>,</span>
+<span>  y     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">97.6</span>, <span class="fl">95.1</span>, <span class="fl">90.3</span>, <span class="fl">92.5</span>, <span class="fl">89.8</span>, <span class="fl">92.7</span>, <span class="fl">94.4</span>, <span class="fl">96.2</span>,</span>
+<span>            <span class="fl">88.9</span>, <span class="fl">90.2</span>, <span class="fl">88.2</span>, <span class="fl">91.0</span>, <span class="fl">89.3</span>, <span class="fl">88.5</span>, <span class="fl">93.7</span>, <span class="fl">92.7</span>,</span>
+<span>            <span class="fl">94.7</span>, <span class="fl">95.3</span>, <span class="fl">94.7</span>, <span class="fl">95.3</span>, <span class="fl">94.7</span>, <span class="fl">96.5</span>, <span class="fl">99.2</span>, <span class="fl">96.9</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ses</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">y</span>, <span class="va">alpha</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># returns forecasts for t = 2 ... n+1, with F_2 = y_1</span></span>
+<span>  <span class="fu">accumulate</span><span class="op">(</span><span class="va">y</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">]</span>, \<span class="op">(</span><span class="va">f</span>, <span class="va">obs</span><span class="op">)</span> <span class="va">alpha</span> <span class="op">*</span> <span class="va">obs</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">alpha</span><span class="op">)</span> <span class="op">*</span> <span class="va">f</span>, .init <span class="op">=</span> <span class="va">y</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section><section id="the-smoothing-table" class="level2"><h2 class="anchored" data-anchor-id="the-smoothing-table">The smoothing table</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">alpha</span> <span class="op">&lt;-</span> <span class="fl">0.4</span></span>
+<span></span>
+<span><span class="va">ses_tbl</span> <span class="op">&lt;-</span> <span class="va">ses_data</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    forecast <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fu">ses</span><span class="op">(</span><span class="va">y</span>, <span class="va">alpha</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">24</span><span class="op">]</span><span class="op">)</span>,   <span class="co"># F_t aligned to period t</span></span>
+<span>    error    <span class="op">=</span> <span class="va">y</span> <span class="op">-</span> <span class="va">forecast</span>,</span>
+<span>    abs_err  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">error</span><span class="op">)</span>,</span>
+<span>    pct_err  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">error</span> <span class="op">/</span> <span class="va">y</span><span class="op">)</span>,</span>
+<span>    sq_err   <span class="op">=</span> <span class="va">error</span><span class="op">^</span><span class="fl">2</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">ses_tbl</span> <span class="op">|&gt;</span> <span class="fu">slice</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">show_tbl</span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: left;">date</th>
+<th style="text-align: right;">y</th>
+<th style="text-align: right;">forecast</th>
+<th style="text-align: right;">error</th>
+<th style="text-align: right;">abs_err</th>
+<th style="text-align: right;">pct_err</th>
+<th style="text-align: right;">sq_err</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2010-01-01</td>
+<td style="text-align: right;">97.6</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2010-02-01</td>
+<td style="text-align: right;">95.1</td>
+<td style="text-align: right;">97.600</td>
+<td style="text-align: right;">-2.500</td>
+<td style="text-align: right;">2.500</td>
+<td style="text-align: right;">0.026</td>
+<td style="text-align: right;">6.250</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2010-03-01</td>
+<td style="text-align: right;">90.3</td>
+<td style="text-align: right;">97.600</td>
+<td style="text-align: right;">-7.300</td>
+<td style="text-align: right;">7.300</td>
+<td style="text-align: right;">0.081</td>
+<td style="text-align: right;">53.290</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2010-04-01</td>
+<td style="text-align: right;">92.5</td>
+<td style="text-align: right;">96.600</td>
+<td style="text-align: right;">-4.100</td>
+<td style="text-align: right;">4.100</td>
+<td style="text-align: right;">0.044</td>
+<td style="text-align: right;">16.810</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2010-05-01</td>
+<td style="text-align: right;">89.8</td>
+<td style="text-align: right;">94.080</td>
+<td style="text-align: right;">-4.280</td>
+<td style="text-align: right;">4.280</td>
+<td style="text-align: right;">0.048</td>
+<td style="text-align: right;">18.318</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2010-06-01</td>
+<td style="text-align: right;">92.7</td>
+<td style="text-align: right;">93.448</td>
+<td style="text-align: right;">-0.748</td>
+<td style="text-align: right;">0.748</td>
+<td style="text-align: right;">0.008</td>
+<td style="text-align: right;">0.560</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2010-07-01</td>
+<td style="text-align: right;">94.4</td>
+<td style="text-align: right;">91.989</td>
+<td style="text-align: right;">2.411</td>
+<td style="text-align: right;">2.411</td>
+<td style="text-align: right;">0.026</td>
+<td style="text-align: right;">5.814</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2010-08-01</td>
+<td style="text-align: right;">96.2</td>
+<td style="text-align: right;">92.273</td>
+<td style="text-align: right;">3.927</td>
+<td style="text-align: right;">3.927</td>
+<td style="text-align: right;">0.041</td>
+<td style="text-align: right;">15.419</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section><section id="accuracy-and-choosing-alpha" class="level2"><h2 class="anchored" data-anchor-id="accuracy-and-choosing-alpha">Accuracy, and choosing <span class="math inline">\(\alpha\)</span>
+</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">ses_tbl</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">summarise</span><span class="op">(</span></span>
+<span>    ME   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">error</span>,   na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    MAE  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">abs_err</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    MAPE <span class="op">=</span> <span class="fl">100</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pct_err</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    SSE  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">sq_err</span>,   na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">show_tbl</span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: right;">ME</th>
+<th style="text-align: right;">MAE</th>
+<th style="text-align: right;">MAPE</th>
+<th style="text-align: right;">SSE</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td style="text-align: right;">-0.104</td>
+<td style="text-align: right;">2.89</td>
+<td style="text-align: right;">3.117</td>
+<td style="text-align: right;">253.64</td>
+</tr></tbody>
+</table>
+</div>
+</div>
+<p>Small differences from the spreadsheet come from Excel rounding each smoothed value to one decimal. R carries full precision.</p>
+</section><section id="let-the-data-pick-alpha" class="level2"><h2 class="anchored" data-anchor-id="let-the-data-pick-alpha">Let the data pick <span class="math inline">\(\alpha\)</span>
+</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sse_for</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">a</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fu">ses</span><span class="op">(</span><span class="va">ses_data</span><span class="op">$</span><span class="va">y</span>, <span class="va">a</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">24</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="op">(</span><span class="va">ses_data</span><span class="op">$</span><span class="va">y</span> <span class="op">-</span> <span class="va">f</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">grid</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span>alpha <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.95</span>, by <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>sse <span class="op">=</span> <span class="fu">map_dbl</span><span class="op">(</span><span class="va">alpha</span>, <span class="va">sse_for</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">best</span> <span class="op">&lt;-</span> <span class="va">grid</span> <span class="op">|&gt;</span> <span class="fu">slice_min</span><span class="op">(</span><span class="va">sse</span><span class="op">)</span></span>
+<span><span class="fu">show_tbl</span><span class="op">(</span><span class="va">best</span>, digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: right;">alpha</th>
+<th style="text-align: right;">sse</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td style="text-align: right;">0.77</td>
+<td style="text-align: right;">236.1215</td>
+</tr></tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="trend-season-smoothing_files/figure-html/ses-grid-plot-1.png" class="img-fluid figure-img" width="1280"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="the-same-thing-in-one-line" class="level2"><h2 class="anchored" data-anchor-id="the-same-thing-in-one-line">The same thing, in one line</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">ses_ts</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/ts.html">ts</a></span><span class="op">(</span><span class="va">ses_data</span><span class="op">$</span><span class="va">y</span>, start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2010</span>, <span class="fl">1</span><span class="op">)</span>, frequency <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span>
+<span><span class="va">ses_opt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/HoltWinters.html">HoltWinters</a></span><span class="op">(</span><span class="va">ses_ts</span>, beta <span class="op">=</span> <span class="cn">FALSE</span>, gamma <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ses_opt</span><span class="op">$</span><span class="va">alpha</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; [1] 0.698175</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">ses_opt</span><span class="op">$</span><span class="va">SSE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; [1] 160.5603</code></pre>
+</div>
+</div>
+<p><code><a href="https://rdrr.io/r/stats/HoltWinters.html">HoltWinters()</a></code> with <code>beta = FALSE, gamma = FALSE</code> <em>is</em> simple exponential smoothing, with <span class="math inline">\(\alpha\)</span> chosen by minimising the same SSE you just plotted by hand.</p>
+</section><section id="holt-adding-a-trend" class="level2"><h2 class="anchored" data-anchor-id="holt-adding-a-trend">Holt: adding a trend</h2>
+<p>SES has no trend, so its forecast is flat — useless for a growing series. Holt adds a second recursion for the slope:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\ell_t &amp;= \alpha Y_t + (1-\alpha)(\ell_{t-1} + b_{t-1}) \\
+b_t &amp;= \beta(\ell_t - \ell_{t-1}) + (1-\beta) b_{t-1} \\
+\hat Y_{t+h} &amp;= \ell_t + h\, b_t
+\end{aligned}
+\]</span></p>
+<p>The level is smoothed, then the change in level is itself smoothed. Unlike OLS, the slope is <strong>local</strong>: recent quarters count more than the first one.</p>
+</section><section id="holt-on-the-car-sales" class="level2"><h2 class="anchored" data-anchor-id="holt-on-the-car-sales">Holt on the car sales</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">deseason_ts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/ts.html">ts</a></span><span class="op">(</span><span class="va">cars_dec</span><span class="op">$</span><span class="va">deseason</span>, start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, frequency <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="va">holt_fit</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/HoltWinters.html">HoltWinters</a></span><span class="op">(</span><span class="va">deseason_ts</span>, gamma <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="va">holt_fit</span><span class="op">$</span><span class="va">alpha</span>, beta <span class="op">=</span> <span class="va">holt_fit</span><span class="op">$</span><span class="va">beta</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; alpha.alpha   beta.beta 
+#&gt;   1.0000000   0.3760964</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">holt_fc</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span></span>
+<span>  t         <span class="op">=</span> <span class="fl">17</span><span class="op">:</span><span class="fl">20</span>,</span>
+<span>  quarter   <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>,</span>
+<span>  trend_hat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">holt_fit</span>, n.ahead <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">seasonal_tbl</span>, by <span class="op">=</span> <span class="fu">join_by</span><span class="op">(</span><span class="va">quarter</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>forecast_holt <span class="op">=</span> <span class="va">trend_hat</span> <span class="op">*</span> <span class="va">index</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">holt_fc</span> <span class="op">|&gt;</span> <span class="fu">select</span><span class="op">(</span><span class="va">t</span>, <span class="va">quarter</span>, <span class="va">trend_hat</span>, <span class="va">forecast_holt</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">show_tbl</span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: right;">t</th>
+<th style="text-align: right;">quarter</th>
+<th style="text-align: right;">trend_hat</th>
+<th style="text-align: right;">forecast_holt</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">7.484</td>
+<td style="text-align: right;">6.965</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">7.608</td>
+<td style="text-align: right;">6.363</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">7.733</td>
+<td style="text-align: right;">8.441</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">7.857</td>
+<td style="text-align: right;">8.969</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section><section id="global-trend-vs-local-trend" class="level2"><h2 class="anchored" data-anchor-id="global-trend-vs-local-trend">Global trend vs local trend</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">future</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">t</span>, <span class="va">quarter</span>, ols_trend <span class="op">=</span> <span class="va">forecast</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">holt_fc</span> <span class="op">|&gt;</span> <span class="fu">select</span><span class="op">(</span><span class="va">t</span>, holt <span class="op">=</span> <span class="va">forecast_holt</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu">join_by</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>difference <span class="op">=</span> <span class="va">holt</span> <span class="op">-</span> <span class="va">ols_trend</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">show_tbl</span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: right;">t</th>
+<th style="text-align: right;">quarter</th>
+<th style="text-align: right;">ols_trend</th>
+<th style="text-align: right;">holt</th>
+<th style="text-align: right;">difference</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">7.086</td>
+<td style="text-align: right;">6.965</td>
+<td style="text-align: right;">-0.121</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6.491</td>
+<td style="text-align: right;">6.363</td>
+<td style="text-align: right;">-0.128</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">8.632</td>
+<td style="text-align: right;">8.441</td>
+<td style="text-align: right;">-0.191</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">9.195</td>
+<td style="text-align: right;">8.969</td>
+<td style="text-align: right;">-0.226</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>On a short, well-behaved series the two nearly agree. They diverge when the trend bends — and then the local method is usually the one you want.</p>
+</section><section id="holtwinters-trend-and-season-together" class="level2"><h2 class="anchored" data-anchor-id="holtwinters-trend-and-season-together">Holt–Winters: trend and season together</h2>
+<p>Add a third recursion for the seasonal factors and you have the full method:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\ell_t &amp;= \alpha \frac{Y_t}{s_{t-m}} + (1-\alpha)(\ell_{t-1}+b_{t-1}) \\
+b_t &amp;= \beta(\ell_t-\ell_{t-1}) + (1-\beta) b_{t-1} \\
+s_t &amp;= \gamma \frac{Y_t}{\ell_t} + (1-\gamma) s_{t-m} \\
+\hat Y_{t+h} &amp;= (\ell_t + h b_t)\, s_{t+h-m}
+\end{aligned}
+\]</span></p>
+<p>The key advantage over classical decomposition: <span class="math inline">\(\gamma &gt; 0\)</span> lets the <strong>seasonal shape evolve</strong>. In Pakistan, where tax and tariff changes reshape the calendar of demand, that matters.</p>
+<hr></section></section><section id="part-7-application-monthly-car-sales-in-pakistan" class="level1" data-background-color="#2C5F2D"><h1 data-background-color="#2C5F2D">Part 7 · Application: monthly car sales in Pakistan</h1>
+<section id="the-data" class="level2"><h2 class="anchored" data-anchor-id="the-data">The data</h2>
+<p>PAMA publishes monthly production and sales by category. The series below is a <strong>teaching series</strong> shaped like PAMA passenger-car sales: the June push before the new fiscal year, the July collapse after price and duty revisions, the 2020 lockdown, the 2022–23 import-compression crash, and the 2024–25 recovery as policy rates fell.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">614</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">anchor_level</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>`2015` <span class="op">=</span> <span class="fl">11000</span>, `2016` <span class="op">=</span> <span class="fl">13500</span>, `2017` <span class="op">=</span> <span class="fl">15500</span>, `2018` <span class="op">=</span> <span class="fl">17500</span>,</span>
+<span>                  `2019` <span class="op">=</span> <span class="fl">11000</span>, `2020` <span class="op">=</span>  <span class="fl">9500</span>, `2021` <span class="op">=</span> <span class="fl">16500</span>, `2022` <span class="op">=</span> <span class="fl">15000</span>,</span>
+<span>                  `2023` <span class="op">=</span>  <span class="fl">6000</span>, `2024` <span class="op">=</span>  <span class="fl">8000</span>, `2025` <span class="op">=</span> <span class="fl">12500</span>, `2026` <span class="op">=</span> <span class="fl">13000</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">seas_true</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1.05</span>, <span class="fl">0.92</span>, <span class="fl">1.06</span>, <span class="fl">1.00</span>, <span class="fl">1.02</span>, <span class="fl">1.30</span>,</span>
+<span>               <span class="fl">0.78</span>, <span class="fl">0.92</span>, <span class="fl">1.02</span>, <span class="fl">1.05</span>, <span class="fl">0.98</span>, <span class="fl">0.90</span><span class="op">)</span>  <span class="co"># Jan ... Dec, sums to 12</span></span>
+<span></span>
+<span><span class="va">pak</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span>date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fu">ymd</span><span class="op">(</span><span class="st">"2015-01-01"</span><span class="op">)</span>, <span class="fu">ymd</span><span class="op">(</span><span class="st">"2025-12-01"</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"month"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    level <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/approxfun.html">approx</a></span><span class="op">(</span>x    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu">ymd</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">anchor_level</span><span class="op">)</span>, <span class="st">"-06-15"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   y    <span class="op">=</span> <span class="va">anchor_level</span>,</span>
+<span>                   xout <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span>, rule <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">$</span><span class="va">y</span>,</span>
+<span>    sales <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">level</span> <span class="op">*</span> <span class="va">seas_true</span><span class="op">[</span><span class="fu">month</span><span class="op">(</span><span class="va">date</span><span class="op">)</span><span class="op">]</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fu">n</span><span class="op">(</span><span class="op">)</span>, <span class="fl">0</span>, <span class="fl">0.07</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">date</span>, <span class="va">sales</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-simple callout-none no-icon">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><strong>To use the real data</strong>: download the monthly PDFs or the historic month-wise file from <code>pama.org.pk</code>, save as <code>data/pama_cars_monthly.csv</code> with columns <code>month</code>, <code>sales</code>, and replace the block above with <code>pak &lt;- read_csv("data/pama_cars_monthly.csv") |&gt; mutate(date = ym(month))</code>. Everything downstream runs unchanged.</p>
+</div>
+</div>
+</div>
+</section><section id="the-series" class="level2"><h2 class="anchored" data-anchor-id="the-series">The series</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="trend-season-smoothing_files/figure-html/pak-plot-1.png" class="img-fluid figure-img" width="1280"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Three structural episodes in eleven years. Classical decomposition will handle the season well and the breaks badly — which is itself the lesson.</p>
+</section><section id="seasonal-subseries-plot" class="level2"><h2 class="anchored" data-anchor-id="seasonal-subseries-plot">Seasonal subseries plot</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="trend-season-smoothing_files/figure-html/pak-subseries-1.png" class="img-fluid figure-img" width="1280"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="the-212-centred-moving-average" class="level2"><h2 class="anchored" data-anchor-id="the-212-centred-moving-average">The 2×12 centred moving average</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pak_dec</span> <span class="op">&lt;-</span> <span class="va">pak</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    trend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">sales</span>,</span>
+<span>              filter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">11</span><span class="op">)</span>, <span class="fl">0.5</span><span class="op">)</span> <span class="op">/</span> <span class="fl">12</span>, sides <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    ratio <span class="op">=</span> <span class="va">sales</span> <span class="op">/</span> <span class="va">trend</span>,</span>
+<span>    mon   <span class="op">=</span> <span class="fu">month</span><span class="op">(</span><span class="va">date</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">pak_index</span> <span class="op">&lt;-</span> <span class="va">pak_dec</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">summarise</span><span class="op">(</span>index_raw <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">ratio</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">mon</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">arrange</span><span class="op">(</span><span class="va">mon</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>index <span class="op">=</span> <span class="va">index_raw</span> <span class="op">*</span> <span class="fl">12</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">index_raw</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pak_index</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">transmute</span><span class="op">(</span>month <span class="op">=</span> <span class="va">month.abb</span><span class="op">[</span><span class="va">mon</span><span class="op">]</span>, index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">index</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">pivot_wider</span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">month</span>, values_from <span class="op">=</span> <span class="va">index</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">show_tbl</span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: right;">Jan</th>
+<th style="text-align: right;">Feb</th>
+<th style="text-align: right;">Mar</th>
+<th style="text-align: right;">Apr</th>
+<th style="text-align: right;">May</th>
+<th style="text-align: right;">Jun</th>
+<th style="text-align: right;">Jul</th>
+<th style="text-align: right;">Aug</th>
+<th style="text-align: right;">Sep</th>
+<th style="text-align: right;">Oct</th>
+<th style="text-align: right;">Nov</th>
+<th style="text-align: right;">Dec</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td style="text-align: right;">1.05</td>
+<td style="text-align: right;">0.923</td>
+<td style="text-align: right;">1.036</td>
+<td style="text-align: right;">1.016</td>
+<td style="text-align: right;">1.036</td>
+<td style="text-align: right;">1.305</td>
+<td style="text-align: right;">0.773</td>
+<td style="text-align: right;">0.902</td>
+<td style="text-align: right;">1.027</td>
+<td style="text-align: right;">1.051</td>
+<td style="text-align: right;">0.987</td>
+<td style="text-align: right;">0.894</td>
+</tr></tbody>
+</table>
+</div>
+</div>
+</section><section id="trend-and-seasonally-adjusted-series" class="level2"><h2 class="anchored" data-anchor-id="trend-and-seasonally-adjusted-series">Trend and seasonally adjusted series</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="trend-season-smoothing_files/figure-html/pak-sa-plot-1.png" class="img-fluid figure-img" width="1280"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Notice the June spike disappears from the adjusted line. What remains is genuine news: the 2020 dip, the 2023 collapse, the recovery.</p>
+</section><section id="a-proper-forecasting-test" class="level2"><h2 class="anchored" data-anchor-id="a-proper-forecasting-test">A proper forecasting test</h2>
+<p>Hold out the last twelve months. Estimate on the rest. Compare three rules.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">train</span> <span class="op">&lt;-</span> <span class="va">pak</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">date</span> <span class="op">&lt;</span>  <span class="fu">ymd</span><span class="op">(</span><span class="st">"2025-01-01"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">test</span>  <span class="op">&lt;-</span> <span class="va">pak</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">date</span> <span class="op">&gt;=</span> <span class="fu">ymd</span><span class="op">(</span><span class="st">"2025-01-01"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">train</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">test</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; [1] 120</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; [1] 12</code></pre>
+</div>
+</div>
+<p><strong>Rule 1 — seasonal naive.</strong> The forecast for next March is last March. Crude, hard to beat, and the benchmark every model must clear.</p>
+<p><strong>Rule 2 — decomposition plus trend</strong>, with the trend fitted only to the last three years, because of the 2023 break.</p>
+<p><strong>Rule 3 — Holt–Winters multiplicative</strong>, which updates both level and season as it goes.</p>
+</section><section id="rule-1-seasonal-naive" class="level2"><h2 class="anchored" data-anchor-id="rule-1-seasonal-naive">Rule 1: seasonal naive</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">snaive_fc</span> <span class="op">&lt;-</span> <span class="va">test</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>forecast <span class="op">=</span> <span class="va">train</span> <span class="op">|&gt;</span> <span class="fu">slice_tail</span><span class="op">(</span>n <span class="op">=</span> <span class="fl">12</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">pull</span><span class="op">(</span><span class="va">sales</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">accuracy_tbl</span><span class="op">(</span><span class="va">snaive_fc</span><span class="op">$</span><span class="va">sales</span>, <span class="va">snaive_fc</span><span class="op">$</span><span class="va">forecast</span>, <span class="st">"seasonal naive"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">show_tbl</span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: left;">model</th>
+<th style="text-align: right;">ME</th>
+<th style="text-align: right;">MAE</th>
+<th style="text-align: right;">RMSE</th>
+<th style="text-align: right;">MAPE</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td style="text-align: left;">seasonal naive</td>
+<td style="text-align: right;">3517.08</td>
+<td style="text-align: right;">3517.08</td>
+<td style="text-align: right;">3681.85</td>
+<td style="text-align: right;">28.89</td>
+</tr></tbody>
+</table>
+</div>
+</div>
+</section><section id="rule-2-decomposition-plus-linear-trend" class="level2"><h2 class="anchored" data-anchor-id="rule-2-decomposition-plus-linear-trend">Rule 2: decomposition plus linear trend</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tr_dec</span> <span class="op">&lt;-</span> <span class="va">train</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    trend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">sales</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">11</span><span class="op">)</span>, <span class="fl">0.5</span><span class="op">)</span> <span class="op">/</span> <span class="fl">12</span>, sides <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    ratio <span class="op">=</span> <span class="va">sales</span> <span class="op">/</span> <span class="va">trend</span>,</span>
+<span>    mon   <span class="op">=</span> <span class="fu">month</span><span class="op">(</span><span class="va">date</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">tr_index</span> <span class="op">&lt;-</span> <span class="va">tr_dec</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">summarise</span><span class="op">(</span>index_raw <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">ratio</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">mon</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>index <span class="op">=</span> <span class="va">index_raw</span> <span class="op">*</span> <span class="fl">12</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">index_raw</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tr_model</span> <span class="op">&lt;-</span> <span class="va">tr_dec</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">tr_index</span>, by <span class="op">=</span> <span class="fu">join_by</span><span class="op">(</span><span class="va">mon</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>t <span class="op">=</span> <span class="fu">row_number</span><span class="op">(</span><span class="op">)</span>, deseason <span class="op">=</span> <span class="va">sales</span> <span class="op">/</span> <span class="va">index</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">t</span> <span class="op">&gt;</span> <span class="fu">n</span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">36</span><span class="op">)</span>                      <span class="co"># last three years only</span></span>
+<span></span>
+<span><span class="va">lm_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">deseason</span> <span class="op">~</span> <span class="va">t</span>, data <span class="op">=</span> <span class="va">tr_model</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">dec_fc</span> <span class="op">&lt;-</span> <span class="va">test</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>t <span class="op">=</span> <span class="fl">121</span><span class="op">:</span><span class="fl">132</span>, mon <span class="op">=</span> <span class="fu">month</span><span class="op">(</span><span class="va">date</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">tr_index</span>, by <span class="op">=</span> <span class="fu">join_by</span><span class="op">(</span><span class="va">mon</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>forecast <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">lm_fit</span>, newdata <span class="op">=</span> <span class="fu">pick</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span> <span class="op">*</span> <span class="va">index</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">accuracy_tbl</span><span class="op">(</span><span class="va">dec_fc</span><span class="op">$</span><span class="va">sales</span>, <span class="va">dec_fc</span><span class="op">$</span><span class="va">forecast</span>, <span class="st">"decomposition + trend"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">show_tbl</span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: left;">model</th>
+<th style="text-align: right;">ME</th>
+<th style="text-align: right;">MAE</th>
+<th style="text-align: right;">RMSE</th>
+<th style="text-align: right;">MAPE</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td style="text-align: left;">decomposition + trend</td>
+<td style="text-align: right;">7569.47</td>
+<td style="text-align: right;">7569.47</td>
+<td style="text-align: right;">7812.5</td>
+<td style="text-align: right;">62.15</td>
+</tr></tbody>
+</table>
+</div>
+</div>
+</section><section id="rule-3-holtwinters" class="level2"><h2 class="anchored" data-anchor-id="rule-3-holtwinters">Rule 3: Holt–Winters</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb46"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">train_ts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/ts.html">ts</a></span><span class="op">(</span><span class="va">train</span><span class="op">$</span><span class="va">sales</span>, start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2015</span>, <span class="fl">1</span><span class="op">)</span>, frequency <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span>
+<span><span class="va">hw_fit</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/HoltWinters.html">HoltWinters</a></span><span class="op">(</span><span class="va">train_ts</span>, seasonal <span class="op">=</span> <span class="st">"multiplicative"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="va">hw_fit</span><span class="op">$</span><span class="va">alpha</span>, beta <span class="op">=</span> <span class="va">hw_fit</span><span class="op">$</span><span class="va">beta</span>, gamma <span class="op">=</span> <span class="va">hw_fit</span><span class="op">$</span><span class="va">gamma</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; alpha.alpha   beta.beta gamma.gamma 
+#&gt;   0.4049314   0.3295493   0.4886703</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb48"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">hw_fc</span> <span class="op">&lt;-</span> <span class="va">test</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>forecast <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">hw_fit</span>, n.ahead <span class="op">=</span> <span class="fl">12</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">accuracy_tbl</span><span class="op">(</span><span class="va">hw_fc</span><span class="op">$</span><span class="va">sales</span>, <span class="va">hw_fc</span><span class="op">$</span><span class="va">forecast</span>, <span class="st">"Holt-Winters multiplicative"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">show_tbl</span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: left;">model</th>
+<th style="text-align: right;">ME</th>
+<th style="text-align: right;">MAE</th>
+<th style="text-align: right;">RMSE</th>
+<th style="text-align: right;">MAPE</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td style="text-align: left;">Holt-Winters multiplicative</td>
+<td style="text-align: right;">196.97</td>
+<td style="text-align: right;">740.68</td>
+<td style="text-align: right;">860.65</td>
+<td style="text-align: right;">6.44</td>
+</tr></tbody>
+</table>
+</div>
+</div>
+</section><section id="the-scoreboard" class="level2"><h2 class="anchored" data-anchor-id="the-scoreboard">The scoreboard</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb49"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">bind_rows</span><span class="op">(</span></span>
+<span>  <span class="fu">accuracy_tbl</span><span class="op">(</span><span class="va">snaive_fc</span><span class="op">$</span><span class="va">sales</span>, <span class="va">snaive_fc</span><span class="op">$</span><span class="va">forecast</span>, <span class="st">"Seasonal naive"</span><span class="op">)</span>,</span>
+<span>  <span class="fu">accuracy_tbl</span><span class="op">(</span><span class="va">dec_fc</span><span class="op">$</span><span class="va">sales</span>,    <span class="va">dec_fc</span><span class="op">$</span><span class="va">forecast</span>,    <span class="st">"Decomposition + trend"</span><span class="op">)</span>,</span>
+<span>  <span class="fu">accuracy_tbl</span><span class="op">(</span><span class="va">hw_fc</span><span class="op">$</span><span class="va">sales</span>,     <span class="va">hw_fc</span><span class="op">$</span><span class="va">forecast</span>,     <span class="st">"Holt-Winters"</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">arrange</span><span class="op">(</span><span class="va">MAPE</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">show_tbl</span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: left;">model</th>
+<th style="text-align: right;">ME</th>
+<th style="text-align: right;">MAE</th>
+<th style="text-align: right;">RMSE</th>
+<th style="text-align: right;">MAPE</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Holt-Winters</td>
+<td style="text-align: right;">196.97</td>
+<td style="text-align: right;">740.68</td>
+<td style="text-align: right;">860.65</td>
+<td style="text-align: right;">6.44</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Seasonal naive</td>
+<td style="text-align: right;">3517.08</td>
+<td style="text-align: right;">3517.08</td>
+<td style="text-align: right;">3681.85</td>
+<td style="text-align: right;">28.89</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Decomposition + trend</td>
+<td style="text-align: right;">7569.47</td>
+<td style="text-align: right;">7569.47</td>
+<td style="text-align: right;">7812.50</td>
+<td style="text-align: right;">62.15</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Report MAPE to a policy audience and RMSE to a technical one. Always show the naive benchmark: a model that cannot beat “same month last year” has earned nothing.</p>
+</section><section id="the-forecasts-plotted" class="level2"><h2 class="anchored" data-anchor-id="the-forecasts-plotted">The forecasts, plotted</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="trend-season-smoothing_files/figure-html/pak-fc-plot-1.png" class="img-fluid figure-img" width="1280"></p>
+</figure>
+</div>
+</div>
+</div>
+<hr></section></section><section id="part-8-diagnostics-and-pitfalls" class="level1" data-background-color="#2C5F2D"><h1 data-background-color="#2C5F2D">Part 8 · Diagnostics and pitfalls</h1>
+<section id="check-what-is-left-over" class="level2"><h2 class="anchored" data-anchor-id="check-what-is-left-over">Check what is left over</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">resid_hw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">residuals</a></span><span class="op">(</span><span class="va">hw_fit</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">resid_hw</span>, main <span class="op">=</span> <span class="st">"Holt-Winters residuals"</span>, ylab <span class="op">=</span> <span class="st">""</span>, col <span class="op">=</span> <span class="va">qau_green</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>h <span class="op">=</span> <span class="fl">0</span>, col <span class="op">=</span> <span class="va">qau_brown</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/acf.html">acf</a></span><span class="op">(</span><span class="va">resid_hw</span>, main <span class="op">=</span> <span class="st">"ACF of residuals"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="trend-season-smoothing_files/figure-html/pak-resid-1.png" class="img-fluid figure-img" width="1280"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/box.test.html">Box.test</a></span><span class="op">(</span><span class="va">resid_hw</span>, lag <span class="op">=</span> <span class="fl">24</span>, type <span class="op">=</span> <span class="st">"Ljung-Box"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; 
+#&gt;  Box-Ljung test
+#&gt; 
+#&gt; data:  resid_hw
+#&gt; X-squared = 44.72, df = 24, p-value = 0.006285</code></pre>
+</div>
+</div>
+<p>If the ACF still shows spikes at lags 12 and 24, seasonality is left in the residuals and the seasonal component is mis-specified.</p>
+</section><section id="four-residual-questions" class="level2"><h2 class="anchored" data-anchor-id="four-residual-questions">Four residual questions</h2>
+<ol type="1">
+<li>
+<strong>Mean zero?</strong> If not, the forecasts are biased — subtract the mean.</li>
+<li>
+<strong>No autocorrelation?</strong> Spikes in the ACF mean information was left on the table.</li>
+<li>
+<strong>Constant variance?</strong> Widening residuals call for logs.</li>
+<li>
+<strong>Roughly normal?</strong> Only needed for prediction intervals, not for the point forecast.</li>
+</ol>
+<p>Failing (1) or (2) is serious. Failing (3) or (4) affects the intervals, not the centre.</p>
+</section><section id="pitfalls-specific-to-pakistani-data" class="level2"><h2 class="anchored" data-anchor-id="pitfalls-specific-to-pakistani-data">Pitfalls specific to Pakistani data</h2>
+<ul>
+<li><p><strong>Fiscal year vs calendar year.</strong> PAMA, FBR and PBS report July–June. A “year-on-year” figure from a fiscal-year table is not comparable with a calendar-year one. Decide your <span class="math inline">\(m\)</span> origin and label it.</p></li>
+<li><p><strong>Moving holidays.</strong> Eid shifts about eleven days each year, so Ramadan demand migrates across months. A fixed monthly index cannot capture it — it shows up as a large irregular in two months each year. Remedies: a Ramadan-days regressor, or working in Hijri-adjusted months.</p></li>
+<li><p><strong>Trading-day effects.</strong> Months differ in working days; a 31-day month with five Fridays is not a 28-day February. Divide by working days before decomposing.</p></li>
+<li><p><strong>Structural breaks.</strong> Import compression in 2022–23 broke both level and seasonal shape. Fitting one global trend across a break gives a confident, wrong forecast. Fit after the break, or allow a break dummy.</p></li>
+<li><p><strong>Revisions.</strong> PBS and PAMA figures are revised. A forecast evaluated against revised data flatters itself; keep the vintage you actually had.</p></li>
+</ul></section><section id="when-classical-decomposition-is-the-wrong-tool" class="level2"><h2 class="anchored" data-anchor-id="when-classical-decomposition-is-the-wrong-tool">When classical decomposition is the wrong tool</h2>
+<ul>
+<li>The <strong>first and last <span class="math inline">\(m/2\)</span> observations get no trend estimate</strong> — awkward when the recent end is what you care about. STL and X-13 fill the ends.</li>
+<li>It assumes the <strong>seasonal shape never changes</strong>. Over ten years of Pakistani energy or auto data, that is rarely true.</li>
+<li>It is <strong>not robust to outliers</strong>: one lockdown month contaminates that month’s index for every year.</li>
+<li>There is <strong>no uncertainty</strong>. No standard errors, no intervals.</li>
+</ul>
+<p>Use it to <em>see</em> the structure and to teach. Use STL, X-13ARIMA-SEATS, ETS or SARIMA to publish.</p>
+</section><section id="what-we-covered" class="level2"><h2 class="anchored" data-anchor-id="what-we-covered">What we covered</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 68%">
+<col style="width: 25%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: right;">Step</th>
+<th style="text-align: left;">Operation</th>
+<th style="text-align: left;">R tool</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">Plot: time, seasonal, subseries</td>
+<td style="text-align: left;">ggplot2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">Trend by centred moving average (2xm-MA)</td>
+<td style="text-align: left;">stats::filter()</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">Detrend: ratio (multiplicative) or difference (additive)</td>
+<td style="text-align: left;">mutate()</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">Seasonal index: average by cycle position, then normalise</td>
+<td style="text-align: left;">summarise(.by =)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">Deseasonalise, fit a trend, extrapolate, re-seasonalise</td>
+<td style="text-align: left;">lm() or HoltWinters()</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">Evaluate out of sample against a naive benchmark</td>
+<td style="text-align: left;">hold-out sample</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section><section id="exercises" class="level2"><h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
+<ol type="1">
+<li><p>The second sheet of the workbook holds another quarterly series: <code>72, 110, 117, 172, 76, 112, 130, 194, 78, 119, 128, 201, 81, 134, 141, 216</code>. Run the full decomposition. Your Q4 index should land near 1.48. Compare with the spreadsheet and account for any gap — check the CMA alignment first.</p></li>
+<li><p>Re-run Part 4 in logs. Does the additive decomposition of <span class="math inline">\(\log Y\)</span> give the same seasonal pattern as the multiplicative decomposition of <span class="math inline">\(Y\)</span>?</p></li>
+<li><p>For the Pakistan series, drop everything before 2023 and refit. Does a shorter, break-free sample beat the long sample out of sample?</p></li>
+<li><p>Build a fiscal-year version of the Pakistan series (July as period 1). Do the seasonal indices change? Should they?</p></li>
+<li><p>Take monthly PBS data of your choice — CPI, large-scale manufacturing, exports — and decide additive or multiplicative before running a single line of code. Then test your decision by comparing MAPE on logs and levels.</p></li>
+</ol></section><section id="sources-and-further-reading" class="level2"><h2 class="anchored" data-anchor-id="sources-and-further-reading">Sources and further reading</h2>
+<ul>
+<li>
+<strong>Data</strong>: Pakistan Automotive Manufacturers Association, monthly production and sales (<code>pama.org.pk</code>); Pakistan Bureau of Statistics monthly bulletins.</li>
+<li>Hyndman, R. J. &amp; Athanasopoulos, G. — <em>Forecasting: Principles and Practice</em>, 3rd ed., chapters 3 and 8. Free at <code>otexts.com/fpp3</code>.</li>
+<li>Makridakis, Wheelwright &amp; Hyndman — <em>Forecasting: Methods and Applications</em>, chapters 3–4 for the hand-worked decomposition tables.</li>
+<li>Ladiray &amp; Quenneville — <em>Seasonal Adjustment with the X-11 Method</em> for what statistical agencies actually run.</li>
+</ul></section><section id="appendix-the-same-work-in-fpp3" class="level2"><h2 class="anchored" data-anchor-id="appendix-the-same-work-in-fpp3">Appendix · The same work in <code>fpp3</code>
+</h2>
+<p>For students who go on to the tidy forecasting stack:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://pkg.robjhyndman.com/fpp3/">fpp3</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pak_tsbl</span> <span class="op">&lt;-</span> <span class="va">pak</span> <span class="op">|&gt;</span> <span class="fu">mutate</span><span class="op">(</span>month <span class="op">=</span> <span class="fu">yearmonth</span><span class="op">(</span><span class="va">date</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">as_tsibble</span><span class="op">(</span>index <span class="op">=</span> <span class="va">month</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pak_tsbl</span> <span class="op">|&gt;</span> <span class="fu">model</span><span class="op">(</span><span class="fu">classical_decomposition</span><span class="op">(</span><span class="va">sales</span>, type <span class="op">=</span> <span class="st">"multiplicative"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">components</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">autoplot</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pak_tsbl</span> <span class="op">|&gt;</span> <span class="fu">model</span><span class="op">(</span><span class="fu">STL</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">sales</span><span class="op">)</span> <span class="op">~</span> <span class="fu">season</span><span class="op">(</span>window <span class="op">=</span> <span class="st">"periodic"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">components</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">autoplot</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="va">pak_tsbl</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">month</span> <span class="op">&lt;</span> <span class="fu">yearmonth</span><span class="op">(</span><span class="st">"2025 Jan"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">model</span><span class="op">(</span>snaive  <span class="op">=</span> <span class="fu">SNAIVE</span><span class="op">(</span><span class="va">sales</span><span class="op">)</span>,</span>
+<span>        hw      <span class="op">=</span> <span class="fu">ETS</span><span class="op">(</span><span class="va">sales</span> <span class="op">~</span> <span class="fu">error</span><span class="op">(</span><span class="st">"M"</span><span class="op">)</span> <span class="op">+</span> <span class="fu">trend</span><span class="op">(</span><span class="st">"A"</span><span class="op">)</span> <span class="op">+</span> <span class="fu">season</span><span class="op">(</span><span class="st">"M"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>        arima   <span class="op">=</span> <span class="fu">ARIMA</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">sales</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">fit</span> <span class="op">|&gt;</span> <span class="fu">forecast</span><span class="op">(</span>h <span class="op">=</span> <span class="fl">12</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">accuracy</span><span class="op">(</span><span class="va">pak_tsbl</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Same concepts, less bookkeeping. Learn the bookkeeping first.</p>
+
+
+</section></section><a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/zahedasghar\.github\.io\/timeseries\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© Prof.&nbsp;Dr.&nbsp;Zahid Asghar · School of Economics, Quaid-i-Azam University</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/Zahedasghar/timeseries/blob/main/labs/trend-season-smoothing.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/Zahedasghar/timeseries/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+<li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/Zahedasghar/timeseries">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://zahidasghar.com">
+      <i class="bi bi-globe" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+</div>
+  </div>
+</footer>
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

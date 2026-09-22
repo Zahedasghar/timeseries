@@ -1,0 +1,67 @@
+---
+title: "Applications"
+subtitle: "Case studies on Pakistani data, from raw series to forecast"
+toc: false
+---
+
+The lectures teach a method and the labs make you practise it. These case studies show the
+methods at work on questions people in Pakistan actually ask: where remittances come from,
+what we export and to whom, whether tax collections will meet target, and how fast solar
+prices are falling. Several of them pull fresh data from the State Bank every time they are
+rendered, so the numbers stay current.
+
+## Live reports from the SBP EasyData API
+
+::: {.card-grid}
+<a class="tcard" href="remittances_sbp.html">
+  <span class="num">Remittances</span><span class="ttl">Remittances to Pakistan: what the latest numbers say</span>
+  <span class="dsc">Monthly inflows by corridor, seasonality around Eid, and a short-horizon forecast.</span></a>
+<a class="tcard" href="exports_sbp.html">
+  <span class="num">Exports</span><span class="ttl">Pakistan's exports: what sells and where it goes</span>
+  <span class="dsc">Product and destination breakdowns, concentration, and how the mix has shifted.</span></a>
+<a class="tcard" href="trade_sbp.html">
+  <span class="num">Trade</span><span class="ttl">Pakistan's trade: who buys, who sells, and what moves</span>
+  <span class="dsc">Imports, exports and the balance, partner by partner.</span></a>
+:::
+
+## Fiscal, monetary and financial markets
+
+::: {.card-grid}
+<a class="tcard" href="Pak_tax_data_analysis.html">
+  <span class="num">Tax</span><span class="ttl">Forecasting tax collections for the next 12 months</span>
+  <span class="dsc">Monthly FBR collections modelled with ETS and ARIMA, with a 12-month-ahead forecast.</span></a>
+<a class="tcard" href="charting_pak_economy.html">
+  <span class="num">Inflation</span><span class="ttl">Pakistan inflation dashboard</span>
+  <span class="dsc">Headline and core inflation measures alongside the policy rate.</span></a>
+<a class="tcard" href="kse30-interactive.html">
+  <span class="num">Stock market</span><span class="ttl">KSE-30 interactive time series</span>
+  <span class="dsc">An interactive look at the index, with zoom and range selection.</span></a>
+<a class="tcard" href="Export-Data-Analysis111.html">
+  <span class="num">Exports</span><span class="ttl">Exploring export data with partner countries</span>
+  <span class="dsc">An earlier, exploratory treatment of bilateral export flows.</span></a>
+:::
+
+## Energy and technology
+
+::: {.card-grid}
+<a class="tcard" href="solar_energy.html">
+  <span class="num">Solar</span><span class="ttl">The solar energy revolution in Pakistan</span>
+  <span class="dsc">How technological learning curves caught energy policy off guard.</span></a>
+<a class="tcard" href="solar_experience_curve_analysis.html">
+  <span class="num">Solar</span><span class="ttl">When technology outruns the forecast</span>
+  <span class="dsc">Wright's Law against Moore's Law, the identification trap, and price scenarios for policy.</span></a>
+<a class="tcard" href="solar_price_arimax_analysis.html">
+  <span class="num">Solar</span><span class="ttl">Solar panel prices and global polysilicon</span>
+  <span class="dsc">Cointegration, Granger causality and a 12-month ARIMAX forecast.</span></a>
+:::
+
+## Methods in practice
+
+::: {.card-grid}
+<a class="tcard" href="trend-season-smoothing.html">
+  <span class="num">Smoothing</span><span class="ttl">Trend, season and simple forecasting</span>
+  <span class="dsc">Moving averages, classical decomposition and exponential smoothing, from spreadsheet to R.</span></a>
+<a class="tcard" href="Machine_Learning_Forecasting_Using_Time_Series_Signature.html">
+  <span class="num">Machine learning</span><span class="ttl">Time series machine learning</span>
+  <span class="dsc">Calendar features from the time series signature, fed to glmnet and XGBoost models.</span></a>
+:::

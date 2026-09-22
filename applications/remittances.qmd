@@ -27,6 +27,7 @@ We will use R packages such as **fable**, **fpp3**, **tsibble**, **dplyr**, **gg
 ## Load Libraries and Data
 
 ```{r}
+#| eval: false
 # Load necessary libraries
 library(fable)       # Forecasting tools
 library(fpp3)        # Time series analysis and forecasting
@@ -56,6 +57,89 @@ rmt$date <- dates
 # Reorder columns so that date is first
 rmt <- rmt %>% select(-Period) %>% select(date, everything())
 ```
+
+
+```{r sbp-remittances}
+library(tidyverse)
+library(httr2)
+library(janitor)
+library(tsibble)
+
+sbp_series <- function(series_id,
+                       start_date = "2010-07-01",
+                       end_date   = Sys.Date(),
+                       key        = Sys.getenv("SBP_EASYDATA_KEY")) {
+
+  if (!nzchar(key)) {
+    stop("SBP_EASYDATA_KEY not found. Run usethis::edit_r_environ(), add the key, restart R.")
+  }
+
+  request("https://easydata.sbp.org.pk/api/v1/series") |>
+    req_url_path_append(series_id, "data") |>
+    req_url_query(
+      api_key    = key,
+      start_date = as.character(start_date),
+      end_date   = as.character(end_date),
+      format     = "csv"
+    ) |>
+    req_timeout(60) |>
+    req_retry(max_tries = 3) |>
+    req_perform() |>
+    resp_body_string() |>
+    I() |>
+    read_csv(show_col_types = FALSE) |>
+    clean_names() |>
+    transmute(
+      date  = as.Date(observation_date),
+      value = as.numeric(observation_value)
+    ) |>
+    arrange(date)
+}
+
+# Replace the WRxxxx codes with the keys you pulled from the EasyData portal
+series_map <- c(
+  "Saudi Arabia" = "TS_GP_BOP_WR_M.WRxxxx",
+  "UAE"          = "TS_GP_BOP_WR_M.WRxxxx",
+  "UK"           = "TS_GP_BOP_WR_M.WRxxxx",
+  "USA"          = "TS_GP_BOP_WR_M.WRxxxx",
+  "Total"        = "TS_GP_BOP_WR_M.WRxxxx"
+)
+
+cache_file <- "data/remittances_sbp.rds"
+dir.create(dirname(cache_file), showWarnings = FALSE, recursive = TRUE)
+
+fetch_all <- function() {
+  imap_dfr(series_map, \(id, country) sbp_series(id) |> mutate(country = country))
+}
+
+cache_fresh <- file.exists(cache_file) &&
+  difftime(Sys.time(), file.mtime(cache_file), units = "days") < 7
+
+rmt_long <- if (cache_fresh) {
+  read_rds(cache_file)
+} else {
+  out <- try(fetch_all(), silent = TRUE)
+  if (inherits(out, "try-error")) {
+    if (!file.exists(cache_file)) stop(out)
+    message("SBP API unreachable, falling back to cached copy from ", file.mtime(cache_file))
+    read_rds(cache_file)
+  } else {
+    write_rds(out, cache_file)
+    out
+  }
+}
+
+rmt_ts <- rmt_long |>
+  mutate(month = yearmonth(date)) |>
+  as_tsibble(index = month, key = country)
+
+# Wide version, if you prefer the old layout
+rmt <- rmt_long |>
+  pivot_wider(names_from = country, values_from = value) |>
+  arrange(date)
+```
+
+
 
 ---
 

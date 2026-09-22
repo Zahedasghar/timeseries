@@ -1,0 +1,692 @@
+---
+title: "Pakistan's Exports: What Sells and Where It Goes"
+subtitle: "A self-updating report, pulled live from the SBP EasyData API at every render"
+author: "Zahid Asghar"
+date: today
+date-format: "D MMMM YYYY"
+params:
+  rediscover: false   # true scans SBP for country and product series codes
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    embed-resources: true
+    fig-width: 9
+    fig-height: 5
+execute:
+  echo: false
+  warning: false
+  message: false
+editor_options:
+  chunk_output_type: console
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(tidyverse)
+library(httr2)
+library(tsibble)
+library(knitr)
+library(plotly)
+library(plotly)
+
+if (!exists("params")) params <- list(rediscover = FALSE)
+theme_set(theme_minimal(base_size = 12))
+
+start_date <- "2001-07-01"
+keys_file  <- "sbp_export_series.csv"   # series codes and names only, no data
+
+# Headline exports, BPM6 monthly summary
+headline_keys <- c(
+  goods    = "TS_GP_BOP_BPM6SUM_M.P00030",   # Exports of goods FOB
+  services = "TS_GP_BOP_BPM6SUM_M.P00060"    # Exports of services
+)
+
+# Breakdowns and candidate series-code prefixes (used only when scanning)
+blocks <- tribble(
+  ~block,       ~dataset,               ~prefixes,
+  "country",    "TS_GP_BOP_XRECCOU_M",  list(c("EXPC", "EXPA")),   # EXPC mirrors the confirmed IMPC
+  "product",    "TS_GP_BOP_XRECCOM_M",  list(c("EXPA", "EXPC"))    # EXPA confirmed: ...XRECCOM_M.EXPA00420
+)
+
+block_title <- c(country = "export destinations", product = "export products")
+
+country_agg <- regex(str_c(
+  "\\btotal\\b|countries|region|union|world|unspecified|not specified|n\\.e\\.s|",
+  "^(asia|africa|europe|oceania|america)\\b|^(north|south|latin|central) america|",
+  "^(east|west|south|central|north)(ern)? (asia|europe)|middle east|far east|",
+  "\\bgcc\\b|saarc|asean|opec|commonwealth|^others?\\b"
+), ignore_case = TRUE)
+
+product_agg <- regex("\\btotal\\b|^others?\\b|\\bgroup\\b", ignore_case = TRUE)
+```
+
+```{r}
+#| label: api
+#| include: false
+
+sbp_key <- Sys.getenv("SBP_EASYDATA_KEY")
+if (!nzchar(sbp_key)) {
+  stop("SBP_EASYDATA_KEY not found. Add it with usethis::edit_r_environ() and restart R.")
+}
+
+sbp_req <- function(key, start = start_date, end = Sys.Date(), timeout = 30) {
+  request("https://easydata.sbp.org.pk/api/v1/series") |>
+    req_url_path_append(key, "data") |>
+    req_url_query(api_key = sbp_key, format = "json",
+                  start_date = as.character(as.Date(start)),
+                  end_date   = as.character(as.Date(end))) |>
+    req_headers(Accept = "application/json") |>
+    req_user_agent("pakistan-export-report (R httr2)") |>
+    req_timeout(timeout) |>
+    req_error(is_error = \(r) FALSE)
+}
+
+# SBP JSON: { columns: [...], rows: [[dataset, key, name, date, value, unit, ...], ...] }
+parse_sbp <- function(resp, key) {
+  body <- resp_body_json(resp, simplifyVector = FALSE)
+  if (is.null(body$rows) || length(body$rows) == 0) return(NULL)
+
+  cols <- str_to_lower(unlist(body$columns))
+  find <- function(pattern, fallback) {
+    i <- which(str_detect(cols, pattern))
+    if (length(i) == 0) fallback else i[1]
+  }
+  i_name <- find("series name|^series$", 3)
+  i_date <- find("observation date", 4)
+  i_val  <- find("observation value", 5)
+  cell   <- function(r, i) if (length(r) >= i && !is.null(r[[i]])) as.character(r[[i]]) else NA_character_
+
+  tibble(
+    key         = key,
+    series_name = map_chr(body$rows, cell, i = i_name),
+    date        = map_chr(body$rows, cell, i = i_date),
+    value       = map_chr(body$rows, cell, i = i_val)
+  ) |>
+    mutate(
+      month = yearmonth(as.Date(parse_date_time(date, c("Ymd", "dbY", "dby", "dmY"), quiet = TRUE))),
+      value = parse_number(value)
+    ) |>
+    filter(!is.na(month), !is.na(value)) |>
+    select(key, series_name, month, value)
+}
+safe_parse <- possibly(parse_sbp, otherwise = NULL)
+
+empty_pull <- tibble(key = character(), series_name = character(),
+                     month = yearmonth(as.Date(character())), value = numeric())
+
+# One series at a time, with patient retries. SBP sometimes fails a call and
+# answers the same call a few seconds later, so each series gets up to
+# `attempts` tries with growing waits.
+pull_keys <- function(keys, start = start_date, timeout = 30, attempts = 4,
+                      waits = c(2, 5, 10), pause = 0.8,
+                      deadline = Inf, verbose = TRUE) {
+  keys <- unique(keys)
+  if (length(keys) == 0) return(empty_pull)
+  out <- vector("list", length(keys))
+
+  for (i in seq_along(keys)) {
+    note <- ""
+    for (a in seq_len(attempts)) {
+      if (Sys.time() > deadline) break
+      Sys.sleep(if (a == 1) pause else waits[min(a - 1, length(waits))])
+      resp <- tryCatch(req_perform(sbp_req(keys[i], start = start, timeout = timeout)),
+                       error = \(e) e)
+
+      if (!inherits(resp, "httr2_response")) {
+        note <- str_c("request failed: ", conditionMessage(resp))
+      } else if (resp_status(resp) != 200) {
+        note <- str_c("HTTP ", resp_status(resp))
+        if (resp_status(resp) == 404) break          # wrong code, no point retrying
+      } else {
+        out[[i]] <- safe_parse(resp, keys[i])
+        if (!is.null(out[[i]])) { note <- str_c("ok, ", nrow(out[[i]]), " rows"); break }
+        note <- "HTTP 200 but no usable rows"
+      }
+    }
+    if (verbose) message(sprintf("  [%d/%d] %s  %s (attempt %d)",
+                                 i, length(keys), keys[i], note, a))
+    if (Sys.time() > deadline) { message("  time limit reached, stopping"); break }
+  }
+  out <- list_rbind(out)
+  if (is.null(out) || ncol(out) == 0) empty_pull else out
+}
+```
+
+```{r}
+#| label: directory
+#| include: false
+
+# Scanning is OFF by default. Run it once with -P rediscover:true, or write
+# sbp_export_series.csv by hand with columns: block, key, series_name.
+
+code_keys <- function(dataset, prefix, width, codes) {
+  str_c(dataset, ".", prefix, str_pad(codes, width, pad = "0"))
+}
+
+# Walk the codes upward in steps of 10. Stop when there has been no hit for a
+# long stretch, so the scan ends by itself once the list of series runs out.
+scan_prefix <- function(dataset, prefix, deadline, width = 5, step = 10,
+                        give_up_before_first = 80, give_up_after_last = 40) {
+  recent <- Sys.Date() - 540
+  hits <- list(); misses <- 0; code <- step; any_hit <- FALSE
+  repeat {
+    if (Sys.time() > deadline) { message("  time limit reached"); break }
+    key <- code_keys(dataset, prefix, width, code)
+    got <- pull_keys(key, start = recent, timeout = 10, attempts = 2,
+                     waits = 2, pause = 0.3, verbose = FALSE)
+    if (nrow(got) > 0) {
+      any_hit <- TRUE; misses <- 0
+      hits[[length(hits) + 1]] <- got |> summarise(series_name = last(series_name), .by = key)
+      message("  ", key, "  ", last(got$series_name))
+    } else {
+      misses <- misses + 1
+    }
+    if (!any_hit && misses >= give_up_before_first) break
+    if (any_hit && misses >= give_up_after_last) break
+    code <- code + step
+  }
+  list_rbind(hits)
+}
+
+discover_block <- function(dataset, prefixes, deadline) {
+  for (p in prefixes) {
+    message("Scanning ", dataset, ".", p, "...")
+    found <- scan_prefix(dataset, p, deadline)
+    if (!is.null(found) && nrow(found) > 0) return(found)
+  }
+  NULL
+}
+
+if (isTRUE(params$rediscover)) {
+  deadline <- Sys.time() + 20 * 60
+  message("Scanning SBP for export series (max 20 minutes)...")
+  found <- blocks |>
+    mutate(found = map2(dataset, prefixes, \(d, p) discover_block(d, p, deadline))) |>
+    select(block, found) |>
+    unnest(found)
+  if (nrow(found) > 0) write_csv(found, keys_file)
+}
+
+directory <- if (file.exists(keys_file)) {
+  read_csv(keys_file, show_col_types = FALSE)
+} else {
+  tibble(block = character(), key = character(), series_name = character())
+}
+```
+
+```{r}
+#| label: pull
+#| include: false
+
+raw <- pull_keys(c(headline_keys, directory$key))
+pulled_on <- format(Sys.Date(), "%d %B %Y")
+
+if (!headline_keys[["goods"]] %in% raw$key) {
+  stop("SBP did not return goods exports (", headline_keys[["goods"]], ") after several tries. ",
+       "The messages above show what SBP answered; please render again in a few minutes.")
+}
+
+roll12 <- function(x) as.numeric(stats::filter(x, rep(1, 12), sides = 1))
+
+# ---- Headline exports ----
+exp_m <- raw |>
+  filter(key %in% headline_keys) |>
+  mutate(series = names(headline_keys)[match(key, headline_keys)], value = abs(value)) |>
+  distinct(month, series, .keep_all = TRUE) |>
+  select(month, series, value) |>
+  pivot_wider(names_from = series, values_from = value) |>
+  (\(d) { if (!"services" %in% names(d)) d$services <- NA_real_; d })() |>
+  arrange(month) |>
+  filter(!is.na(goods)) |>
+  mutate(
+    goods12  = roll12(goods),
+    serv12   = roll12(services),
+    goods_yoy   = goods / lag(goods, 12) - 1,
+    goods12_yoy = goods12 / lag(goods12, 12) - 1,
+    serv_yoy    = services / lag(services, 12) - 1,
+    serv12_yoy  = serv12 / lag(serv12, 12) - 1,
+    serv12   = roll12(services),
+    fy       = year(as.Date(month)) + (month(as.Date(month)) >= 7),
+    fy_month = (month(as.Date(month)) - 7) %% 12 + 1
+  )
+
+# ---- Destinations and products ----
+detail <- raw |>
+  inner_join(select(directory, key, block), by = join_by(key)) |>
+  mutate(label = str_squish(series_name)) |>
+  distinct(key, month, .keep_all = TRUE)
+
+if (nrow(detail) > 0) {
+  series_info <- detail |>
+    summarise(mean_v = mean(value), .by = c(block, key, label)) |>
+    mutate(
+      named_total = str_detect(label, regex("\\btotal\\b", ignore_case = TRUE)),
+      others_sum  = sum(mean_v) - mean_v,
+      .by = block
+    ) |>
+    mutate(
+      total_key = {
+        cand <- key[named_total]
+        if (length(cand) > 0) cand[which.max(mean_v[named_total])]
+        else if (max(mean_v) > 0.5 * others_sum[which.max(mean_v)]) key[which.max(mean_v)]
+        else NA_character_
+      },
+      total_mean = if (all(is.na(total_key))) NA_real_ else mean_v[key == first(total_key)],
+      .by = block
+    ) |>
+    mutate(role = case_when(
+      key == total_key ~ "Total",
+      block == "country" & str_detect(label, country_agg) ~ "Aggregate",
+      block == "product" & str_detect(label, product_agg) ~ "Aggregate",
+      !is.na(total_mean) & mean_v > 0.5 * total_mean ~ "Aggregate",
+      .default = "Item"
+    ))
+
+  items <- detail |>
+    semi_join(filter(series_info, role == "Item"), by = join_by(key)) |>
+    summarise(value = sum(value), .by = c(block, label, month))
+
+  block_totals <- bind_rows(
+    detail |>
+      semi_join(filter(series_info, role == "Total"), by = join_by(key)) |>
+      select(block, month, value),
+    items |>
+      filter(!block %in% series_info$block[series_info$role == "Total"]) |>
+      summarise(value = sum(value), .by = c(block, month))
+  )
+} else {
+  series_info  <- tibble(block = character(), key = character(), label = character(),
+                         mean_v = numeric(), role = character())
+  items        <- tibble(block = character(), label = character(),
+                         month = yearmonth(as.Date(character())), value = numeric())
+  block_totals <- tibble(block = character(), month = yearmonth(as.Date(character())), value = numeric())
+}
+
+has <- as.list(set_names(names(block_title) %in% unique(items$block), names(block_title)))
+```
+
+```{r}
+#| label: helpers
+#| include: false
+
+usd <- function(x) {
+  x <- unname(x)
+  if_else(abs(x) >= 1000,
+          str_c("$", format(round(abs(x) / 1000, 2), nsmall = 2), " billion"),
+          str_c("$", format(round(abs(x)), big.mark = ","), " million"))
+}
+pct   <- function(x, d = 1) str_c(format(round(100 * abs(unname(x)), d), nsmall = d), "%")
+chg   <- function(x) if_else(is.na(x), "new", str_c(if_else(x >= 0, "up ", "down "), pct(x)))
+mlab  <- function(m) format(as.Date(m), "%B %Y")
+fylab <- function(fy) str_c("FY", fy - 1, "-", sprintf("%02d", fy %% 100))
+list_and <- function(x) {
+  if (length(x) <= 1) return(x)
+  str_c(str_c(head(x, -1), collapse = ", "), " and ", tail(x, 1))
+}
+
+analyse_block <- function(blk, n = 10) {
+  tot <- block_totals |> filter(block == blk)
+  if (nrow(tot) == 0) return(NULL)
+  latest_b <- max(tot$month)
+  in_now   <- function(m) m > latest_b - 12 & m <= latest_b
+  in_prev  <- function(m) m > latest_b - 24 & m <= latest_b - 12
+  tot_now  <- sum(tot$value[in_now(tot$month)])
+  tot_prev <- sum(tot$value[in_prev(tot$month)])
+
+  tbl <- items |>
+    filter(block == blk) |>
+    summarise(now = sum(value[in_now(month)]), before = sum(value[in_prev(month)]), .by = label) |>
+    mutate(
+      growth       = if_else(before > 0, now / before - 1, NA_real_),
+      share        = now / tot_now,
+      share_before = before / tot_prev,
+      rank_now     = min_rank(desc(now)),
+      rank_before  = min_rank(desc(before))
+    ) |>
+    arrange(rank_now, label)
+
+  top <- slice_head(tbl, n = n)
+  list(
+    block = blk, latest = latest_b, tot_now = tot_now,
+    table = tbl, top = top,
+    top_share = sum(top$share),
+    top_share_before = sum(slice_min(tbl, rank_before, n = n, with_ties = FALSE)$share_before),
+    newcomers = top$label[top$rank_before > n]
+  )
+}
+
+A <- map(set_names(names(block_title)), \(b) if (isTRUE(has[[b]])) analyse_block(b) else NULL)
+
+block_msg <- function(a) {
+  if (is.null(a)) return("")
+  what   <- block_title[[a$block]]
+  ranked <- filter(a$top, !is.na(growth))
+  fast   <- slice_max(ranked, growth, n = 1, with_ties = FALSE)
+  slow   <- slice_min(ranked, growth, n = 1, with_ties = FALSE)
+  str_c(
+    str_glue(
+      "In the twelve months to {mlab(a$latest)}, the top 10 {what} accounted for {pct(a$top_share)} ",
+      "of the {usd(a$tot_now)} total ({if_else(a$top_share >= a$top_share_before, 'up', 'down')} from ",
+      "{pct(a$top_share_before)} a year earlier). {a$top$label[1]} leads with {usd(a$top$now[1])}, ",
+      "a {pct(a$top$share[1])} share, followed by {a$top$label[2]} ({pct(a$top$share[2])}) and ",
+      "{a$top$label[3]} ({pct(a$top$share[3])}). Within the top 10, {fast$label} grew fastest ",
+      "({chg(fast$growth)}) while {slow$label} ",
+      "{if_else(slow$growth < 0, 'fell furthest', 'grew least')} ({chg(slow$growth)}). "
+    ),
+    if (length(a$newcomers) > 0) {
+      str_glue("{list_and(a$newcomers)} {if (length(a$newcomers) > 1) 'are' else 'is'} new to the top 10 this year.")
+    } else {
+      "The top 10 line-up is unchanged from the previous year."
+    }
+  )
+}
+
+plot_top <- function(a) {
+  if (is.null(a)) return(invisible(NULL))
+  a$top |>
+    mutate(label = fct_reorder(label, now),
+           tag = str_c(pct(share), "  ·  ", chg(growth))) |>
+    ggplot(aes(now / 1000, label,
+               text = str_c(label, "<br>", usd(now), "<br>Share: ", pct(share),
+                            "<br>Change: ", chg(growth)))) +
+    geom_col(fill = "#1b5e20", width = 0.7) +
+    geom_text(aes(label = tag), hjust = -0.05, size = 3.2, colour = "grey30") +
+    scale_x_continuous(expand = expansion(mult = c(0, 0.35))) +
+    labs(x = str_c("US$ billion, 12 months to ", mlab(a$latest)), y = NULL,
+         caption = "Labels: share of total · change on the previous 12 months")
+}
+
+plot_trend <- function(a) {
+  if (is.null(a)) return(invisible(NULL))
+  items |>
+    filter(block == a$block, label %in% a$top$label) |>
+    select(label, month, value) |>
+    complete(label, month = seq(min(month), max(month), by = 1), fill = list(value = 0)) |>
+    arrange(label, month) |>
+    mutate(r12 = roll12(value), .by = label) |>
+    filter(!is.na(r12)) |>
+    mutate(label = factor(label, levels = a$top$label)) |>
+    ggplot(aes(as.Date(month), r12 / 1000)) +
+    geom_line(colour = "#1b5e20", linewidth = 0.8) +
+    facet_wrap(~label, ncol = 5, scales = "free_y") +
+    labs(x = NULL, y = "US$ billion, rolling 12 months") +
+    theme(strip.text = element_text(face = "bold", size = 9),
+          axis.text.x = element_text(size = 7))
+}
+
+table_top <- function(a) {
+  if (is.null(a)) return(invisible(NULL))
+  a$top |>
+    transmute(
+      Rank = rank_now,
+      Name = label,
+      `12 months (US$ m)` = round(now),
+      `Previous 12 months (US$ m)` = round(before),
+      Change = if_else(is.na(growth), "new", scales::percent(growth, accuracy = 0.1)),
+      Share = scales::percent(share, accuracy = 0.1),
+      `Rank a year ago` = rank_before
+    ) |>
+    kable()
+}
+```
+
+```{r}
+#| label: messages
+#| include: false
+
+latest  <- max(exp_m$month)
+lr      <- exp_m |> filter(month == latest)
+ly      <- exp_m |> filter(month == latest - 12)
+cur_fy  <- lr$fy
+cur_fm  <- lr$fy_month
+fytd    <- sum(exp_m$goods[exp_m$fy == cur_fy])
+fytd_ly <- sum(exp_m$goods[exp_m$fy == cur_fy - 1 & exp_m$fy_month <= cur_fm])
+
+fy_done <- exp_m |>
+  summarise(goods = sum(goods), months = n(), .by = fy) |>
+  filter(months == 12) |>
+  arrange(fy) |>
+  mutate(growth = goods / lag(goods) - 1)
+last_fy <- slice_tail(fy_done, n = 1)
+
+svc_ok  <- !all(is.na(exp_m$services))
+svc12   <- if (svc_ok) sum(tail(exp_m$services, 12), na.rm = TRUE) else NA
+
+msg_head <- str_c(
+  str_glue(
+    "In {mlab(latest)}, Pakistan exported goods worth {usd(lr$goods)}, ",
+    "{chg(lr$goods / ly$goods - 1)} on {mlab(latest - 12)}. Over the last twelve months goods ",
+    "exports reached {usd(lr$goods12)}, {chg(lr$goods12 / ly$goods12 - 1)} on the year before. ",
+    "{fylab(last_fy$fy)} closed at {usd(last_fy$goods)} ({chg(last_fy$growth)})"
+  ),
+  if (last_fy$goods == max(fy_done$goods)) ", the highest annual total in this series." else ".",
+  if (cur_fm < 12) {
+    str_glue(" The first {cur_fm} month{if (cur_fm > 1) 's' else ''} of {fylab(cur_fy)} ",
+             "brought in {usd(fytd)}, {chg(fytd / fytd_ly - 1)} on the same months of {fylab(cur_fy - 1)}.")
+  } else "",
+  if (svc_ok) {
+    str_glue(" Services added another {usd(svc12)} over the last twelve months, ",
+             "{pct(svc12 / (svc12 + lr$goods12))} of total exports.")
+  } else ""
+)
+```
+
+::: {.callout-note appearance="simple"}
+## The story so far (data to `r mlab(latest)`)
+
+`r msg_head`
+
+`r block_msg(A$country)`
+
+`r block_msg(A$product)`
+:::
+
+Every number above is calculated at render time from data downloaded from SBP EasyData on `r pulled_on`. Hover over any chart for exact values; drag the slider under a chart to zoom into a period.
+
+## About the data
+
+Goods and services exports come from SBP's monthly balance of payments summary (BPM6), in million US dollars. `r if (isTRUE(has$country) || isTRUE(has$product)) "The breakdowns by destination and product come from SBP's export receipts datasets, compiled from banking-channel transactions, so their totals differ a little from the BPM6 goods figure; shares there are measured against each dataset's own total." else ""`
+
+```{r}
+#| label: chart-helpers
+#| include: false
+
+hover_m <- "%{x|%b %Y}<br>US$ %{y:,.0f} million<extra>%{fullData.name}</extra>"
+
+monthly_chart <- function(df, value, avg, bar_col, line_col) {
+  plot_ly(df, x = ~as.Date(month)) |>
+    add_bars(y = value, name = "Monthly", marker = list(color = bar_col),
+             hovertemplate = hover_m) |>
+    add_lines(y = avg, name = "12-month average", line = list(color = line_col, width = 3),
+              hovertemplate = hover_m) |>
+    layout(xaxis = list(title = "", rangeslider = list(visible = TRUE)),
+           yaxis = list(title = "US$ million"),
+           legend = list(orientation = "h", y = 1.12), hovermode = "x unified")
+}
+
+growth_chart <- function(df, monthly, rolling, col) {
+  plot_ly(df, x = ~as.Date(month)) |>
+    add_bars(y = monthly, name = "Month vs same month last year",
+             marker = list(color = "#c8e6c9"),
+             hovertemplate = "%{x|%b %Y}<br>%{y:.1f}%<extra>%{fullData.name}</extra>") |>
+    add_lines(y = rolling, name = "Rolling 12 months vs a year earlier",
+              line = list(color = col, width = 3),
+              hovertemplate = "%{x|%b %Y}<br>%{y:.1f}%<extra>%{fullData.name}</extra>") |>
+    layout(xaxis = list(title = ""), yaxis = list(title = "Growth, %", zeroline = TRUE),
+           legend = list(orientation = "h", y = 1.12), hovermode = "x unified")
+}
+
+fy_tbl <- exp_m |>
+  summarise(goods = sum(goods), services = sum(services), months = n(), .by = fy) |>
+  arrange(fy) |>
+  mutate(
+    complete  = months == 12,
+    fy_l      = str_c(fylab(fy), if_else(complete, "", " (to date)")),
+    goods_g   = if_else(complete & lag(complete), goods / lag(goods) - 1, NA_real_),
+    serv_g    = if_else(complete & lag(complete), services / lag(services) - 1, NA_real_),
+    serv_sh   = services / (goods + services)
+  )
+
+fy_chart <- function(value, col, title) {
+  plot_ly(fy_tbl, x = ~fy_l, y = value, type = "bar",
+          marker = list(color = if_else(fy_tbl$complete, col, "#bdbdbd")),
+          hovertemplate = "%{x}<br>US$ %{y:.2f} billion<extra></extra>") |>
+    layout(title = list(text = title, x = 0), xaxis = list(title = "", categoryorder = "array",
+           categoryarray = fy_tbl$fy_l), yaxis = list(title = "US$ billion"))
+}
+```
+
+## Goods exports
+
+```{r}
+#| label: fig-goods
+
+monthly_chart(exp_m, ~goods, ~goods12 / 12, "#a5d6a7", "#1b5e20")
+```
+
+```{r}
+#| label: fig-goods-growth
+
+growth_chart(filter(exp_m, !is.na(goods_yoy)), ~goods_yoy * 100, ~goods12_yoy * 100, "#1b5e20")
+```
+
+The bars swing with Eid, working days and shipment timing, so the rolling line is the better guide to direction.
+
+```{r}
+#| label: fig-goods-fy
+
+fy_chart(~goods / 1000, "#1b5e20", "Goods exports by fiscal year (grey = year to date)")
+```
+
+```{r}
+#| label: fig-race
+#| fig-cap: "Cumulative goods exports through the fiscal year"
+
+exp_m |>
+  filter(fy >= cur_fy - 3) |>
+  arrange(month) |>
+  mutate(cum = cumsum(goods) / 1000, fy_l = fylab(fy),
+         mname = month.abb[month(as.Date(month))], .by = fy) |>
+  plot_ly(x = ~fy_month, y = ~cum, color = ~fy_l, type = "scatter", mode = "lines+markers",
+          text = ~mname,
+          hovertemplate = "%{text}: US$ %{y:.2f} billion<extra>%{fullData.name}</extra>") |>
+  layout(xaxis = list(title = "", tickvals = 1:12, ticktext = month.abb[c(7:12, 1:6)]),
+         yaxis = list(title = "US$ billion, cumulative"),
+         legend = list(orientation = "h", y = 1.12))
+```
+
+This chart puts the current fiscal year beside the three before it, month by month, so it shows at a glance whether the year is running ahead or behind.
+
+```{r}
+#| label: services-header
+#| results: asis
+
+if (svc_ok) cat("\n## Services exports\n")
+```
+
+```{r}
+#| label: fig-services
+#| eval: !expr svc_ok
+
+monthly_chart(exp_m, ~services, ~serv12 / 12, "#b3e5fc", "#01579b")
+```
+
+```{r}
+#| label: fig-services-growth
+#| eval: !expr svc_ok
+
+growth_chart(filter(exp_m, !is.na(serv_yoy)), ~serv_yoy * 100, ~serv12_yoy * 100, "#01579b")
+```
+
+```{r}
+#| label: fig-services-fy
+#| eval: !expr svc_ok
+
+fy_chart(~services / 1000, "#01579b", "Services exports by fiscal year (grey = year to date)")
+```
+
+## Fiscal year summary
+
+```{r}
+#| label: tbl-fy
+
+fy_tbl |>
+  transmute(
+    `Fiscal year` = fy_l,
+    `Goods (US$ m)` = round(goods),
+    `Goods growth` = scales::percent(goods_g, accuracy = 0.1),
+    `Services (US$ m)` = round(services),
+    `Services growth` = scales::percent(serv_g, accuracy = 0.1),
+    `Services share of total` = scales::percent(serv_sh, accuracy = 0.1)
+  ) |>
+  select(where(\(x) !all(is.na(x)))) |>
+  kable(align = "lrrrrr", caption = "Growth is shown only between complete fiscal years")
+```
+
+## The last twelve months
+
+```{r}
+#| label: tbl-recent
+
+exp_m |>
+  slice_tail(n = 12) |>
+  transmute(
+    Month = format(as.Date(month), "%b %Y"),
+    `Goods (US$ m)` = round(goods),
+    `Goods, vs a year earlier` = scales::percent(goods_yoy, accuracy = 0.1),
+    `Services (US$ m)` = round(services),
+    `Services, vs a year earlier` = scales::percent(serv_yoy, accuracy = 0.1)
+  ) |>
+  select(where(\(x) !all(is.na(x)))) |>
+  kable(align = "lrrrr")
+```
+
+```{r}
+#| label: breakdowns
+#| results: asis
+#| fig-height: 5
+
+for (b in names(block_title)) {
+  a <- A[[b]]
+  if (is.null(a)) next
+  cat("\n\n## Top 10 ", block_title[[b]], "\n\n", sep = "")
+  cat(block_msg(a), "\n\n")
+  print(plot_top(a))
+  cat("\n\n")
+  print(plot_trend(a))
+  cat("\n\n")
+  cat(table_top(a), sep = "\n")
+  cat("\n\n")
+}
+```
+
+## Keeping it current
+
+Each render downloads every series again, so `quarto render exports_sbp.qmd` after SBP's monthly release updates every number, chart and sentence. SBP occasionally fails a request, so each series is tried up to four times. Destination and product sections appear automatically once their series codes are listed in ``r keys_file`` (build it with `-P rediscover:true`); until then the report covers goods and services only.
+
+```{r}
+#| label: tbl-directory
+#| results: asis
+#| eval: !expr nrow(series_info) > 0
+
+cat("\n## Appendix: destination and product series\n\n")
+series_info |>
+  arrange(block, role, desc(mean_v)) |>
+  transmute(Breakdown = block_title[block], Code = key, Name = label, Role = role,
+            `Average monthly flow (US$ m)` = round(mean_v, 1)) |>
+  kable() |>
+  cat(sep = "\n")
+```
+
+## Appendix: code
+
+```{r}
+#| label: code-appendix
+#| ref.label: !expr knitr::all_labels(label != "code-appendix")
+#| echo: true
+#| eval: false
+#| code-fold: true
+```

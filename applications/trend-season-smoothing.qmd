@@ -1,0 +1,1091 @@
+---
+title: "Trend, Season and Simple Forecasting"
+subtitle: "Moving averages, classical decomposition and exponential smoothing — from the spreadsheet to R"
+author: "Prof. Dr. Zahid Asghar · School of Economics, QAU"
+date: today
+format:
+  revealjs:
+    theme: default
+    slide-number: true
+    chalkboard: true
+    smaller: true
+    scrollable: true
+    code-line-numbers: false
+    code-overflow: wrap
+    incremental: false
+    fig-width: 9
+    fig-height: 4.6
+    fig-align: center
+execute:
+  echo: true
+  warning: false
+  message: false
+knitr:
+  opts_chunk:
+    comment: "#>"
+    dpi: 160
+---
+
+```{=html}
+<style>
+:root {
+  --qau-green: #2C5F2D;
+  --qau-brown: #8B7355;
+}
+.reveal h1, .reveal h2, .reveal h3 { color: var(--qau-green); font-family: Georgia, serif; }
+.reveal .slide-number { color: var(--qau-brown); }
+.reveal blockquote { border-left: 4px solid var(--qau-brown); }
+.reveal code { color: #1f3d20; }
+.reveal .callout { border-left: 5px solid var(--qau-brown); padding-left: .7em; }
+.reveal table { font-size: 0.75em; }
+</style>
+```
+
+```{r setup}
+#| echo: false
+library(tidyverse)
+library(lubridate)
+library(knitr)
+
+theme_set(theme_minimal(base_size = 13))
+qau_green <- "#2C5F2D"
+qau_brown <- "#8B7355"
+
+show_tbl <- function(df, digits = 4, caption = NULL) {
+  kable(df, digits = digits, caption = caption)
+}
+```
+
+# Why start here? {background-color="#2C5F2D"}
+
+## The methods everyone skips
+
+Most forecasting courses jump straight to ARIMA and ETS. That is a mistake.
+
+Before any model is estimated, three questions have to be answered from the data itself:
+
+1. **Is there a trend, and is it straight?**
+2. **Is there a season, and is it fixed or growing with the level?**
+3. **What is left over, and does it look like noise?**
+
+Classical decomposition answers all three with arithmetic a student can do by hand — averages, ratios and one regression. Once you can see the components, every later model becomes a statement about them.
+
+::: {.callout}
+The deck follows your Excel workbook column by column. Every spreadsheet column — `MA(4)`, `CMA(4)`, `St·It`, `St`, deseasonalised, `Tt`, fitted, error — is reproduced in R, so students can put the two side by side.
+:::
+
+## Roadmap
+
+| Part | Topic | Data |
+|---|---|---|
+| 1 | Components and the two models | quarterly car sales |
+| 2 | Moving averages and the centred MA | quarterly car sales |
+| 3 | Ratio-to-moving-average seasonal indices | quarterly car sales |
+| 4 | Deseasonalise, fit trend, forecast | quarterly car sales |
+| 5 | Additive decomposition | daily hits |
+| 6 | Exponential smoothing: SES, Holt, Holt–Winters | monthly series |
+| 7 | Application: monthly car sales in Pakistan | PAMA-style monthly data |
+| 8 | Accuracy, diagnostics, pitfalls | all |
+
+---
+
+# Part 1 · The components {background-color="#2C5F2D"}
+
+## What a series is made of
+
+A seasonal series is usually written as four pieces:
+
+$$
+Y_t = T_t \times S_t \times C_t \times I_t \qquad \text{(multiplicative)}
+$$
+
+$$
+Y_t = T_t + S_t + C_t + I_t \qquad \text{(additive)}
+$$
+
+- $T_t$ — **trend**: the slow movement of the level
+- $S_t$ — **season**: a pattern that repeats every $m$ periods ($m = 4$ quarterly, $12$ monthly)
+- $C_t$ — **cycle**: longer swings with no fixed length; in practice we merge it into the trend and speak of a **trend–cycle**
+- $I_t$ — **irregular**: what is left
+
+Classical decomposition estimates $T$ first, removes it, then estimates $S$, then calls the residue $I$.
+
+## Additive or multiplicative?
+
+Look at the seasonal swings as the level rises.
+
+- **Additive** — the peaks and troughs stay the same *distance* from the trend. Seasonal effect measured in units. Indices sum to 0.
+- **Multiplicative** — the peaks and troughs stay the same *proportion* of the trend, so they widen as the series grows. Seasonal effect measured as a ratio. Indices sum to $m$.
+
+::: {.callout}
+Rule of thumb: if the fan widens with the level, go multiplicative — or take logs and work additively, because
+$\log(T_t S_t I_t) = \log T_t + \log S_t + \log I_t$.
+:::
+
+Car sales, electricity demand and most Pakistani nominal series are multiplicative. Temperature is additive.
+
+## The data in your workbook
+
+Sixteen quarters of car sales, in thousands of units.
+
+```{r cars-data}
+cars <- tibble(
+  t       = 1:16,
+  year    = rep(1:4, each = 4),
+  quarter = rep(1:4, times = 4),
+  sales   = c(4.8, 4.1, 6.0, 6.5,
+              5.8, 5.2, 6.8, 7.4,
+              6.0, 5.6, 7.5, 7.8,
+              6.3, 5.9, 8.0, 8.4)
+)
+
+head(cars, 8)
+```
+
+## Always plot first
+
+```{r cars-plot}
+#| echo: false
+ggplot(cars, aes(t, sales)) +
+  geom_line(colour = qau_green, linewidth = 1) +
+  geom_point(aes(shape = factor(quarter)), colour = qau_green, size = 2.6) +
+  scale_x_continuous(breaks = seq(1, 16, 1)) +
+  scale_shape_discrete(name = "Quarter") +
+  labs(title = "Quarterly car sales", x = "Quarter (t)", y = "Sales (000 units)")
+```
+
+Two things are visible without any model: the level drifts up by roughly 0.15 per quarter, and Q2 is always the low point while Q4 is always the high point.
+
+## The seasonal plot
+
+Overlaying years is the fastest seasonality check.
+
+```{r cars-seasonal-plot}
+#| echo: false
+ggplot(cars, aes(quarter, sales, colour = factor(year), group = year)) +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 2.2) +
+  scale_colour_brewer(palette = "Dark2", name = "Year") +
+  labs(title = "Seasonal plot: the shape repeats, the level rises",
+       x = "Quarter", y = "Sales (000 units)")
+```
+
+Parallel lines that shift upward mean a stable seasonal shape on a rising trend — exactly what decomposition assumes.
+
+---
+
+# Part 2 · Moving averages {background-color="#2C5F2D"}
+
+## A moving average is a local mean
+
+A $k$-term moving average replaces each observation by the average of its neighbours:
+
+$$
+\hat{T}_t = \frac{1}{k}\sum_{j=-h}^{h} y_{t+j}, \qquad k = 2h+1
+$$
+
+- **Odd $k$** (3, 5, 7) is naturally centred on $t$.
+- **Larger $k$** smooths more: it kills noise but also flattens genuine turning points and costs you $h$ observations at each end.
+- With $k = m$ (the seasonal period) the average covers one full year, so the seasonal effect cancels out. That is the whole trick.
+
+## The problem with even $k$
+
+For quarterly data we need $k = 4$ to sweep out the season. But a 4-term average of $y_1,\dots,y_4$ sits at time **2.5**, not at any observation.
+
+The fix is to average two consecutive 4-term averages. This is the **centred moving average**, written $2\times4$-MA:
+
+$$
+\text{CMA}_t = \frac{\text{MA}_{t-0.5} + \text{MA}_{t+0.5}}{2}
+= \frac{\tfrac12 y_{t-2} + y_{t-1} + y_t + y_{t+1} + \tfrac12 y_{t+2}}{4}
+$$
+
+The half-weights at the ends are what makes it land on $t$. For monthly data the same logic gives the $2\times12$-MA with weights $\tfrac{1}{24},\tfrac{1}{12},\dots,\tfrac{1}{12},\tfrac{1}{24}$.
+
+## Computing both columns
+
+```{r cars-ma}
+cars_ma <- cars |>
+  mutate(
+    # MA(4): average of t-2, t-1, t, t+1  → sits at t - 0.5
+    ma4  = (lag(sales, 2) + lag(sales, 1) + sales + lead(sales, 1)) / 4,
+    # CMA(4): average of the two neighbouring MA(4) values → sits at t
+    cma4 = (ma4 + lead(ma4)) / 2
+  )
+
+cars_ma |> select(t, quarter, sales, ma4, cma4) |> head(8) |> show_tbl()
+```
+
+The first CMA appears at $t = 3$ and the last at $t = 14$: a $2\times4$-MA costs two observations at each end.
+
+## The one-line version
+
+The weighted form gives the identical column without any lag bookkeeping:
+
+```{r cars-ma-filter}
+cars_ma <- cars_ma |>
+  mutate(cma_direct = as.numeric(
+    stats::filter(sales, filter = c(0.5, 1, 1, 1, 0.5) / 4, sides = 2)
+  ))
+
+all.equal(cars_ma$cma4, cars_ma$cma_direct)
+```
+
+::: {.callout}
+Use `stats::filter()` with the `stats::` prefix — `dplyr::filter()` will otherwise mask it and give a confusing error.
+:::
+
+## Alignment: the classic spreadsheet bug
+
+In a spreadsheet nothing stops you writing the CMA one row too high. The numbers still look plausible, and the seasonal indices come out wrong.
+
+```{r cars-misalign}
+misaligned <- cars_ma |>
+  mutate(cma_bad = lead(cma4)) |>         # trend shifted one quarter early
+  summarise(
+    correct    = mean(sales / cma4,    na.rm = TRUE),
+    shifted    = mean(sales / cma_bad, na.rm = TRUE),
+    .by = quarter
+  ) |>
+  mutate(across(c(correct, shifted), \(x) x * 4 / sum(x)))
+
+show_tbl(misaligned)
+```
+
+Q2's index moves by more than a full percentage point of the level. Whenever you replicate a spreadsheet, check that the first CMA sits at $t = m/2 + 1$ — here, quarter 3.
+
+## How much smoothing?
+
+```{r cars-ma-compare}
+#| echo: false
+cars_ma |>
+  mutate(
+    ma3 = (lag(sales) + sales + lead(sales)) / 3,
+    ma5 = (lag(sales, 2) + lag(sales) + sales + lead(sales) + lead(sales, 2)) / 5
+  ) |>
+  select(t, sales, ma3, ma5, cma4) |>
+  pivot_longer(-c(t, sales)) |>
+  mutate(name = recode(name, ma3 = "3-MA", ma5 = "5-MA", cma4 = "2x4-MA (centred)")) |>
+  ggplot(aes(t, sales)) +
+  geom_line(colour = "grey70", linewidth = 0.8) +
+  geom_line(aes(y = value, colour = name), linewidth = 1) +
+  facet_wrap(~name) +
+  scale_colour_manual(values = c(qau_green, qau_brown, "#4f7942"), guide = "none") +
+  labs(title = "Smoothing is a trade-off", x = "Quarter (t)", y = "Sales")
+```
+
+The 3-MA still wobbles with the season because it does not cover a full year. Only a span equal to the seasonal period removes the season cleanly.
+
+---
+
+# Part 3 · Seasonal indices {background-color="#2C5F2D"}
+
+## Step 1 — detrend by division
+
+If $Y_t = T_t S_t I_t$ and the CMA estimates $T_t$, then
+
+$$
+\frac{Y_t}{\text{CMA}_t} \approx S_t \times I_t
+$$
+
+This is the **ratio-to-moving-average**, the `St, It` column of your sheet. For an additive series you subtract instead of divide.
+
+```{r cars-ratio}
+cars_ratio <- cars_ma |>
+  mutate(ratio = sales / cma4)
+
+cars_ratio |> select(t, quarter, sales, cma4, ratio) |> slice(3:10) |> show_tbl()
+```
+
+## Step 2 — average out the irregular
+
+Each quarter now has three or four ratios. Averaging them cancels $I_t$ and leaves $S_t$.
+
+```{r cars-index}
+seasonal_tbl <- cars_ratio |>
+  summarise(index_raw = mean(ratio, na.rm = TRUE), .by = quarter) |>
+  mutate(index = index_raw * 4 / sum(index_raw))   # normalise: indices must sum to m
+
+show_tbl(seasonal_tbl)
+sum(seasonal_tbl$index_raw); sum(seasonal_tbl$index)
+```
+
+## Why normalise?
+
+The raw averages will not sum to exactly 4 — here they miss by a fraction of a percent. If you skip the rescaling, the seasonal factors quietly add or subtract level from every forecast you make.
+
+Rescale by $m / \sum \hat S_j$ for multiplicative, and subtract the mean for additive:
+
+```r
+# multiplicative
+index <- index_raw * m / sum(index_raw)
+
+# additive
+index <- index_raw - mean(index_raw)
+```
+
+::: {.callout}
+Some textbook spreadsheets leave this step out. If the two sheets in your workbook give slightly different indices for the same recipe, normalisation and CMA alignment are the first places to look.
+:::
+
+## Reading the indices
+
+```{r cars-index-plot}
+#| echo: false
+seasonal_tbl |>
+  ggplot(aes(factor(quarter), index - 1, fill = index > 1)) +
+  geom_col(width = 0.6) +
+  geom_hline(yintercept = 0) +
+  scale_fill_manual(values = c(qau_brown, qau_green), guide = "none") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Seasonal effect relative to the trend",
+       x = "Quarter", y = "Deviation from trend")
+```
+
+Q4 runs about 14% above trend, Q2 about 16% below. A dealer reading a 16% drop from Q1 to Q2 as a collapse in demand is reading the calendar, not the market.
+
+## Step 3 — the components
+
+```{r cars-components}
+cars_dec <- cars_ratio |>
+  left_join(seasonal_tbl, by = join_by(quarter)) |>
+  mutate(
+    deseason  = sales / index,          # seasonally adjusted series
+    irregular = sales / (cma4 * index)  # what the model cannot explain
+  )
+
+cars_dec |> select(t, sales, cma4, index, deseason, irregular) |> slice(3:10) |> show_tbl()
+```
+
+## Seasonally adjusted vs raw
+
+```{r cars-sa-plot}
+#| echo: false
+cars_dec |>
+  select(t, Original = sales, `Seasonally adjusted` = deseason, `Trend (2x4-MA)` = cma4) |>
+  pivot_longer(-t) |>
+  ggplot(aes(t, value, colour = name, linetype = name)) +
+  geom_line(linewidth = 1) +
+  scale_colour_manual(values = c("grey60", qau_brown, qau_green), name = NULL) +
+  scale_linetype_manual(values = c("solid", "solid", "dashed"), name = NULL) +
+  labs(title = "Removing the season reveals the underlying path",
+       x = "Quarter (t)", y = "Sales (000 units)")
+```
+
+This is precisely what PBS, SBP and every statistical agency publish as "seasonally adjusted" — nothing more mysterious than dividing by an index.
+
+## Cross-check with `decompose()`
+
+```{r cars-decompose}
+cars_ts <- ts(cars$sales, start = c(1, 1), frequency = 4)
+dc <- decompose(cars_ts, type = "multiplicative")
+
+tibble(
+  quarter   = 1:4,
+  by_hand   = seasonal_tbl$index,
+  decompose = as.numeric(dc$figure)
+) |> show_tbl()
+```
+
+Identical to the last decimal. `decompose()` is the same recipe: centred MA, ratio, average by cycle position, normalise.
+
+## And with `stl()`
+
+```{r cars-stl}
+#| fig-height: 4.2
+stl_fit <- stl(log(cars_ts), s.window = "periodic")
+plot(stl_fit, main = "STL on log sales")
+```
+
+`stl()` is the modern workhorse: loess instead of simple averages, robust to outliers, and it allows the seasonal shape to evolve (`s.window = 7` rather than `"periodic"`). Classical decomposition assumes the shape never changes.
+
+---
+
+# Part 4 · Forecasting from the decomposition {background-color="#2C5F2D"}
+
+## The logic
+
+You cannot extrapolate a moving average — it stops two periods from the end. So:
+
+1. **Deseasonalise** the series: $D_t = Y_t / S_t$
+2. **Fit a trend** to $D_t$ — a straight line is usually enough
+3. **Extrapolate** the trend to $t + h$
+4. **Re-seasonalise**: $\hat Y_{t+h} = \hat T_{t+h} \times S_{t+h}$
+
+Step 2 is where the regression enters, and it must be run on the **deseasonalised** series, not on raw sales.
+
+## Fitting the trend
+
+```{r cars-trend}
+trend_fit <- lm(deseason ~ t, data = cars_dec)
+coef(trend_fit)
+```
+
+```{r cars-trend-plot}
+#| echo: false
+cars_dec |>
+  mutate(trend_hat = fitted(trend_fit)) |>
+  ggplot(aes(t, deseason)) +
+  geom_point(colour = qau_brown, size = 2.4) +
+  geom_line(aes(y = trend_hat), colour = qau_green, linewidth = 1) +
+  labs(title = "Linear trend on the seasonally adjusted series",
+       x = "Quarter (t)", y = "Deseasonalised sales")
+```
+
+## Fitted values and errors
+
+```{r cars-fitted}
+cars_fit <- cars_dec |>
+  mutate(
+    trend_hat = fitted(trend_fit),
+    fitted    = trend_hat * index,
+    error     = sales - fitted
+  )
+
+cars_fit |> select(t, quarter, sales, trend_hat, index, fitted, error) |> head(8) |> show_tbl()
+```
+
+## How good is the fit?
+
+```{r cars-accuracy-fn}
+accuracy_tbl <- function(actual, fitted, label = "model") {
+  e <- actual - fitted
+  tibble(
+    model = label,
+    ME    = mean(e, na.rm = TRUE),
+    MAE   = mean(abs(e), na.rm = TRUE),
+    RMSE  = sqrt(mean(e^2, na.rm = TRUE)),
+    MAPE  = 100 * mean(abs(e / actual), na.rm = TRUE)
+  )
+}
+
+accuracy_tbl(cars_fit$sales, cars_fit$fitted, "decomposition + linear trend") |> show_tbl()
+```
+
+MAPE under 3% on a series with a 30% seasonal swing: the two components have done nearly all the work.
+
+## A common shortcut — and what it costs
+
+A tempting shortcut is to regress **raw** sales on $t$ and then multiply by the seasonal index. The slope looks fine, but the intercept has already absorbed the average seasonal level, so multiplying by $S_t$ counts the season one and a half times.
+
+```{r cars-shortcut}
+shortcut <- lm(sales ~ t, data = cars_fit)
+
+bind_rows(
+  accuracy_tbl(cars_fit$sales, cars_fit$fitted, "trend on deseasonalised (correct)"),
+  accuracy_tbl(cars_fit$sales, fitted(shortcut) * cars_fit$index, "trend on raw sales (shortcut)")
+) |> show_tbl()
+```
+
+The fit is a third worse, and the gap grows with the forecast horizon.
+
+## Forecasting year 5
+
+```{r cars-forecast}
+future <- tibble(t = 17:20, quarter = 1:4) |>
+  left_join(seasonal_tbl, by = join_by(quarter)) |>
+  mutate(
+    trend_hat = predict(trend_fit, newdata = pick(t)),
+    forecast  = trend_hat * index
+  )
+
+future |> select(t, quarter, trend_hat, index, forecast) |> show_tbl(digits = 3)
+```
+
+## The forecast in context
+
+```{r cars-forecast-plot}
+#| echo: false
+bind_rows(
+  cars_fit |> transmute(t, value = sales, series = "Actual"),
+  cars_fit |> transmute(t, value = fitted, series = "Fitted"),
+  future   |> transmute(t, value = forecast, series = "Forecast")
+) |>
+  ggplot(aes(t, value, colour = series, linetype = series)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  geom_vline(xintercept = 16.5, linetype = "dotted") +
+  scale_colour_manual(values = c("grey40", qau_green, qau_brown), name = NULL) +
+  scale_linetype_manual(values = c("solid", "solid", "dashed"), name = NULL) +
+  labs(title = "Four quarters ahead", x = "Quarter (t)", y = "Sales (000 units)")
+```
+
+## What this forecast assumes
+
+Worth saying out loud to students, because the arithmetic hides it:
+
+- the trend stays **linear** — no saturation, no policy shock
+- the seasonal shape is **fixed** for all time
+- the irregular component has **no memory**
+- there is **no uncertainty band**, because we never modelled the errors
+
+Every one of these is relaxed later by ETS and ARIMA. But the point estimate of a good decomposition is often within a few percent of theirs, and you can explain it to a secretary in a ministry.
+
+---
+
+# Part 5 · The additive case {background-color="#2C5F2D"}
+
+## When the swings do not grow
+
+Average daily hits on a website, five years of quarterly data — the `Sheet1 (2)` example from your workbook.
+
+```{r hits-data}
+hits <- tibble(
+  t       = 1:20,
+  year    = rep(2001:2005, each = 4),
+  quarter = rep(1:4, times = 5),
+  hits    = c(242,  58,  34, 116,
+              289, 129,  32, 217,
+              239,  79,  55, 157,
+              180, 101,  91, 138,
+              250, 165,  91, 144)
+)
+```
+
+```{r hits-plot}
+#| echo: false
+ggplot(hits, aes(t, hits)) +
+  geom_line(colour = qau_green, linewidth = 1) +
+  geom_point(colour = qau_green, size = 2) +
+  labs(title = "Average daily hits", x = "Quarter (t)", y = "Hits")
+```
+
+## The quick method — and when it is legitimate
+
+With no visible trend, the seasonal effect is simply each quarter's mean minus the grand mean.
+
+```{r hits-quick}
+grand <- mean(hits$hits)
+
+hits_idx <- hits |>
+  summarise(q_mean = mean(hits), .by = quarter) |>
+  mutate(index_add = q_mean - grand)
+
+show_tbl(hits_idx, digits = 2)
+grand
+```
+
+Seasonally adjusted series: $Y_t - S_j$.
+
+```{r hits-adjust}
+hits_sa <- hits |>
+  left_join(hits_idx, by = join_by(quarter)) |>
+  mutate(seas_adj = hits - index_add)
+
+hits_sa |> select(t, quarter, hits, index_add, seas_adj) |> head(8) |> show_tbl(digits = 2)
+```
+
+## The proper method, for comparison
+
+If there *is* a trend, the quick method confuses trend with season and you must detrend first — by subtraction, since the model is additive.
+
+```{r hits-proper}
+hits_proper <- hits |>
+  mutate(
+    cma4 = (0.5 * lag(hits, 2) + lag(hits) + hits + lead(hits) + 0.5 * lead(hits, 2)) / 4,
+    diff = hits - cma4
+  ) |>
+  summarise(raw = mean(diff, na.rm = TRUE), .by = quarter) |>
+  mutate(index_add = raw - mean(raw))
+
+hits_idx |> select(quarter, quick = index_add) |>
+  left_join(hits_proper |> select(quarter, detrended = index_add), by = join_by(quarter)) |>
+  show_tbl(digits = 2)
+```
+
+Close, because the trend here is weak. On a trending series the two diverge sharply — which is why the detrended route is the default.
+
+## Additive vs multiplicative, side by side
+
+| | Additive | Multiplicative |
+|---|---|---|
+| Model | $Y = T + S + I$ | $Y = T \times S \times I$ |
+| Detrend | $Y_t - \text{CMA}_t$ | $Y_t / \text{CMA}_t$ |
+| Indices sum to | 0 | $m$ |
+| Adjust | $Y_t - S_j$ | $Y_t / S_j$ |
+| Use when | swings constant in units | swings constant in percent |
+| Trick | — | take logs, then use additive |
+
+---
+
+# Part 6 · Exponential smoothing {background-color="#2C5F2D"}
+
+## The idea
+
+A moving average gives equal weight to the last $k$ observations and none to the rest. That is an odd belief. Simple exponential smoothing instead lets weights fade geometrically:
+
+$$
+F_{t+1} = \alpha Y_t + (1-\alpha) F_t
+= \alpha \sum_{j\ge 0}(1-\alpha)^j\, Y_{t-j}
+$$
+
+- $\alpha$ near 1 → the forecast chases the last observation
+- $\alpha$ near 0 → the forecast is a long memory, almost a constant
+- No trend, no season: every future period gets the same forecast
+
+## The SES sheet, reproduced
+
+Twenty-four monthly observations, $\alpha = 0.4$, starting level $F_2 = Y_1$.
+
+```{r ses-data}
+ses_data <- tibble(
+  date  = seq(ymd("2010-01-01"), by = "month", length.out = 24),
+  y     = c(97.6, 95.1, 90.3, 92.5, 89.8, 92.7, 94.4, 96.2,
+            88.9, 90.2, 88.2, 91.0, 89.3, 88.5, 93.7, 92.7,
+            94.7, 95.3, 94.7, 95.3, 94.7, 96.5, 99.2, 96.9)
+)
+
+ses <- function(y, alpha) {
+  # returns forecasts for t = 2 ... n+1, with F_2 = y_1
+  accumulate(y[-length(y)], \(f, obs) alpha * obs + (1 - alpha) * f, .init = y[1])
+}
+```
+
+## The smoothing table
+
+```{r ses-table}
+alpha <- 0.4
+
+ses_tbl <- ses_data |>
+  mutate(
+    forecast = c(NA, ses(y, alpha)[-24]),   # F_t aligned to period t
+    error    = y - forecast,
+    abs_err  = abs(error),
+    pct_err  = abs(error / y),
+    sq_err   = error^2
+  )
+
+ses_tbl |> slice(1:8) |> show_tbl(digits = 3)
+```
+
+## Accuracy, and choosing $\alpha$
+
+```{r ses-accuracy}
+ses_tbl |>
+  summarise(
+    ME   = mean(error,   na.rm = TRUE),
+    MAE  = mean(abs_err, na.rm = TRUE),
+    MAPE = 100 * mean(pct_err, na.rm = TRUE),
+    SSE  = sum(sq_err,   na.rm = TRUE)
+  ) |> show_tbl(digits = 3)
+```
+
+Small differences from the spreadsheet come from Excel rounding each smoothed value to one decimal. R carries full precision.
+
+## Let the data pick $\alpha$
+
+```{r ses-grid}
+sse_for <- function(a) {
+  f <- c(NA, ses(ses_data$y, a)[-24])
+  sum((ses_data$y - f)^2, na.rm = TRUE)
+}
+
+grid <- tibble(alpha = seq(0.05, 0.95, by = 0.01)) |>
+  mutate(sse = map_dbl(alpha, sse_for))
+
+best <- grid |> slice_min(sse)
+show_tbl(best, digits = 4)
+```
+
+```{r ses-grid-plot}
+#| echo: false
+#| fig-height: 3.4
+ggplot(grid, aes(alpha, sse)) +
+  geom_line(colour = qau_green, linewidth = 1) +
+  geom_point(data = best, colour = qau_brown, size = 3) +
+  labs(title = "Sum of squared errors against the smoothing constant",
+       x = expression(alpha), y = "SSE")
+```
+
+## The same thing, in one line
+
+```{r ses-hw}
+ses_ts  <- ts(ses_data$y, start = c(2010, 1), frequency = 12)
+ses_opt <- HoltWinters(ses_ts, beta = FALSE, gamma = FALSE)
+
+ses_opt$alpha
+ses_opt$SSE
+```
+
+`HoltWinters()` with `beta = FALSE, gamma = FALSE` *is* simple exponential smoothing, with $\alpha$ chosen by minimising the same SSE you just plotted by hand.
+
+## Holt: adding a trend
+
+SES has no trend, so its forecast is flat — useless for a growing series. Holt adds a second recursion for the slope:
+
+$$
+\begin{aligned}
+\ell_t &= \alpha Y_t + (1-\alpha)(\ell_{t-1} + b_{t-1}) \\
+b_t &= \beta(\ell_t - \ell_{t-1}) + (1-\beta) b_{t-1} \\
+\hat Y_{t+h} &= \ell_t + h\, b_t
+\end{aligned}
+$$
+
+The level is smoothed, then the change in level is itself smoothed. Unlike OLS, the slope is **local**: recent quarters count more than the first one.
+
+## Holt on the car sales
+
+```{r holt-cars}
+deseason_ts <- ts(cars_dec$deseason, start = c(1, 1), frequency = 4)
+holt_fit    <- HoltWinters(deseason_ts, gamma = FALSE)
+
+c(alpha = holt_fit$alpha, beta = holt_fit$beta)
+
+holt_fc <- tibble(
+  t         = 17:20,
+  quarter   = 1:4,
+  trend_hat = as.numeric(predict(holt_fit, n.ahead = 4))
+) |>
+  left_join(seasonal_tbl, by = join_by(quarter)) |>
+  mutate(forecast_holt = trend_hat * index)
+
+holt_fc |> select(t, quarter, trend_hat, forecast_holt) |> show_tbl(digits = 3)
+```
+
+## Global trend vs local trend
+
+```{r holt-compare}
+future |>
+  select(t, quarter, ols_trend = forecast) |>
+  left_join(holt_fc |> select(t, holt = forecast_holt), by = join_by(t)) |>
+  mutate(difference = holt - ols_trend) |>
+  show_tbl(digits = 3)
+```
+
+On a short, well-behaved series the two nearly agree. They diverge when the trend bends — and then the local method is usually the one you want.
+
+## Holt–Winters: trend and season together
+
+Add a third recursion for the seasonal factors and you have the full method:
+
+$$
+\begin{aligned}
+\ell_t &= \alpha \frac{Y_t}{s_{t-m}} + (1-\alpha)(\ell_{t-1}+b_{t-1}) \\
+b_t &= \beta(\ell_t-\ell_{t-1}) + (1-\beta) b_{t-1} \\
+s_t &= \gamma \frac{Y_t}{\ell_t} + (1-\gamma) s_{t-m} \\
+\hat Y_{t+h} &= (\ell_t + h b_t)\, s_{t+h-m}
+\end{aligned}
+$$
+
+The key advantage over classical decomposition: $\gamma > 0$ lets the **seasonal shape evolve**. In Pakistan, where tax and tariff changes reshape the calendar of demand, that matters.
+
+---
+
+# Part 7 · Application: monthly car sales in Pakistan {background-color="#2C5F2D"}
+
+## The data
+
+PAMA publishes monthly production and sales by category. The series below is a **teaching series** shaped like PAMA passenger-car sales: the June push before the new fiscal year, the July collapse after price and duty revisions, the 2020 lockdown, the 2022–23 import-compression crash, and the 2024–25 recovery as policy rates fell.
+
+```{r pak-data}
+set.seed(614)
+
+anchor_level <- c(`2015` = 11000, `2016` = 13500, `2017` = 15500, `2018` = 17500,
+                  `2019` = 11000, `2020` =  9500, `2021` = 16500, `2022` = 15000,
+                  `2023` =  6000, `2024` =  8000, `2025` = 12500, `2026` = 13000)
+
+seas_true <- c(1.05, 0.92, 1.06, 1.00, 1.02, 1.30,
+               0.78, 0.92, 1.02, 1.05, 0.98, 0.90)  # Jan ... Dec, sums to 12
+
+pak <- tibble(date = seq(ymd("2015-01-01"), ymd("2025-12-01"), by = "month")) |>
+  mutate(
+    level = approx(x    = as.numeric(ymd(paste0(names(anchor_level), "-06-15"))),
+                   y    = anchor_level,
+                   xout = as.numeric(date), rule = 2)$y,
+    sales = round(level * seas_true[month(date)] * exp(rnorm(n(), 0, 0.07)))
+  ) |>
+  select(date, sales)
+```
+
+::: {.callout}
+**To use the real data**: download the monthly PDFs or the historic month-wise file from `pama.org.pk`, save as `data/pama_cars_monthly.csv` with columns `month`, `sales`, and replace the block above with
+`pak <- read_csv("data/pama_cars_monthly.csv") |> mutate(date = ym(month))`.
+Everything downstream runs unchanged.
+:::
+
+## The series
+
+```{r pak-plot}
+#| echo: false
+ggplot(pak, aes(date, sales)) +
+  geom_line(colour = qau_green, linewidth = 0.8) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(title = "Monthly passenger car sales, Pakistan",
+       subtitle = "Teaching series shaped on PAMA reporting",
+       x = NULL, y = "Units")
+```
+
+Three structural episodes in eleven years. Classical decomposition will handle the season well and the breaks badly — which is itself the lesson.
+
+## Seasonal subseries plot
+
+```{r pak-subseries}
+#| echo: false
+pak_sub <- pak |>
+  mutate(yr = year(date), mon = month(date, label = TRUE))
+
+pak_means <- pak_sub |> summarise(avg = mean(sales), .by = mon)
+
+ggplot(pak_sub, aes(yr, sales)) +
+  geom_line(colour = "grey70") +
+  geom_hline(data = pak_means, aes(yintercept = avg), colour = qau_brown) +
+  facet_wrap(~mon, nrow = 2) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(title = "Subseries plot: each month's own history, with its mean",
+       x = NULL, y = "Units") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 7))
+```
+
+## The 2×12 centred moving average
+
+```{r pak-cma}
+pak_dec <- pak |>
+  mutate(
+    trend = as.numeric(stats::filter(sales,
+              filter = c(0.5, rep(1, 11), 0.5) / 12, sides = 2)),
+    ratio = sales / trend,
+    mon   = month(date)
+  )
+
+pak_index <- pak_dec |>
+  summarise(index_raw = mean(ratio, na.rm = TRUE), .by = mon) |>
+  arrange(mon) |>
+  mutate(index = index_raw * 12 / sum(index_raw))
+
+pak_index |>
+  transmute(month = month.abb[mon], index = round(index, 3)) |>
+  pivot_wider(names_from = month, values_from = index) |>
+  show_tbl(digits = 3)
+```
+
+## Trend and seasonally adjusted series
+
+```{r pak-sa-plot}
+#| echo: false
+pak_sa <- pak_dec |>
+  left_join(pak_index, by = join_by(mon)) |>
+  mutate(seas_adj = sales / index)
+
+pak_sa |>
+  select(date, Original = sales, `Seasonally adjusted` = seas_adj, Trend = trend) |>
+  pivot_longer(-date) |>
+  ggplot(aes(date, value, colour = name)) +
+  geom_line(linewidth = 0.8) +
+  scale_colour_manual(values = c("grey70", qau_brown, qau_green), name = NULL) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(title = "Original, adjusted and trend", x = NULL, y = "Units")
+```
+
+Notice the June spike disappears from the adjusted line. What remains is genuine news: the 2020 dip, the 2023 collapse, the recovery.
+
+## A proper forecasting test
+
+Hold out the last twelve months. Estimate on the rest. Compare three rules.
+
+```{r pak-split}
+train <- pak |> filter(date <  ymd("2025-01-01"))
+test  <- pak |> filter(date >= ymd("2025-01-01"))
+
+nrow(train); nrow(test)
+```
+
+**Rule 1 — seasonal naive.** The forecast for next March is last March. Crude, hard to beat, and the benchmark every model must clear.
+
+**Rule 2 — decomposition plus trend**, with the trend fitted only to the last three years, because of the 2023 break.
+
+**Rule 3 — Holt–Winters multiplicative**, which updates both level and season as it goes.
+
+## Rule 1: seasonal naive
+
+```{r pak-snaive}
+snaive_fc <- test |>
+  mutate(forecast = train |> slice_tail(n = 12) |> pull(sales))
+
+accuracy_tbl(snaive_fc$sales, snaive_fc$forecast, "seasonal naive") |> show_tbl(digits = 2)
+```
+
+## Rule 2: decomposition plus linear trend
+
+```{r pak-dec-fc}
+tr_dec <- train |>
+  mutate(
+    trend = as.numeric(stats::filter(sales, c(0.5, rep(1, 11), 0.5) / 12, sides = 2)),
+    ratio = sales / trend,
+    mon   = month(date)
+  )
+
+tr_index <- tr_dec |>
+  summarise(index_raw = mean(ratio, na.rm = TRUE), .by = mon) |>
+  mutate(index = index_raw * 12 / sum(index_raw))
+
+tr_model <- tr_dec |>
+  left_join(tr_index, by = join_by(mon)) |>
+  mutate(t = row_number(), deseason = sales / index) |>
+  filter(t > n() - 36)                      # last three years only
+
+lm_fit <- lm(deseason ~ t, data = tr_model)
+
+dec_fc <- test |>
+  mutate(t = 121:132, mon = month(date)) |>
+  left_join(tr_index, by = join_by(mon)) |>
+  mutate(forecast = predict(lm_fit, newdata = pick(t)) * index)
+
+accuracy_tbl(dec_fc$sales, dec_fc$forecast, "decomposition + trend") |> show_tbl(digits = 2)
+```
+
+## Rule 3: Holt–Winters
+
+```{r pak-hw}
+train_ts <- ts(train$sales, start = c(2015, 1), frequency = 12)
+hw_fit   <- HoltWinters(train_ts, seasonal = "multiplicative")
+
+c(alpha = hw_fit$alpha, beta = hw_fit$beta, gamma = hw_fit$gamma)
+
+hw_fc <- test |>
+  mutate(forecast = as.numeric(predict(hw_fit, n.ahead = 12)))
+
+accuracy_tbl(hw_fc$sales, hw_fc$forecast, "Holt-Winters multiplicative") |> show_tbl(digits = 2)
+```
+
+## The scoreboard
+
+```{r pak-scoreboard}
+bind_rows(
+  accuracy_tbl(snaive_fc$sales, snaive_fc$forecast, "Seasonal naive"),
+  accuracy_tbl(dec_fc$sales,    dec_fc$forecast,    "Decomposition + trend"),
+  accuracy_tbl(hw_fc$sales,     hw_fc$forecast,     "Holt-Winters")
+) |> arrange(MAPE) |> show_tbl(digits = 2)
+```
+
+Report MAPE to a policy audience and RMSE to a technical one. Always show the naive benchmark: a model that cannot beat "same month last year" has earned nothing.
+
+## The forecasts, plotted
+
+```{r pak-fc-plot}
+#| echo: false
+bind_rows(
+  pak   |> filter(date >= ymd("2022-01-01")) |> transmute(date, value = sales, series = "Actual"),
+  snaive_fc |> transmute(date, value = forecast, series = "Seasonal naive"),
+  dec_fc    |> transmute(date, value = forecast, series = "Decomposition"),
+  hw_fc     |> transmute(date, value = forecast, series = "Holt-Winters")
+) |>
+  ggplot(aes(date, value, colour = series, linetype = series)) +
+  geom_line(linewidth = 0.9) +
+  scale_colour_manual(values = c("grey30", qau_green, qau_brown, "#4f7942"), name = NULL) +
+  scale_linetype_manual(values = c("solid", "dashed", "dashed", "dashed"), name = NULL) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(title = "Twelve months held out", x = NULL, y = "Units")
+```
+
+---
+
+# Part 8 · Diagnostics and pitfalls {background-color="#2C5F2D"}
+
+## Check what is left over
+
+```{r pak-resid}
+#| fig-height: 3.6
+resid_hw <- residuals(hw_fit)
+
+par(mfrow = c(1, 2))
+plot(resid_hw, main = "Holt-Winters residuals", ylab = "", col = qau_green)
+abline(h = 0, col = qau_brown)
+acf(resid_hw, main = "ACF of residuals")
+```
+
+```{r pak-ljung}
+Box.test(resid_hw, lag = 24, type = "Ljung-Box")
+```
+
+If the ACF still shows spikes at lags 12 and 24, seasonality is left in the residuals and the seasonal component is mis-specified.
+
+## Four residual questions
+
+1. **Mean zero?** If not, the forecasts are biased — subtract the mean.
+2. **No autocorrelation?** Spikes in the ACF mean information was left on the table.
+3. **Constant variance?** Widening residuals call for logs.
+4. **Roughly normal?** Only needed for prediction intervals, not for the point forecast.
+
+Failing (1) or (2) is serious. Failing (3) or (4) affects the intervals, not the centre.
+
+## Pitfalls specific to Pakistani data
+
+- **Fiscal year vs calendar year.** PAMA, FBR and PBS report July–June. A "year-on-year" figure from a fiscal-year table is not comparable with a calendar-year one. Decide your $m$ origin and label it.
+
+- **Moving holidays.** Eid shifts about eleven days each year, so Ramadan demand migrates across months. A fixed monthly index cannot capture it — it shows up as a large irregular in two months each year. Remedies: a Ramadan-days regressor, or working in Hijri-adjusted months.
+
+- **Trading-day effects.** Months differ in working days; a 31-day month with five Fridays is not a 28-day February. Divide by working days before decomposing.
+
+- **Structural breaks.** Import compression in 2022–23 broke both level and seasonal shape. Fitting one global trend across a break gives a confident, wrong forecast. Fit after the break, or allow a break dummy.
+
+- **Revisions.** PBS and PAMA figures are revised. A forecast evaluated against revised data flatters itself; keep the vintage you actually had.
+
+## When classical decomposition is the wrong tool
+
+- The **first and last $m/2$ observations get no trend estimate** — awkward when the recent end is what you care about. STL and X-13 fill the ends.
+- It assumes the **seasonal shape never changes**. Over ten years of Pakistani energy or auto data, that is rarely true.
+- It is **not robust to outliers**: one lockdown month contaminates that month's index for every year.
+- There is **no uncertainty**. No standard errors, no intervals.
+
+Use it to *see* the structure and to teach. Use STL, X-13ARIMA-SEATS, ETS or SARIMA to publish.
+
+## What we covered
+
+```{r recap}
+#| echo: false
+tibble(
+  Step = 1:6,
+  Operation = c("Plot: time, seasonal, subseries",
+                "Trend by centred moving average (2xm-MA)",
+                "Detrend: ratio (multiplicative) or difference (additive)",
+                "Seasonal index: average by cycle position, then normalise",
+                "Deseasonalise, fit a trend, extrapolate, re-seasonalise",
+                "Evaluate out of sample against a naive benchmark"),
+  `R tool` = c("ggplot2", "stats::filter()", "mutate()", "summarise(.by =)",
+               "lm() or HoltWinters()", "hold-out sample")
+) |> show_tbl()
+```
+
+## Exercises
+
+1. The second sheet of the workbook holds another quarterly series: `72, 110, 117, 172, 76, 112, 130, 194, 78, 119, 128, 201, 81, 134, 141, 216`. Run the full decomposition. Your Q4 index should land near 1.48. Compare with the spreadsheet and account for any gap — check the CMA alignment first.
+
+2. Re-run Part 4 in logs. Does the additive decomposition of $\log Y$ give the same seasonal pattern as the multiplicative decomposition of $Y$?
+
+3. For the Pakistan series, drop everything before 2023 and refit. Does a shorter, break-free sample beat the long sample out of sample?
+
+4. Build a fiscal-year version of the Pakistan series (July as period 1). Do the seasonal indices change? Should they?
+
+5. Take monthly PBS data of your choice — CPI, large-scale manufacturing, exports — and decide additive or multiplicative before running a single line of code. Then test your decision by comparing MAPE on logs and levels.
+
+## Sources and further reading
+
+- **Data**: Pakistan Automotive Manufacturers Association, monthly production and sales (`pama.org.pk`); Pakistan Bureau of Statistics monthly bulletins.
+- Hyndman, R. J. & Athanasopoulos, G. — *Forecasting: Principles and Practice*, 3rd ed., chapters 3 and 8. Free at `otexts.com/fpp3`.
+- Makridakis, Wheelwright & Hyndman — *Forecasting: Methods and Applications*, chapters 3–4 for the hand-worked decomposition tables.
+- Ladiray & Quenneville — *Seasonal Adjustment with the X-11 Method* for what statistical agencies actually run.
+
+## Appendix · The same work in `fpp3`
+
+For students who go on to the tidy forecasting stack:
+
+```r
+library(fpp3)
+
+pak_tsbl <- pak |> mutate(month = yearmonth(date)) |> as_tsibble(index = month)
+
+pak_tsbl |> model(classical_decomposition(sales, type = "multiplicative")) |>
+  components() |> autoplot()
+
+pak_tsbl |> model(STL(log(sales) ~ season(window = "periodic"))) |>
+  components() |> autoplot()
+
+fit <- pak_tsbl |>
+  filter(month < yearmonth("2025 Jan")) |>
+  model(snaive  = SNAIVE(sales),
+        hw      = ETS(sales ~ error("M") + trend("A") + season("M")),
+        arima   = ARIMA(log(sales)))
+
+fit |> forecast(h = 12) |> accuracy(pak_tsbl)
+```
+
+Same concepts, less bookkeeping. Learn the bookkeeping first.

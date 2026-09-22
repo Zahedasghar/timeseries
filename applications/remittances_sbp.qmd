@@ -1,0 +1,659 @@
+---
+title: "Remittances to Pakistan: What the Latest Numbers Say"
+subtitle: "A self-updating report, pulled live from the SBP EasyData API at every render"
+author: "Zahid Asghar"
+date: today
+date-format: "D MMMM YYYY"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    embed-resources: true
+    fig-width: 9
+    fig-height: 5
+execute:
+  echo: false
+  warning: false
+  message: false
+editor_options:
+  chunk_output_type: console
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(tidyverse)
+library(httr2)
+library(fpp3)      # tsibble, feasts, fable
+library(plotly)
+library(knitr)
+
+theme_set(theme_minimal(base_size = 12))
+
+start_date <- "2010-07-01"
+
+# Workers' remittances, monthly, US$ million (dataset TS_GP_BOP_WR_M).
+# The six corridors do not overlap, so Total minus their sum is "Rest of world".
+series <- tribble(
+  ~key,                       ~name,
+  "TS_GP_BOP_WR_M.WR0010",    "Total",
+  "TS_GP_BOP_WR_M.WR0040",    "Saudi Arabia",
+  "TS_GP_BOP_WR_M.WR0050",    "UAE",
+  "TS_GP_BOP_WR_M.WR0100",    "Other GCC",
+  "TS_GP_BOP_WR_M.WR0030",    "United Kingdom",
+  "TS_GP_BOP_WR_M.WR0150",    "EU",
+  "TS_GP_BOP_WR_M.WR0020",    "United States"
+)
+
+# Approximate Eid dates as observed in Pakistan. Extend as years pass.
+eid_dates <- tribble(
+  ~fitr,        ~adha,
+  "2010-09-10", "2010-11-17",
+  "2011-08-31", "2011-11-07",
+  "2012-08-19", "2012-10-27",
+  "2013-08-08", "2013-10-16",
+  "2014-07-29", "2014-10-06",
+  "2015-07-18", "2015-09-25",
+  "2016-07-07", "2016-09-13",
+  "2017-06-26", "2017-09-02",
+  "2018-06-16", "2018-08-22",
+  "2019-06-05", "2019-08-12",
+  "2020-05-25", "2020-08-01",
+  "2021-05-14", "2021-07-21",
+  "2022-05-03", "2022-07-10",
+  "2023-04-22", "2023-06-29",
+  "2024-04-10", "2024-06-17",
+  "2025-03-31", "2025-06-07",
+  "2026-03-21", "2026-05-27",
+  "2027-03-10", "2027-05-17",
+  "2028-02-27", "2028-05-05",
+  "2029-02-14", "2029-04-24"
+)
+```
+
+```{r}
+#| label: api
+#| include: false
+
+sbp_key <- Sys.getenv("SBP_EASYDATA_KEY")
+if (!nzchar(sbp_key)) {
+  stop("SBP_EASYDATA_KEY not found. Run usethis::edit_r_environ(), add ",
+       "SBP_EASYDATA_KEY=your_key, end the file with a blank line, restart R.")
+}
+
+# SBP returns JSON: { columns: [...], rows: [[dataset, key, name, date, value, unit, ...], ...] }
+sbp_series <- function(key, start = start_date, end = Sys.Date()) {
+  body <- request("https://easydata.sbp.org.pk/api/v1/series") |>
+    req_url_path_append(key, "data") |>
+    req_url_query(api_key = sbp_key, format = "json",
+                  start_date = as.character(start), end_date = as.character(end)) |>
+    req_headers(Accept = "application/json") |>
+    req_user_agent("remittances-report (R httr2)") |>
+    req_timeout(60) |>
+    req_retry(max_tries = 3) |>
+    req_perform() |>
+    resp_body_json(simplifyVector = FALSE)
+
+  if (is.null(body$rows) || length(body$rows) == 0) {
+    stop("No observations returned for ", key)
+  }
+
+  # Locate columns by name, falling back to SBP's documented positions
+  cols   <- str_to_lower(unlist(body$columns))
+  find   <- function(pattern, fallback) {
+    i <- which(str_detect(cols, pattern))
+    if (length(i) == 0) fallback else i[1]
+  }
+  i_name <- find("series name", 3)
+  i_date <- find("observation date", 4)
+  i_val  <- find("observation value", 5)
+
+  cell <- function(r, i) if (length(r) >= i && !is.null(r[[i]])) as.character(r[[i]]) else NA_character_
+
+  tibble(
+    key         = key,
+    series_name = map_chr(body$rows, cell, i = i_name),
+    date        = map_chr(body$rows, cell, i = i_date),
+    value       = map_chr(body$rows, cell, i = i_val)
+  ) |>
+    mutate(
+      month = yearmonth(as.Date(parse_date_time(date, c("Ymd", "dmY", "dbY"), quiet = TRUE))),
+      value = parse_number(value)
+    ) |>
+    filter(!is.na(month), !is.na(value)) |>
+    select(key, series_name, month, value)
+}
+```
+
+```{r}
+#| label: pull
+#| include: false
+
+pulled <- series |>
+  mutate(data = map(key, \(k) {
+    Sys.sleep(0.3)
+    tryCatch(sbp_series(k), error = \(e) { message(k, ": ", conditionMessage(e)); NULL })
+  }))
+
+failed <- pulled |> filter(map_lgl(data, is.null)) |> pull(name)
+if ("Total" %in% failed) stop("Could not download total remittances (WR0010) from SBP.")
+
+rmt <- pulled |>
+  filter(!map_lgl(data, is.null)) |>
+  select(name, data) |>
+  unnest(data) |>
+  distinct(name, month, .keep_all = TRUE)
+
+pulled_on <- format(Sys.Date(), "%d %B %Y")
+```
+
+```{r}
+#| label: helpers
+#| include: false
+
+fy_of       <- function(m) { d <- as.Date(m); as.integer(year(d) + (month(d) >= 7)) }
+fy_month_of <- function(m) as.integer((month(as.Date(m)) - 7) %% 12 + 1)
+fylab       <- function(fy) str_c("FY", fy - 1, "-", sprintf("%02d", fy %% 100))
+fyshort     <- function(fy) str_c("FY", sprintf("%02d", fy %% 100))
+
+usd <- function(x) {
+  x <- unname(x)
+  if_else(abs(x) >= 1000,
+          str_c("$", format(round(x / 1000, 2), nsmall = 2), " billion"),
+          str_c("$", format(round(x), big.mark = ","), " million"))
+}
+pct  <- function(x, d = 1) str_c(format(round(100 * abs(unname(x)), d), nsmall = d), "%")
+chg  <- function(x) str_c(if_else(x >= 0, "up ", "down "), pct(x))
+pp   <- function(x) sprintf("%+.1f percentage points", 100 * x)
+mlab <- function(m) format(as.Date(m), "%B %Y")
+
+# Share of the 15 days before each Eid that falls in each month
+pre_eid <- function(dates, days = 15) {
+  tibble(eid = as.Date(dates)) |>
+    reframe(day = seq(eid - days, eid - 1, by = "day"), .by = eid) |>
+    count(month = yearmonth(day)) |>
+    transmute(month, w = n / days)
+}
+
+eid_w <- full_join(
+  pre_eid(eid_dates$fitr) |> rename(eid_fitr = w),
+  pre_eid(eid_dates$adha) |> rename(eid_adha = w),
+  by = join_by(month)
+)
+
+add_calendar <- function(df) {
+  df |>
+    left_join(eid_w, by = join_by(month)) |>
+    mutate(
+      across(c(eid_fitr, eid_adha), \(x) coalesce(x, 0)),
+      febc = as.numeric(month >= yearmonth("2022 Jul"))
+    )
+}
+```
+
+```{r}
+#| label: prepare
+#| include: false
+
+total <- rmt |>
+  filter(name == "Total") |>
+  select(month, remittances = value) |>
+  arrange(month) |>
+  mutate(
+    fy       = fy_of(month),
+    fy_month = fy_month_of(month),
+    roll12   = as.numeric(stats::filter(remittances, rep(1, 12), sides = 1))
+  ) |>
+  add_calendar()
+
+total_ts <- total |> as_tsibble(index = month) |> fill_gaps()
+
+# Corridors from July 2019, when SBP began recording the remitter's original country
+named <- rmt |>
+  filter(name != "Total", month >= yearmonth("2019 Jul")) |>
+  select(month, corridor = name, remittances = value)
+
+n_named <- n_distinct(named$corridor)
+
+corridors <- named |>
+  mutate(n = n(), .by = month) |>
+  filter(n == n_named) |>
+  select(-n)
+
+rest <- corridors |>
+  summarise(named_sum = sum(remittances), .by = month) |>
+  inner_join(select(total, month, total = remittances), by = join_by(month)) |>
+  transmute(month, corridor = "Rest of world", remittances = total - named_sum)
+
+has_corridors <- length(failed) == 0 && nrow(rest) > 0 && all(rest$remittances >= 0)
+
+if (has_corridors) {
+  corridors <- bind_rows(corridors, rest) |>
+    mutate(share = remittances / sum(remittances), .by = month)
+}
+```
+
+```{r}
+#| label: insights
+#| include: false
+
+# ---- Latest month and rolling year ----
+latest     <- max(total$month)
+latest_val <- total$remittances[total$month == latest]
+ly_val     <- total$remittances[total$month == latest - 12]
+yoy        <- latest_val / ly_val - 1
+roll_now   <- total$roll12[total$month == latest]
+roll_prev  <- total$roll12[total$month == latest - 12]
+
+rec_row          <- slice_max(total, remittances, n = 1, with_ties = FALSE)
+latest_is_record <- rec_row$month == latest
+cal_m            <- month(as.Date(latest))
+same_month       <- total |> filter(month(as.Date(month)) == cal_m)
+latest_rank      <- rank(-same_month$remittances)[same_month$month == latest]
+
+# ---- Fiscal years ----
+fy_tbl <- total |>
+  summarise(value = sum(remittances), months = n(), .by = fy) |>
+  mutate(complete = months == 12)
+
+fy_done <- fy_tbl |>
+  filter(complete) |>
+  arrange(fy) |>
+  mutate(growth = value / lag(value) - 1)
+
+last_fy      <- max(fy_done$fy)
+last_fy_val  <- fy_done$value[fy_done$fy == last_fy]
+last_fy_g    <- fy_done$growth[fy_done$fy == last_fy]
+fy_is_record <- last_fy_val == max(fy_done$value)
+
+cur_fy    <- fy_of(latest)
+cur_fm    <- fy_month_of(latest)
+fytd      <- sum(total$remittances[total$fy == cur_fy])
+fytd_prev <- sum(total$remittances[total$fy == cur_fy - 1 & total$fy_month <= cur_fm])
+fytd_g    <- fytd / fytd_prev - 1
+
+# ---- Corridors ----
+if (has_corridors) {
+  latest_c <- max(corridors$month)
+  base_fy  <- corridors |>
+    mutate(fy = fy_of(month)) |>
+    count(fy) |>
+    filter(n == 12 * n_distinct(corridors$corridor)) |>
+    pull(fy) |>
+    min()
+
+  share_period <- function(df) {
+    df |>
+      summarise(value = sum(remittances), .by = corridor) |>
+      mutate(share = value / sum(value))
+  }
+
+  share_now  <- corridors |> filter(month > latest_c - 12) |> share_period()
+  share_prev <- corridors |> filter(month > latest_c - 24, month <= latest_c - 12) |> share_period()
+  share_base <- corridors |> filter(fy_of(month) == base_fy) |> share_period()
+
+  corr_tbl <- share_base |>
+    select(corridor, base_share = share) |>
+    inner_join(select(share_now, corridor, value_now = value, share_now = share),
+               by = join_by(corridor)) |>
+    inner_join(select(share_prev, corridor, value_prev = value), by = join_by(corridor)) |>
+    mutate(change = share_now - base_share,
+           growth = value_now / value_prev - 1) |>
+    arrange(desc(share_now))
+
+  top_corr <- corr_tbl |> filter(corridor != "Rest of world") |> slice(1)
+  gainer   <- corr_tbl |> slice_max(change, n = 1, with_ties = FALSE)
+  loser    <- corr_tbl |> slice_min(change, n = 1, with_ties = FALSE)
+  fastest  <- corr_tbl |> filter(corridor != "Rest of world") |>
+    slice_max(growth, n = 1, with_ties = FALSE)
+  slowest  <- corr_tbl |> filter(corridor != "Rest of world") |>
+    slice_min(growth, n = 1, with_ties = FALSE)
+  gcc_now  <- sum(share_now$share[share_now$corridor %in% c("Saudi Arabia", "UAE", "Other GCC")])
+  gcc_base <- sum(share_base$share[share_base$corridor %in% c("Saudi Arabia", "UAE", "Other GCC")])
+  hhi_now  <- sum(share_now$share^2) * 1e4
+  hhi_base <- sum(share_base$share^2) * 1e4
+}
+
+# ---- Seasonality ----
+stl_comp <- total_ts |>
+  model(STL(log(remittances) ~ season(window = "periodic"))) |>
+  components() |>
+  as_tibble() |>
+  mutate(m = month(as.Date(month))) |>
+  left_join(select(total, month, eid_fitr), by = join_by(month))
+
+seas <- stl_comp |>
+  summarise(s = mean(season_year), .by = m) |>
+  mutate(effect = exp(s) - 1)
+
+peak_m     <- seas$m[which.max(seas$effect)]
+trough_m   <- seas$m[which.min(seas$effect)]
+peak_eff   <- max(seas$effect)
+trough_eff <- min(seas$effect)
+
+# ---- Forecasting ----
+h_test <- 24
+train  <- total_ts |> filter(month <= max(month) - h_test)
+test   <- total_ts |> filter(month >  max(month) - h_test)
+
+model_spec <- function(data) {
+  data |>
+    model(
+      `Seasonal naive` = SNAIVE(log(remittances)),
+      ETS              = ETS(log(remittances)),
+      ARIMA            = ARIMA(log(remittances)),
+      `ARIMA + Eid`    = ARIMA(log(remittances) ~ eid_fitr + eid_adha + febc)
+    )
+}
+
+acc <- model_spec(train) |>
+  forecast(new_data = test) |>
+  accuracy(total_ts) |>
+  filter(!is.na(MASE)) |>
+  arrange(MASE)
+
+best_model <- acc$.model[1]
+best_mase  <- acc$MASE[1]
+
+full_fits <- model_spec(total_ts)
+best_fit  <- full_fits |> select(all_of(best_model))
+
+future <- new_data(total_ts, 12) |> add_calendar()
+fc     <- best_fit |> forecast(new_data = future)
+next12 <- sum(fc$.mean)
+
+# Fiscal-year projection: months on record plus 2,000 simulated paths
+target_fy     <- if (cur_fm == 12) cur_fy + 1 else cur_fy
+actual_so_far <- sum(total$remittances[total$fy == target_fy])
+
+set.seed(2026)
+fy_proj <- best_fit |>
+  generate(new_data = future, times = 2000) |>
+  as_tibble() |>
+  filter(fy_of(month) == target_fy) |>
+  summarise(fc = sum(.sim), .by = .rep) |>
+  mutate(total = fc + actual_so_far)
+
+proj <- quantile(fy_proj$total, c(0.1, 0.5, 0.9), na.rm = TRUE)
+
+# Calendar effects
+eid_coef <- full_fits |>
+  select(`ARIMA + Eid`) |>
+  tidy() |>
+  filter(term %in% c("eid_fitr", "eid_adha", "febc")) |>
+  mutate(effect = exp(estimate) - 1, t = estimate / std.error)
+
+fitr_row <- eid_coef |> filter(term == "eid_fitr")
+eid_sig  <- nrow(fitr_row) == 1 && abs(fitr_row$t) > 2
+
+lb <- best_fit |>
+  augment() |>
+  features(.innov, ljung_box, lag = 24)
+```
+
+```{r}
+#| label: messages
+#| include: false
+
+msg_month <- str_c(
+  str_glue("In {mlab(latest)}, overseas Pakistanis sent home {usd(latest_val)}, ",
+           "{pct(yoy)} {if_else(yoy >= 0, 'more', 'less')} than in {mlab(latest - 12)}. "),
+  if (latest_is_record) {
+    "That is the largest monthly inflow in the series. "
+  } else if (latest_rank == 1) {
+    str_glue("It is the strongest {month.name[cal_m]} on record. ")
+  } else {
+    str_glue("The record month is still {mlab(rec_row$month)} at {usd(rec_row$remittances)}. ")
+  },
+  str_glue("Over the last twelve months the total comes to {usd(roll_now)}, ",
+           "against {usd(roll_prev)} in the twelve months before.")
+)
+
+fytd_sentence <- if (cur_fm < 12) {
+  str_glue(" The first {cur_fm} month{if (cur_fm > 1) 's' else ''} of {fylab(cur_fy)} ",
+           "have brought in {usd(fytd)}, {pct(fytd_g)} ",
+           "{if_else(fytd_g >= 0, 'ahead of', 'behind')} the same stretch of {fylab(cur_fy - 1)}.")
+} else ""
+
+msg_fy <- str_c(
+  str_glue("{fylab(last_fy)} closed at {usd(last_fy_val)}, {chg(last_fy_g)} on the year before"),
+  if (fy_is_record) ", the largest annual total in the series." else ".",
+  fytd_sentence
+)
+
+msg_corr <- if (has_corridors) {
+  str_glue(
+    "{top_corr$corridor} is still the largest single source, supplying {pct(top_corr$share_now)} ",
+    "of inflows over the past year, and the three Gulf corridors together account for {pct(gcc_now)} ",
+    "(against {pct(gcc_base)} in {fylab(base_fy)}). Since {fylab(base_fy)}, {gainer$corridor} has gained ",
+    "the most ground ({pp(gainer$change)}) and {loser$corridor} has lost the most ({pp(loser$change)}). ",
+    "Over the past year {fastest$corridor} grew fastest ({chg(fastest$growth)}) and ",
+    "{slowest$corridor} slowest ({chg(slowest$growth)}). Concentration across corridors has ",
+    "{if_else(hhi_now >= hhi_base, 'risen', 'eased')}, with the Herfindahl index moving from ",
+    "{round(hhi_base)} to {round(hhi_now)}."
+  )
+} else {
+  str_c("The corridor breakdown is left out of this render because not every corridor series ",
+        "downloaded cleanly", if (length(failed) > 0) str_c(" (", str_c(failed, collapse = ", "), ")") else "", ".")
+}
+
+msg_season <- str_c(
+  str_glue("The calendar leaves a clear mark. Once the trend is removed, {month.name[peak_m]} ",
+           "typically runs about {pct(peak_eff)} above an average month and {month.name[trough_m]} ",
+           "about {pct(trough_eff)} below it. "),
+  if (eid_sig) {
+    str_glue("The moving Eid calendar adds its own pulse: a month holding the full fortnight before ",
+             "Eid ul Fitr receives roughly {pct(fitr_row$effect)} ",
+             "{if_else(fitr_row$effect >= 0, 'more', 'less')} than the calendar alone would suggest.")
+  } else {
+    "The pre-Eid ul Fitr effect is not statistically distinguishable from zero once the calendar month is accounted for."
+  }
+)
+
+msg_fc <- str_glue(
+  "Tested on the last {h_test} months of held-out data, the {best_model} model forecast most ",
+  "accurately (MASE {round(best_mase, 2)}). It expects about {usd(next12)} over the next twelve ",
+  "months and places {fylab(target_fy)} at roughly {usd(proj[2])}, with an 80% range from ",
+  "{usd(proj[1])} to {usd(proj[3])}."
+)
+```
+
+::: {.callout-note appearance="simple"}
+## The story so far (data to `r mlab(latest)`)
+
+`r msg_month`
+
+`r msg_fy`
+
+`r msg_corr`
+
+`r msg_season`
+
+`r msg_fc`
+:::
+
+Every figure above is calculated when the document renders, from data downloaded from SBP a moment earlier. Render it again after SBP's next release and the text rewrites itself.
+
+## About the data
+
+The figures are workers' remittances from the State Bank of Pakistan's monthly dataset `TS_GP_BOP_WR_M`, in million US dollars, downloaded from SBP EasyData on `r pulled_on`. The report uses the published total and six corridors: Saudi Arabia, UAE, Other GCC, United Kingdom, EU and United States. Whatever remains of the total is shown as "Rest of world", so corridor shares always add up to 100%.
+
+Two things about the series deserve attention. SBP attributes flows to the *original country of the remitter* only from July 2019, so corridor comparisons start from `r if (has_corridors) fylab(base_fy) else "FY2019-20"`. And from July 2022 the series includes encashment and profit on FEBCs and FCBCs, which the forecasting model treats as a level shift.
+
+## The long view
+
+```{r}
+#| label: fig-trend
+#| fig-cap: "Monthly inflows and their twelve-month average"
+
+p_trend <- total |>
+  mutate(date = as.Date(month), avg12 = roll12 / 12) |>
+  ggplot(aes(date)) +
+  geom_col(aes(y = remittances), fill = "grey75", width = 25) +
+  geom_line(aes(y = avg12), colour = "#1b5e20", linewidth = 0.9) +
+  scale_y_continuous(labels = scales::label_comma()) +
+  labs(x = NULL, y = "US$ million",
+       caption = "Bars: monthly inflow. Line: twelve-month moving average. Source: SBP EasyData")
+
+ggplotly(p_trend)
+```
+
+The moving average is the line to watch. Monthly bars jump with Eid, the exchange rate and the number of working days, while the average shows where the underlying flow is heading. Keep in mind that when the interbank and open-market exchange rates drift apart, as they did in 2022-23, money tends to move towards informal channels and out of these numbers.
+
+```{r}
+#| label: fig-fy
+#| fig-cap: "Remittances by fiscal year"
+
+fy_tbl |>
+  mutate(fy_l = fct_inorder(fyshort(fy)),
+         status = if_else(complete, "Complete year", "Year to date")) |>
+  ggplot(aes(fy_l, value / 1000, fill = status)) +
+  geom_col() +
+  scale_fill_manual(values = c("Complete year" = "#1b5e20", "Year to date" = "#a5d6a7")) +
+  labs(x = NULL, y = "US$ billion", fill = NULL) +
+  theme(legend.position = "top", axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+## Where the money comes from
+
+```{r}
+#| label: fig-corridors
+#| fig-cap: "Share of total remittances by corridor"
+#| eval: !expr has_corridors
+
+corridors |>
+  mutate(corridor = fct_reorder(corridor, share, .fun = mean)) |>
+  ggplot(aes(as.Date(month), share, fill = corridor)) +
+  geom_area(colour = "white", linewidth = 0.2) +
+  scale_y_continuous(labels = scales::label_percent()) +
+  scale_fill_brewer(palette = "Set2") +
+  labs(x = NULL, y = "Share of total", fill = NULL)
+```
+
+```{r}
+#| label: fig-corridor-levels
+#| fig-cap: "Twelve-month rolling inflows by corridor"
+#| eval: !expr has_corridors
+
+corridors |>
+  arrange(month) |>
+  mutate(roll = as.numeric(stats::filter(remittances, rep(1, 12), sides = 1)),
+         .by = corridor) |>
+  filter(!is.na(roll)) |>
+  ggplot(aes(as.Date(month), roll / 1000, colour = corridor)) +
+  geom_line(linewidth = 0.8) +
+  scale_colour_brewer(palette = "Set2") +
+  labs(x = NULL, y = "US$ billion, last 12 months", colour = NULL)
+```
+
+```{r}
+#| label: tbl-corridors
+#| eval: !expr has_corridors
+
+corr_tbl |>
+  transmute(
+    Corridor = corridor,
+    `Last 12 months (US$ m)` = round(value_now),
+    `Growth on prior year` = scales::percent(growth, accuracy = 0.1),
+    `Share now` = scales::percent(share_now, accuracy = 0.1),
+    !!str_c("Share in ", fyshort(base_fy)) := scales::percent(base_share, accuracy = 0.1),
+    `Change (pp)` = round(100 * change, 1)
+  ) |>
+  kable(caption = "Corridors ranked by their share over the past twelve months")
+```
+
+## The rhythm of the year
+
+```{r}
+#| label: fig-season
+#| fig-cap: "Typical deviation from an average month, in fiscal-year order"
+
+seas |>
+  mutate(m_lab = factor(month.abb[m], levels = month.abb[c(7:12, 1:6)])) |>
+  ggplot(aes(m_lab, effect, fill = effect > 0)) +
+  geom_col(show.legend = FALSE) +
+  scale_fill_manual(values = c(`TRUE` = "#1b5e20", `FALSE` = "#bf360c")) +
+  scale_y_continuous(labels = scales::label_percent()) +
+  labs(x = NULL, y = "Seasonal effect")
+```
+
+A fixed calendar pattern cannot fully capture Eid, because Eid comes about eleven days earlier each year. The next chart shows what the fixed pattern leaves unexplained. Months that contain the run-up to Eid ul Fitr tend to sit above zero, and that is the part a purely seasonal model misses.
+
+```{r}
+#| label: fig-eid
+#| fig-cap: "What the seasonal pattern misses: unexplained deviation against the pre-Eid ul Fitr weight"
+
+stl_comp |>
+  ggplot(aes(eid_fitr, exp(remainder) - 1)) +
+  geom_hline(yintercept = 0, colour = "grey60") +
+  geom_jitter(width = 0.02, alpha = 0.6, colour = "#1b5e20") +
+  geom_smooth(method = "lm", colour = "#bf360c") +
+  scale_x_continuous(labels = scales::label_percent()) +
+  scale_y_continuous(labels = scales::label_percent()) +
+  labs(x = "Share of the 15 pre-Eid ul Fitr days falling in the month",
+       y = "Unexplained deviation")
+```
+
+```{r}
+#| label: tbl-eid
+
+eid_coef |>
+  transmute(
+    Regressor = recode(term,
+                       eid_fitr = "Pre-Eid ul Fitr fortnight",
+                       eid_adha = "Pre-Eid ul Adha fortnight",
+                       febc     = "FEBC/FCBC inclusion (from Jul 2022)"),
+    `Effect on inflows` = scales::percent(effect, accuracy = 0.1),
+    `t-statistic` = round(t, 1)
+  ) |>
+  kable(caption = "Calendar effects in the ARIMA model with regressors")
+```
+
+## Looking ahead
+
+```{r}
+#| label: tbl-accuracy
+
+acc |>
+  select(Model = .model, RMSE, MAE, MAPE, MASE) |>
+  kable(digits = 2,
+        caption = str_c("Accuracy on the last ", h_test, " months, held out from estimation"))
+```
+
+```{r}
+#| label: fig-forecast
+#| fig-cap: "Twelve-month forecast from the best-performing model"
+
+fc |>
+  autoplot(total_ts |> filter(month > max(month) - 60), level = c(80, 95)) +
+  labs(x = NULL, y = "US$ million", title = str_c(best_model, " forecast"))
+```
+
+```{r}
+#| label: fig-fy-proj
+#| fig-cap: "Simulated distribution of the fiscal-year total"
+
+fy_proj |>
+  ggplot(aes(total / 1000)) +
+  geom_histogram(bins = 40, fill = "#a5d6a7", colour = "white") +
+  geom_vline(xintercept = proj / 1000, linetype = c("dashed", "solid", "dashed"),
+             colour = "#1b5e20") +
+  labs(x = str_c(fylab(target_fy), " total (US$ billion)"), y = "Simulated paths")
+```
+
+The projection adds the months already on record to 2,000 simulated paths for the months still to come, so the range narrows as the fiscal year fills in. The Ljung-Box test on the chosen model's residuals gives a p-value of `r round(lb$lb_pvalue, 3)`, so `r if (lb$lb_pvalue < 0.05) "some autocorrelation remains and the intervals may be slightly too narrow." else "there is no sign of leftover autocorrelation."`
+
+## Keeping it current
+
+There is nothing to maintain. Each render downloads the seven series again, so running `quarto render remittances_sbp.qmd` after SBP's monthly release (usually in the second week) updates every number, chart and sentence. A scheduled render around the 12th of each month, through Windows Task Scheduler or GitHub Actions with the key stored as a secret, keeps the page current without anyone touching it.
+
+## Appendix: code
+
+```{r}
+#| label: code-appendix
+#| ref.label: !expr knitr::all_labels(label != "code-appendix")
+#| echo: true
+#| eval: false
+#| code-fold: true
+```

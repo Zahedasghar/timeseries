@@ -1,0 +1,474 @@
+---
+title: "Remittances in Pakistan: Trends and Forecasting"
+subtitle: "Live data from the SBP EasyData API"
+author: "Zahid Asghar"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    code-fold: show
+execute:
+  warning: false
+  message: false
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+This post looks at workers' remittances flowing into Pakistan, broken down by the
+country the money is sent from. Rather than working off a downloaded spreadsheet
+that goes stale the moment it is saved, the data here comes straight from the
+State Bank of Pakistan's EasyData API, so re-rendering the document refreshes the
+numbers.
+
+Two things are worth knowing about the series before reading too much into the
+country split. SBP records remittances by the *original country of the remitter*
+only from July 2019 onwards, so the earlier country breakdown is compiled on a
+different basis. And from July 2022 the series also absorbs encashment and profit
+on FEBCs and FCBCs. Values are in million US dollars.
+
+## Setup
+
+```{r setup}
+library(tidyverse)   # dplyr, ggplot2, tidyr, purrr, readr, stringr
+library(httr2)       # API requests
+library(janitor)     # clean_names()
+library(fpp3)        # loads tsibble, feasts and fable together
+library(plotly)      # interactive plots
+
+theme_set(theme_minimal(base_size = 12))
+```
+
+Note that `fpp3` already brings in `tsibble`, `feasts` and `fable`. The older
+`forecast` and `xts` packages are deliberately left out: loading `forecast`
+alongside `fable` masks `forecast()` and `accuracy()`, which is the source of a
+lot of confusing errors. Everything below is done the fable way.
+
+## Talking to EasyData
+
+The API follows one pattern:
+
+```
+https://easydata.sbp.org.pk/api/v1/series/{SERIES_ID}/data?api_key={KEY}&start_date=&end_date=&format=csv
+```
+
+The key lives in `~/.Renviron` as `SBP_EASYDATA_KEY` and never appears in this
+document. If the next chunk complains that the key is missing, run
+`usethis::edit_r_environ()`, add the line, make sure the file ends with a blank
+line, and restart R.
+
+```{r api-helpers}
+sbp_raw <- function(series_id,
+                    start_date = "2010-07-01",
+                    end_date   = Sys.Date(),
+                    key        = Sys.getenv("SBP_EASYDATA_KEY")) {
+
+  if (!nzchar(key)) {
+    stop("SBP_EASYDATA_KEY not found. Run usethis::edit_r_environ(), ",
+         "add the key, end the file with a blank line, then restart R.")
+  }
+
+  request("https://easydata.sbp.org.pk/api/v1/series") |>
+    req_url_path_append(series_id, "data") |>
+    req_url_query(
+      api_key    = key,
+      start_date = as.character(start_date),
+      end_date   = as.character(end_date),
+      format     = "csv"
+    ) |>
+    req_timeout(60) |>
+    req_retry(max_tries = 3) |>
+    req_perform() |>
+    resp_body_string() |>
+    I() |>
+    read_csv(show_col_types = FALSE) |>
+    clean_names()
+}
+
+# The CSV carries several metadata columns; pick them out by pattern rather
+# than by position, so a change in column order does not break the pipeline.
+pick_col <- function(df, pattern) {
+  hit <- names(df)[str_detect(names(df), pattern)]
+  if (length(hit) == 0) NA_character_ else hit[1]
+}
+
+sbp_series <- function(series_id, ...) {
+  raw <- sbp_raw(series_id, ...)
+
+  date_col  <- pick_col(raw, "observation_date|^date$|period")
+  value_col <- pick_col(raw, "observation_value|^value$")
+
+  if (is.na(date_col) || is.na(value_col)) {
+    stop("Unexpected columns for ", series_id, ": ",
+         paste(names(raw), collapse = ", "))
+  }
+
+  raw |>
+    transmute(
+      date         = as.Date(.data[[date_col]]),
+      remittances  = as.numeric(.data[[value_col]])
+    ) |>
+    filter(!is.na(date)) |>
+    arrange(date)
+}
+```
+
+## Finding the country series codes
+
+Workers' remittances sit in the monthly dataset `TS_GP_BOP_WR_M`, with one series
+per source country keyed as `TS_GP_BOP_WR_M.WRnnnn`. Rather than typing codes out
+of the portal by hand, this chunk discovers them: it first tries the dataset-level
+endpoint, and if that is not available it probes the series codes and reads each
+country's name out of the returned metadata.
+
+Run it once. It writes a lookup table to disk, and everything afterwards reads
+from that.
+
+```{r discover-series}
+#| eval: false
+
+lookup_file <- "data/sbp_wr_series.csv"
+dir.create("data", showWarnings = FALSE, recursive = TRUE)
+
+# Attempt 1: whole dataset in one call, if SBP exposes it on your key
+dataset_try <- try(
+  request("https://easydata.sbp.org.pk/api/v1/dataset") |>
+    req_url_path_append("TS_GP_BOP_WR_M", "data") |>
+    req_url_query(api_key = Sys.getenv("SBP_EASYDATA_KEY"), format = "csv") |>
+    req_timeout(120) |>
+    req_perform() |>
+    resp_body_string() |>
+    I() |>
+    read_csv(show_col_types = FALSE) |>
+    clean_names(),
+  silent = TRUE
+)
+
+if (!inherits(dataset_try, "try-error")) {
+
+  print(names(dataset_try))   # inspect, then keep the code + name columns
+  glimpse(dataset_try)
+
+} else {
+
+  # Attempt 2: probe the series codes one at a time.
+  probe <- function(code) {
+    id  <- paste0("TS_GP_BOP_WR_M.", code)
+    out <- try(sbp_raw(id, start_date = "2024-01-01", end_date = "2024-06-30"),
+               silent = TRUE)
+    Sys.sleep(0.3)   # be polite to the server
+    if (inherits(out, "try-error") || nrow(out) == 0) return(NULL)
+
+    name_col <- pick_col(out, "series_name|series_title|^name$|title|description")
+    tibble(
+      code        = code,
+      series_id   = id,
+      series_name = if (is.na(name_col)) NA_character_ else as.character(out[[name_col]][1])
+    )
+  }
+
+  codes <- sprintf("WR%04d", seq(10, 600, by = 10))
+  series_lookup <- map_dfr(codes, probe)
+
+  write_csv(series_lookup, lookup_file)
+  print(series_lookup, n = Inf)
+}
+# Single known series, no error suppression
+test <- sbp_raw("TS_GP_BOP_WR_M.WR0320",
+                start_date = "2024-01-01",
+                end_date   = "2024-06-30")
+
+names(test)
+glimpse(test)
+```
+
+Open `data/sbp_wr_series.csv`, read the country names, and keep the ones you want.
+The next chunk builds `series_map` from that file, so no codes are hard-coded here.
+
+```{r build-series-map}
+lookup_file <- "data/sbp_wr_series.csv"
+
+stopifnot(
+  "Run the discovery chunk first to create data/sbp_wr_series.csv" =
+    file.exists(lookup_file)
+)
+
+series_lookup <- read_csv(lookup_file, show_col_types = FALSE) |>
+  filter(!is.na(series_name)) |>
+  mutate(
+    # Tidy the SBP label into a short country name for plotting
+    country = series_name |>
+      str_remove(regex("^workers'?\\s*remittances\\s*[-:,]?\\s*", ignore_case = TRUE)) |>
+      str_remove(regex("\\s*\\(.*\\)$")) |>
+      str_squish()
+  )
+
+series_map <- set_names(series_lookup$series_id, series_lookup$country)
+
+length(series_map)
+head(names(series_map), 20)
+```
+
+## Pulling and caching the data
+
+Every render would otherwise hit the API once per country. The cache keeps a local
+copy for a week, and falls back to it if SBP is unreachable mid-render.
+
+```{r fetch-data}
+cache_file <- "data/remittances_sbp.rds"
+dir.create(dirname(cache_file), showWarnings = FALSE, recursive = TRUE)
+
+fetch_all <- function() {
+  imap_dfr(series_map, \(id, country) {
+    Sys.sleep(0.2)
+    sbp_series(id) |> mutate(country = country)
+  })
+}
+
+cache_fresh <- file.exists(cache_file) &&
+  difftime(Sys.time(), file.mtime(cache_file), units = "days") < 7
+
+rmt_long <- if (cache_fresh) {
+  read_rds(cache_file)
+} else {
+  out <- try(fetch_all(), silent = TRUE)
+  if (inherits(out, "try-error")) {
+    if (!file.exists(cache_file)) stop(out)
+    message("SBP API unreachable, using cached copy from ", file.mtime(cache_file))
+    read_rds(cache_file)
+  } else {
+    write_rds(out, cache_file)
+    out
+  }
+}
+
+rmt_long <- rmt_long |>
+  filter(!is.na(remittances)) |>
+  mutate(month = yearmonth(date))
+
+glimpse(rmt_long)
+range(rmt_long$date)
+```
+
+To force a refresh before publishing: `file.remove("data/remittances_sbp.rds")`.
+
+### As a tsibble
+
+```{r make-tsibble}
+ts_data <- rmt_long |>
+  as_tsibble(key = country, index = month) |>
+  fill_gaps()          # implicit gaps break the seasonal models
+
+has_gaps(ts_data) |> filter(.gaps) |> head()
+```
+
+`fill_gaps()` matters here: countries enter the series at different dates, and
+fable refuses to fit seasonal models on a tsibble with implicit gaps.
+
+### A wide copy, if you want one
+
+```{r wide-copy}
+rmt_wide <- rmt_long |>
+  select(date, country, remittances) |>
+  pivot_wider(names_from = country, values_from = remittances) |>
+  arrange(date)
+
+dim(rmt_wide)
+```
+
+## Trends by country
+
+```{r plot-trends}
+#| fig-height: 6
+
+total_label <- names(series_map)[str_detect(names(series_map),
+                                            regex("total|all countries", ignore_case = TRUE))]
+
+top_countries <- rmt_long |>
+  filter(!country %in% total_label) |>
+  group_by(country) |>
+  summarise(mean_flow = mean(remittances, na.rm = TRUE), .groups = "drop") |>
+  slice_max(mean_flow, n = 6) |>
+  pull(country)
+
+p_trend <- rmt_long |>
+  filter(country %in% top_countries) |>
+  ggplot(aes(date, remittances, colour = country)) +
+  geom_line(linewidth = 0.6) +
+  labs(
+    title = "Workers' remittances to Pakistan by source country",
+    x = NULL, y = "US$ million", colour = NULL,
+    caption = "Source: State Bank of Pakistan, EasyData"
+  )
+
+ggplotly(p_trend)
+```
+
+## Country shares
+
+The original version filtered on `share > 0.08`, which drops individual *months*
+rather than countries and leaves broken lines. Ranking countries by their average
+share and then plotting the full series for the leaders is what was intended.
+
+```{r shares}
+#| fig-height: 5
+
+totals <- if (length(total_label) > 0) {
+  rmt_long |> filter(country %in% total_label) |> select(date, total = remittances)
+} else {
+  rmt_long |> group_by(date) |> summarise(total = sum(remittances, na.rm = TRUE))
+}
+
+rmt_share <- rmt_long |>
+  filter(!country %in% total_label) |>
+  left_join(totals, by = "date") |>
+  mutate(share = remittances / total) |>
+  filter(is.finite(share))
+
+share_leaders <- rmt_share |>
+  group_by(country) |>
+  summarise(mean_share = mean(share, na.rm = TRUE), .groups = "drop") |>
+  filter(mean_share > 0.05) |>
+  pull(country)
+
+p_share <- rmt_share |>
+  filter(country %in% share_leaders) |>
+  ggplot(aes(date, share, colour = country)) +
+  geom_line(linewidth = 0.6) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(
+    title = "Share of total remittances by source country",
+    x = NULL, y = "Share of total", colour = NULL
+  )
+
+ggplotly(p_share)
+```
+
+## Seasonality and decomposition
+
+```{r decomposition}
+#| fig-height: 6
+
+focus <- top_countries[1]
+
+ts_data |>
+  filter(country == focus) |>
+  model(STL(remittances ~ season(window = "periodic"))) |>
+  components() |>
+  autoplot() +
+  labs(title = paste("STL decomposition:", focus))
+```
+
+```{r seasonal-subseries}
+#| fig-height: 5
+
+ts_data |>
+  filter(country == focus, !is.na(remittances)) |>
+  gg_subseries(remittances) +
+  labs(title = paste("Seasonal pattern:", focus), y = "US$ million")
+```
+
+The Ramadan and Eid effect is usually visible here, and it moves through the
+calendar year, which is one reason a purely seasonal-naive model struggles.
+
+## Forecasting
+
+Three models fitted side by side, on the countries that matter most, with a
+holdout period so the comparison means something.
+
+```{r fit-models}
+model_set <- ts_data |>
+  filter(country %in% top_countries)
+
+train <- model_set |> filter(month < max(month) - 23)
+
+fits <- train |>
+  model(
+    snaive = SNAIVE(remittances ~ lag("year")),
+    ets    = ETS(remittances),
+    arima  = ARIMA(remittances)
+  )
+
+fits
+```
+
+```{r accuracy}
+fc_test <- fits |> forecast(h = "24 months")
+
+fc_test |>
+  accuracy(model_set) |>
+  select(country, .model, RMSE, MAE, MAPE, MASE) |>
+  arrange(country, RMSE) |>
+  print(n = Inf)
+```
+
+```{r forecast-plot}
+#| fig-height: 7
+
+final_fits <- model_set |>
+  model(
+    snaive = SNAIVE(remittances ~ lag("year")),
+    ets    = ETS(remittances),
+    arima  = ARIMA(remittances)
+  )
+
+fc <- final_fits |> forecast(h = "12 months")
+
+fc |>
+  autoplot(model_set |> filter(date >= max(date) - years(5)), level = 80) +
+  facet_wrap(~ country, scales = "free_y", ncol = 2) +
+  labs(
+    title = "12-month forecasts by model",
+    x = NULL, y = "US$ million"
+  )
+```
+
+### Total remittances
+
+```{r forecast-total}
+#| fig-height: 5
+
+total_series <- if (length(total_label) > 0) {
+  ts_data |> filter(country %in% total_label)
+} else {
+  rmt_long |>
+    filter(!country %in% total_label) |>
+    group_by(month) |>
+    summarise(remittances = sum(remittances, na.rm = TRUE), .groups = "drop") |>
+    as_tsibble(index = month)
+}
+
+total_series |>
+  model(
+    ets   = ETS(remittances),
+    arima = ARIMA(remittances)
+  ) |>
+  forecast(h = "12 months") |>
+  autoplot(total_series |> filter(month >= max(month) - 60), level = 80) +
+  labs(title = "Total remittances: 12-month forecast", x = NULL, y = "US$ million")
+```
+
+### Residual checks
+
+```{r residuals}
+#| fig-height: 5
+
+final_fits |>
+  filter(country == focus) |>
+  select(arima) |>
+  gg_tsresiduals() +
+  labs(title = paste("ARIMA residuals:", focus))
+```
+
+## Conclusion
+
+The data now arrives live from SBP rather than from a file, the country labels come
+from SBP's own metadata rather than from column names, and the forecasting is done
+entirely within the fable framework so models can be compared on a common holdout.
+
+Natural extensions: aggregate the country series with `reconcile()` so the parts
+sum to the published total, add oil prices or the PKR/USD rate as regressors in a
+dynamic regression, and test whether the July 2019 change in compilation basis
+shows up as a structural break in the country shares.
