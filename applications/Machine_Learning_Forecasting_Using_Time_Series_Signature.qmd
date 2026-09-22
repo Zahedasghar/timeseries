@@ -1,5 +1,5 @@
 ---
-title: "Time Series Machine Learning"
+title: "Time Series:  Machine Learning"
 author: "Zahid Asghar"
 format: 
   html:
